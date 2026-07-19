@@ -5,49 +5,73 @@ export type MobileLegendsPackage = {
   amountInPaise: number;
   deliveryLabel: string;
   featured?: boolean;
+  source: "fazercards-live" | "fazercards-indicative";
+  supplierCategoryId?: string;
+  supplierOfferId?: string;
+  region?: string | null;
+  expectedMarginInPaise?: number;
 };
 
-export const mobileLegendsPackages: MobileLegendsPackage[] = [
+export const fallbackMobileLegendsPackages: MobileLegendsPackage[] = [
   {
-    id: "diamonds-86",
+    id: "mlbb-86-indicative",
     name: "86 Diamonds",
-    description: "A starter diamond package for skins and in-game items.",
-    amountInPaise: 9900,
-    deliveryLabel: "Demo fulfilment",
+    description: "78 Diamonds + 8 bonus. Entry pack with a protected minimum profit.",
+    amountInPaise: 13_000,
+    deliveryLabel: "Supplier price fallback",
+    source: "fazercards-indicative",
+    supplierOfferId: "indicative-78-plus-8",
   },
   {
-    id: "diamonds-172",
-    name: "172 Diamonds",
-    description: "A balanced package for regular top-ups.",
-    amountInPaise: 19500,
-    deliveryLabel: "Demo fulfilment",
-  },
-  {
-    id: "diamonds-257",
-    name: "257 Diamonds",
-    description: "A larger package for events and premium items.",
-    amountInPaise: 28900,
-    deliveryLabel: "Demo fulfilment",
-  },
-  {
-    id: "weekly-diamond-pass",
+    id: "mlbb-weekly-pass-indicative",
     name: "Weekly Diamond Pass",
-    description: "A seven-day value package for frequent players.",
-    amountInPaise: 14900,
-    deliveryLabel: "Demo fulfilment",
+    description: "Seven-day value pack for frequent players.",
+    amountInPaise: 16_000,
+    deliveryLabel: "Supplier price fallback",
     featured: true,
+    source: "fazercards-indicative",
+    supplierOfferId: "indicative-weekly-pass",
   },
   {
-    id: "twilight-pass",
+    id: "mlbb-172-indicative",
+    name: "172 Diamonds",
+    description: "156 Diamonds + 16 bonus for regular top-ups.",
+    amountInPaise: 24_500,
+    deliveryLabel: "Supplier price fallback",
+    source: "fazercards-indicative",
+    supplierOfferId: "indicative-156-plus-16",
+  },
+  {
+    id: "mlbb-257-indicative",
+    name: "257 Diamonds",
+    description: "234 Diamonds + 23 bonus for events and premium items.",
+    amountInPaise: 35_500,
+    deliveryLabel: "Supplier price fallback",
+    source: "fazercards-indicative",
+    supplierOfferId: "indicative-234-plus-23",
+  },
+  {
+    id: "mlbb-565-indicative",
+    name: "565 Diamonds",
+    description: "500 Diamonds + 65 bonus with a lower percentage margin at higher value.",
+    amountInPaise: 81_500,
+    deliveryLabel: "Supplier price fallback",
+    source: "fazercards-indicative",
+    supplierOfferId: "indicative-500-plus-65",
+  },
+  {
+    id: "mlbb-twilight-pass-indicative",
     name: "Twilight Pass",
-    description: "A premium progression package for active players.",
-    amountInPaise: 74900,
-    deliveryLabel: "Demo fulfilment",
+    description: "Premium progression pass priced from the public supplier reference rate.",
+    amountInPaise: 88_000,
+    deliveryLabel: "Supplier price fallback",
+    source: "fazercards-indicative",
+    supplierOfferId: "indicative-twilight-pass",
   },
 ];
 
-export function getMobileLegendsPackage(packageId: string) {
-  return mobileLegendsPackages.find((item) => item.id === packageId) ?? null;
+export function getFallbackMobileLegendsPackage(packageId: string) {
+  return fallbackMobileLegendsPackages.find((item) => item.id === packageId) ?? null;
 }
 
 export function formatInr(amountInPaise: number) {
