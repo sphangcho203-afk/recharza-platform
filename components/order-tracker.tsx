@@ -1,6 +1,6 @@
 "use client";
 
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useState } from "react";
 
 import { formatInr } from "@/lib/mobile-legends";
 
@@ -77,14 +77,18 @@ export function OrderTracker({ orderId }: { orderId: string }) {
     }
   }
 
-  useEffect(() => {
+  function useSavedToken() {
     const storedToken = sessionStorage.getItem(`recharza-order:${orderId}`);
 
-    if (storedToken) {
-      setAccessToken(storedToken);
-      void loadOrder(storedToken);
+    if (!storedToken) {
+      setStatus("error");
+      setMessage("No saved token was found in this browser session.");
+      return;
     }
-  }, [orderId]);
+
+    setAccessToken(storedToken);
+    void loadOrder(storedToken);
+  }
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -119,9 +123,17 @@ export function OrderTracker({ orderId }: { orderId: string }) {
         </label>
 
         <button
+          type="button"
+          onClick={useSavedToken}
+          className="mt-3 w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10"
+        >
+          Use saved token from this browser
+        </button>
+
+        <button
           type="submit"
           disabled={status === "loading"}
-          className="mt-4 w-full rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 py-3.5 text-sm font-black text-white disabled:cursor-wait disabled:opacity-60"
+          className="mt-3 w-full rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 py-3.5 text-sm font-black text-white disabled:cursor-wait disabled:opacity-60"
         >
           {status === "loading" ? "Loading order..." : "Open secure order"}
         </button>
