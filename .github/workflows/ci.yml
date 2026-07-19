@@ -20,10 +20,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 20.19.0
 
       - name: Install dependencies
         run: npm install
+
+      - name: Validate database schema
+        run: npm run db:validate
 
       - name: Type check
         run: npm run typecheck
