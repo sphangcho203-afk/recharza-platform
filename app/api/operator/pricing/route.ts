@@ -47,6 +47,18 @@ function parsePolicy(payload: unknown): PricingPolicy | null {
   return policy;
 }
 
+function toPricingPolicy(config: PricingPolicy): PricingPolicy {
+  return {
+    usdInrRatePaise: config.usdInrRatePaise,
+    fxBufferBps: config.fxBufferBps,
+    gatewayFeeBps: config.gatewayFeeBps,
+    targetMarginBps: config.targetMarginBps,
+    minimumMarginInPaise: config.minimumMarginInPaise,
+    overheadInPaise: config.overheadInPaise,
+    roundingInPaise: config.roundingInPaise,
+  };
+}
+
 async function getPolicy() {
   return getPrisma().pricingConfiguration.upsert({
     where: { id: "default" },
@@ -79,7 +91,7 @@ export async function GET(request: Request) {
 
     return Response.json({
       ok: true,
-      policy,
+      policy: toPricingPolicy(policy),
       catalog: {
         productCount,
         publishedCount,
@@ -138,7 +150,7 @@ export async function POST(request: Request) {
     }
 
     const prisma = getPrisma();
-    const previous = await getPolicy();
+    const previous = toPricingPolicy(await getPolicy());
     const products = await prisma.supplierProduct.findMany({
       where: { provider: "fazercards" },
       select: { id: true, supplierPriceUsdMicros: true },
