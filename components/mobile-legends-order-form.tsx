@@ -1,6 +1,7 @@
 "use client";
 
-import { type FormEvent, useMemo, useState } from "react";
+import Link from "next/link";
+import { type FormEvent, useMemo, useRef, useState } from "react";
 
 import {
   formatInr,
@@ -19,18 +20,23 @@ type CreatedOrder = {
   package: {
     name: string;
     amountInPaise: number;
-    currency: "INR";
+    currency: string;
   };
   player: {
     playerId: string;
     zoneId: string;
-    verificationMode: "format-only";
+    verificationMode: string;
   };
-  persistence: "not_configured";
+  persistence: "database";
+  tracking: {
+    path: string;
+    accessToken: string;
+  };
 };
 
 type OrderResponse = {
   ok: boolean;
+  duplicate?: boolean;
   message?: string;
   order?: CreatedOrder;
   paymentSession?: {
@@ -46,6 +52,14 @@ const initialVerification: VerificationState = {
   message: "Enter the player and zone IDs, then validate the format.",
 };
 
+function createIdempotencyKey() {
+  if (globalThis.crypto?.randomUUID) {
+    return `rz_${globalThis.crypto.randomUUID()}`;
+  }
+
+  return `rz_${Date.now()}_${Math.random().toString(36).slice(2, 18)}`;
+}
+
 export function MobileLegendsOrderForm() {
   const [packageId, setPackageId] = useState(
     mobileLegendsPackages.find((item) => item.featured)?.id ??
@@ -58,8 +72,10 @@ export function MobileLegendsOrderForm() {
     useState<VerificationState>(initialVerification);
   const [isCreatingOrder, setIsCreatingOrder] = useState(false);
   const [order, setOrder] = useState<CreatedOrder | null>(null);
+  const [wasDuplicate, setWasDuplicate] = useState(false);
   const [paymentMessage, setPaymentMessage] = useState("");
   const [orderError, setOrderError] = useState("");
+  const idempotencyKey = useRef<string | null>(null);
 
   const selectedPackage = useMemo(
     () =>
@@ -68,11 +84,17 @@ export function MobileLegendsOrderForm() {
     [packageId],
   );
 
-  function resetVerification() {
-    setVerification(initialVerification);
+  function resetOrderState() {
+    idempotencyKey.current = null;
     setOrder(null);
+    setWasDuplicate(false);
     setPaymentMessage("");
     setOrderError("");
+  }
+
+  function resetVerification() {
+    setVerification(initialVerification);
+    resetOrderState();
   }
 
   async function verifyPlayer() {
@@ -80,8 +102,7 @@ export function MobileLegendsOrderForm() {
       status: "loading",
       message: "Checking the player and zone ID format...",
     });
-    setOrder(null);
-    setOrderError("");
+    resetOrderState();
 
     try {
       const response = await fetch("/api/games/mobile-legends/verify", {
@@ -119,10 +140,16 @@ export function MobileLegendsOrderForm() {
     setOrder(null);
     setPaymentMessage("");
 
+    const requestKey = idempotencyKey.current ?? createIdempotencyKey();
+    idempotencyKey.current = requestKey;
+
     try {
       const response = await fetch("/api/orders", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": requestKey,
+        },
         body: JSON.stringify({
           gameSlug: "mobile-legends",
           packageId,
@@ -138,13 +165,18 @@ export function MobileLegendsOrderForm() {
         return;
       }
 
+      sessionStorage.setItem(
+        `recharza-order:${result.order.id}`,
+        result.order.tracking.accessToken,
+      );
       setOrder(result.order);
+      setWasDuplicate(Boolean(result.duplicate));
       setPaymentMessage(
         result.paymentSession?.message ??
-          "The development order was created without charging a payment.",
+          "The persistent development order was created without charging a payment.",
       );
     } catch {
-      setOrderError("The order service could not be reached. Please retry.");
+      setOrderError("The order service could not be reached. Retrying will not create a duplicate.");
     } finally {
       setIsCreatingOrder(false);
     }
@@ -169,8 +201,8 @@ export function MobileLegendsOrderForm() {
         </div>
 
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          These amounts are development placeholders. Final prices must come from the connected
-          fulfilment provider before launch.
+          These amounts remain development placeholders. The server owns the selected product and
+          total, and successful orders are stored in PostgreSQL.
         </p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
@@ -184,9 +216,7 @@ export function MobileLegendsOrderForm() {
                 aria-pressed={selected}
                 onClick={() => {
                   setPackageId(item.id);
-                  setOrder(null);
-                  setPaymentMessage("");
-                  setOrderError("");
+                  resetOrderState();
                 }}
                 className={`relative rounded-2xl border p-4 text-left transition ${
                   selected
@@ -283,9 +313,7 @@ export function MobileLegendsOrderForm() {
             value={customerEmail}
             onChange={(event) => {
               setCustomerEmail(event.target.value);
-              setOrder(null);
-              setPaymentMessage("");
-              setOrderError("");
+              resetOrderState();
             }}
             placeholder="you@example.com"
             className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400"
@@ -296,7 +324,7 @@ export function MobileLegendsOrderForm() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-semibold text-white">{selectedPackage.name}</p>
-              <p className="mt-1 text-xs text-slate-500">Development checkout only</p>
+              <p className="mt-1 text-xs text-slate-500">Persistent development checkout</p>
             </div>
             <p className="text-xl font-black text-white">
               {formatInr(selectedPackage.amountInPaise)}
@@ -309,7 +337,7 @@ export function MobileLegendsOrderForm() {
           disabled={isCreatingOrder || verification.status !== "success"}
           className="mt-4 w-full rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 py-3.5 text-sm font-black text-white shadow-[0_14px_40px_rgba(139,92,246,0.24)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0"
         >
-          {isCreatingOrder ? "Creating order..." : "Create development order"}
+          {isCreatingOrder ? "Creating protected order..." : "Create persistent development order"}
         </button>
 
         {orderError ? (
@@ -324,7 +352,7 @@ export function MobileLegendsOrderForm() {
             className="mt-5 rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5"
           >
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">
-              Development order created
+              {wasDuplicate ? "Existing order safely recovered" : "Persistent order created"}
             </p>
             <p className="mt-2 text-2xl font-black text-white">{order.id}</p>
             <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
@@ -340,13 +368,35 @@ export function MobileLegendsOrderForm() {
               </div>
               <div>
                 <dt className="text-slate-500">Status</dt>
-                <dd className="mt-1 font-semibold text-slate-200">Awaiting provider</dd>
+                <dd className="mt-1 font-semibold capitalize text-slate-200">
+                  {order.status.replaceAll("_", " ")}
+                </dd>
               </div>
               <div>
                 <dt className="text-slate-500">Storage</dt>
-                <dd className="mt-1 font-semibold text-slate-200">Not persisted yet</dd>
+                <dd className="mt-1 font-semibold text-slate-200">PostgreSQL</dd>
               </div>
             </dl>
+
+            <label className="mt-5 block text-xs font-bold uppercase tracking-wider text-emerald-200">
+              Private tracking token
+              <textarea
+                readOnly
+                rows={3}
+                value={order.tracking.accessToken}
+                className="mt-2 w-full resize-none rounded-2xl border border-emerald-400/15 bg-black/20 px-3 py-3 font-mono text-xs font-normal normal-case tracking-normal text-emerald-100 outline-none"
+              />
+            </label>
+            <p className="mt-2 text-xs leading-5 text-emerald-100/70">
+              Keep this token private. It is required to open the persisted order timeline.
+            </p>
+
+            <Link
+              href={order.tracking.path}
+              className="mt-4 block rounded-2xl border border-emerald-300/25 bg-emerald-300/10 px-4 py-3 text-center text-sm font-black text-emerald-100 transition hover:bg-emerald-300/15"
+            >
+              Open secure order tracking
+            </Link>
             <p className="mt-4 text-sm leading-6 text-emerald-100/80">{paymentMessage}</p>
           </div>
         ) : null}
