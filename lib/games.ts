@@ -6,6 +6,7 @@ export type Game = {
   icon: string;
   gradient: string;
   badge?: string;
+  available?: boolean;
   packages: string[];
 };
 
@@ -17,7 +18,8 @@ export const games: Game[] = [
     category: "MOBA",
     icon: "ML",
     gradient: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
-    badge: "Popular",
+    badge: "Playable demo",
+    available: true,
     packages: ["Diamonds", "Weekly Pass", "Twilight Pass"],
   },
   {

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import type { Game } from "@/lib/games";
 
 type GameCardProps = {
@@ -44,13 +46,22 @@ export function GameCard({ game }: GameCardProps) {
           ))}
         </div>
 
-        <button
-          type="button"
-          disabled
-          className="w-full cursor-not-allowed rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-400"
-        >
-          Packages coming next
-        </button>
+        {game.available ? (
+          <Link
+            href={`/games/${game.slug}`}
+            className="block w-full rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-3 text-center text-sm font-bold text-white shadow-[0_12px_34px_rgba(139,92,246,0.2)] transition hover:-translate-y-0.5"
+          >
+            Open playable demo
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="w-full cursor-not-allowed rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-400"
+          >
+            Packages coming later
+          </button>
+        )}
       </div>
     </article>
   );

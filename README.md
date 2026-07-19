@@ -9,7 +9,12 @@ Recharza is a multi-game top-up, gift card, and digital recharge platform being 
 - Tailwind CSS
 - Responsive Recharza landing page
 - Initial six-game catalogue
-- Reusable catalogue components
+- Playable Mobile Legends development storefront
+- Package selection with clearly labelled placeholder prices
+- Player and zone ID format validation
+- Server-side package and price verification
+- Development-only order creation
+- Payment-provider abstraction that cannot charge real money
 - Deployment health endpoint
 - GitHub Actions verification workflow
 - Environment-variable template with no real credentials
@@ -28,6 +33,12 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+The Mobile Legends development flow is available at:
+
+```text
+/games/mobile-legends
+```
+
 ## Validation
 
 ```bash
@@ -42,23 +53,37 @@ The health endpoint is available at:
 /api/health
 ```
 
+## Development API routes
+
+```text
+POST /api/games/mobile-legends/verify
+POST /api/orders
+```
+
+The verification endpoint currently checks player and zone ID format only. It does not claim to retrieve a live nickname.
+
+The order endpoint recalculates the selected package and price on the server. It returns a temporary development order and a non-charging payment session. Orders are not persisted yet.
+
 ## Security rules
 
 Never commit real API keys, database passwords, payment secrets, webhook secrets, service-account files, or production credentials.
 
 Use `.env.example` only as a variable-name template. Store real values in the deployment provider's encrypted environment settings.
 
-## Planned purchase flow
+Never trust a price, product description, payment status, or verification result sent directly by the browser. Recalculate and verify sensitive order data on the server.
+
+## Purchase flow
 
 1. Choose a game
 2. Select a package
-3. Enter and verify player details
-4. Pay and receive an order record
-5. Track fulfilment status
+3. Enter and validate player details
+4. Create an order
+5. Start a payment session
+6. Track fulfilment status
 
 ## Next milestone
 
-Build the first complete Mobile Legends product flow with package selection, player-ID validation, order creation, and a payment-provider abstraction.
+Add persistent order storage, duplicate-order protection, rate limiting, customer authentication, and a verified provider integration. Real payments must remain disabled until webhook verification and fulfilment reconciliation are complete.
 
 ## Branch workflow
 
