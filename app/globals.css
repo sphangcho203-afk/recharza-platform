@@ -2,7 +2,7 @@
 
 :root {
   color-scheme: dark;
-  --background: #070711;
+  --background: #06060f;
   --foreground: #f8fafc;
 }
 
@@ -16,7 +16,9 @@ html {
 
 body {
   margin: 0;
-  background: var(--background);
+  background:
+    radial-gradient(circle at 50% -20%, rgba(124, 58, 237, 0.1), transparent 34rem),
+    var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   text-rendering: optimizeLegibility;
@@ -33,12 +35,140 @@ a {
     linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   background-size: 54px 54px;
-  mask-image: linear-gradient(to bottom, black 0%, transparent 85%);
+  mask-image: linear-gradient(to bottom, black 0%, transparent 88%);
+}
+
+.scanline {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.035) 49%,
+    rgba(139, 92, 246, 0.08) 50%,
+    transparent 52%,
+    transparent 100%
+  );
+  background-size: 100% 14rem;
+  animation: scanline 10s linear infinite;
+}
+
+.orb-drift {
+  animation: orb-drift 12s ease-in-out infinite alternate;
+}
+
+.orb-drift-delayed {
+  animation: orb-drift-delayed 15s ease-in-out infinite alternate;
+}
+
+.reveal-card {
+  animation: reveal-card 620ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.package-card {
+  animation: package-card 520ms cubic-bezier(0.2, 0.7, 0.25, 1) both;
+}
+
+.success-rise {
+  animation: success-rise 440ms cubic-bezier(0.18, 0.8, 0.25, 1) both;
+}
+
+.glass-glow {
+  position: relative;
+  isolation: isolate;
+}
+
+.glass-glow::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(120deg, rgba(139, 92, 246, 0.11), transparent 42%, rgba(236, 72, 153, 0.08));
+  content: "";
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+
+.glass-glow:hover::before {
+  opacity: 1;
+}
+
+.text-shimmer {
+  background: linear-gradient(90deg, #ffffff 0%, #c4b5fd 35%, #f0abfc 58%, #ffffff 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: text-shimmer 8s linear infinite;
 }
 
 ::selection {
   background: rgba(139, 92, 246, 0.45);
   color: white;
+}
+
+@keyframes scanline {
+  from {
+    background-position: 0 -14rem;
+  }
+  to {
+    background-position: 0 100vh;
+  }
+}
+
+@keyframes orb-drift {
+  from {
+    transform: translate3d(-2%, -2%, 0) scale(0.96);
+  }
+  to {
+    transform: translate3d(7%, 6%, 0) scale(1.08);
+  }
+}
+
+@keyframes orb-drift-delayed {
+  from {
+    transform: translate3d(5%, -4%, 0) scale(1.04);
+  }
+  to {
+    transform: translate3d(-8%, 8%, 0) scale(0.94);
+  }
+}
+
+@keyframes reveal-card {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes package-card {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes success-rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes text-shimmer {
+  to {
+    background-position: -220% center;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
