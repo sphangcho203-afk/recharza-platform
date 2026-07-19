@@ -8,6 +8,14 @@ import {
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
+export type StorefrontPricingSnapshot = {
+  mode: "live" | "fallback";
+  publishedCount: number;
+  latestSyncAt: string | null;
+  offersSynced: number;
+  minimumPrices: Record<string, number | null>;
+};
+
 function mapSupplierProduct(product: {
   offerId: string;
   categoryId: string;
@@ -101,7 +109,7 @@ export async function getMobileLegendsPackageForCheckout(packageId: string) {
   }
 }
 
-export async function getStorefrontPricingSnapshot() {
+export async function getStorefrontPricingSnapshot(): Promise<StorefrontPricingSnapshot> {
   try {
     const [publishedCount, latestSync, gameMinimums] = await Promise.all([
       getPrisma().supplierProduct.count({
@@ -127,7 +135,7 @@ export async function getStorefrontPricingSnapshot() {
       minimumPrices: Object.fromEntries(
         gameMinimums.map((item) => [item.gameSlug, item._min.retailPriceInPaise ?? null]),
       ),
-    } as const;
+    };
   } catch {
     return {
       mode: "fallback",
@@ -135,6 +143,6 @@ export async function getStorefrontPricingSnapshot() {
       latestSyncAt: null,
       offersSynced: 0,
       minimumPrices: {},
-    } as const;
+    };
   }
 }
