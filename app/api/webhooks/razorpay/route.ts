@@ -9,6 +9,16 @@ import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
 export const runtime = "nodejs";
 
+type OrderStatusValue =
+  | "CREATED"
+  | "AWAITING_PAYMENT"
+  | "PAYMENT_PENDING"
+  | "PAID"
+  | "FULFILLING"
+  | "COMPLETED"
+  | "FAILED"
+  | "CANCELLED";
+
 const SUPPORTED_EVENTS = new Set([
   "payment.authorized",
   "payment.captured",
@@ -25,11 +35,14 @@ function isUniqueConstraintError(error: unknown) {
   );
 }
 
-function canMoveToPaid(status: string) {
+function canMoveToPaid(status: OrderStatusValue) {
   return !["FULFILLING", "COMPLETED", "CANCELLED"].includes(status);
 }
 
-function resolveTargetStatus(eventType: string, currentStatus: string) {
+function resolveTargetStatus(
+  eventType: string,
+  currentStatus: OrderStatusValue,
+): OrderStatusValue {
   if (["payment.captured", "order.paid"].includes(eventType)) {
     return canMoveToPaid(currentStatus) ? "PAID" : currentStatus;
   }
@@ -79,7 +92,9 @@ export async function POST(request: Request) {
     const eventId = request.headers.get("x-razorpay-event-id")?.trim() || null;
     const payloadHash = hashWebhookPayload(rawBody);
     const prisma = getPrisma();
-    const duplicateFilters: Array<Record<string, unknown>> = [{ payloadHash }];
+    const duplicateFilters: Prisma.PaymentWebhookWhereInput[] = [
+      { payloadHash },
+    ];
 
     if (eventId) {
       duplicateFilters.push({ provider: "razorpay", eventId });
