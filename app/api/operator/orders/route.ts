@@ -1,0 +1,102 @@
+import { verifyOperatorAccess } from "@/lib/operator-auth";
+import { getPrisma } from "@/lib/prisma";
+import { RuntimeConfigurationError } from "@/lib/runtime-config";
+
+export const runtime = "nodejs";
+
+const ORDER_STATUSES = new Set([
+  "CREATED",
+  "AWAITING_PAYMENT",
+  "PAYMENT_PENDING",
+  "PAID",
+  "FULFILLING",
+  "COMPLETED",
+  "FAILED",
+  "CANCELLED",
+]);
+
+function maskEmail(email: string) {
+  const [localPart, domain] = email.split("@");
+
+  if (!localPart || !domain) {
+    return "hidden";
+  }
+
+  return `${localPart.slice(0, 2)}${"*".repeat(Math.max(2, localPart.length - 2))}@${domain}`;
+}
+
+export async function GET(request: Request) {
+  try {
+    if (!verifyOperatorAccess(request)) {
+      return Response.json(
+        { ok: false, message: "Operator access is required." },
+        { status: 401 },
+      );
+    }
+
+    const url = new URL(request.url);
+    const requestedStatus = url.searchParams.get("status")?.toUpperCase() ?? "";
+    const parsedLimit = Number(url.searchParams.get("limit") ?? 50);
+    const limit = Number.isFinite(parsedLimit)
+      ? Math.min(100, Math.max(1, Math.floor(parsedLimit)))
+      : 50;
+    const where = ORDER_STATUSES.has(requestedStatus)
+      ? { status: requestedStatus as never }
+      : {};
+
+    const orders = await getPrisma().order.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      include: {
+        customer: true,
+        _count: { select: { events: true, webhooks: true, auditLogs: true } },
+      },
+    });
+
+    return Response.json(
+      {
+        ok: true,
+        orders: orders.map((order) => ({
+          id: order.publicId,
+          status: order.status.toLowerCase(),
+          gameSlug: order.gameSlug,
+          package: {
+            id: order.packageId,
+            name: order.packageName,
+            amountInPaise: order.amountInPaise,
+            currency: order.currency,
+          },
+          player: {
+            playerId: order.playerId,
+            zoneId: order.zoneId,
+          },
+          customerEmail: maskEmail(order.customer.email),
+          paymentProvider: order.paymentProvider,
+          paymentSessionId: order.paymentSessionId,
+          createdAt: order.createdAt.toISOString(),
+          updatedAt: order.updatedAt.toISOString(),
+          counts: order._count,
+        })),
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      },
+    );
+  } catch (error) {
+    if (error instanceof RuntimeConfigurationError) {
+      return Response.json(
+        { ok: false, message: "Operator access is not configured yet." },
+        { status: 503 },
+      );
+    }
+
+    console.error("Operator order listing failed", error);
+    return Response.json(
+      { ok: false, message: "Operator orders are temporarily unavailable." },
+      { status: 500 },
+    );
+  }
+}
