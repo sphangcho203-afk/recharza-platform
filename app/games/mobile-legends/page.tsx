@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/site-header";
 export const metadata: Metadata = {
   title: "Mobile Legends Top-Up",
   description:
-    "Select a Mobile Legends package, validate player details, and create a safe development order on Recharza.",
+    "Select a Mobile Legends package, validate player details, and create a persisted development order on Recharza.",
 };
 
 export default function MobileLegendsPage() {
@@ -37,30 +37,30 @@ export default function MobileLegendsPage() {
                 <span className="grid h-6 w-6 place-items-center rounded-lg bg-blue-500 text-[10px] text-white">
                   ML
                 </span>
-                First playable storefront
+                Persistent order infrastructure
               </div>
               <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-[-0.045em] sm:text-5xl lg:text-6xl">
-                Mobile Legends top-up flow, built for verification before payment.
+                Mobile Legends orders with durable storage and protected tracking.
               </h1>
               <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
-                Choose a development package, validate the player and zone ID format, and create an
-                order record without charging real money. Live nickname lookup, database storage,
+                Choose a development package, validate the player and zone ID format, and create a
+                PostgreSQL-backed order without charging real money. Live nickname lookup,
                 fulfilment, and payment processing remain safely disabled.
               </p>
             </div>
 
             <div className="grid min-w-56 gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-5 text-sm">
               <div className="flex items-center justify-between gap-6">
-                <span className="text-slate-500">Checkout</span>
-                <span className="font-bold text-amber-200">Development</span>
+                <span className="text-slate-500">Order storage</span>
+                <span className="font-bold text-emerald-300">PostgreSQL</span>
+              </div>
+              <div className="flex items-center justify-between gap-6">
+                <span className="text-slate-500">Duplicate guard</span>
+                <span className="font-bold text-emerald-300">Enabled</span>
               </div>
               <div className="flex items-center justify-between gap-6">
                 <span className="text-slate-500">Real charge</span>
                 <span className="font-bold text-emerald-300">Disabled</span>
-              </div>
-              <div className="flex items-center justify-between gap-6">
-                <span className="text-slate-500">Server pricing</span>
-                <span className="font-bold text-emerald-300">Enabled</span>
               </div>
             </div>
           </div>
@@ -82,17 +82,17 @@ export default function MobileLegendsPage() {
           </article>
           <article>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">02</p>
-            <h2 className="mt-2 text-lg font-bold">Server-owned totals</h2>
+            <h2 className="mt-2 text-lg font-bold">Replay-safe creation</h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">
-              The order API ignores browser pricing and retrieves the approved package amount itself.
+              Idempotency keys and database constraints prevent a network retry from creating another
+              order.
             </p>
           </article>
           <article>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">03</p>
-            <h2 className="mt-2 text-lg font-bold">Payments remain unplugged</h2>
+            <h2 className="mt-2 text-lg font-bold">Private tracking access</h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">
-              The provider abstraction creates a non-charging development session until verified
-              credentials and webhooks are configured.
+              An order ID locates the record, while a separate token protects the customer timeline.
             </p>
           </article>
         </div>
