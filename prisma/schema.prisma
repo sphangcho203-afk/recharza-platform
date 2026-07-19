@@ -18,6 +18,13 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum WebhookStatus {
+  RECEIVED
+  PROCESSED
+  IGNORED
+  FAILED
+}
+
 model Customer {
   id              String   @id @default(cuid())
   email           String   @unique
@@ -47,6 +54,8 @@ model Order {
   customerId       String
   customer         Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
   events           OrderEvent[]
+  webhooks         PaymentWebhook[]
+  auditLogs        AdminAuditLog[]
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt
 
@@ -65,6 +74,38 @@ model OrderEvent {
   createdAt DateTime @default(now())
 
   @@index([orderId, createdAt])
+}
+
+model PaymentWebhook {
+  id           String        @id @default(cuid())
+  provider     String
+  eventId      String?
+  eventType    String
+  payloadHash  String        @unique
+  payload      Json
+  status       WebhookStatus @default(RECEIVED)
+  errorMessage String?
+  orderId      String?
+  order        Order?        @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  receivedAt   DateTime      @default(now())
+  processedAt  DateTime?
+
+  @@unique([provider, eventId], name: "provider_event_id")
+  @@index([status, receivedAt])
+  @@index([orderId, receivedAt])
+}
+
+model AdminAuditLog {
+  id               String   @id @default(cuid())
+  action           String
+  actorFingerprint String
+  metadata         Json?
+  orderId          String?
+  order             Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  createdAt        DateTime @default(now())
+
+  @@index([orderId, createdAt])
+  @@index([createdAt])
 }
 
 model RateLimitBucket {
