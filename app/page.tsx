@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { GameCard } from "@/components/game-card";
 import { SiteHeader } from "@/components/site-header";
 import { games } from "@/lib/games";
@@ -43,7 +45,7 @@ export default function Home() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-violet-200">
               <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.8)]" />
-              Storefront foundation online
+              Playable Mobile Legends demo online
             </div>
 
             <h1 className="mt-7 max-w-3xl text-5xl font-black leading-[0.98] tracking-[-0.055em] text-white sm:text-6xl lg:text-7xl">
@@ -56,12 +58,12 @@ export default function Home() {
             </p>
 
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <a
-                href="#games"
+              <Link
+                href="/games/mobile-legends"
                 className="rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-6 py-3.5 text-center text-sm font-bold text-white shadow-[0_14px_50px_rgba(139,92,246,0.28)] transition hover:-translate-y-0.5"
               >
-                Explore launch catalogue
-              </a>
+                Open Mobile Legends demo
+              </Link>
               <a
                 href="#how-it-works"
                 className="rounded-2xl border border-white/10 bg-white/5 px-6 py-3.5 text-center text-sm font-bold text-white transition hover:bg-white/10"
@@ -76,12 +78,12 @@ export default function Home() {
                 <p className="mt-1 text-xs text-slate-400">Launch games</p>
               </div>
               <div>
-                <p className="text-2xl font-bold">4</p>
-                <p className="mt-1 text-xs text-slate-400">Order stages</p>
+                <p className="text-2xl font-bold">1</p>
+                <p className="mt-1 text-xs text-slate-400">Playable flow</p>
               </div>
               <div>
-                <p className="text-2xl font-bold">24/7</p>
-                <p className="mt-1 text-xs text-slate-400">Store access</p>
+                <p className="text-2xl font-bold">0</p>
+                <p className="mt-1 text-xs text-slate-400">Real charges</p>
               </div>
             </div>
           </div>
@@ -95,16 +97,16 @@ export default function Home() {
                   <p className="mt-1 font-semibold">Mobile Legends top-up</p>
                 </div>
                 <span className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-300">
-                  Preview
+                  Playable demo
                 </span>
               </div>
 
               <div className="mt-5 rounded-3xl bg-gradient-to-br from-blue-600 to-violet-700 p-6">
-                <p className="text-sm text-blue-100">Selected package</p>
+                <p className="text-sm text-blue-100">Featured package</p>
                 <div className="mt-8 flex items-end justify-between gap-4">
                   <div>
                     <p className="text-3xl font-black">Weekly Pass</p>
-                    <p className="mt-1 text-sm text-blue-100">Player verification before payment</p>
+                    <p className="mt-1 text-sm text-blue-100">Player validation before order creation</p>
                   </div>
                   <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-xl font-black backdrop-blur">
                     ML
@@ -122,7 +124,9 @@ export default function Home() {
                       {index + 1}
                     </span>
                     <span className="text-sm text-slate-200">{step}</span>
-                    <span className="ml-auto text-xs text-slate-500">Queued</span>
+                    <span className="ml-auto text-xs text-slate-500">
+                      {index < 3 ? "Ready" : "Mocked"}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -142,8 +146,8 @@ export default function Home() {
             </h2>
           </div>
           <p className="max-w-xl text-sm leading-7 text-slate-400">
-            The first catalogue is structured for game currency, memberships, passes, and digital
-            gift cards. Package pricing and checkout will be connected in the next build stage.
+            Mobile Legends now has a working development order flow. The other catalogue entries
+            remain staged until their package, validation, and fulfilment rules are implemented.
           </p>
         </div>
 
@@ -209,7 +213,7 @@ export default function Home() {
 
       <footer className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-8">
-          <p>© 2026 Recharza. Storefront foundation.</p>
+          <p>© 2026 Recharza. Development storefront.</p>
           <p>Play more. Wait less.</p>
         </div>
       </footer>
