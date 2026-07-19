@@ -3,10 +3,7 @@
 import Link from "next/link";
 import { type FormEvent, useMemo, useRef, useState } from "react";
 
-import {
-  formatInr,
-  mobileLegendsPackages,
-} from "@/lib/mobile-legends";
+import { formatInr, type MobileLegendsPackage } from "@/lib/mobile-legends";
 
 type VerificationState =
   | { status: "idle"; message: string }
@@ -60,11 +57,13 @@ function createIdempotencyKey() {
   return `rz_${Date.now()}_${Math.random().toString(36).slice(2, 18)}`;
 }
 
-export function MobileLegendsOrderForm() {
-  const [packageId, setPackageId] = useState(
-    mobileLegendsPackages.find((item) => item.featured)?.id ??
-      mobileLegendsPackages[0].id,
-  );
+export function MobileLegendsOrderForm({
+  packages,
+}: {
+  packages: MobileLegendsPackage[];
+}) {
+  const firstPackage = packages.find((item) => item.featured) ?? packages[0];
+  const [packageId, setPackageId] = useState(firstPackage.id);
   const [playerId, setPlayerId] = useState("");
   const [zoneId, setZoneId] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -78,10 +77,11 @@ export function MobileLegendsOrderForm() {
   const idempotencyKey = useRef<string | null>(null);
 
   const selectedPackage = useMemo(
-    () =>
-      mobileLegendsPackages.find((item) => item.id === packageId) ??
-      mobileLegendsPackages[0],
-    [packageId],
+    () => packages.find((item) => item.id === packageId) ?? packages[0],
+    [packageId, packages],
+  );
+  const usesLiveSupplierPricing = packages.some(
+    (item) => item.source === "fazercards-live",
   );
 
   function resetOrderState() {
@@ -185,28 +185,35 @@ export function MobileLegendsOrderForm() {
   return (
     <form
       onSubmit={submitOrder}
-      className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]"
+      className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]"
     >
-      <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 sm:p-7">
-        <div className="flex items-start justify-between gap-4">
+      <section className="reveal-card rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-2xl shadow-black/20 sm:p-7">
+        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
-              Step 1
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-300">
+              01 · Package
             </p>
-            <h2 className="mt-2 text-2xl font-bold">Choose a package</h2>
+            <h2 className="mt-2 text-2xl font-black tracking-tight">Choose your top-up</h2>
           </div>
-          <span className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs font-semibold text-amber-200">
-            Demo prices
+          <span
+            className={`w-fit rounded-full border px-3 py-1 text-xs font-bold ${
+              usesLiveSupplierPricing
+                ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200"
+                : "border-amber-300/20 bg-amber-300/10 text-amber-200"
+            }`}
+          >
+            {usesLiveSupplierPricing ? "Live supplier pricing" : "Protected fallback pricing"}
           </span>
         </div>
 
-        <p className="mt-3 text-sm leading-6 text-slate-400">
-          These amounts remain development placeholders. The server owns the selected product and
-          total, and successful orders are stored in PostgreSQL.
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+          {usesLiveSupplierPricing
+            ? "Approved FazerCards offers are priced by Recharza's FX, fee, overhead, and profit policy."
+            : "Live supplier credentials are not configured here, so the page uses guarded indicative supplier rates instead of unsafe old placeholders."}
         </p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          {mobileLegendsPackages.map((item) => {
+          {packages.map((item, index) => {
             const selected = item.id === packageId;
 
             return (
@@ -218,23 +225,33 @@ export function MobileLegendsOrderForm() {
                   setPackageId(item.id);
                   resetOrderState();
                 }}
-                className={`relative rounded-2xl border p-4 text-left transition ${
+                style={{ animationDelay: `${Math.min(index * 45, 360)}ms` }}
+                className={`package-card relative overflow-hidden rounded-2xl border p-4 text-left transition duration-300 ${
                   selected
-                    ? "border-violet-400 bg-violet-400/10 shadow-[0_0_0_1px_rgba(167,139,250,0.2)]"
-                    : "border-white/10 bg-black/15 hover:border-white/20 hover:bg-white/[0.04]"
+                    ? "border-violet-400 bg-violet-400/12 shadow-[0_0_0_1px_rgba(167,139,250,0.22),0_18px_50px_rgba(76,29,149,0.16)]"
+                    : "border-white/10 bg-black/15 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.055]"
                 }`}
               >
+                <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
                 {item.featured ? (
                   <span className="absolute right-3 top-3 rounded-full bg-violet-400/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-200">
                     Popular
                   </span>
                 ) : null}
                 <span className="block pr-16 text-sm font-bold text-white">{item.name}</span>
-                <span className="mt-2 block text-xl font-black text-white">
+                <span className="mt-2 block text-2xl font-black tracking-tight text-white">
                   {formatInr(item.amountInPaise)}
                 </span>
                 <span className="mt-2 block text-xs leading-5 text-slate-400">
                   {item.description}
+                </span>
+                <span className="mt-4 flex items-center justify-between gap-3 text-[10px] font-bold uppercase tracking-[0.14em]">
+                  <span className="text-slate-500">{item.deliveryLabel}</span>
+                  {item.region ? (
+                    <span className="rounded-full border border-blue-300/15 bg-blue-300/10 px-2 py-1 text-blue-200">
+                      {item.region}
+                    </span>
+                  ) : null}
                 </span>
               </button>
             );
@@ -242,11 +259,18 @@ export function MobileLegendsOrderForm() {
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 sm:p-7">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
-          Steps 2 to 4
-        </p>
-        <h2 className="mt-2 text-2xl font-bold">Player and order details</h2>
+      <section className="reveal-card rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-2xl shadow-black/20 sm:p-7 lg:sticky lg:top-24 lg:self-start">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-300">
+              02 · Player and receipt
+            </p>
+            <h2 className="mt-2 text-2xl font-black tracking-tight">Confirm the destination</h2>
+          </div>
+          <span className="grid h-10 w-10 place-items-center rounded-2xl border border-white/10 bg-black/20 text-xs font-black text-violet-200">
+            ML
+          </span>
+        </div>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="text-sm font-semibold text-slate-200">
@@ -261,7 +285,7 @@ export function MobileLegendsOrderForm() {
                 resetVerification();
               }}
               placeholder="Example: 123456789"
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10"
             />
           </label>
 
@@ -277,7 +301,7 @@ export function MobileLegendsOrderForm() {
                 resetVerification();
               }}
               placeholder="Example: 2045"
-              className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400"
+              className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10"
             />
           </label>
         </div>
@@ -286,9 +310,9 @@ export function MobileLegendsOrderForm() {
           type="button"
           onClick={verifyPlayer}
           disabled={verification.status === "loading"}
-          className="mt-4 w-full rounded-2xl border border-violet-400/30 bg-violet-400/10 px-4 py-3 text-sm font-bold text-violet-100 transition hover:bg-violet-400/15 disabled:cursor-wait disabled:opacity-60"
+          className="mt-4 w-full rounded-2xl border border-violet-400/30 bg-violet-400/10 px-4 py-3 text-sm font-bold text-violet-100 transition hover:bg-violet-400/16 disabled:cursor-wait disabled:opacity-60"
         >
-          {verification.status === "loading" ? "Validating..." : "Validate player format"}
+          {verification.status === "loading" ? "Validating..." : "Validate player details"}
         </button>
 
         <div
@@ -316,28 +340,33 @@ export function MobileLegendsOrderForm() {
               resetOrderState();
             }}
             placeholder="you@example.com"
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400"
+            className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10"
           />
         </label>
 
-        <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4">
-          <div className="flex items-center justify-between gap-4">
+        <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-black/25">
+          <div className="flex items-center justify-between gap-4 p-4">
             <div>
-              <p className="text-sm font-semibold text-white">{selectedPackage.name}</p>
-              <p className="mt-1 text-xs text-slate-500">Persistent development checkout</p>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                Order total
+              </p>
+              <p className="mt-1 text-sm font-semibold text-white">{selectedPackage.name}</p>
             </div>
-            <p className="text-xl font-black text-white">
+            <p className="text-2xl font-black tracking-tight text-white">
               {formatInr(selectedPackage.amountInPaise)}
             </p>
+          </div>
+          <div className="border-t border-white/10 px-4 py-3 text-xs leading-5 text-slate-500">
+            The server resolves this package again before writing the order. Browser prices are never trusted.
           </div>
         </div>
 
         <button
           type="submit"
           disabled={isCreatingOrder || verification.status !== "success"}
-          className="mt-4 w-full rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 py-3.5 text-sm font-black text-white shadow-[0_14px_40px_rgba(139,92,246,0.24)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0"
+          className="mt-4 w-full rounded-2xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500 px-5 py-3.5 text-sm font-black text-white shadow-[0_14px_45px_rgba(139,92,246,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_55px_rgba(139,92,246,0.36)] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:translate-y-0"
         >
-          {isCreatingOrder ? "Creating protected order..." : "Create persistent development order"}
+          {isCreatingOrder ? "Creating protected order..." : "Create protected development order"}
         </button>
 
         {orderError ? (
@@ -349,12 +378,12 @@ export function MobileLegendsOrderForm() {
         {order ? (
           <div
             aria-live="polite"
-            className="mt-5 rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5"
+            className="success-rise mt-5 rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5"
           >
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">
               {wasDuplicate ? "Existing order safely recovered" : "Persistent order created"}
             </p>
-            <p className="mt-2 text-2xl font-black text-white">{order.id}</p>
+            <p className="mt-2 break-all text-2xl font-black text-white">{order.id}</p>
             <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
               <div>
                 <dt className="text-slate-500">Package</dt>
