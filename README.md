@@ -1,89 +1,130 @@
 # Recharza Platform
 
-Recharza is a multi-game top-up, gift card, and digital recharge platform being built around secure checkout, clear order tracking, and a focused mobile-first storefront.
+Recharza is a mobile-first multi-game top-up and digital recharge platform being built around server-owned pricing, durable order records, protected tracking, and payment safety.
 
 ## Current foundation
 
-- Next.js App Router
-- React and TypeScript
-- Tailwind CSS
-- Responsive Recharza landing page
-- Initial six-game catalogue
-- Playable Mobile Legends development storefront
-- Package selection with clearly labelled placeholder prices
-- Player and zone ID format validation
+- Next.js App Router, React, TypeScript, and Tailwind CSS
+- Six-game catalogue with a playable Mobile Legends development flow
+- Player and zone ID format validation without fake nickname claims
 - Server-side package and price verification
-- Development-only order creation
-- Payment-provider abstraction that cannot charge real money
-- Deployment health endpoint
-- GitHub Actions verification workflow
-- Environment-variable template with no real credentials
+- PostgreSQL order persistence through Prisma ORM
+- Customer records prepared for a future authentication provider
+- Database-enforced idempotency to prevent duplicate orders
+- Database-backed rate limiting with salted client fingerprints
+- Private order tracking tokens and event timelines
+- Development payment adapter that cannot charge real money
+- GitHub Actions checks for Prisma schema, TypeScript, ESLint, and production builds
 
-## Local development
+## Requirements
 
-Requirements:
-
-- Node.js 20.9 or newer
+- Node.js 20.19 or newer
 - npm
+- PostgreSQL
+
+## Local setup
 
 ```bash
 npm install
+cp .env.example .env
+```
+
+Configure at least these variables:
+
+```text
+DATABASE_URL=postgresql://username:password@localhost:5432/recharza?schema=public
+ORDER_ACCESS_SECRET=<random value with at least 32 characters>
+RATE_LIMIT_SALT=<different random value with at least 32 characters>
+```
+
+Create the database tables and start the app:
+
+```bash
+npm run db:migrate
 npm run dev
 ```
 
 Open `http://localhost:3000`.
 
-The Mobile Legends development flow is available at:
+## Application routes
 
 ```text
-/games/mobile-legends
+/                         Storefront
+/games/mobile-legends     Persistent development checkout
+/orders/:orderId          Private order tracking console
+/api/health               Deployment health response
 ```
+
+## API routes
+
+```text
+POST /api/games/mobile-legends/verify
+POST /api/orders
+GET  /api/orders/:orderId
+```
+
+### Order creation
+
+`POST /api/orders` requires an `Idempotency-Key` header. The server validates the package, amount, player details, customer email, rate limit, and database configuration before writing an order.
+
+Retrying the same request with the same idempotency key returns the original order rather than creating another one.
+
+### Order tracking
+
+A successful order response contains:
+
+- a public order ID
+- a separate private access token
+- a tracking path
+
+The tracking endpoint requires the token as a bearer credential. Customer email addresses are masked in tracking responses.
+
+## Database commands
+
+```bash
+npm run db:generate
+npm run db:validate
+npm run db:migrate
+npm run db:deploy
+```
+
+Use `db:migrate` during local development. Use `db:deploy` in a controlled production deployment after reviewing migrations.
 
 ## Validation
 
 ```bash
+npm run db:validate
 npm run typecheck
 npm run lint
 npm run build
 ```
 
-The health endpoint is available at:
-
-```text
-/api/health
-```
-
-## Development API routes
-
-```text
-POST /api/games/mobile-legends/verify
-POST /api/orders
-```
-
-The verification endpoint currently checks player and zone ID format only. It does not claim to retrieve a live nickname.
-
-The order endpoint recalculates the selected package and price on the server. It returns a temporary development order and a non-charging payment session. Orders are not persisted yet.
-
 ## Security rules
 
-Never commit real API keys, database passwords, payment secrets, webhook secrets, service-account files, or production credentials.
+Never commit API keys, database passwords, payment secrets, webhook secrets, service-account files, authentication secrets, or production credentials.
 
 Use `.env.example` only as a variable-name template. Store real values in the deployment provider's encrypted environment settings.
 
-Never trust a price, product description, payment status, or verification result sent directly by the browser. Recalculate and verify sensitive order data on the server.
+The application never trusts browser-supplied prices or payment states. Product totals are recalculated on the server.
 
-## Purchase flow
+Raw client IP addresses are not stored in rate-limit records. They are converted into salted fingerprints.
 
-1. Choose a game
-2. Select a package
-3. Enter and validate player details
-4. Create an order
-5. Start a payment session
-6. Track fulfilment status
+Order tracking tokens are returned to the customer once, stored only as hashes in PostgreSQL, and required to read the order timeline.
+
+## Deliberately disabled
+
+- real payment collection
+- live Mobile Legends nickname retrieval
+- automated fulfilment
+- payment webhook processing
+- refunds
+- customer login and email verification
+
+These features must not be represented as active until their providers, signatures, reconciliation rules, and failure handling are implemented and tested.
 
 ## Next milestone
 
-Add persistent order storage, duplicate-order protection, rate limiting, customer authentication, and a verified provider integration. Real payments must remain disabled until webhook verification and fulfilment reconciliation are complete.
+Add customer authentication, verified email ownership, signed payment webhooks, fulfilment reconciliation, administrative order controls, and automated expiry cleanup for old rate-limit buckets.
 
 ## Branch workflow
 

@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OrderStatus {
+  CREATED
+  AWAITING_PAYMENT
+  PAYMENT_PENDING
+  PAID
+  FULFILLING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model Customer {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  authSubject     String?  @unique
+  emailVerifiedAt DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  orders          Order[]
+}
+
+model Order {
+  id               String      @id @default(cuid())
+  publicId         String      @unique
+  idempotencyKey   String      @unique
+  accessTokenHash  String
+  status           OrderStatus @default(CREATED)
+  gameSlug         String
+  packageId        String
+  packageName      String
+  amountInPaise    Int
+  currency         String      @default("INR")
+  playerId         String
+  zoneId           String
+  verificationMode String
+  paymentProvider  String?
+  paymentSessionId String?     @unique
+  customerId       String
+  customer         Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  events           OrderEvent[]
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@index([customerId, createdAt])
+  @@index([playerId, zoneId, createdAt])
+  @@index([status, createdAt])
+}
+
+model OrderEvent {
+  id        String   @id @default(cuid())
+  type      String
+  message   String
+  metadata  Json?
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+model RateLimitBucket {
+  id          String   @id @default(cuid())
+  fingerprint String
+  route       String
+  windowStart DateTime
+  count       Int      @default(0)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([fingerprint, route, windowStart], name: "rate_limit_bucket")
+  @@index([expiresAt])
+}
