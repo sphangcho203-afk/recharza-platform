@@ -1,10 +1,21 @@
+import type { Prisma } from "@/generated/prisma/client";
 import { verifyOperatorAccess } from "@/lib/operator-auth";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
 export const runtime = "nodejs";
 
-const ORDER_STATUSES = new Set([
+type OrderStatusValue =
+  | "CREATED"
+  | "AWAITING_PAYMENT"
+  | "PAYMENT_PENDING"
+  | "PAID"
+  | "FULFILLING"
+  | "COMPLETED"
+  | "FAILED"
+  | "CANCELLED";
+
+const ORDER_STATUSES = new Set<OrderStatusValue>([
   "CREATED",
   "AWAITING_PAYMENT",
   "PAYMENT_PENDING",
@@ -14,6 +25,10 @@ const ORDER_STATUSES = new Set([
   "FAILED",
   "CANCELLED",
 ]);
+
+function isOrderStatus(value: string): value is OrderStatusValue {
+  return ORDER_STATUSES.has(value as OrderStatusValue);
+}
 
 function maskEmail(email: string) {
   const [localPart, domain] = email.split("@");
@@ -40,8 +55,8 @@ export async function GET(request: Request) {
     const limit = Number.isFinite(parsedLimit)
       ? Math.min(100, Math.max(1, Math.floor(parsedLimit)))
       : 50;
-    const where = ORDER_STATUSES.has(requestedStatus)
-      ? { status: requestedStatus as never }
+    const where: Prisma.OrderWhereInput = isOrderStatus(requestedStatus)
+      ? { status: requestedStatus }
       : {};
 
     const orders = await getPrisma().order.findMany({
