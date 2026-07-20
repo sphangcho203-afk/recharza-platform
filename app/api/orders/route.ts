@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
 
-import { getMobileLegendsPackage } from "@/lib/mobile-legends";
 import {
   deriveOrderAccessToken,
   hashOrderAccessToken,
@@ -17,6 +16,7 @@ import {
   createRateLimitHeaders,
 } from "@/lib/rate-limit";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
+import { getMobileLegendsPackageForCheckout } from "@/lib/storefront-catalog";
 
 export const runtime = "nodejs";
 
@@ -194,13 +194,17 @@ export async function POST(request: Request) {
 
     const selectedPackage =
       typeof data.packageId === "string"
-        ? getMobileLegendsPackage(data.packageId)
+        ? await getMobileLegendsPackageForCheckout(data.packageId)
         : null;
 
     if (!selectedPackage) {
       return Response.json(
-        { ok: false, message: "Select a valid Mobile Legends package." },
-        { status: 400, headers: rateHeaders },
+        {
+          ok: false,
+          message:
+            "That package is unavailable or no longer approved. Refresh the catalogue and choose another offer.",
+        },
+        { status: 409, headers: rateHeaders },
       );
     }
 
@@ -258,7 +262,13 @@ export async function POST(request: Request) {
             events: {
               create: {
                 type: "ORDER_CREATED",
-                message: "Order persisted and awaiting a payment session.",
+                message: "Order persisted with a server-resolved catalogue price.",
+                metadata: {
+                  catalogueSource: selectedPackage.source,
+                  supplierCategoryId: selectedPackage.supplierCategoryId ?? null,
+                  supplierOfferId: selectedPackage.supplierOfferId ?? null,
+                  region: selectedPackage.region ?? null,
+                },
               },
             },
           },

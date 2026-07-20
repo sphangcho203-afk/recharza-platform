@@ -1,13 +1,18 @@
 # Recharza Platform
 
-Recharza is a mobile-first multi-game top-up and digital recharge platform being built around server-owned pricing, durable order records, protected tracking, signed payment events, and auditable operations.
+Recharza is a mobile-first multi-game top-up and digital recharge platform built around server-owned pricing, supplier-aware margins, durable order records, protected tracking, signed payment events, and auditable operations.
 
 ## Current foundation
 
 - Next.js App Router, React, TypeScript, and Tailwind CSS
-- Six-game catalogue with a playable Mobile Legends development flow
+- Responsive six-game catalogue and a complete Mobile Legends development checkout
+- Server-loaded package catalogue with safe supplier-price fallbacks
+- FazerCards B2B category and offer synchronization through a server-only API client
+- Category allowlisting so region-incompatible supplier lines cannot publish automatically
+- Profit-aware retail pricing with FX, gateway, overhead, minimum-profit, percentage-margin, and upward-rounding rules
+- Protected operator pricing controls and full-catalogue repricing
 - Player and zone ID format validation without fake nickname claims
-- Server-side package and price verification
+- Server-side package and price verification at order creation
 - PostgreSQL order persistence through Prisma ORM
 - Database-enforced idempotency to prevent duplicate orders
 - Database-backed rate limiting with salted client fingerprints
@@ -24,6 +29,7 @@ Recharza is a mobile-first multi-game top-up and digital recharge platform being
 - Node.js 20.19 or newer
 - npm
 - PostgreSQL
+- A FazerCards B2B API key for authenticated catalogue prices
 
 ## Local setup
 
@@ -32,7 +38,7 @@ npm install
 cp .env.example .env
 ```
 
-Configure at least these variables:
+Configure the required database and security values:
 
 ```text
 DATABASE_URL=postgresql://username:password@localhost:5432/recharza?schema=public
@@ -42,6 +48,16 @@ ADMIN_ACCESS_TOKEN=<temporary operator token with at least 32 characters>
 CRON_SECRET=<separate maintenance token with at least 32 characters>
 RAZORPAY_WEBHOOK_SECRET=<webhook secret configured in Razorpay>
 ```
+
+Configure the supplier integration:
+
+```text
+FAZERCARDS_API_KEY=<server-side B2B key>
+FAZERCARDS_API_BASE_URL=https://api.fzr.cards/api/v2
+FAZERCARDS_PUBLISHED_CATEGORY_IDS=<comma-separated reviewed category IDs>
+```
+
+Do not place the FazerCards key in a `NEXT_PUBLIC_` variable. It must never reach browser JavaScript.
 
 Create the database tables and start the app:
 
@@ -55,14 +71,73 @@ Open `http://localhost:3000`.
 ## Application routes
 
 ```text
-/                         Storefront
-/games/mobile-legends     Persistent development checkout
+/                         Supplier-aware storefront
+/games/mobile-legends     Server-loaded protected checkout
 /orders/:orderId          Private customer order tracking
-/operator                 Temporary protected operator console
+/operator                 Temporary protected operations console
 /api/health               Deployment health response
 ```
 
-The operator page is deliberately excluded from search indexing. Its bearer-token gate is temporary and must be replaced with staff authentication before production use.
+The operator page is excluded from search indexing. Its bearer-token gate is temporary and must be replaced with staff authentication before production use.
+
+## Supplier catalogue flow
+
+Recharza uses the FazerCards top-up catalogue as a supplier source, not as a public client-side dependency.
+
+```text
+FazerCards API
+    ↓ server-only category and offer sync
+SupplierProduct records
+    ↓ approved-category publication gate
+Pricing policy
+    ↓ FX + fees + overhead + margin + upward rounding
+Storefront package
+    ↓ server resolves the same offer again
+Persistent order
+```
+
+### Synchronize FazerCards
+
+```text
+POST /api/operator/suppliers/fazercards/sync
+Authorization: Bearer <ADMIN_ACCESS_TOKEN>
+```
+
+The sync route:
+
+1. loads FazerCards top-up categories with pagination
+2. keeps supported Recharza game lines
+3. loads each category's offers and required fields
+4. marks missing old offers unavailable
+5. converts supplier USD prices into integer micro-dollars
+6. calculates landed cost and protected retail price
+7. stores expected margin and catalogue metadata
+8. publishes only category IDs in `FAZERCARDS_PUBLISHED_CATEGORY_IDS`
+9. writes a supplier sync run and operator audit record
+
+An empty publication allowlist is safe: products synchronize for review but none become visible to customers.
+
+## Pricing policy
+
+```text
+GET  /api/operator/pricing
+POST /api/operator/pricing
+Authorization: Bearer <ADMIN_ACCESS_TOKEN>
+```
+
+The stored policy contains:
+
+- `usdInrRatePaise`: paise per USD, for example `9650` means ₹96.50
+- `fxBufferBps`: reserve for exchange-rate movement and conversion spread
+- `gatewayFeeBps`: estimated payment-processing reserve
+- `targetMarginBps`: base expected percentage margin
+- `minimumMarginInPaise`: absolute expected profit floor
+- `overheadInPaise`: supplier-plan and operating contribution per order
+- `roundingInPaise`: upward-only customer-price increment
+
+Small products receive a higher percentage target automatically. Larger products receive a lower percentage target so headline prices can remain competitive. No price is rounded downward.
+
+Updating the policy reprices stored supplier products in controlled database batches. Existing orders retain their recorded totals.
 
 ## Customer and order APIs
 
@@ -74,9 +149,9 @@ GET  /api/orders/:orderId
 
 ### Order creation
 
-`POST /api/orders` requires an `Idempotency-Key` header. The server validates the package, amount, player details, customer email, rate limit, and database configuration before writing an order.
+`POST /api/orders` requires an `Idempotency-Key` header. The server resolves the package from the approved catalogue, recalculates the authoritative total, validates player details and customer email, applies rate limits, and writes the order.
 
-Retrying the same request with the same idempotency key returns the original order rather than creating another one.
+A stale, unavailable, or unpublished supplier offer is rejected with a refresh message. Retrying the same request with the same idempotency key returns the original order rather than creating another one.
 
 ### Order tracking
 
@@ -103,7 +178,7 @@ Supported events are `payment.authorized`, `payment.captured`, `payment.failed`,
 
 Operators cannot manually set `PAID`. Only a verified and reconciled payment webhook may establish that state.
 
-## Operator APIs
+## Operator order APIs
 
 ```text
 GET  /api/operator/orders
@@ -154,7 +229,7 @@ Never commit API keys, database passwords, payment secrets, webhook secrets, ser
 
 Use `.env.example` only as a variable-name template. Store real values in the deployment provider's encrypted environment settings.
 
-The application never trusts browser-supplied prices or payment states. Product totals are recalculated on the server.
+The application never trusts browser-supplied prices, supplier availability, or payment states. Product totals and offer publication are resolved on the server.
 
 Raw client IP addresses are not stored in rate-limit records. They are converted into salted fingerprints.
 
@@ -165,17 +240,19 @@ Payment webhooks are verified against the raw request body before JSON parsing. 
 ## Deliberately disabled
 
 - real payment-session creation and customer charging
-- live Mobile Legends nickname retrieval
+- automated FazerCards order placement
+- FazerCards completion, failure, and refund webhook handling
+- live Mobile Legends nickname retrieval through FazerCards
 - automated fulfilment-provider calls
 - refunds
 - customer and staff login
 - verified email delivery
 
-These features must not be represented as active until their providers, credentials, signatures, reconciliation rules, and failure handling are implemented and tested.
+These features must not be represented as active until their credentials, signatures, reconciliation rules, failure handling, and test-mode runs are complete.
 
 ## Next milestone
 
-Add customer and staff authentication, verified email ownership, live test-mode Razorpay order creation, fulfilment-provider reconciliation, refunds, and notification delivery.
+Connect FazerCards player-ID validation and test fulfilment orders, process supplier completion and refund webhooks, add customer and staff authentication, enable verified email ownership, and create live Razorpay test-mode payment sessions.
 
 ## Branch workflow
 

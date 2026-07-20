@@ -25,6 +25,12 @@ enum WebhookStatus {
   FAILED
 }
 
+enum SupplierSyncStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
 model Customer {
   id              String   @id @default(cuid())
   email           String   @unique
@@ -106,6 +112,61 @@ model AdminAuditLog {
 
   @@index([orderId, createdAt])
   @@index([createdAt])
+}
+
+model PricingConfiguration {
+  id                   String   @id @default("default")
+  usdInrRatePaise      Int      @default(9650)
+  fxBufferBps          Int      @default(250)
+  gatewayFeeBps        Int      @default(250)
+  targetMarginBps      Int      @default(1200)
+  minimumMarginInPaise Int      @default(1500)
+  overheadInPaise      Int      @default(500)
+  roundingInPaise      Int      @default(500)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model SupplierProduct {
+  id                      String   @id @default(cuid())
+  provider                String
+  categoryId              String
+  offerId                 String
+  gameSlug                String
+  name                    String
+  region                  String?
+  supplierCurrency        String   @default("USD")
+  supplierPriceUsdMicros  Int
+  landedCostInPaise       Int
+  retailPriceInPaise      Int
+  expectedMarginInPaise   Int
+  expectedMarginBps       Int
+  available               Boolean  @default(true)
+  published               Boolean  @default(false)
+  fields                  Json?
+  raw                     Json?
+  syncedAt                DateTime @default(now())
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@unique([provider, offerId], name: "provider_offer")
+  @@index([gameSlug, published, available, retailPriceInPaise])
+  @@index([provider, categoryId, available])
+  @@index([syncedAt])
+}
+
+model SupplierSyncRun {
+  id               String             @id @default(cuid())
+  provider         String
+  status           SupplierSyncStatus @default(RUNNING)
+  categoriesSynced Int                @default(0)
+  offersSynced     Int                @default(0)
+  errorMessage     String?
+  startedAt        DateTime           @default(now())
+  completedAt      DateTime?
+
+  @@index([provider, startedAt])
+  @@index([status, startedAt])
 }
 
 model RateLimitBucket {

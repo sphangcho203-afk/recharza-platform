@@ -1,25 +1,43 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { GameLogo } from "@/components/game-logo";
 import { MobileLegendsOrderForm } from "@/components/mobile-legends-order-form";
 import { SiteHeader } from "@/components/site-header";
+import { games, mobileLegendsRegions } from "@/lib/games";
+import { getMobileLegendsPackages } from "@/lib/storefront-catalog";
 
 export const metadata: Metadata = {
   title: "Mobile Legends Top-Up",
   description:
-    "Select a Mobile Legends package, validate player details, and create a persisted development order on Recharza.",
+    "Choose a Mobile Legends market and approved package with server-owned pricing, player validation, and protected order tracking on Recharza.",
 };
 
-export default function MobileLegendsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function MobileLegendsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ region?: string }>;
+}) {
+  const params = await searchParams;
+  const mobileLegendsGame = games.find((game) => game.slug === "mobile-legends")!;
+  const selectedRegion =
+    mobileLegendsRegions.find((region) => region.code === params.region) ??
+    mobileLegendsGame.region!;
+  const packages = await getMobileLegendsPackages();
+  const livePricing = packages.some((item) => item.source === "fazercards-live");
+
   return (
-    <main className="min-h-screen overflow-hidden bg-[#070711] text-white">
+    <main className="min-h-screen overflow-hidden bg-[#06060f] text-white">
       <SiteHeader />
 
       <section className="relative isolate border-b border-white/10">
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute left-[-8rem] top-[-12rem] h-[28rem] w-[28rem] rounded-full bg-blue-600/20 blur-[120px]" />
-          <div className="absolute right-[-8rem] top-0 h-[26rem] w-[26rem] rounded-full bg-violet-600/20 blur-[120px]" />
-          <div className="hero-grid absolute inset-0 opacity-30" />
+          <div className="orb-drift absolute left-[-8rem] top-[-12rem] h-[28rem] w-[28rem] rounded-full bg-blue-600/20 blur-[120px]" />
+          <div className="orb-drift-delayed absolute right-[-8rem] top-0 h-[26rem] w-[26rem] rounded-full bg-violet-600/20 blur-[120px]" />
+          <div className="hero-grid absolute inset-0 opacity-35" />
+          <div className="scanline absolute inset-0 opacity-20" />
         </div>
 
         <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:py-20">
@@ -31,36 +49,74 @@ export default function MobileLegendsPage() {
             Back to catalogue
           </Link>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_22rem] lg:items-end">
             <div>
               <div className="inline-flex items-center gap-3 rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-blue-200">
-                <span className="grid h-6 w-6 place-items-center rounded-lg bg-blue-500 text-[10px] text-white">
-                  ML
-                </span>
-                Persistent order infrastructure
+                <span>{selectedRegion.flag}</span>
+                {selectedRegion.label} market selected
               </div>
-              <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-[-0.045em] sm:text-5xl lg:text-6xl">
-                Mobile Legends orders with durable storage and protected tracking.
+              <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-[-0.05em] sm:text-5xl lg:text-6xl">
+                Mobile Legends top-up for the correct market.
               </h1>
               <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
-                Choose a development package, validate the player and zone ID format, and create a
-                PostgreSQL-backed order without charging real money. Live nickname lookup,
-                fulfilment, and payment processing remain safely disabled.
+                Choose the market before the package. Recharza keeps India, Indonesia, Philippines
+                and Arabia as regional catalogue routes under the same Mobile Legends brand instead
+                of pretending they are separate games.
               </p>
             </div>
 
-            <div className="grid min-w-56 gap-3 rounded-3xl border border-white/10 bg-white/[0.04] p-5 text-sm">
-              <div className="flex items-center justify-between gap-6">
-                <span className="text-slate-500">Order storage</span>
-                <span className="font-bold text-emerald-300">PostgreSQL</span>
+            <div
+              className="overflow-hidden rounded-3xl border border-white/10 p-4 shadow-2xl shadow-black/25"
+              style={{ background: mobileLegendsGame.gradient }}
+            >
+              <GameLogo game={mobileLegendsGame} priority />
+              <div className="mt-4 flex items-center justify-between gap-4 text-sm">
+                <span className="text-white/70">Catalogue state</span>
+                <span
+                  className={
+                    livePricing ? "font-bold text-emerald-200" : "font-bold text-amber-100"
+                  }
+                >
+                  {livePricing ? "Live approved" : "Protected fallback"}
+                </span>
               </div>
-              <div className="flex items-center justify-between gap-6">
-                <span className="text-slate-500">Duplicate guard</span>
-                <span className="font-bold text-emerald-300">Enabled</span>
+            </div>
+          </div>
+
+          <div className="mt-10 rounded-[1.7rem] border border-white/10 bg-white/[0.035] p-4 backdrop-blur-xl">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+                  Select MLBB market
+                </p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Regional categories will filter live supplier offers after their exact IDs are approved.
+                </p>
               </div>
-              <div className="flex items-center justify-between gap-6">
-                <span className="text-slate-500">Real charge</span>
-                <span className="font-bold text-emerald-300">Disabled</span>
+              <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <Link
+                  href="/games/mobile-legends"
+                  className={`shrink-0 rounded-xl border px-4 py-2.5 text-sm font-bold transition ${
+                    selectedRegion.code === "global"
+                      ? "border-violet-400/50 bg-violet-400/15 text-white"
+                      : "border-white/10 bg-black/15 text-slate-400 hover:text-white"
+                  }`}
+                >
+                  🌐 Global
+                </Link>
+                {mobileLegendsRegions.map((region) => (
+                  <Link
+                    key={region.code}
+                    href={`/games/mobile-legends?region=${region.code}`}
+                    className={`shrink-0 rounded-xl border px-4 py-2.5 text-sm font-bold transition ${
+                      selectedRegion.code === region.code
+                        ? "border-violet-400/50 bg-violet-400/15 text-white"
+                        : "border-white/10 bg-black/15 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    {region.flag} {region.label}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
@@ -68,33 +124,29 @@ export default function MobileLegendsPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:py-16">
-        <MobileLegendsOrderForm />
+        <div className="mb-6 rounded-2xl border border-violet-400/20 bg-violet-400/10 px-4 py-3 text-sm leading-6 text-violet-100">
+          <strong>{selectedRegion.flag} {selectedRegion.label}:</strong> {selectedRegion.note}. Shared
+          fallback packages remain visible until an approved live supplier category exists for this market.
+        </div>
+        <MobileLegendsOrderForm packages={packages} />
       </section>
 
       <section className="mx-auto max-w-7xl px-5 pb-24 sm:px-8">
-        <div className="grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.035] p-6 sm:p-8 lg:grid-cols-3">
-          <article>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">01</p>
-            <h2 className="mt-2 text-lg font-bold">No fake nickname claims</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">
-              The current verifier checks only ID format and tells the customer exactly that.
-            </p>
-          </article>
-          <article>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">02</p>
-            <h2 className="mt-2 text-lg font-bold">Replay-safe creation</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">
-              Idempotency keys and database constraints prevent a network retry from creating another
-              order.
-            </p>
-          </article>
-          <article>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">03</p>
-            <h2 className="mt-2 text-lg font-bold">Private tracking access</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">
-              An order ID locates the record, while a separate token protects the customer timeline.
-            </p>
-          </article>
+        <div className="grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.035] p-6 sm:p-8 lg:grid-cols-4">
+          {[
+            ["01", "Market-first routing", "The selected MLBB market is explicit before package selection begins."],
+            ["02", "Supplier-aware pricing", "Offers pass through FX, fee, overhead and margin rules before publication."],
+            ["03", "Replay-safe creation", "Idempotency keys and database constraints prevent duplicate orders during retries."],
+            ["04", "Private tracking", "A separate access token protects each persisted order timeline."],
+          ].map(([number, title, description]) => (
+            <article key={number} className="rounded-2xl border border-white/5 bg-black/10 p-4">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">
+                {number}
+              </p>
+              <h2 className="mt-3 text-lg font-bold">{title}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-400">{description}</p>
+            </article>
+          ))}
         </div>
       </section>
     </main>
