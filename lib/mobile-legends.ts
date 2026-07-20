@@ -6,6 +6,7 @@ export type MobileLegendsPackage = {
   deliveryLabel: string;
   featured?: boolean;
   source: "fazercards-live" | "fazercards-indicative";
+  supplierProductId?: string;
   supplierCategoryId?: string;
   supplierOfferId?: string;
   region?: string | null;
