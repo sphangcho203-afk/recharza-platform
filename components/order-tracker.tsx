@@ -3,6 +3,7 @@
 import { type FormEvent, useState } from "react";
 
 import { formatInr } from "@/lib/mobile-legends";
+import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 
 type TrackedOrder = {
   id: string;
@@ -192,6 +193,15 @@ export function OrderTracker({ orderId }: { orderId: string }) {
                 </dd>
               </div>
             </dl>
+
+            <RazorpayTestCheckout
+              orderId={order.id}
+              orderStatus={order.status}
+              accessToken={accessToken.trim()}
+              amountInPaise={order.package.amountInPaise}
+              packageName={order.package.name}
+              onVerified={() => loadOrder(accessToken)}
+            />
 
             <div className="mt-7">
               <h3 className="text-lg font-black text-white">Order timeline</h3>
