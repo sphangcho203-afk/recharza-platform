@@ -32,22 +32,7 @@ jobs:
         run: npm run typecheck
 
       - name: Lint
-        id: lint
-        shell: bash
-        run: |
-          set +e
-          npm run lint 2>&1 | tee lint.log
-          exit_code=${PIPESTATUS[0]}
-          echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
-          exit "$exit_code"
-
-      - name: Upload lint failure
-        if: failure() && steps.lint.outputs.exit_code != '0'
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-failure
-          path: lint.log
-          retention-days: 1
+        run: npm run lint
 
       - name: Build
         run: npm run build
