@@ -19,6 +19,7 @@ function isUniqueConstraintError(error: unknown) {
 export async function ensureOrderFulfilment(input: {
   orderId: string;
   source: "payment-webhook" | "operator" | "maintenance";
+  forceRetry?: boolean;
 }) {
   const prisma = getPrisma();
   const order = await prisma.order.findUnique({
@@ -26,11 +27,9 @@ export async function ensureOrderFulfilment(input: {
     include: { supplierProduct: true },
   });
 
-  if (!order) {
-    return { ok: false, state: "missing-order" as const };
-  }
+  if (!order) return { ok: false, state: "missing-order" as const };
 
-  if (!['PAID', 'FULFILLING'].includes(order.status)) {
+  if (!["PAID", "FULFILLING"].includes(order.status)) {
     return {
       ok: false,
       state: "not-payable" as const,
@@ -38,21 +37,41 @@ export async function ensureOrderFulfilment(input: {
     };
   }
 
-  const idempotencyKey = `fazercards:${order.publicId}`;
-  const existing = await prisma.fulfilmentAttempt.findUnique({
-    where: { idempotencyKey },
+  const previousAttempts = await prisma.fulfilmentAttempt.findMany({
+    where: { orderId: order.id, provider: "fazercards" },
+    orderBy: { createdAt: "desc" },
+    take: 20,
   });
+  const latest = previousAttempts[0];
 
-  if (existing) {
+  if (latest && !input.forceRetry) {
     return {
       ok: true,
       duplicate: true,
-      state: existing.status.toLowerCase(),
-      attemptId: existing.id,
-      providerOrderId: existing.providerOrderId,
+      state: latest.status.toLowerCase(),
+      attemptId: latest.id,
+      providerOrderId: latest.providerOrderId,
     };
   }
 
+  if (
+    latest &&
+    input.forceRetry &&
+    ["SUBMITTING", "SUBMITTED", "PROCESSING", "COMPLETED"].includes(latest.status)
+  ) {
+    return {
+      ok: false,
+      state: "active-attempt" as const,
+      attemptId: latest.id,
+      attemptStatus: latest.status.toLowerCase(),
+      message: "An active or completed supplier attempt cannot be duplicated.",
+    };
+  }
+
+  const idempotencyKey =
+    previousAttempts.length === 0
+      ? `fazercards:${order.publicId}`
+      : `fazercards:${order.publicId}:retry:${previousAttempts.length + 1}`;
   const product = order.supplierProduct;
   const config = getFazerCardsOperationConfiguration();
   const canSubmit = Boolean(
@@ -73,6 +92,7 @@ export async function ensureOrderFulfilment(input: {
         idempotencyKey,
         requestPayload: {
           source: input.source,
+          retry: previousAttempts.length,
           recharzaOrderId: order.publicId,
           supplierProductId: order.supplierProductId,
           categoryId: order.supplierCategoryId,
@@ -121,7 +141,11 @@ export async function ensureOrderFulfilment(input: {
           type: "FULFILMENT_DRY_RUN_PLANNED",
           message:
             "A dry-run fulfilment plan was recorded because no approved live supplier product was attached.",
-          metadata: { attemptId: attempt.id, source: input.source },
+          metadata: {
+            attemptId: attempt.id,
+            source: input.source,
+            retry: previousAttempts.length,
+          },
         },
       }),
     ]);
@@ -157,7 +181,11 @@ export async function ensureOrderFulfilment(input: {
             type: "FULFILMENT_DRY_RUN_PLANNED",
             message:
               "A complete FazerCards dry-run request was recorded; supplier writes remain disabled.",
-            metadata: { attemptId: attempt.id, source: input.source },
+            metadata: {
+              attemptId: attempt.id,
+              source: input.source,
+              retry: previousAttempts.length,
+            },
           },
         }),
       ]);
@@ -190,6 +218,7 @@ export async function ensureOrderFulfilment(input: {
                 providerOrderId: result.providerOrderId,
                 providerStatus: result.providerStatus,
                 source: input.source,
+                retry: previousAttempts.length,
               },
             },
           },
@@ -205,7 +234,8 @@ export async function ensureOrderFulfilment(input: {
       providerOrderId: result.providerOrderId,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message.slice(0, 500) : "Unknown fulfilment error.";
+    const message =
+      error instanceof Error ? error.message.slice(0, 500) : "Unknown fulfilment error.";
 
     await prisma.$transaction([
       prisma.fulfilmentAttempt.update({
@@ -218,7 +248,12 @@ export async function ensureOrderFulfilment(input: {
           type: "FAZERCARDS_ORDER_FAILED",
           message:
             "Supplier fulfilment failed after payment; the paid order remains available for staff recovery.",
-          metadata: { attemptId: attempt.id, source: input.source, error: message },
+          metadata: {
+            attemptId: attempt.id,
+            source: input.source,
+            retry: previousAttempts.length,
+            error: message,
+          },
         },
       }),
     ]);
