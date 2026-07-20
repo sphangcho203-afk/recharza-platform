@@ -1,11 +1,11 @@
 # Recharza Platform
 
-Recharza is a mobile-first multi-game top-up and digital recharge platform built around server-owned pricing, supplier-aware margins, durable order records, protected tracking, signed payment events, and auditable operations.
+Recharza is a mobile-first multi-game top-up and digital recharge platform built around server-owned pricing, supplier-aware margins, durable order records, protected tracking, signed payment events, recoverable test checkout, and auditable operations.
 
 ## Current foundation
 
 - Next.js App Router, React, TypeScript, and Tailwind CSS
-- Responsive six-game catalogue and a complete Mobile Legends development checkout
+- Media-first responsive game catalogue and Mobile Legends checkout
 - Server-loaded package catalogue with safe supplier-price fallbacks
 - FazerCards B2B category and offer synchronization through a server-only API client
 - Category allowlisting so region-incompatible supplier lines cannot publish automatically
@@ -17,11 +17,12 @@ Recharza is a mobile-first multi-game top-up and digital recharge platform built
 - Database-enforced idempotency to prevent duplicate orders
 - Database-backed rate limiting with salted client fingerprints
 - Private order tracking tokens and event timelines
+- Recoverable Razorpay Standard Checkout restricted to Test Mode
+- Server-side Razorpay Checkout signature verification
 - Razorpay raw-body HMAC webhook verification
 - Idempotent payment webhook receipts and monotonic reconciliation
-- Protected operator order console with audited status transitions
+- Protected operational-health, supplier-pricing, and order consoles
 - Protected maintenance cleanup for expired rate-limit and webhook data
-- Development payment adapter that cannot charge real money
 - GitHub Actions checks for Prisma schema, TypeScript, ESLint, and production builds
 
 ## Requirements
@@ -30,6 +31,7 @@ Recharza is a mobile-first multi-game top-up and digital recharge platform built
 - npm
 - PostgreSQL
 - A FazerCards B2B API key for authenticated catalogue prices
+- Razorpay Test Mode keys for simulated Standard Checkout
 
 ## Local setup
 
@@ -46,7 +48,6 @@ ORDER_ACCESS_SECRET=<random value with at least 32 characters>
 RATE_LIMIT_SALT=<different random value with at least 32 characters>
 ADMIN_ACCESS_TOKEN=<temporary operator token with at least 32 characters>
 CRON_SECRET=<separate maintenance token with at least 32 characters>
-RAZORPAY_WEBHOOK_SECRET=<webhook secret configured in Razorpay>
 ```
 
 Configure the supplier integration:
@@ -57,7 +58,18 @@ FAZERCARDS_API_BASE_URL=https://api.fzr.cards/api/v2
 FAZERCARDS_PUBLISHED_CATEGORY_IDS=<comma-separated reviewed category IDs>
 ```
 
-Do not place the FazerCards key in a `NEXT_PUBLIC_` variable. It must never reach browser JavaScript.
+Configure Razorpay Test Mode:
+
+```text
+RAZORPAY_KEY_ID=rzp_test_...
+RAZORPAY_KEY_SECRET=<test key secret>
+RAZORPAY_WEBHOOK_SECRET=<test-mode webhook secret>
+RAZORPAY_API_BASE_URL=https://api.razorpay.com/v1
+```
+
+This build rejects non-test Razorpay key IDs. Live charging remains intentionally blocked.
+
+Do not place supplier or payment secrets in a `NEXT_PUBLIC_` variable. They must never reach browser JavaScript.
 
 Create the database tables and start the app:
 
@@ -73,7 +85,7 @@ Open `http://localhost:3000`.
 ```text
 /                         Supplier-aware storefront
 /games/mobile-legends     Server-loaded protected checkout
-/orders/:orderId          Private customer order tracking
+/orders/:orderId          Private tracking and recoverable test payment
 /operator                 Temporary protected operations console
 /api/health               Deployment health response
 ```
@@ -103,17 +115,7 @@ POST /api/operator/suppliers/fazercards/sync
 Authorization: Bearer <ADMIN_ACCESS_TOKEN>
 ```
 
-The sync route:
-
-1. loads FazerCards top-up categories with pagination
-2. keeps supported Recharza game lines
-3. loads each category's offers and required fields
-4. marks missing old offers unavailable
-5. converts supplier USD prices into integer micro-dollars
-6. calculates landed cost and protected retail price
-7. stores expected margin and catalogue metadata
-8. publishes only category IDs in `FAZERCARDS_PUBLISHED_CATEGORY_IDS`
-9. writes a supplier sync run and operator audit record
+The sync route loads paginated categories and offers, marks stale offers unavailable, calculates landed cost and retail price, publishes only reviewed category IDs, and writes a supplier sync run plus an operator audit record.
 
 An empty publication allowlist is safe: products synchronize for review but none become visible to customers.
 
@@ -125,19 +127,7 @@ POST /api/operator/pricing
 Authorization: Bearer <ADMIN_ACCESS_TOKEN>
 ```
 
-The stored policy contains:
-
-- `usdInrRatePaise`: paise per USD, for example `9650` means ₹96.50
-- `fxBufferBps`: reserve for exchange-rate movement and conversion spread
-- `gatewayFeeBps`: estimated payment-processing reserve
-- `targetMarginBps`: base expected percentage margin
-- `minimumMarginInPaise`: absolute expected profit floor
-- `overheadInPaise`: supplier-plan and operating contribution per order
-- `roundingInPaise`: upward-only customer-price increment
-
-Small products receive a higher percentage target automatically. Larger products receive a lower percentage target so headline prices can remain competitive. No price is rounded downward.
-
-Updating the policy reprices stored supplier products in controlled database batches. Existing orders retain their recorded totals.
+The stored policy contains the USD/INR rate, FX reserve, gateway reserve, target margin, minimum profit, operating overhead, and upward-only rounding increment. Existing orders retain their recorded totals when the policy changes.
 
 ## Customer and order APIs
 
@@ -145,17 +135,47 @@ Updating the policy reprices stored supplier products in controlled database bat
 POST /api/games/mobile-legends/verify
 POST /api/orders
 GET  /api/orders/:orderId
+POST /api/orders/:orderId/payment-session
+POST /api/payments/razorpay/verify
 ```
 
 ### Order creation
 
 `POST /api/orders` requires an `Idempotency-Key` header. The server resolves the package from the approved catalogue, recalculates the authoritative total, validates player details and customer email, applies rate limits, and writes the order.
 
-A stale, unavailable, or unpublished supplier offer is rejected with a refresh message. Retrying the same request with the same idempotency key returns the original order rather than creating another one.
+Retrying the same request with the same idempotency key returns the original order rather than creating another one.
 
 ### Order tracking
 
 A successful order response contains a public order ID, a separate private access token, and a tracking path. The tracking endpoint requires the token as a bearer credential. Customer email addresses are masked in tracking responses.
+
+## Razorpay Test Mode checkout
+
+Test checkout begins from the secure order page, not from untrusted browser pricing.
+
+```text
+POST /api/orders/:orderId/payment-session
+Authorization: Bearer <ORDER_ACCESS_TOKEN>
+```
+
+The payment-session route:
+
+1. verifies the private order token
+2. permits only payable order states
+3. rejects missing, partial, or non-test Razorpay keys
+4. claims the order in PostgreSQL before contacting Razorpay
+5. creates or restores one Razorpay Test Mode order
+6. returns only the public test key ID and checkout configuration
+7. restores the previous Recharza payment state if provider creation fails
+
+After Standard Checkout returns a payment ID, order ID, and signature, the browser sends them to:
+
+```text
+POST /api/payments/razorpay/verify
+Authorization: Bearer <ORDER_ACCESS_TOKEN>
+```
+
+The server verifies the signature using the server-stored provider order ID. A valid browser callback may move the order to `PAYMENT_PENDING`, but it cannot establish `PAID`.
 
 ## Payment reconciliation
 
@@ -163,37 +183,31 @@ A successful order response contains a public order ID, a separate private acces
 POST /api/webhooks/razorpay
 ```
 
-The webhook route:
-
-1. reads the unmodified raw request body
-2. verifies `X-Razorpay-Signature` with HMAC-SHA256
-3. rejects invalid signatures before parsing business data
-4. deduplicates by `X-Razorpay-Event-Id` and payload hash
-5. matches the provider order ID to a stored Recharza order
-6. verifies the amount and currency
-7. records the immutable webhook receipt
-8. advances the order through monotonic payment states
+The webhook route reads the unmodified raw request body, verifies `X-Razorpay-Signature`, deduplicates deliveries, matches the provider order ID, verifies amount and currency, records the immutable receipt, and advances the order through monotonic payment states.
 
 Supported events are `payment.authorized`, `payment.captured`, `payment.failed`, and `order.paid`.
 
 Operators cannot manually set `PAID`. Only a verified and reconciled payment webhook may establish that state.
 
-## Operator order APIs
+## Operator APIs
 
 ```text
+GET  /api/operator/health
 GET  /api/operator/orders
 POST /api/operator/orders/:orderId/status
 ```
 
-Both routes require `Authorization: Bearer <ADMIN_ACCESS_TOKEN>`.
+All routes require `Authorization: Bearer <ADMIN_ACCESS_TOKEN>`.
 
-Manual transitions are intentionally narrow:
+The health endpoint reports only readiness and counters. It never returns secrets. It covers database reachability, Razorpay mode, webhook configuration, pending orders, failed webhook receipts, supplier-key state, approved categories, offer counts, and the latest supplier sync.
+
+Manual order transitions are intentionally narrow:
 
 - `CREATED`, `AWAITING_PAYMENT`, or `PAYMENT_PENDING` → `FAILED` or `CANCELLED`
 - `PAID` → `FULFILLING`
 - `FULFILLING` → `COMPLETED` or `FAILED`
 
-Every operator transition requires a written reason and creates an `AdminAuditLog` record plus an order timeline event.
+Every operator transition requires a written reason and creates an audit record plus an order timeline event.
 
 ## Maintenance API
 
@@ -227,19 +241,17 @@ npm run build
 
 Never commit API keys, database passwords, payment secrets, webhook secrets, service-account files, authentication secrets, or production credentials.
 
-Use `.env.example` only as a variable-name template. Store real values in the deployment provider's encrypted environment settings.
-
-The application never trusts browser-supplied prices, supplier availability, or payment states. Product totals and offer publication are resolved on the server.
+The application never trusts browser-supplied prices, supplier availability, provider order IDs, or payment states. Product totals, offer publication, payment sessions, and reconciliation are resolved on the server.
 
 Raw client IP addresses are not stored in rate-limit records. They are converted into salted fingerprints.
 
-Order tracking tokens are returned to the customer once, stored only as hashes in PostgreSQL, and required to read the order timeline.
+Order tracking tokens are returned to the customer once, stored only as hashes in PostgreSQL, and required to read the order timeline or create a payment session.
 
 Payment webhooks are verified against the raw request body before JSON parsing. Amount, currency, and provider order references must all match before the order can be marked paid.
 
 ## Deliberately disabled
 
-- real payment-session creation and customer charging
+- Razorpay Live Mode and real customer charging
 - automated FazerCards order placement
 - FazerCards completion, failure, and refund webhook handling
 - live Mobile Legends nickname retrieval through FazerCards
@@ -248,11 +260,11 @@ Payment webhooks are verified against the raw request body before JSON parsing. 
 - customer and staff login
 - verified email delivery
 
-These features must not be represented as active until their credentials, signatures, reconciliation rules, failure handling, and test-mode runs are complete.
+These features must not be represented as active until their credentials, signatures, reconciliation rules, failure handling, and test runs are complete.
 
 ## Next milestone
 
-Connect FazerCards player-ID validation and test fulfilment orders, process supplier completion and refund webhooks, add customer and staff authentication, enable verified email ownership, and create live Razorpay test-mode payment sessions.
+Add customer and staff authentication, verified email ownership, supplier player-ID validation, test fulfilment orders, supplier completion/refund webhooks, and automated post-payment fulfilment reconciliation.
 
 ## Branch workflow
 
