@@ -17,11 +17,13 @@ export type Game = {
   family: "moba" | "battle-royale" | "shooter" | "rpg";
   kind: GameKind;
   status: GameStatus;
-  logoSrc: string;
+  logoSources: string[];
+  artworkSources: string[];
   logoAlt: string;
+  artworkAlt: string;
   logoTreatment: GameLogoTreatment;
-  gradient: string;
-  glow: string;
+  artworkPosition?: string;
+  accent: string;
   badge?: string;
   available?: boolean;
   href?: string;
@@ -31,9 +33,6 @@ export type Game = {
   startingPriceInPaise?: number | null;
   region?: GameRegion;
 };
-
-export const mobileLegendsLogo =
-  "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhsDEXLMCs22Ic2oY5ujt7mnL1U2XT8pK7E6JzK4DD5z6GgjZMANhLwq6pSDfzF-sEQZ24jV6FTLPDfrxui43Cw-3ZlLDqJQ4gMpyqETN1AU_20t_Rbhu_h7r1uYbugXEcEXlE-pPaRgNQ/s320-rw/MLBB%2B%2528Mobile%2BLegends%2BBang%2BBang%2529%2BNew%2B2020%2BLogo%2B-%2BDownload%2BFree%2BVector%2BPNG.png";
 
 export const mobileLegendsRegions: GameRegion[] = [
   {
@@ -66,11 +65,19 @@ const mobileLegendsBase = {
   publisher: "MOONTON",
   category: "MOBA",
   family: "moba" as const,
-  logoSrc: mobileLegendsLogo,
+  logoSources: [
+    "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhsDEXLMCs22Ic2oY5ujt7mnL1U2XT8pK7E6JzK4DD5z6GgjZMANhLwq6pSDfzF-sEQZ24jV6FTLPDfrxui43Cw-3ZlLDqJQ4gMpyqETN1AU_20t_Rbhu_h7r1uYbugXEcEXlE-pPaRgNQ/s320-rw/MLBB%2B%2528Mobile%2BLegends%2BBang%2BBang%2529%2BNew%2B2020%2BLogo%2B-%2BDownload%2BFree%2BVector%2BPNG.png",
+    "https://upload.wikimedia.org/wikipedia/en/thumb/4/4e/Mobile_Legends_Bang_Bang_logo.png/512px-Mobile_Legends_Bang_Bang_logo.png",
+  ],
+  artworkSources: [
+    "https://static-jupiter-cms-axis.xlaxiata.my.id/1332/pasted-image-2026-01-29T00-07-50-831Z_cropped_processed_by_imagy.webp",
+    "https://upload.wikimedia.org/wikipedia/en/8/86/Mobile_Legends_Bang_Bang.jpg",
+  ],
   logoAlt: "Mobile Legends: Bang Bang logo",
+  artworkAlt: "Mobile Legends: Bang Bang promotional artwork",
   logoTreatment: "native" as const,
-  gradient: "linear-gradient(135deg, #0f4cbb 0%, #4f2cb9 50%, #8618a7 100%)",
-  glow: "rgba(99,102,241,0.38)",
+  artworkPosition: "center 30%",
+  accent: "#5b7cff",
   packages: ["Diamonds", "Weekly Pass", "Twilight Pass"],
   pricingKey: "mobile-legends",
   startingPriceInPaise: 13_000,
@@ -116,11 +123,20 @@ export const games: Game[] = [
     family: "battle-royale",
     kind: "game",
     status: "coming-soon",
-    logoSrc: "https://upload.wikimedia.org/wikipedia/commons/e/e0/Freefirelogo.png",
-    logoAlt: "Free Fire logo",
-    logoTreatment: "light-panel",
-    gradient: "linear-gradient(135deg, #dc2626 0%, #f97316 55%, #facc15 100%)",
-    glow: "rgba(249,115,22,0.34)",
+    logoSources: [
+      "https://dl.dir.freefiremobile.com/common/web_event/official2/dist/client/img/max_logo.b96cbd2.png",
+      "https://dl.dir.freefiremobile.com/common/web_event/official2/dist/client/img/full_logo.969f536.png",
+      "https://freefiremobile-a.akamaihd.net/common/web_event/official2.ff.garena.all/img/20228/59b8d38d554133f433734da39258dc43.jpg",
+    ],
+    artworkSources: [
+      "https://freefiremobile-a.akamaihd.net/common/web_event/official2.ff.garena.all/img/20228/e14db15cad1206214fe56520563e2aa7.jpg",
+      "https://freefiremobile-a.akamaihd.net/common/web_event/official2.ff.garena.all/img/20228/f10082aee7db7a5bf0e28c5a6383e4b7.jpg",
+    ],
+    logoAlt: "Free Fire MAX logo",
+    artworkAlt: "Free Fire promotional artwork",
+    logoTreatment: "native",
+    artworkPosition: "center",
+    accent: "#f5b72b",
     packages: ["Diamonds", "Membership", "Level Up Pass"],
     pricingMode: "staged",
   },
@@ -132,11 +148,20 @@ export const games: Game[] = [
     family: "battle-royale",
     kind: "game",
     status: "coming-soon",
-    logoSrc: "https://www.pubgmobile.com/images/event/brandassets/down-logo5.png",
+    logoSources: [
+      "https://www.pubgmobile.com/images/event/brandassets/img-logo1.png",
+      "https://www.pubgmobile.com/images/event/brandassets/img-logo3.png",
+      "https://www.pubgmobile.com/images/event/brandassets/down-logo5.png",
+    ],
+    artworkSources: [
+      "https://upload.wikimedia.org/wikipedia/en/9/9f/Pubgbattlegrounds.png",
+      "https://www.pubgmobile.com/images/event/brandassets/img-logo1.png",
+    ],
     logoAlt: "PUBG Mobile logo",
-    logoTreatment: "invert",
-    gradient: "linear-gradient(135deg, #d97706 0%, #334155 58%, #020617 100%)",
-    glow: "rgba(245,158,11,0.32)",
+    artworkAlt: "PUBG promotional artwork",
+    logoTreatment: "native",
+    artworkPosition: "center 25%",
+    accent: "#f3b81b",
     packages: ["Unknown Cash", "Royale Pass", "Prime Plus"],
     pricingMode: "staged",
   },
@@ -148,12 +173,19 @@ export const games: Game[] = [
     family: "battle-royale",
     kind: "game",
     status: "coming-soon",
-    logoSrc:
+    logoSources: [
       "https://upload.wikimedia.org/wikipedia/commons/9/99/Battlegrounds_Mobile_India%2C_BGMI_LOGO_white_-_1082x360.png",
+      "https://upload.wikimedia.org/wikipedia/en/thumb/6/6f/Battlegrounds_Mobile_India.jpg/512px-Battlegrounds_Mobile_India.jpg",
+    ],
+    artworkSources: [
+      "https://www.battlegroundsmobileindia.com/api/fileDownload/901/2",
+      "https://upload.wikimedia.org/wikipedia/en/6/6f/Battlegrounds_Mobile_India.jpg",
+    ],
     logoAlt: "Battlegrounds Mobile India logo",
+    artworkAlt: "BGMI promotional artwork",
     logoTreatment: "native",
-    gradient: "linear-gradient(135deg, #f97316 0%, #facc15 48%, #16a34a 100%)",
-    glow: "rgba(34,197,94,0.25)",
+    artworkPosition: "center 30%",
+    accent: "#ff8a2b",
     badge: "India",
     packages: ["Unknown Cash", "Royale Pass", "Prime Plus"],
     pricingMode: "staged",
@@ -166,12 +198,19 @@ export const games: Game[] = [
     family: "shooter",
     kind: "game",
     status: "coming-soon",
-    logoSrc:
+    logoSources: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Call_of_Duty_Mobile_2023_logo.svg/1280px-Call_of_Duty_Mobile_2023_logo.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Call_of_Duty_Mobile_2023_logo.svg/640px-Call_of_Duty_Mobile_2023_logo.svg.png",
+    ],
+    artworkSources: [
+      "https://lblog.fp.guinfra.com/file/694780e0d500923b76140cddVE93BDRB03",
+      "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Call_of_Duty_Mobile_Logo.png/512px-Call_of_Duty_Mobile_Logo.png",
+    ],
     logoAlt: "Call of Duty Mobile logo",
+    artworkAlt: "Call of Duty Mobile promotional artwork",
     logoTreatment: "invert",
-    gradient: "linear-gradient(135deg, #111827 0%, #334155 60%, #eab308 100%)",
-    glow: "rgba(234,179,8,0.26)",
+    artworkPosition: "center 20%",
+    accent: "#f4c430",
     packages: ["COD Points", "Battle Pass", "Vault Packs"],
     pricingMode: "staged",
   },
@@ -183,12 +222,19 @@ export const games: Game[] = [
     family: "shooter",
     kind: "game",
     status: "coming-soon",
-    logoSrc:
+    logoSources: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Valorant_logo.svg/960px-Valorant_logo.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Valorant_logo_-_pink_color_version.svg/960px-Valorant_logo_-_pink_color_version.svg.png",
+    ],
+    artworkSources: [
+      "https://upload.wikimedia.org/wikipedia/en/b/ba/Valorant_cover.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Valorant_logo_-_pink_color_version.svg/960px-Valorant_logo_-_pink_color_version.svg.png",
+    ],
     logoAlt: "VALORANT logo",
+    artworkAlt: "VALORANT promotional artwork",
     logoTreatment: "invert",
-    gradient: "linear-gradient(135deg, #fb7185 0%, #be123c 48%, #3f0d21 100%)",
-    glow: "rgba(251,113,133,0.34)",
+    artworkPosition: "center 18%",
+    accent: "#ff4655",
     packages: ["VALORANT Points", "Regional Gift Cards"],
     pricingMode: "staged",
   },
@@ -200,12 +246,19 @@ export const games: Game[] = [
     family: "rpg",
     kind: "game",
     status: "coming-soon",
-    logoSrc:
+    logoSources: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Genshin_Impact_wordmark.svg/960px-Genshin_Impact_wordmark.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Genshin_Impact_wordmark.svg/640px-Genshin_Impact_wordmark.svg.png",
+    ],
+    artworkSources: [
+      "https://upload.wikimedia.org/wikipedia/en/5/5d/Genshin_Impact_cover.jpg",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Genshin_Impact_wordmark.svg/960px-Genshin_Impact_wordmark.svg.png",
+    ],
     logoAlt: "Genshin Impact logo",
+    artworkAlt: "Genshin Impact promotional artwork",
     logoTreatment: "invert",
-    gradient: "linear-gradient(135deg, #38bdf8 0%, #6366f1 54%, #312e81 100%)",
-    glow: "rgba(56,189,248,0.33)",
+    artworkPosition: "center 18%",
+    accent: "#7ec8ff",
     packages: ["Genesis Crystals", "Welkin Moon"],
     pricingMode: "staged",
   },
@@ -217,12 +270,19 @@ export const games: Game[] = [
     family: "battle-royale",
     kind: "game",
     status: "coming-soon",
-    logoSrc:
+    logoSources: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/FortniteLogo.svg/1280px-FortniteLogo.svg.png",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/FortniteLogo.svg/640px-FortniteLogo.svg.png",
+    ],
+    artworkSources: [
+      "https://cdn2.unrealengine.com/fnbr-35-00-c6ms1-discover-playlist-tiles-keyart-480x270-480x270-d8d88e6f0b9d.jpg",
+      "https://cdn2.unrealengine.com/fnbr-35-00-c6ms1-web-carousel-logo-1458x416-0adca73e5786.png",
+    ],
     logoAlt: "Fortnite logo",
+    artworkAlt: "Fortnite promotional artwork",
     logoTreatment: "invert",
-    gradient: "linear-gradient(135deg, #2563eb 0%, #7c3aed 52%, #ec4899 100%)",
-    glow: "rgba(124,58,237,0.36)",
+    artworkPosition: "center",
+    accent: "#8d5cff",
     packages: ["V-Bucks", "Starter Packs", "Gift Cards"],
     pricingMode: "staged",
   },
