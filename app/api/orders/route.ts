@@ -1,15 +1,12 @@
 import { randomUUID } from "node:crypto";
 
+import { getRequestSession } from "@/lib/auth";
 import {
   deriveOrderAccessToken,
   hashOrderAccessToken,
   normalizeIdempotencyKey,
 } from "@/lib/order-security";
-import {
-  validateCustomerEmail,
-  validateMobileLegendsPlayer,
-} from "@/lib/order-validation";
-import { paymentProvider } from "@/lib/payments/provider";
+import { validateMobileLegendsPlayer } from "@/lib/order-validation";
 import { getPrisma } from "@/lib/prisma";
 import {
   consumeRateLimit,
@@ -38,8 +35,9 @@ type StoredOrder = {
   verificationMode: string;
   paymentProvider: string | null;
   paymentSessionId: string | null;
+  customerId: string;
   createdAt: Date;
-  customer: { email: string };
+  customer: { id: string; email: string };
 };
 
 function isUniqueConstraintError(error: unknown) {
@@ -87,12 +85,12 @@ function createOrderResponse(
       },
     },
     paymentSession: {
-      provider: order.paymentProvider ?? "development-mock",
-      sessionId: order.paymentSessionId ?? `dev_${order.publicId}`,
-      status: "development_only",
+      provider: order.paymentProvider,
+      sessionId: order.paymentSessionId,
+      status: "not_started",
       checkoutUrl: null,
       message:
-        "No payment was charged. Connect a verified payment provider and signed webhooks before enabling checkout.",
+        "The verified order is saved. Open secure tracking to continue with Razorpay Test Mode when configured.",
     },
   };
 }
@@ -118,27 +116,32 @@ export async function POST(request: Request) {
 
     if (!rateLimit.allowed) {
       return Response.json(
-        {
-          ok: false,
-          message: "Too many order attempts. Wait before trying again.",
-        },
+        { ok: false, message: "Too many order attempts. Wait before trying again." },
         {
           status: 429,
           headers: {
             ...rateHeaders,
             "Retry-After": String(
-              Math.max(
-                1,
-                Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000),
-              ),
+              Math.max(1, Math.ceil((rateLimit.resetAt.getTime() - Date.now()) / 1000)),
             ),
           },
         },
       );
     }
 
-    let payload: unknown;
+    const session = await getRequestSession(request);
+    if (!session) {
+      return Response.json(
+        {
+          ok: false,
+          code: "AUTH_REQUIRED",
+          message: "Verify your email and sign in before creating an order.",
+        },
+        { status: 401, headers: rateHeaders },
+      );
+    }
 
+    let payload: unknown;
     try {
       payload = await request.json();
     } catch {
@@ -164,25 +167,26 @@ export async function POST(request: Request) {
       return Response.json(
         {
           ok: false,
-          message:
-            "A valid idempotency key is required to prevent duplicate orders.",
+          message: "A valid idempotency key is required to prevent duplicate orders.",
         },
         { status: 400, headers: rateHeaders },
       );
     }
 
     const existingOrder = await findExistingOrder(idempotencyKey);
-
     if (existingOrder) {
-      const accessToken = deriveOrderAccessToken(
-        existingOrder.publicId,
-        idempotencyKey,
-      );
+      if (existingOrder.customerId !== session.customer.id) {
+        return Response.json(
+          { ok: false, message: "That retry key is already associated with another account." },
+          { status: 409, headers: rateHeaders },
+        );
+      }
 
-      return Response.json(
-        createOrderResponse(existingOrder, accessToken, true),
-        { status: 200, headers: rateHeaders },
-      );
+      const accessToken = deriveOrderAccessToken(existingOrder.publicId, idempotencyKey);
+      return Response.json(createOrderResponse(existingOrder, accessToken, true), {
+        status: 200,
+        headers: rateHeaders,
+      });
     }
 
     if (data.gameSlug !== "mobile-legends") {
@@ -209,22 +213,9 @@ export async function POST(request: Request) {
     }
 
     const player = validateMobileLegendsPlayer(data.playerId, data.zoneId);
-
     if (!player.valid) {
       return Response.json(
         { ok: false, message: player.message },
-        { status: 400, headers: rateHeaders },
-      );
-    }
-
-    const customerEmail = validateCustomerEmail(data.customerEmail);
-
-    if (!customerEmail) {
-      return Response.json(
-        {
-          ok: false,
-          message: "Enter a valid email address for the order receipt.",
-        },
         { status: 400, headers: rateHeaders },
       );
     }
@@ -235,92 +226,58 @@ export async function POST(request: Request) {
     const accessTokenHash = hashOrderAccessToken(accessToken);
 
     let order: StoredOrder;
-
     try {
-      order = await prisma.$transaction(async (transaction) => {
-        const customer = await transaction.customer.upsert({
-          where: { email: customerEmail },
-          update: {},
-          create: { email: customerEmail },
-        });
-
-        return transaction.order.create({
-          data: {
-            publicId,
-            idempotencyKey,
-            accessTokenHash,
-            status: "CREATED",
-            gameSlug: "mobile-legends",
-            packageId: selectedPackage.id,
-            packageName: selectedPackage.name,
-            amountInPaise: selectedPackage.amountInPaise,
-            currency: "INR",
-            playerId: player.playerId,
-            zoneId: player.zoneId,
-            verificationMode: player.verificationMode,
-            customerId: customer.id,
-            events: {
-              create: {
-                type: "ORDER_CREATED",
-                message: "Order persisted with a server-resolved catalogue price.",
-                metadata: {
-                  catalogueSource: selectedPackage.source,
-                  supplierCategoryId: selectedPackage.supplierCategoryId ?? null,
-                  supplierOfferId: selectedPackage.supplierOfferId ?? null,
-                  region: selectedPackage.region ?? null,
-                },
+      order = await prisma.order.create({
+        data: {
+          publicId,
+          idempotencyKey,
+          accessTokenHash,
+          status: "CREATED",
+          gameSlug: "mobile-legends",
+          packageId: selectedPackage.id,
+          packageName: selectedPackage.name,
+          amountInPaise: selectedPackage.amountInPaise,
+          currency: "INR",
+          playerId: player.playerId,
+          zoneId: player.zoneId,
+          verificationMode: player.verificationMode,
+          customerId: session.customer.id,
+          supplierProductId: selectedPackage.supplierProductId ?? null,
+          supplierCategoryId: selectedPackage.supplierCategoryId ?? null,
+          supplierOfferId: selectedPackage.supplierOfferId ?? null,
+          events: {
+            create: {
+              type: "ORDER_CREATED",
+              message: "Verified-account order persisted with a server-resolved catalogue price.",
+              metadata: {
+                catalogueSource: selectedPackage.source,
+                supplierProductId: selectedPackage.supplierProductId ?? null,
+                supplierCategoryId: selectedPackage.supplierCategoryId ?? null,
+                supplierOfferId: selectedPackage.supplierOfferId ?? null,
+                region: selectedPackage.region ?? null,
+                accountRole: session.customer.role,
               },
             },
           },
-          include: { customer: true },
-        });
+        },
+        include: { customer: true },
       });
     } catch (error) {
       if (isUniqueConstraintError(error)) {
         const duplicateOrder = await findExistingOrder(idempotencyKey);
-
-        if (duplicateOrder) {
+        if (duplicateOrder?.customerId === session.customer.id) {
           const duplicateToken = deriveOrderAccessToken(
             duplicateOrder.publicId,
             idempotencyKey,
           );
-
-          return Response.json(
-            createOrderResponse(duplicateOrder, duplicateToken, true),
-            { status: 200, headers: rateHeaders },
-          );
+          return Response.json(createOrderResponse(duplicateOrder, duplicateToken, true), {
+            status: 200,
+            headers: rateHeaders,
+          });
         }
       }
-
       throw error;
     }
-
-    const paymentSession = await paymentProvider.createSession({
-      orderId: order.publicId,
-      amountInPaise: order.amountInPaise,
-      currency: "INR",
-      customerEmail,
-    });
-
-    order = await prisma.order.update({
-      where: { id: order.id },
-      data: {
-        status: "AWAITING_PAYMENT",
-        paymentProvider: paymentSession.provider,
-        paymentSessionId: paymentSession.sessionId,
-        events: {
-          create: {
-            type: "PAYMENT_SESSION_CREATED",
-            message: "Development payment session created without charging money.",
-            metadata: {
-              provider: paymentSession.provider,
-              sessionId: paymentSession.sessionId,
-            },
-          },
-        },
-      },
-      include: { customer: true },
-    });
 
     return Response.json(createOrderResponse(order, accessToken, false), {
       status: 201,
@@ -332,7 +289,7 @@ export async function POST(request: Request) {
         {
           ok: false,
           message:
-            "Order storage is not configured yet. Add the required database and security secrets.",
+            "Order storage or verified-account access is not configured yet. Add the required database and security secrets.",
         },
         { status: 503, headers: rateHeaders },
       );
@@ -340,10 +297,7 @@ export async function POST(request: Request) {
 
     console.error("Order creation failed", error);
     return Response.json(
-      {
-        ok: false,
-        message: "The order could not be safely created. Please retry later.",
-      },
+      { ok: false, message: "The order could not be safely created. Please retry later." },
       { status: 500, headers: rateHeaders },
     );
   }
