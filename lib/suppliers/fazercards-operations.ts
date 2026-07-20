@@ -26,6 +26,26 @@ function resolvePath(name: string) {
   return value.startsWith("/") ? value : `/${value}`;
 }
 
+async function parseFazerCardsResponse(response: Response) {
+  const text = await response.text();
+  let payload: unknown;
+  try {
+    payload = JSON.parse(text);
+  } catch {
+    throw new Error(`FazerCards returned non-JSON with status ${response.status}.`);
+  }
+
+  const object = asObject(payload);
+  if (!response.ok) {
+    throw new Error(
+      asString(object?.message) ||
+        `FazerCards request failed with status ${response.status}.`,
+    );
+  }
+
+  return object ?? {};
+}
+
 async function postFazerCards(path: string, body: Record<string, unknown>) {
   const apiKey = requireEnvironmentVariable("FAZERCARDS_API_KEY", { minLength: 12 });
   const response = await fetch(`${getBaseUrl()}${path}`, {
@@ -39,21 +59,21 @@ async function postFazerCards(path: string, body: Record<string, unknown>) {
     cache: "no-store",
     signal: AbortSignal.timeout(25_000),
   });
+  return parseFazerCardsResponse(response);
+}
 
-  const text = await response.text();
-  let payload: unknown;
-  try {
-    payload = JSON.parse(text);
-  } catch {
-    throw new Error(`FazerCards returned non-JSON with status ${response.status}.`);
-  }
-
-  const object = asObject(payload);
-  if (!response.ok) {
-    throw new Error(asString(object?.message) || `FazerCards request failed with status ${response.status}.`);
-  }
-
-  return object ?? {};
+async function getFazerCards(path: string) {
+  const apiKey = requireEnvironmentVariable("FAZERCARDS_API_KEY", { minLength: 12 });
+  const response = await fetch(`${getBaseUrl()}${path}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "X-API-Key": apiKey,
+    },
+    cache: "no-store",
+    signal: AbortSignal.timeout(25_000),
+  });
+  return parseFazerCardsResponse(response);
 }
 
 function findNestedObject(object: ApiObject | null, key: string) {
@@ -80,6 +100,37 @@ function readExplicitValidity(payload: ApiObject) {
     if (typeof value === "boolean") return value;
   }
   return null;
+}
+
+function readSupplierStatus(payload: ApiObject) {
+  const data = findNestedObject(payload, "data");
+  const order = findNestedObject(payload, "order") ?? findNestedObject(data, "order");
+  return (
+    asString(payload.status) ||
+    asString(payload.order_status) ||
+    asString(data?.status) ||
+    asString(data?.order_status) ||
+    asString(order?.status) ||
+    asString(order?.order_status) ||
+    null
+  );
+}
+
+function normalizeSupplierState(value: string) {
+  const normalized = value.trim().toLowerCase().replace(/[\s.-]+/g, "_");
+  if (["completed", "complete", "success", "successful", "delivered", "fulfilled"].includes(normalized)) {
+    return "completed" as const;
+  }
+  if (["failed", "failure", "rejected", "error"].includes(normalized)) {
+    return "failed" as const;
+  }
+  if (["cancelled", "canceled", "void", "refunded"].includes(normalized)) {
+    return "cancelled" as const;
+  }
+  if (["processing", "pending", "submitted", "in_progress", "queued"].includes(normalized)) {
+    return "processing" as const;
+  }
+  return "unknown" as const;
 }
 
 function buildSupplierFields(fieldSchema: unknown, playerId: string, zoneId: string) {
@@ -227,6 +278,47 @@ export async function createFazerCardsTopup(input: {
     providerStatus:
       asString(responsePayload.status) || asString(data?.status) || "submitted",
     requestPayload,
+    responsePayload,
+  };
+}
+
+export async function getFazerCardsTopupStatus(providerOrderId: string) {
+  const template = resolvePath("FAZERCARDS_ORDER_STATUS_PATH");
+  if (!template) {
+    return {
+      configured: false,
+      rawStatus: null,
+      state: "unknown" as const,
+      responsePayload: null,
+    };
+  }
+
+  if (!template.includes("{order_id}") && !template.includes(":orderId")) {
+    throw new Error(
+      "FAZERCARDS_ORDER_STATUS_PATH must include {order_id} or :orderId as the provider-order placeholder.",
+    );
+  }
+
+  const encodedId = encodeURIComponent(providerOrderId);
+  const path = template
+    .replace("{order_id}", encodedId)
+    .replace(":orderId", encodedId);
+  const responsePayload = await getFazerCards(path);
+  const rawStatus = readSupplierStatus(responsePayload);
+
+  if (!rawStatus) {
+    return {
+      configured: true,
+      rawStatus: null,
+      state: "unknown" as const,
+      responsePayload,
+    };
+  }
+
+  return {
+    configured: true,
+    rawStatus,
+    state: normalizeSupplierState(rawStatus),
     responsePayload,
   };
 }
