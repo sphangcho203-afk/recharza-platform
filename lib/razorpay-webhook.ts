@@ -51,6 +51,24 @@ export function verifyRazorpayWebhookSignature(
   return constantTimeHexEqual(expectedSignature, receivedSignature.trim());
 }
 
+export function verifyRazorpayCheckoutSignature(input: {
+  providerOrderId: string;
+  paymentId: string;
+  receivedSignature: string;
+}) {
+  const secret = requireEnvironmentVariable("RAZORPAY_KEY_SECRET", {
+    minLength: 16,
+  });
+  const expectedSignature = createHmac("sha256", secret)
+    .update(`${input.providerOrderId}|${input.paymentId}`)
+    .digest("hex");
+
+  return constantTimeHexEqual(
+    expectedSignature,
+    input.receivedSignature.trim(),
+  );
+}
+
 export function hashWebhookPayload(rawBody: string) {
   return createHash("sha256").update(rawBody).digest("hex");
 }
