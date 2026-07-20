@@ -21,10 +21,7 @@ const FIELD_LIMITS: Record<keyof PricingPolicy, { min: number; max: number }> = 
 };
 
 function parsePolicy(payload: unknown): PricingPolicy | null {
-  if (!payload || typeof payload !== "object") {
-    return null;
-  }
-
+  if (!payload || typeof payload !== "object") return null;
   const object = payload as Record<string, unknown>;
   const policy = {} as PricingPolicy;
 
@@ -32,19 +29,11 @@ function parsePolicy(payload: unknown): PricingPolicy | null {
     [keyof PricingPolicy, { min: number; max: number }]
   >) {
     const value = Number(object[key]);
-
-    if (!Number.isSafeInteger(value) || value < limits.min || value > limits.max) {
-      return null;
-    }
-
+    if (!Number.isSafeInteger(value) || value < limits.min || value > limits.max) return null;
     policy[key] = value;
   }
 
-  if (policy.gatewayFeeBps + policy.targetMarginBps >= 9_000) {
-    return null;
-  }
-
-  return policy;
+  return policy.gatewayFeeBps + policy.targetMarginBps >= 9_000 ? null : policy;
 }
 
 function toPricingPolicy(config: PricingPolicy): PricingPolicy {
@@ -69,11 +58,9 @@ async function getPolicy() {
 
 export async function GET(request: Request) {
   try {
-    if (!verifyOperatorAccess(request)) {
-      return Response.json(
-        { ok: false, message: "Operator access is required." },
-        { status: 401 },
-      );
+    const operator = await verifyOperatorAccess(request);
+    if (!operator) {
+      return Response.json({ ok: false, message: "Verified staff access is required." }, { status: 401 });
     }
 
     const prisma = getPrisma();
@@ -91,60 +78,31 @@ export async function GET(request: Request) {
 
     return Response.json({
       ok: true,
+      access: { mode: operator.mode, role: operator.role },
       policy: toPricingPolicy(policy),
-      catalog: {
-        productCount,
-        publishedCount,
-        latestSync,
-      },
+      catalog: { productCount, publishedCount, latestSync },
     });
   } catch (error) {
     if (error instanceof RuntimeConfigurationError) {
-      return Response.json(
-        { ok: false, message: "Pricing controls are not configured yet." },
-        { status: 503 },
-      );
+      return Response.json({ ok: false, message: "Pricing controls are not configured yet." }, { status: 503 });
     }
-
     console.error("Pricing policy read failed", error);
-    return Response.json(
-      { ok: false, message: "Pricing controls are temporarily unavailable." },
-      { status: 500 },
-    );
+    return Response.json({ ok: false, message: "Pricing controls are temporarily unavailable." }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
-    const operator = verifyOperatorAccess(request);
-
+    const operator = await verifyOperatorAccess(request);
     if (!operator) {
-      return Response.json(
-        { ok: false, message: "Operator access is required." },
-        { status: 401 },
-      );
+      return Response.json({ ok: false, message: "Verified staff access is required." }, { status: 401 });
     }
 
-    let payload: unknown;
-
-    try {
-      payload = await request.json();
-    } catch {
-      return Response.json(
-        { ok: false, message: "The request body must be valid JSON." },
-        { status: 400 },
-      );
-    }
-
+    const payload = await request.json().catch(() => null);
     const policy = parsePolicy(payload);
-
     if (!policy) {
       return Response.json(
-        {
-          ok: false,
-          message:
-            "Pricing values are invalid or would leave insufficient room for fees and margin.",
-        },
+        { ok: false, message: "Pricing values are invalid or would leave insufficient room for fees and margin." },
         { status: 400 },
       );
     }
@@ -156,20 +114,13 @@ export async function POST(request: Request) {
       select: { id: true, supplierPriceUsdMicros: true },
     });
 
-    await prisma.pricingConfiguration.update({
-      where: { id: "default" },
-      data: policy,
-    });
+    await prisma.pricingConfiguration.update({ where: { id: "default" }, data: policy });
 
-    const batchSize = 100;
-
-    for (let index = 0; index < products.length; index += batchSize) {
-      const batch = products.slice(index, index + batchSize);
-
+    for (let index = 0; index < products.length; index += 100) {
+      const batch = products.slice(index, index + 100);
       await prisma.$transaction(
         batch.map((product) => {
           const price = calculateRetailPrice(product.supplierPriceUsdMicros, policy);
-
           return prisma.supplierProduct.update({
             where: { id: product.id },
             data: {
@@ -187,31 +138,23 @@ export async function POST(request: Request) {
       data: {
         action: "PRICING_POLICY_UPDATED",
         actorFingerprint: operator.actorFingerprint,
+        actorCustomerId: operator.actorCustomerId,
         metadata: {
           previous,
           next: policy,
           productsRepriced: products.length,
+          actorRole: operator.role,
+          accessMode: operator.mode,
         },
       },
     });
 
-    return Response.json({
-      ok: true,
-      policy,
-      productsRepriced: products.length,
-    });
+    return Response.json({ ok: true, policy, productsRepriced: products.length });
   } catch (error) {
     if (error instanceof RuntimeConfigurationError) {
-      return Response.json(
-        { ok: false, message: "Pricing controls are not configured yet." },
-        { status: 503 },
-      );
+      return Response.json({ ok: false, message: "Pricing controls are not configured yet." }, { status: 503 });
     }
-
     console.error("Pricing policy update failed", error);
-    return Response.json(
-      { ok: false, message: "The pricing policy could not be updated safely." },
-      { status: 500 },
-    );
+    return Response.json({ ok: false, message: "The pricing policy could not be updated safely." }, { status: 500 });
   }
 }
