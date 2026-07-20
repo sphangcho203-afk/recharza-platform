@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { OperatorConsole } from "@/components/operator-console";
+import { OperatorHealthPanel } from "@/components/operator-health-panel";
 import { SiteHeader } from "@/components/site-header";
 import { SupplierPricingConsole } from "@/components/supplier-pricing-console";
 
 export const metadata: Metadata = {
   title: "Operator Console",
   description:
-    "Protected development console for supplier pricing, catalogue synchronization, and order operations.",
+    "Protected development console for operational health, supplier pricing, catalogue synchronization, and order operations.",
   robots: { index: false, follow: false },
 };
 
@@ -37,16 +38,16 @@ export default function OperatorPage() {
             Internal operations
           </p>
           <h1 className="mt-3 max-w-5xl text-4xl font-black tracking-[-0.05em] sm:text-5xl lg:text-6xl">
-            Control the catalogue, protect the margin, and move orders without inventing payments.
+            Check system health, protect the margin, and move orders without inventing payments.
           </h1>
           <p className="mt-5 max-w-4xl text-base leading-8 text-slate-300">
-            This development console manages supplier synchronization, pricing policy, and narrow
-            fulfilment transitions. The temporary token gate must be replaced by staff authentication
-            before production launch.
+            This development console reports payment and supplier readiness, manages catalogue
+            synchronization and pricing policy, and permits narrow audited fulfilment transitions.
+            The temporary token gate must be replaced by staff authentication before production launch.
           </p>
 
           <div className="mt-8 grid max-w-4xl gap-3 rounded-3xl border border-amber-300/20 bg-amber-300/10 p-5 text-sm text-amber-100 sm:grid-cols-3">
-            <p>Supplier API key remains server-side</p>
+            <p>Supplier and payment secrets remain server-side</p>
             <p>Every pricing and order change is audited</p>
             <p>Only signed payment events establish PAID</p>
           </div>
@@ -54,6 +55,7 @@ export default function OperatorPage() {
       </section>
 
       <div className="mx-auto grid max-w-7xl gap-8 px-5 py-12 sm:px-8 lg:py-16">
+        <OperatorHealthPanel />
         <SupplierPricingConsole />
         <OperatorConsole />
       </div>
