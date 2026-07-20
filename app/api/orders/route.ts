@@ -14,6 +14,7 @@ import {
 } from "@/lib/rate-limit";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 import { getMobileLegendsPackageForCheckout } from "@/lib/storefront-catalog";
+import { validateFazerCardsPlayer } from "@/lib/suppliers/fazercards-operations";
 
 export const runtime = "nodejs";
 
@@ -33,6 +34,7 @@ type StoredOrder = {
   playerId: string;
   zoneId: string;
   verificationMode: string;
+  verifiedNickname: string | null;
   paymentProvider: string | null;
   paymentSessionId: string | null;
   customerId: string;
@@ -74,6 +76,7 @@ function createOrderResponse(
       player: {
         playerId: order.playerId,
         zoneId: order.zoneId,
+        nickname: order.verifiedNickname,
         verificationMode: order.verificationMode,
       },
       customerEmail: order.customer.email,
@@ -141,19 +144,10 @@ export async function POST(request: Request) {
       );
     }
 
-    let payload: unknown;
-    try {
-      payload = await request.json();
-    } catch {
-      return Response.json(
-        { ok: false, message: "The request body must be valid JSON." },
-        { status: 400, headers: rateHeaders },
-      );
-    }
-
+    const payload = await request.json().catch(() => null);
     if (!payload || typeof payload !== "object") {
       return Response.json(
-        { ok: false, message: "Order details are required." },
+        { ok: false, message: "Order details are required in valid JSON." },
         { status: 400, headers: rateHeaders },
       );
     }
@@ -221,6 +215,52 @@ export async function POST(request: Request) {
     }
 
     const prisma = getPrisma();
+    let verificationMode = player.verificationMode;
+    let verifiedNickname: string | null = null;
+    let supplierValidationConfirmed = false;
+
+    if (selectedPackage.source === "fazercards-live" && selectedPackage.supplierProductId) {
+      const product = await prisma.supplierProduct.findFirst({
+        where: {
+          id: selectedPackage.supplierProductId,
+          provider: "fazercards",
+          available: true,
+          published: true,
+        },
+        select: {
+          categoryId: true,
+          offerId: true,
+          fields: true,
+        },
+      });
+
+      if (!product) {
+        return Response.json(
+          { ok: false, message: "The approved supplier product changed. Refresh and retry." },
+          { status: 409, headers: rateHeaders },
+        );
+      }
+
+      const supplierValidation = await validateFazerCardsPlayer({
+        categoryId: product.categoryId,
+        offerId: product.offerId,
+        playerId: player.playerId,
+        zoneId: player.zoneId,
+        fieldSchema: product.fields,
+      });
+
+      if (!supplierValidation.valid) {
+        return Response.json(
+          { ok: false, message: supplierValidation.message },
+          { status: 400, headers: rateHeaders },
+        );
+      }
+
+      verificationMode = supplierValidation.mode;
+      verifiedNickname = supplierValidation.nickname;
+      supplierValidationConfirmed = supplierValidation.confirmed;
+    }
+
     const publicId = createPublicOrderId();
     const accessToken = deriveOrderAccessToken(publicId, idempotencyKey);
     const accessTokenHash = hashOrderAccessToken(accessToken);
@@ -240,7 +280,8 @@ export async function POST(request: Request) {
           currency: "INR",
           playerId: player.playerId,
           zoneId: player.zoneId,
-          verificationMode: player.verificationMode,
+          verifiedNickname,
+          verificationMode,
           customerId: session.customer.id,
           supplierProductId: selectedPackage.supplierProductId ?? null,
           supplierCategoryId: selectedPackage.supplierCategoryId ?? null,
@@ -255,6 +296,8 @@ export async function POST(request: Request) {
                 supplierCategoryId: selectedPackage.supplierCategoryId ?? null,
                 supplierOfferId: selectedPackage.supplierOfferId ?? null,
                 region: selectedPackage.region ?? null,
+                verificationMode,
+                supplierValidationConfirmed,
                 accountRole: session.customer.role,
               },
             },
