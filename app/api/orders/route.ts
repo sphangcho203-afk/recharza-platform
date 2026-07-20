@@ -215,7 +215,7 @@ export async function POST(request: Request) {
     }
 
     const prisma = getPrisma();
-    let verificationMode = player.verificationMode;
+    let verificationMode: string = player.verificationMode;
     let verifiedNickname: string | null = null;
     let supplierValidationConfirmed = false;
 
