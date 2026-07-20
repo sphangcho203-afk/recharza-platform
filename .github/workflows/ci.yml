@@ -29,25 +29,25 @@ jobs:
         run: npm run db:validate
 
       - name: Type check
-        id: typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        id: lint
         shell: bash
         run: |
           set +e
-          npm run typecheck 2>&1 | tee typecheck.log
+          npm run lint 2>&1 | tee lint.log
           exit_code=${PIPESTATUS[0]}
           echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
           exit "$exit_code"
 
-      - name: Upload type-check failure
-        if: failure() && steps.typecheck.outputs.exit_code != '0'
+      - name: Upload lint failure
+        if: failure() && steps.lint.outputs.exit_code != '0'
         uses: actions/upload-artifact@v4
         with:
-          name: typecheck-failure
-          path: typecheck.log
+          name: lint-failure
+          path: lint.log
           retention-days: 1
-
-      - name: Lint
-        run: npm run lint
 
       - name: Build
         run: npm run build
