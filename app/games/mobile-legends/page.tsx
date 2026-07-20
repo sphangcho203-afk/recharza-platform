@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { GameLogo } from "@/components/game-logo";
 import { MobileLegendsOrderForm } from "@/components/mobile-legends-order-form";
+import { ResilientImage } from "@/components/resilient-image";
 import { SiteHeader } from "@/components/site-header";
 import { games, mobileLegendsRegions } from "@/lib/games";
 import { getMobileLegendsPackages } from "@/lib/storefront-catalog";
@@ -65,20 +66,28 @@ export default async function MobileLegendsPage({
               </p>
             </div>
 
-            <div
-              className="overflow-hidden rounded-3xl border border-white/10 p-4 shadow-2xl shadow-black/25"
-              style={{ background: mobileLegendsGame.gradient }}
-            >
-              <GameLogo game={mobileLegendsGame} priority />
-              <div className="mt-4 flex items-center justify-between gap-4 text-sm">
-                <span className="text-white/70">Catalogue state</span>
-                <span
-                  className={
-                    livePricing ? "font-bold text-emerald-200" : "font-bold text-amber-100"
-                  }
-                >
-                  {livePricing ? "Live approved" : "Protected fallback"}
-                </span>
+            <div className="relative min-h-52 overflow-hidden rounded-3xl border border-white/10 shadow-2xl shadow-black/25">
+              <ResilientImage
+                sources={mobileLegendsGame.artworkSources}
+                alt={mobileLegendsGame.artworkAlt}
+                loading="eager"
+                className="absolute inset-0 h-full w-full object-cover"
+                style={{ objectPosition: mobileLegendsGame.artworkPosition ?? "center" }}
+                fallbackClassName="absolute inset-0 h-full w-full"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#090910] via-[#090910]/30 to-black/5" />
+              <div className="absolute inset-x-0 bottom-0 p-4">
+                <GameLogo game={mobileLegendsGame} priority />
+                <div className="mt-4 flex items-center justify-between gap-4 text-sm">
+                  <span className="text-white/70">Catalogue state</span>
+                  <span
+                    className={
+                      livePricing ? "font-bold text-emerald-200" : "font-bold text-amber-100"
+                    }
+                  >
+                    {livePricing ? "Live approved" : "Protected fallback"}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

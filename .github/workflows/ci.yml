@@ -23,7 +23,7 @@ jobs:
           node-version: 20.19.0
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --silent
 
       - name: Validate database schema
         run: npm run db:validate
