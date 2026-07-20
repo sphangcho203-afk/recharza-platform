@@ -31,43 +31,112 @@ enum SupplierSyncStatus {
   FAILED
 }
 
+enum AccountRole {
+  CUSTOMER
+  STAFF
+  ADMIN
+}
+
+enum AuthTokenPurpose {
+  SIGN_IN
+}
+
+enum FulfilmentStatus {
+  PLANNED
+  SUBMITTING
+  SUBMITTED
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum FulfilmentMode {
+  DRY_RUN
+  SUPPLIER_WRITE
+}
+
 model Customer {
-  id              String   @id @default(cuid())
-  email           String   @unique
-  authSubject     String?  @unique
+  id              String        @id @default(cuid())
+  email           String        @unique
+  displayName     String?
+  username        String?       @unique
+  role            AccountRole   @default(CUSTOMER)
+  authSubject     String?       @unique
   emailVerifiedAt DateTime?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  lastLoginAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
   orders          Order[]
+  sessions        AuthSession[]
+  magicLinks      AuthMagicLink[]
+  staffAuditLogs  AdminAuditLog[] @relation("StaffAuditActor")
+}
+
+model AuthSession {
+  id             String    @id @default(cuid())
+  tokenHash      String    @unique
+  customerId     String
+  customer       Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt      DateTime
+  lastUsedAt     DateTime  @default(now())
+  revokedAt      DateTime?
+  userAgentHash  String?
+  createdAt      DateTime  @default(now())
+
+  @@index([customerId, expiresAt])
+  @@index([expiresAt, revokedAt])
+}
+
+model AuthMagicLink {
+  id                   String           @id @default(cuid())
+  tokenHash            String           @unique
+  purpose              AuthTokenPurpose @default(SIGN_IN)
+  customerId           String
+  customer             Customer         @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  requestedFingerprint String
+  expiresAt            DateTime
+  usedAt               DateTime?
+  createdAt            DateTime         @default(now())
+
+  @@index([customerId, createdAt])
+  @@index([expiresAt, usedAt])
 }
 
 model Order {
-  id               String      @id @default(cuid())
-  publicId         String      @unique
-  idempotencyKey   String      @unique
-  accessTokenHash  String
-  status           OrderStatus @default(CREATED)
-  gameSlug         String
-  packageId        String
-  packageName      String
-  amountInPaise    Int
-  currency         String      @default("INR")
-  playerId         String
-  zoneId           String
-  verificationMode String
-  paymentProvider  String?
-  paymentSessionId String?     @unique
-  customerId       String
-  customer         Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  events           OrderEvent[]
-  webhooks         PaymentWebhook[]
-  auditLogs        AdminAuditLog[]
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
+  id                  String      @id @default(cuid())
+  publicId            String      @unique
+  idempotencyKey      String      @unique
+  accessTokenHash     String
+  status              OrderStatus @default(CREATED)
+  gameSlug            String
+  packageId           String
+  packageName         String
+  amountInPaise       Int
+  currency            String      @default("INR")
+  playerId            String
+  zoneId              String
+  verificationMode    String
+  verifiedNickname    String?
+  paymentProvider     String?
+  paymentSessionId    String?     @unique
+  supplierProductId   String?
+  supplierCategoryId  String?
+  supplierOfferId     String?
+  customerId          String
+  customer            Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  supplierProduct     SupplierProduct? @relation(fields: [supplierProductId], references: [id], onDelete: SetNull)
+  events              OrderEvent[]
+  webhooks            PaymentWebhook[]
+  auditLogs           AdminAuditLog[]
+  fulfilmentAttempts  FulfilmentAttempt[]
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
 
   @@index([customerId, createdAt])
   @@index([playerId, zoneId, createdAt])
   @@index([status, createdAt])
+  @@index([supplierProductId])
 }
 
 model OrderEvent {
@@ -102,14 +171,17 @@ model PaymentWebhook {
 }
 
 model AdminAuditLog {
-  id               String   @id @default(cuid())
+  id               String    @id @default(cuid())
   action           String
   actorFingerprint String
+  actorCustomerId  String?
+  actorCustomer    Customer? @relation("StaffAuditActor", fields: [actorCustomerId], references: [id], onDelete: SetNull)
   metadata         Json?
   orderId          String?
   order             Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
-  createdAt        DateTime @default(now())
+  createdAt        DateTime  @default(now())
 
+  @@index([actorCustomerId, createdAt])
   @@index([orderId, createdAt])
   @@index([createdAt])
 }
@@ -148,6 +220,7 @@ model SupplierProduct {
   syncedAt                DateTime @default(now())
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
+  orders                  Order[]
 
   @@unique([provider, offerId], name: "provider_offer")
   @@index([gameSlug, published, available, retailPriceInPaise])
@@ -167,6 +240,27 @@ model SupplierSyncRun {
 
   @@index([provider, startedAt])
   @@index([status, startedAt])
+}
+
+model FulfilmentAttempt {
+  id                 String            @id @default(cuid())
+  orderId            String
+  order              Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider           String
+  mode               FulfilmentMode
+  status             FulfilmentStatus  @default(PLANNED)
+  idempotencyKey     String            @unique
+  providerOrderId    String?           @unique
+  requestPayload     Json?
+  responsePayload    Json?
+  errorMessage       String?
+  submittedAt        DateTime?
+  completedAt        DateTime?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  @@index([orderId, createdAt])
+  @@index([provider, status, createdAt])
 }
 
 model RateLimitBucket {
