@@ -1,19 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { GameLogo } from "@/components/game-logo";
 import { MobileLegendsOrderForm } from "@/components/mobile-legends-order-form";
 import { SiteHeader } from "@/components/site-header";
+import { games, mobileLegendsRegions } from "@/lib/games";
 import { getMobileLegendsPackages } from "@/lib/storefront-catalog";
 
 export const metadata: Metadata = {
   title: "Mobile Legends Top-Up",
   description:
-    "Choose an approved Mobile Legends package with server-owned pricing, player validation, and protected order tracking on Recharza.",
+    "Choose a Mobile Legends market and approved package with server-owned pricing, player validation, and protected order tracking on Recharza.",
 };
 
 export const dynamic = "force-dynamic";
 
-export default async function MobileLegendsPage() {
+export default async function MobileLegendsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ region?: string }>;
+}) {
+  const params = await searchParams;
+  const mobileLegendsGame = games.find((game) => game.slug === "mobile-legends")!;
+  const selectedRegion =
+    mobileLegendsRegions.find((region) => region.code === params.region) ??
+    mobileLegendsGame.region!;
   const packages = await getMobileLegendsPackages();
   const livePricing = packages.some((item) => item.source === "fazercards-live");
 
@@ -38,42 +49,74 @@ export default async function MobileLegendsPage() {
             Back to catalogue
           </Link>
 
-          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_22rem] lg:items-end">
             <div>
               <div className="inline-flex items-center gap-3 rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-blue-200">
-                <span className="grid h-6 w-6 place-items-center rounded-lg bg-blue-500 text-[10px] text-white">
-                  ML
-                </span>
-                {livePricing ? "Approved live supplier catalogue" : "Protected supplier-price fallback"}
+                <span>{selectedRegion.flag}</span>
+                {selectedRegion.label} market selected
               </div>
               <h1 className="mt-6 max-w-4xl text-4xl font-black tracking-[-0.05em] sm:text-5xl lg:text-6xl">
-                Top up with a price that survives reality.
+                Mobile Legends top-up for the correct market.
               </h1>
               <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
-                Recharza resolves supplier cost, FX reserve, gateway fees, operating overhead, and
-                profit before a package reaches checkout. The server verifies the selected offer
-                again before creating the order.
+                Choose the market before the package. Recharza keeps India, Indonesia, Philippines
+                and Arabia as regional catalogue routes under the same Mobile Legends brand instead
+                of pretending they are separate games.
               </p>
             </div>
 
-            <div className="grid min-w-64 gap-3 rounded-3xl border border-white/10 bg-white/[0.045] p-5 text-sm shadow-2xl shadow-black/25 backdrop-blur-xl">
-              <div className="flex items-center justify-between gap-6">
-                <span className="text-slate-500">Catalogue</span>
-                <span className={livePricing ? "font-bold text-emerald-300" : "font-bold text-amber-200"}>
-                  {livePricing ? "Live approved" : "Indicative fallback"}
+            <div
+              className="overflow-hidden rounded-3xl border border-white/10 p-4 shadow-2xl shadow-black/25"
+              style={{ background: mobileLegendsGame.gradient }}
+            >
+              <GameLogo game={mobileLegendsGame} priority />
+              <div className="mt-4 flex items-center justify-between gap-4 text-sm">
+                <span className="text-white/70">Catalogue state</span>
+                <span
+                  className={
+                    livePricing ? "font-bold text-emerald-200" : "font-bold text-amber-100"
+                  }
+                >
+                  {livePricing ? "Live approved" : "Protected fallback"}
                 </span>
               </div>
-              <div className="flex items-center justify-between gap-6">
-                <span className="text-slate-500">Packages</span>
-                <span className="font-bold text-white">{packages.length}</span>
+            </div>
+          </div>
+
+          <div className="mt-10 rounded-[1.7rem] border border-white/10 bg-white/[0.035] p-4 backdrop-blur-xl">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+                  Select MLBB market
+                </p>
+                <p className="mt-1 text-sm text-slate-500">
+                  Regional categories will filter live supplier offers after their exact IDs are approved.
+                </p>
               </div>
-              <div className="flex items-center justify-between gap-6">
-                <span className="text-slate-500">Server pricing</span>
-                <span className="font-bold text-emerald-300">Enforced</span>
-              </div>
-              <div className="flex items-center justify-between gap-6">
-                <span className="text-slate-500">Real charge</span>
-                <span className="font-bold text-emerald-300">Disabled</span>
+              <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <Link
+                  href="/games/mobile-legends"
+                  className={`shrink-0 rounded-xl border px-4 py-2.5 text-sm font-bold transition ${
+                    selectedRegion.code === "global"
+                      ? "border-violet-400/50 bg-violet-400/15 text-white"
+                      : "border-white/10 bg-black/15 text-slate-400 hover:text-white"
+                  }`}
+                >
+                  🌐 Global
+                </Link>
+                {mobileLegendsRegions.map((region) => (
+                  <Link
+                    key={region.code}
+                    href={`/games/mobile-legends?region=${region.code}`}
+                    className={`shrink-0 rounded-xl border px-4 py-2.5 text-sm font-bold transition ${
+                      selectedRegion.code === region.code
+                        ? "border-violet-400/50 bg-violet-400/15 text-white"
+                        : "border-white/10 bg-black/15 text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    {region.flag} {region.label}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
@@ -81,19 +124,25 @@ export default async function MobileLegendsPage() {
       </section>
 
       <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:py-16">
+        <div className="mb-6 rounded-2xl border border-violet-400/20 bg-violet-400/10 px-4 py-3 text-sm leading-6 text-violet-100">
+          <strong>{selectedRegion.flag} {selectedRegion.label}:</strong> {selectedRegion.note}. Shared
+          fallback packages remain visible until an approved live supplier category exists for this market.
+        </div>
         <MobileLegendsOrderForm packages={packages} />
       </section>
 
       <section className="mx-auto max-w-7xl px-5 pb-24 sm:px-8">
         <div className="grid gap-4 rounded-[2rem] border border-white/10 bg-white/[0.035] p-6 sm:p-8 lg:grid-cols-4">
           {[
-            ["01", "Supplier-aware pricing", "Offers pass through FX, fee, overhead, and margin rules before publication."],
-            ["02", "Region-safe publication", "Live categories stay hidden until an operator approves their exact supplier category ID."],
+            ["01", "Market-first routing", "The selected MLBB market is explicit before package selection begins."],
+            ["02", "Supplier-aware pricing", "Offers pass through FX, fee, overhead and margin rules before publication."],
             ["03", "Replay-safe creation", "Idempotency keys and database constraints prevent duplicate orders during retries."],
-            ["04", "Private tracking", "A separate access token protects each order timeline after creation."],
+            ["04", "Private tracking", "A separate access token protects each persisted order timeline."],
           ].map(([number, title, description]) => (
             <article key={number} className="rounded-2xl border border-white/5 bg-black/10 p-4">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">{number}</p>
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">
+                {number}
+              </p>
               <h2 className="mt-3 text-lg font-bold">{title}</h2>
               <p className="mt-2 text-sm leading-6 text-slate-400">{description}</p>
             </article>
