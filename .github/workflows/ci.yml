@@ -28,6 +28,23 @@ jobs:
       - name: Validate database schema
         run: npm run db:validate
 
+      - name: Validate staging configuration contract
+        env:
+          DEPLOYMENT_ENV: staging
+          NEXT_PUBLIC_APP_URL: https://recharza-staging.example.test
+          DATABASE_URL: postgresql://staging:placeholder@database.example.test:5432/recharza
+          ORDER_ACCESS_SECRET: ci-order-access-secret-32-characters-minimum
+          RATE_LIMIT_SALT: ci-rate-limit-salt-32-characters-minimum
+          CRON_SECRET: ci-maintenance-secret-32-characters-minimum
+          AUTH_ADMIN_EMAILS: admin@example.test
+          RESEND_API_KEY: re_ci_placeholder
+          RESEND_FROM_EMAIL: Recharza <accounts@example.test>
+          RAZORPAY_KEY_ID: rzp_test_ci_placeholder
+          RAZORPAY_KEY_SECRET: ci_razorpay_test_secret
+          RAZORPAY_WEBHOOK_SECRET: ci_razorpay_webhook_secret
+          FAZERCARDS_ORDER_WRITES_ENABLED: "false"
+        run: npm run deploy:check
+
       - name: Type check
         run: npm run typecheck
 
