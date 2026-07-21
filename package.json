@@ -1,6 +1,6 @@
 {
   "name": "recharza-platform",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,7 +13,10 @@
     "db:generate": "prisma generate",
     "db:validate": "prisma validate",
     "db:migrate": "prisma migrate dev",
-    "db:deploy": "prisma migrate deploy"
+    "db:deploy": "prisma migrate deploy",
+    "deploy:check": "node scripts/validate-deployment-env.mjs",
+    "deploy:prepare": "npm run deploy:check && npm run db:deploy",
+    "smoke": "node scripts/smoke-test.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.0.0",
