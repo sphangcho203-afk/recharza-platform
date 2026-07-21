@@ -2,6 +2,10 @@ import { randomUUID } from "node:crypto";
 
 import { getRequestSession } from "@/lib/auth";
 import {
+  isPackageAvailableForMarket,
+  parseMobileLegendsMarket,
+} from "@/lib/mobile-legends-market";
+import {
   deriveOrderAccessToken,
   hashOrderAccessToken,
   normalizeIdempotencyKey,
@@ -27,6 +31,7 @@ type StoredOrder = {
   idempotencyKey: string;
   status: string;
   gameSlug: string;
+  marketCode: string | null;
   packageId: string;
   packageName: string;
   amountInPaise: number;
@@ -60,6 +65,8 @@ function createOrderResponse(
   accessToken: string,
   duplicate: boolean,
 ) {
+  const market = parseMobileLegendsMarket(order.marketCode);
+
   return {
     ok: true,
     duplicate,
@@ -67,6 +74,7 @@ function createOrderResponse(
       id: order.publicId,
       status: order.status.toLowerCase(),
       gameSlug: order.gameSlug,
+      market: market ? { code: market.code, label: market.label } : null,
       package: {
         id: order.packageId,
         name: order.packageName,
@@ -190,6 +198,18 @@ export async function POST(request: Request) {
       );
     }
 
+    const selectedMarket = parseMobileLegendsMarket(data.marketCode);
+    if (!selectedMarket) {
+      return Response.json(
+        {
+          ok: false,
+          code: "MARKET_REQUIRED",
+          message: "Choose India, Indonesia or Philippines before creating the order.",
+        },
+        { status: 400, headers: rateHeaders },
+      );
+    }
+
     const selectedPackage =
       typeof data.packageId === "string"
         ? await getMobileLegendsPackageForCheckout(data.packageId)
@@ -201,6 +221,17 @@ export async function POST(request: Request) {
           ok: false,
           message:
             "That package is unavailable or no longer approved. Refresh the catalogue and choose another offer.",
+        },
+        { status: 409, headers: rateHeaders },
+      );
+    }
+
+    if (!isPackageAvailableForMarket(selectedPackage.region, selectedMarket.code)) {
+      return Response.json(
+        {
+          ok: false,
+          code: "MARKET_PACKAGE_MISMATCH",
+          message: `That package is not approved for the ${selectedMarket.label} market.`,
         },
         { status: 409, headers: rateHeaders },
       );
@@ -274,6 +305,7 @@ export async function POST(request: Request) {
           accessTokenHash,
           status: "CREATED",
           gameSlug: "mobile-legends",
+          marketCode: selectedMarket.code,
           packageId: selectedPackage.id,
           packageName: selectedPackage.name,
           amountInPaise: selectedPackage.amountInPaise,
@@ -289,13 +321,14 @@ export async function POST(request: Request) {
           events: {
             create: {
               type: "ORDER_CREATED",
-              message: "Verified-account order persisted with a server-resolved catalogue price.",
+              message: `Verified-account order persisted for the ${selectedMarket.label} market with a server-resolved catalogue price.`,
               metadata: {
                 catalogueSource: selectedPackage.source,
                 supplierProductId: selectedPackage.supplierProductId ?? null,
                 supplierCategoryId: selectedPackage.supplierCategoryId ?? null,
                 supplierOfferId: selectedPackage.supplierOfferId ?? null,
-                region: selectedPackage.region ?? null,
+                marketCode: selectedMarket.code,
+                supplierPackageRegion: selectedPackage.region ?? null,
                 verificationMode,
                 supplierValidationConfirmed,
                 accountRole: session.customer.role,
