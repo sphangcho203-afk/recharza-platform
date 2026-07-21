@@ -4,12 +4,13 @@ import Link from "next/link";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import { formatInr, type MobileLegendsPackage } from "@/lib/mobile-legends";
+import type { MobileLegendsMarket } from "@/lib/mobile-legends-market";
 
 type VerificationState =
-  | { status: "idle"; message: string }
-  | { status: "loading"; message: string }
-  | { status: "success"; message: string }
-  | { status: "error"; message: string };
+  | { status: "idle"; message: string; nickname: null }
+  | { status: "loading"; message: string; nickname: null }
+  | { status: "success"; message: string; nickname: string | null }
+  | { status: "error"; message: string; nickname: null };
 
 type AccountState =
   | { status: "loading"; email: null }
@@ -19,8 +20,14 @@ type AccountState =
 type CreatedOrder = {
   id: string;
   status: string;
+  market: { code: string; label: string } | null;
   package: { name: string; amountInPaise: number; currency: string };
-  player: { playerId: string; zoneId: string; verificationMode: string };
+  player: {
+    playerId: string;
+    zoneId: string;
+    nickname: string | null;
+    verificationMode: string;
+  };
   persistence: "database";
   tracking: { path: string; accessToken: string };
 };
@@ -41,7 +48,8 @@ type OrderResponse = {
 
 const initialVerification: VerificationState = {
   status: "idle",
-  message: "Enter the player and zone IDs, then validate the destination.",
+  message: "Enter the player and zone IDs, then validate the locked market destination.",
+  nickname: null,
 };
 
 function createIdempotencyKey() {
@@ -49,7 +57,13 @@ function createIdempotencyKey() {
   return `rz_${Date.now()}_${Math.random().toString(36).slice(2, 18)}`;
 }
 
-export function MobileLegendsOrderForm({ packages }: { packages: MobileLegendsPackage[] }) {
+export function MobileLegendsOrderForm({
+  packages,
+  market,
+}: {
+  packages: MobileLegendsPackage[];
+  market: MobileLegendsMarket;
+}) {
   const firstPackage = packages.find((item) => item.featured) ?? packages[0];
   const [packageId, setPackageId] = useState(firstPackage.id);
   const [playerId, setPlayerId] = useState("");
@@ -84,10 +98,20 @@ export function MobileLegendsOrderForm({ packages }: { packages: MobileLegendsPa
       .catch(() => {
         if (active) setAccount({ status: "guest", email: null });
       });
+
     return () => {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    setPackageId(firstPackage.id);
+    setVerification(initialVerification);
+    setOrder(null);
+    setOrderError("");
+    setPaymentMessage("");
+    idempotencyKey.current = null;
+  }, [firstPackage.id, market.code]);
 
   function resetOrderState() {
     idempotencyKey.current = null;
@@ -103,24 +127,44 @@ export function MobileLegendsOrderForm({ packages }: { packages: MobileLegendsPa
   }
 
   async function verifyPlayer() {
-    setVerification({ status: "loading", message: "Checking player and zone details..." });
+    setVerification({
+      status: "loading",
+      message: `Checking ${market.label} player and zone details...`,
+      nickname: null,
+    });
     resetOrderState();
 
     try {
       const response = await fetch("/api/games/mobile-legends/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playerId, zoneId, packageId }),
+        body: JSON.stringify({
+          playerId,
+          zoneId,
+          packageId,
+          marketCode: market.code,
+        }),
       });
-      const result = (await response.json()) as { valid: boolean; message: string };
-      setVerification({
-        status: result.valid ? "success" : "error",
-        message: result.message,
-      });
+      const result = (await response.json()) as {
+        valid: boolean;
+        message: string;
+        nickname?: string | null;
+      };
+
+      setVerification(
+        result.valid
+          ? {
+              status: "success",
+              message: result.message,
+              nickname: result.nickname ?? null,
+            }
+          : { status: "error", message: result.message, nickname: null },
+      );
     } catch {
       setVerification({
         status: "error",
         message: "Verification could not be completed. Check your connection and retry.",
+        nickname: null,
       });
     }
   }
@@ -157,6 +201,7 @@ export function MobileLegendsOrderForm({ packages }: { packages: MobileLegendsPa
           packageId,
           playerId,
           zoneId,
+          marketCode: market.code,
         }),
       });
       const result = (await response.json()) as OrderResponse;
@@ -185,26 +230,25 @@ export function MobileLegendsOrderForm({ packages }: { packages: MobileLegendsPa
   }
 
   return (
-    <form onSubmit={submitOrder} className="grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
-      <section className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-2xl shadow-black/20 sm:p-7">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+    <form onSubmit={submitOrder} className="grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
+      <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 shadow-2xl shadow-black/20 sm:p-6">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-300">01 · Package</p>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">01 · Package</p>
             <h2 className="mt-2 text-2xl font-black tracking-tight">Choose your top-up</h2>
           </div>
-          <span className={`w-fit rounded-full border px-3 py-1 text-xs font-bold ${usesLiveSupplierPricing ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200" : "border-amber-300/20 bg-amber-300/10 text-amber-200"}`}>
-            {usesLiveSupplierPricing ? "Live supplier pricing" : "Protected fallback pricing"}
-          </span>
+          <div className="flex flex-wrap gap-2">
+            <span className="rounded-full border border-blue-300/20 bg-blue-300/10 px-3 py-1 text-xs font-bold text-blue-100">
+              {market.flag} {market.label} locked
+            </span>
+            <span className={`rounded-full border px-3 py-1 text-xs font-bold ${usesLiveSupplierPricing ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200" : "border-amber-300/20 bg-amber-300/10 text-amber-200"}`}>
+              {usesLiveSupplierPricing ? "Live pricing" : "Fallback pricing"}
+            </span>
+          </div>
         </div>
 
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
-          {usesLiveSupplierPricing
-            ? "Approved FazerCards offers are repriced by Recharza before checkout."
-            : "Guarded fallback prices remain visible until approved supplier offers are synchronized."}
-        </p>
-
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          {packages.map((item, index) => {
+        <div className="mt-5 grid grid-cols-2 gap-2 sm:gap-3">
+          {packages.map((item) => {
             const selected = item.id === packageId;
             return (
               <button
@@ -213,75 +257,123 @@ export function MobileLegendsOrderForm({ packages }: { packages: MobileLegendsPa
                 aria-pressed={selected}
                 onClick={() => {
                   setPackageId(item.id);
-                  resetOrderState();
+                  resetVerification();
                 }}
-                style={{ animationDelay: `${Math.min(index * 45, 360)}ms` }}
-                className={`package-card relative overflow-hidden rounded-2xl border p-4 text-left transition duration-300 ${selected ? "border-violet-400 bg-violet-400/12 shadow-[0_0_0_1px_rgba(167,139,250,0.22),0_18px_50px_rgba(76,29,149,0.16)]" : "border-white/10 bg-black/15 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.055]"}`}
+                className={`relative overflow-hidden rounded-2xl border p-3 text-left transition sm:p-4 ${selected ? "border-violet-400 bg-violet-400/12 shadow-[0_0_0_1px_rgba(167,139,250,0.2)]" : "border-white/10 bg-black/15 hover:border-white/20 hover:bg-white/[0.05]"}`}
               >
-                {item.featured ? <span className="absolute right-3 top-3 rounded-full bg-violet-400/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-violet-200">Popular</span> : null}
-                <span className="block pr-16 text-sm font-bold text-white">{item.name}</span>
-                <span className="mt-2 block text-2xl font-black tracking-tight text-white">{formatInr(item.amountInPaise)}</span>
-                <span className="mt-2 block text-xs leading-5 text-slate-400">{item.description}</span>
-                <span className="mt-4 flex items-center justify-between gap-3 text-[10px] font-bold uppercase tracking-[0.14em]">
-                  <span className="text-slate-500">{item.deliveryLabel}</span>
-                  {item.region ? <span className="rounded-full border border-blue-300/15 bg-blue-300/10 px-2 py-1 text-blue-200">{item.region}</span> : null}
-                </span>
+                {item.featured ? (
+                  <span className="absolute right-2 top-2 rounded-full bg-violet-400/15 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-violet-200">Popular</span>
+                ) : null}
+                <span className="block pr-12 text-sm font-bold leading-5 text-white">{item.name}</span>
+                <span className="mt-3 block text-xl font-black tracking-tight text-white sm:text-2xl">{formatInr(item.amountInPaise)}</span>
+                <span className="mt-2 hidden text-xs leading-5 text-slate-400 sm:block">{item.description}</span>
               </button>
             );
           })}
         </div>
       </section>
 
-      <section className="rounded-[2rem] border border-white/10 bg-white/[0.045] p-5 shadow-2xl shadow-black/20 sm:p-7 lg:sticky lg:top-24 lg:self-start">
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-violet-300">02 · Account and player</p>
+      <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 shadow-2xl shadow-black/20 sm:p-6 lg:sticky lg:top-24 lg:self-start">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">02 · Account and player</p>
         <h2 className="mt-2 text-2xl font-black tracking-tight">Confirm the destination</h2>
 
-        <div className={`mt-5 rounded-2xl border px-4 py-3 text-sm ${account.status === "authenticated" ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-100" : "border-amber-300/20 bg-amber-300/10 text-amber-100"}`}>
-          {account.status === "loading" ? "Checking verified account..." : account.status === "authenticated" ? <>Signed in as <strong>{account.email}</strong>. This account will own the order.</> : <><strong>Verified account required.</strong> <Link href="/account" className="underline underline-offset-4">Sign in by email</Link> before checkout.</>}
+        <div className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${account.status === "authenticated" ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-100" : "border-amber-300/20 bg-amber-300/10 text-amber-100"}`}>
+          {account.status === "loading" ? (
+            "Checking verified account..."
+          ) : account.status === "authenticated" ? (
+            <>Signed in as <strong>{account.email}</strong>.</>
+          ) : (
+            <><strong>Verified account required.</strong> <Link href="/account" className="underline underline-offset-4">Sign in by email</Link>.</>
+          )}
         </div>
 
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="text-sm font-semibold text-slate-200">
             Player ID
-            <input required inputMode="numeric" autoComplete="off" value={playerId} onChange={(event) => { setPlayerId(event.target.value); resetVerification(); }} placeholder="Example: 123456789" className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400" />
+            <input
+              required
+              inputMode="numeric"
+              autoComplete="off"
+              value={playerId}
+              onChange={(event) => {
+                setPlayerId(event.target.value.replace(/\D/g, ""));
+                resetVerification();
+              }}
+              placeholder="Example: 123456789"
+              className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
+            />
           </label>
           <label className="text-sm font-semibold text-slate-200">
             Zone ID
-            <input required inputMode="numeric" autoComplete="off" value={zoneId} onChange={(event) => { setZoneId(event.target.value); resetVerification(); }} placeholder="Example: 2045" className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400" />
+            <input
+              required
+              inputMode="numeric"
+              autoComplete="off"
+              value={zoneId}
+              onChange={(event) => {
+                setZoneId(event.target.value.replace(/\D/g, ""));
+                resetVerification();
+              }}
+              placeholder="Example: 2045"
+              className="mt-2 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
+            />
           </label>
         </div>
 
-        <button type="button" onClick={verifyPlayer} disabled={verification.status === "loading"} className="mt-4 w-full rounded-2xl border border-violet-400/30 bg-violet-400/10 px-4 py-3 text-sm font-bold text-violet-100 disabled:cursor-wait disabled:opacity-60">
-          {verification.status === "loading" ? "Validating..." : "Validate player details"}
+        <button
+          type="button"
+          onClick={verifyPlayer}
+          disabled={verification.status === "loading" || !playerId || !zoneId}
+          className="mt-4 w-full rounded-xl border border-violet-400/30 bg-violet-400/10 px-4 py-3 text-sm font-bold text-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {verification.status === "loading" ? "Validating..." : `Validate ${market.label} player`}
         </button>
 
-        <div aria-live="polite" className={`mt-3 rounded-2xl border px-4 py-3 text-sm leading-6 ${verification.status === "success" ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200" : verification.status === "error" ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-white/10 bg-black/15 text-slate-400"}`}>
+        <div aria-live="polite" className={`mt-3 rounded-xl border px-4 py-3 text-sm leading-6 ${verification.status === "success" ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200" : verification.status === "error" ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-white/10 bg-black/15 text-slate-400"}`}>
           {verification.message}
+          {verification.status === "success" && verification.nickname ? (
+            <strong className="mt-1 block text-white">Nickname: {verification.nickname}</strong>
+          ) : null}
         </div>
 
-        <div className="mt-6 overflow-hidden rounded-2xl border border-white/10 bg-black/25">
-          <div className="flex items-center justify-between gap-4 p-4">
-            <div><p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Order total</p><p className="mt-1 text-sm font-semibold text-white">{selectedPackage.name}</p></div>
-            <p className="text-2xl font-black tracking-tight text-white">{formatInr(selectedPackage.amountInPaise)}</p>
+        <div className="mt-5 overflow-hidden rounded-2xl border border-white/10 bg-black/25">
+          <div className="grid grid-cols-[1fr_auto] gap-4 p-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Locked order</p>
+              <p className="mt-1 text-sm font-semibold text-white">{selectedPackage.name}</p>
+              <p className="mt-1 text-xs text-slate-500">{market.flag} {market.label} market</p>
+            </div>
+            <p className="self-center text-2xl font-black tracking-tight text-white">{formatInr(selectedPackage.amountInPaise)}</p>
           </div>
-          <div className="border-t border-white/10 px-4 py-3 text-xs leading-5 text-slate-500">The server resolves the package, price, supplier reference, and account owner again before writing the order.</div>
+          <div className="border-t border-white/10 px-4 py-3 text-xs leading-5 text-slate-500">
+            The server checks the market, package and price again before saving the order.
+          </div>
         </div>
 
-        <button type="submit" disabled={isCreatingOrder || verification.status !== "success" || account.status !== "authenticated"} className="mt-4 w-full rounded-2xl bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500 px-5 py-3.5 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-45">
-          {isCreatingOrder ? "Creating verified order..." : "Create verified order"}
+        <button
+          type="submit"
+          disabled={isCreatingOrder || verification.status !== "success" || account.status !== "authenticated"}
+          className="mt-4 w-full rounded-xl bg-violet-500 px-5 py-3.5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
+        >
+          {isCreatingOrder ? "Creating verified order..." : `Create ${market.label} order`}
         </button>
 
         {orderError ? <p aria-live="assertive" className="mt-3 text-sm text-rose-300">{orderError}</p> : null}
 
         {order ? (
-          <div aria-live="polite" className="success-rise mt-5 rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">{wasDuplicate ? "Existing order safely recovered" : "Verified order created"}</p>
-            <p className="mt-2 break-all text-2xl font-black text-white">{order.id}</p>
-            <p className="mt-3 text-sm text-emerald-100/80">{order.package.name} for {order.player.playerId} ({order.player.zoneId})</p>
-            <label className="mt-5 block text-xs font-bold uppercase tracking-wider text-emerald-200">Private tracking token<textarea readOnly rows={3} value={order.tracking.accessToken} className="mt-2 w-full resize-none rounded-2xl border border-emerald-400/15 bg-black/20 px-3 py-3 font-mono text-xs font-normal normal-case tracking-normal text-emerald-100 outline-none" /></label>
-            <p className="mt-2 text-xs leading-5 text-emerald-100/70">Keep this token private. Your verified account lists the order, while the token unlocks sensitive tracking details.</p>
-            <Link href={order.tracking.path} className="mt-4 block rounded-2xl border border-emerald-300/25 bg-emerald-300/10 px-4 py-3 text-center text-sm font-black text-emerald-100">Open secure order tracking</Link>
-            <p className="mt-4 text-sm leading-6 text-emerald-100/80">{paymentMessage}</p>
+          <div aria-live="polite" className="success-rise mt-5 rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-300">{wasDuplicate ? "Existing order safely recovered" : "Verified order created"}</p>
+            <p className="mt-2 break-all text-xl font-black text-white">{order.id}</p>
+            <p className="mt-2 text-sm text-emerald-100/80">
+              {order.package.name} · {order.market?.label ?? market.label} · {order.player.nickname || order.player.playerId}
+            </p>
+            <label className="mt-4 block text-xs font-bold uppercase tracking-wider text-emerald-200">
+              Private tracking token
+              <textarea readOnly rows={3} value={order.tracking.accessToken} className="mt-2 w-full resize-none rounded-xl border border-emerald-400/15 bg-black/20 px-3 py-3 font-mono text-xs font-normal normal-case tracking-normal text-emerald-100 outline-none" />
+            </label>
+            <p className="mt-2 text-xs leading-5 text-emerald-100/70">Keep this token private. It unlocks sensitive tracking details.</p>
+            <Link href={order.tracking.path} className="mt-4 block rounded-xl border border-emerald-300/25 bg-emerald-300/10 px-4 py-3 text-center text-sm font-black text-emerald-100">Open secure order tracking</Link>
+            <p className="mt-3 text-sm leading-6 text-emerald-100/80">{paymentMessage}</p>
           </div>
         ) : null}
       </section>
