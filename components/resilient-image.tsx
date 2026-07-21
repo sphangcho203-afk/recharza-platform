@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 
 type ResilientImageProps = {
   sources: string[];
@@ -25,11 +25,6 @@ export function ResilientImage({
 }: ResilientImageProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const [failed, setFailed] = useState(sources.length === 0);
-
-  useEffect(() => {
-    setSourceIndex(0);
-    setFailed(sources.length === 0);
-  }, [sources]);
 
   if (failed) {
     return (
