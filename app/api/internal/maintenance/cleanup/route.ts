@@ -5,6 +5,7 @@ import { RuntimeConfigurationError } from "@/lib/runtime-config";
 export const runtime = "nodejs";
 
 const WEBHOOK_RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
+const AUTH_RECORD_RETENTION_MS = 7 * 24 * 60 * 60 * 1000;
 
 export async function POST(request: Request) {
   try {
@@ -18,23 +19,43 @@ export async function POST(request: Request) {
     const prisma = getPrisma();
     const now = new Date();
     const webhookCutoff = new Date(now.getTime() - WEBHOOK_RETENTION_MS);
-    const [rateLimitResult, webhookResult] = await prisma.$transaction([
-      prisma.rateLimitBucket.deleteMany({
-        where: { expiresAt: { lt: now } },
-      }),
-      prisma.paymentWebhook.deleteMany({
-        where: {
-          receivedAt: { lt: webhookCutoff },
-          status: { in: ["PROCESSED", "IGNORED"] },
-        },
-      }),
-    ]);
+    const authCutoff = new Date(now.getTime() - AUTH_RECORD_RETENTION_MS);
+    const [rateLimitResult, webhookResult, sessionResult, magicLinkResult] =
+      await prisma.$transaction([
+        prisma.rateLimitBucket.deleteMany({
+          where: { expiresAt: { lt: now } },
+        }),
+        prisma.paymentWebhook.deleteMany({
+          where: {
+            receivedAt: { lt: webhookCutoff },
+            status: { in: ["PROCESSED", "IGNORED"] },
+          },
+        }),
+        prisma.authSession.deleteMany({
+          where: {
+            OR: [
+              { expiresAt: { lt: now } },
+              { revokedAt: { not: null, lt: authCutoff } },
+            ],
+          },
+        }),
+        prisma.authMagicLink.deleteMany({
+          where: {
+            OR: [
+              { expiresAt: { lt: authCutoff } },
+              { usedAt: { not: null, lt: authCutoff } },
+            ],
+          },
+        }),
+      ]);
 
     return Response.json({
       ok: true,
       deleted: {
         rateLimitBuckets: rateLimitResult.count,
         webhookReceipts: webhookResult.count,
+        authSessions: sessionResult.count,
+        magicLinks: magicLinkResult.count,
       },
       completedAt: now.toISOString(),
     });

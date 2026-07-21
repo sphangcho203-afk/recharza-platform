@@ -9,7 +9,7 @@ import { SupplierPricingConsole } from "@/components/supplier-pricing-console";
 export const metadata: Metadata = {
   title: "Operator Console",
   description:
-    "Protected development console for operational health, supplier pricing, catalogue synchronization, and order operations.",
+    "Protected staff console for operational health, supplier pricing, catalogue synchronization, fulfilment recovery, and order operations.",
   robots: { index: false, follow: false },
 };
 
@@ -26,30 +26,26 @@ export default function OperatorPage() {
         </div>
 
         <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:py-20">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-violet-300 transition hover:text-violet-200"
-          >
+          <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-violet-300 transition hover:text-violet-200">
             <span aria-hidden="true">←</span>
             Back to storefront
           </Link>
 
           <p className="mt-8 text-xs font-black uppercase tracking-[0.2em] text-violet-300">
-            Internal operations
+            Verified staff operations
           </p>
           <h1 className="mt-3 max-w-5xl text-4xl font-black tracking-[-0.05em] sm:text-5xl lg:text-6xl">
-            Check system health, protect the margin, and move orders without inventing payments.
+            Protect the margin, reconcile payments, and recover fulfilment without rewriting history.
           </h1>
           <p className="mt-5 max-w-4xl text-base leading-8 text-slate-300">
-            This development console reports payment and supplier readiness, manages catalogue
-            synchronization and pricing policy, and permits narrow audited fulfilment transitions.
-            The temporary token gate must be replaced by staff authentication before production launch.
+            Approved STAFF and ADMIN email accounts use private database sessions. The emergency bearer token remains available only as a break-glass fallback. Supplier writes default to dry-run until their exact paths and write gate are configured.
           </p>
 
-          <div className="mt-8 grid max-w-4xl gap-3 rounded-3xl border border-amber-300/20 bg-amber-300/10 p-5 text-sm text-amber-100 sm:grid-cols-3">
-            <p>Supplier and payment secrets remain server-side</p>
-            <p>Every pricing and order change is audited</p>
+          <div className="mt-8 grid max-w-5xl gap-3 rounded-3xl border border-amber-300/20 bg-amber-300/10 p-5 text-sm text-amber-100 sm:grid-cols-4">
+            <p>Staff identities are database-backed</p>
+            <p>Every write action is attributable</p>
             <p>Only signed payment events establish PAID</p>
+            <p>Supplier writes default to dry-run</p>
           </div>
         </div>
       </section>

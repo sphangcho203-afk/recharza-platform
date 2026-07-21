@@ -36,11 +36,11 @@ function safeErrorMessage(error: unknown) {
 }
 
 export async function POST(request: Request) {
-  const operator = verifyOperatorAccess(request);
+  const operator = await verifyOperatorAccess(request);
 
   if (!operator) {
     return Response.json(
-      { ok: false, message: "Operator access is required." },
+      { ok: false, message: "Verified staff access is required." },
       { status: 401 },
     );
   }
@@ -67,9 +67,7 @@ export async function POST(request: Request) {
     let publishedOffers = 0;
 
     for (const category of categories) {
-      if (!category.gameSlug) {
-        continue;
-      }
+      if (!category.gameSlug) continue;
 
       const group = await getFazerCardsTopupOffers(category.categoryId);
       await prisma.supplierProduct.updateMany({
@@ -79,7 +77,6 @@ export async function POST(request: Request) {
 
       for (const offer of group.offers) {
         const supplierPriceUsdMicros = parseUsdToMicros(offer.priceUsd);
-
         if (!supplierPriceUsdMicros) {
           invalidOffers += 1;
           continue;
@@ -140,10 +137,7 @@ export async function POST(request: Request) {
         });
 
         offersSynced += 1;
-
-        if (published) {
-          publishedOffers += 1;
-        }
+        if (published) publishedOffers += 1;
       }
     }
 
@@ -161,6 +155,7 @@ export async function POST(request: Request) {
       data: {
         action: "FAZERCARDS_CATALOG_SYNCED",
         actorFingerprint: operator.actorFingerprint,
+        actorCustomerId: operator.actorCustomerId,
         metadata: {
           syncRunId: syncRun.id,
           categoriesSynced: categories.length,
@@ -168,6 +163,8 @@ export async function POST(request: Request) {
           invalidOffers,
           publishedOffers,
           approvedCategoryCount: approvedCategoryIds.size,
+          actorRole: operator.role,
+          accessMode: operator.mode,
         },
       },
     });
@@ -198,10 +195,7 @@ export async function POST(request: Request) {
     });
 
     if (error instanceof RuntimeConfigurationError) {
-      return Response.json(
-        { ok: false, message },
-        { status: 503 },
-      );
+      return Response.json({ ok: false, message }, { status: 503 });
     }
 
     console.error("FazerCards synchronization failed", error);

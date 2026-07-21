@@ -1,4 +1,5 @@
 import type { Prisma } from "@/generated/prisma/client";
+import { ensureOrderFulfilment } from "@/lib/fulfilment";
 import { getPrisma } from "@/lib/prisma";
 import {
   hashWebhookPayload,
@@ -48,17 +49,13 @@ function resolveTargetStatus(
   }
 
   if (eventType === "payment.authorized") {
-    return ["CREATED", "AWAITING_PAYMENT", "PAYMENT_PENDING"].includes(
-      currentStatus,
-    )
+    return ["CREATED", "AWAITING_PAYMENT", "PAYMENT_PENDING"].includes(currentStatus)
       ? "PAYMENT_PENDING"
       : currentStatus;
   }
 
   if (eventType === "payment.failed") {
-    return ["CREATED", "AWAITING_PAYMENT", "PAYMENT_PENDING"].includes(
-      currentStatus,
-    )
+    return ["CREATED", "AWAITING_PAYMENT", "PAYMENT_PENDING"].includes(currentStatus)
       ? "FAILED"
       : currentStatus;
   }
@@ -79,7 +76,6 @@ export async function POST(request: Request) {
     }
 
     let event;
-
     try {
       event = parseRazorpayWebhook(rawBody);
     } catch {
@@ -92,13 +88,8 @@ export async function POST(request: Request) {
     const eventId = request.headers.get("x-razorpay-event-id")?.trim() || null;
     const payloadHash = hashWebhookPayload(rawBody);
     const prisma = getPrisma();
-    const duplicateFilters: Prisma.PaymentWebhookWhereInput[] = [
-      { payloadHash },
-    ];
-
-    if (eventId) {
-      duplicateFilters.push({ provider: "razorpay", eventId });
-    }
+    const duplicateFilters: Prisma.PaymentWebhookWhereInput[] = [{ payloadHash }];
+    if (eventId) duplicateFilters.push({ provider: "razorpay", eventId });
 
     const existingReceipt = await prisma.paymentWebhook.findFirst({
       where: { OR: duplicateFilters },
@@ -115,7 +106,6 @@ export async function POST(request: Request) {
     }
 
     let receipt;
-
     try {
       receipt = await prisma.paymentWebhook.create({
         data: {
@@ -130,7 +120,6 @@ export async function POST(request: Request) {
       if (isUniqueConstraintError(error)) {
         return Response.json({ ok: true, duplicate: true });
       }
-
       throw error;
     }
 
@@ -139,7 +128,6 @@ export async function POST(request: Request) {
         where: { id: receipt.id },
         data: { status: "IGNORED", processedAt: new Date() },
       });
-
       return Response.json({ ok: true, ignored: true });
     }
 
@@ -152,7 +140,6 @@ export async function POST(request: Request) {
           processedAt: new Date(),
         },
       });
-
       return Response.json({ ok: true, reconciled: false });
     }
 
@@ -169,12 +156,10 @@ export async function POST(request: Request) {
           processedAt: new Date(),
         },
       });
-
       return Response.json({ ok: true, reconciled: false });
     }
 
-    const currencyMatches =
-      event.currency?.toUpperCase() === order.currency.toUpperCase();
+    const currencyMatches = event.currency?.toUpperCase() === order.currency.toUpperCase();
     const amountMatches = event.amountInPaise === order.amountInPaise;
 
     if (!currencyMatches || !amountMatches) {
@@ -187,7 +172,6 @@ export async function POST(request: Request) {
           processedAt: new Date(),
         },
       });
-
       return Response.json({ ok: true, reconciled: false });
     }
 
@@ -226,11 +210,25 @@ export async function POST(request: Request) {
       }),
     ]);
 
+    let fulfilment = null;
+    if (targetStatus === "PAID") {
+      try {
+        fulfilment = await ensureOrderFulfilment({
+          orderId: order.id,
+          source: "payment-webhook",
+        });
+      } catch (error) {
+        console.error("Post-payment fulfilment orchestration failed", error);
+        fulfilment = { ok: false, state: "orchestration-error" };
+      }
+    }
+
     return Response.json({
       ok: true,
       reconciled: true,
       orderId: order.publicId,
       status: targetStatus.toLowerCase(),
+      fulfilment,
     });
   } catch (error) {
     if (error instanceof RuntimeConfigurationError) {

@@ -2,8 +2,8 @@
 
 import { type FormEvent, useState } from "react";
 
-import { formatInr } from "@/lib/mobile-legends";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
+import { formatInr } from "@/lib/mobile-legends";
 
 type TrackedOrder = {
   id: string;
@@ -16,10 +16,15 @@ type TrackedOrder = {
   player: {
     playerId: string;
     zoneId: string;
+    nickname: string | null;
     verificationMode: string;
   };
   customerEmail: string;
   paymentProvider: string | null;
+  supplier: {
+    categoryAttached: boolean;
+    offerAttached: boolean;
+  };
   createdAt: string;
   updatedAt: string;
   events: Array<{
@@ -27,6 +32,18 @@ type TrackedOrder = {
     type: string;
     message: string;
     createdAt: string;
+  }>;
+  fulfilment: Array<{
+    id: string;
+    provider: string;
+    mode: string;
+    status: string;
+    providerOrderId: string | null;
+    errorMessage: string | null;
+    submittedAt: string | null;
+    completedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
   }>;
 };
 
@@ -108,7 +125,7 @@ export function OrderTracker({ orderId }: { orderId: string }) {
         </p>
         <h2 className="mt-2 text-2xl font-black text-white">{orderId}</h2>
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          The order ID is public-facing. The access token is separate and should be kept private.
+          Your verified account lists the order. This separate token unlocks its sensitive timeline.
         </p>
 
         <label className="mt-6 block text-sm font-semibold text-slate-200">
@@ -161,7 +178,11 @@ export function OrderTracker({ orderId }: { orderId: string }) {
                 </p>
                 <h2 className="mt-2 text-3xl font-black text-white">{order.package.name}</h2>
                 <p className="mt-2 text-sm text-slate-400">
+                  {order.player.nickname ? `${order.player.nickname} · ` : ""}
                   {order.player.playerId} ({order.player.zoneId})
+                </p>
+                <p className="mt-1 text-xs text-slate-600">
+                  Validation: {order.player.verificationMode.replaceAll("-", " ")}
                 </p>
               </div>
               <span className="w-fit rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-200">
@@ -187,9 +208,9 @@ export function OrderTracker({ orderId }: { orderId: string }) {
                 </dd>
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/15 p-4">
-                <dt className="text-slate-500">Last updated</dt>
+                <dt className="text-slate-500">Supplier product</dt>
                 <dd className="mt-1 font-semibold text-white">
-                  {new Date(order.updatedAt).toLocaleString()}
+                  {order.supplier.offerAttached ? "Approved offer attached" : "Indicative / not attached"}
                 </dd>
               </div>
             </dl>
@@ -202,6 +223,55 @@ export function OrderTracker({ orderId }: { orderId: string }) {
               packageName={order.package.name}
               onVerified={() => loadOrder(accessToken)}
             />
+
+            <div className="mt-7">
+              <div className="flex items-end justify-between gap-4">
+                <h3 className="text-lg font-black text-white">Fulfilment</h3>
+                <span className="text-xs text-slate-500">
+                  {order.fulfilment.length} attempt(s)
+                </span>
+              </div>
+              <div className="mt-4 space-y-3">
+                {order.fulfilment.map((attempt, index) => (
+                  <article
+                    key={attempt.id}
+                    className={`rounded-2xl border p-4 ${
+                      attempt.status === "failed"
+                        ? "border-rose-400/20 bg-rose-400/10"
+                        : attempt.mode === "dry_run"
+                          ? "border-amber-300/20 bg-amber-300/10"
+                          : "border-emerald-400/20 bg-emerald-400/10"
+                    }`}
+                  >
+                    <div className="flex flex-col justify-between gap-1 sm:flex-row">
+                      <p className="text-xs font-bold uppercase tracking-wider text-white">
+                        Attempt {index + 1} · {attempt.mode.replaceAll("_", " ")}
+                      </p>
+                      <span className="text-xs font-bold uppercase text-slate-300">
+                        {attempt.status.replaceAll("_", " ")}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-slate-200">
+                      {attempt.status === "planned"
+                        ? "A safe supplier request plan is stored. No supplier write occurred."
+                        : attempt.status === "failed"
+                          ? attempt.errorMessage ?? "The supplier attempt failed and needs staff review."
+                          : attempt.providerOrderId
+                            ? `Supplier order ${attempt.providerOrderId}`
+                            : "The supplier attempt is being processed."}
+                    </p>
+                    <time className="mt-2 block text-xs text-slate-500">
+                      {new Date(attempt.updatedAt).toLocaleString()}
+                    </time>
+                  </article>
+                ))}
+                {!order.fulfilment.length ? (
+                  <div className="rounded-2xl border border-dashed border-white/10 bg-black/10 p-4 text-sm text-slate-500">
+                    Fulfilment begins only after a verified paid webhook.
+                  </div>
+                ) : null}
+              </div>
+            </div>
 
             <div className="mt-7">
               <h3 className="text-lg font-black text-white">Order timeline</h3>

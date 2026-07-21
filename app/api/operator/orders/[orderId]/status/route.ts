@@ -20,17 +20,16 @@ export async function POST(
   context: { params: Promise<{ orderId: string }> },
 ) {
   try {
-    const operator = verifyOperatorAccess(request);
+    const operator = await verifyOperatorAccess(request);
 
     if (!operator) {
       return Response.json(
-        { ok: false, message: "Operator access is required." },
+        { ok: false, message: "Verified staff access is required." },
         { status: 401 },
       );
     }
 
     let payload: unknown;
-
     try {
       payload = await request.json();
     } catch {
@@ -62,19 +61,13 @@ export async function POST(
 
     const { orderId } = await context.params;
     const prisma = getPrisma();
-    const order = await prisma.order.findUnique({
-      where: { publicId: orderId },
-    });
+    const order = await prisma.order.findUnique({ where: { publicId: orderId } });
 
     if (!order) {
-      return Response.json(
-        { ok: false, message: "Order not found." },
-        { status: 404 },
-      );
+      return Response.json({ ok: false, message: "Order not found." }, { status: 404 });
     }
 
     const allowedTargets = TRANSITIONS[order.status] ?? new Set<string>();
-
     if (!allowedTargets.has(targetStatus)) {
       return Response.json(
         {
@@ -97,7 +90,11 @@ export async function POST(
             create: {
               type: "OPERATOR_STATUS_CHANGED",
               message: `Operator moved the order from ${order.status} to ${targetStatus}.`,
-              metadata: { reason },
+              metadata: {
+                reason,
+                actorRole: operator.role,
+                accessMode: operator.mode,
+              },
             },
           },
         },
@@ -106,11 +103,14 @@ export async function POST(
         data: {
           action: "ORDER_STATUS_CHANGED",
           actorFingerprint: operator.actorFingerprint,
+          actorCustomerId: operator.actorCustomerId,
           orderId: order.id,
           metadata: {
             from: order.status,
             to: targetStatus,
             reason,
+            actorRole: operator.role,
+            accessMode: operator.mode,
           },
         },
       }),

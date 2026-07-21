@@ -32,19 +32,16 @@ function isOrderStatus(value: string): value is OrderStatusValue {
 
 function maskEmail(email: string) {
   const [localPart, domain] = email.split("@");
-
-  if (!localPart || !domain) {
-    return "hidden";
-  }
-
+  if (!localPart || !domain) return "hidden";
   return `${localPart.slice(0, 2)}${"*".repeat(Math.max(2, localPart.length - 2))}@${domain}`;
 }
 
 export async function GET(request: Request) {
   try {
-    if (!verifyOperatorAccess(request)) {
+    const actor = await verifyOperatorAccess(request);
+    if (!actor) {
       return Response.json(
-        { ok: false, message: "Operator access is required." },
+        { ok: false, message: "Verified staff access is required." },
         { status: 401 },
       );
     }
@@ -65,13 +62,21 @@ export async function GET(request: Request) {
       take: limit,
       include: {
         customer: true,
-        _count: { select: { events: true, webhooks: true, auditLogs: true } },
+        _count: {
+          select: {
+            events: true,
+            webhooks: true,
+            auditLogs: true,
+            fulfilmentAttempts: true,
+          },
+        },
       },
     });
 
     return Response.json(
       {
         ok: true,
+        access: { mode: actor.mode, role: actor.role },
         orders: orders.map((order) => ({
           id: order.publicId,
           status: order.status.toLowerCase(),
@@ -85,20 +90,23 @@ export async function GET(request: Request) {
           player: {
             playerId: order.playerId,
             zoneId: order.zoneId,
+            nickname: order.verifiedNickname,
+            verificationMode: order.verificationMode,
           },
           customerEmail: maskEmail(order.customer.email),
           paymentProvider: order.paymentProvider,
           paymentSessionId: order.paymentSessionId,
+          supplier: {
+            productId: order.supplierProductId,
+            categoryId: order.supplierCategoryId,
+            offerId: order.supplierOfferId,
+          },
           createdAt: order.createdAt.toISOString(),
           updatedAt: order.updatedAt.toISOString(),
           counts: order._count,
         })),
       },
-      {
-        headers: {
-          "Cache-Control": "no-store",
-        },
-      },
+      { headers: { "Cache-Control": "no-store" } },
     );
   } catch (error) {
     if (error instanceof RuntimeConfigurationError) {

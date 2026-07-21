@@ -13,11 +13,7 @@ const TRACKING_WINDOW_MS = 10 * 60 * 1000;
 
 function maskEmail(email: string) {
   const [localPart, domain] = email.split("@");
-
-  if (!localPart || !domain) {
-    return "hidden";
-  }
-
+  if (!localPart || !domain) return "hidden";
   const visible = localPart.slice(0, 2);
   return `${visible}${"*".repeat(Math.max(2, localPart.length - 2))}@${domain}`;
 }
@@ -62,6 +58,21 @@ export async function GET(
       include: {
         customer: true,
         events: { orderBy: { createdAt: "asc" } },
+        fulfilmentAttempts: {
+          orderBy: { createdAt: "asc" },
+          select: {
+            id: true,
+            provider: true,
+            mode: true,
+            status: true,
+            providerOrderId: true,
+            errorMessage: true,
+            submittedAt: true,
+            completedAt: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
       },
     });
 
@@ -95,10 +106,15 @@ export async function GET(
           player: {
             playerId: order.playerId,
             zoneId: order.zoneId,
+            nickname: order.verifiedNickname,
             verificationMode: order.verificationMode,
           },
           customerEmail: maskEmail(order.customer.email),
           paymentProvider: order.paymentProvider,
+          supplier: {
+            categoryAttached: Boolean(order.supplierCategoryId),
+            offerAttached: Boolean(order.supplierOfferId),
+          },
           createdAt: order.createdAt.toISOString(),
           updatedAt: order.updatedAt.toISOString(),
           events: order.events.map((event) => ({
@@ -107,6 +123,18 @@ export async function GET(
             message: event.message,
             createdAt: event.createdAt.toISOString(),
           })),
+          fulfilment: order.fulfilmentAttempts.map((attempt) => ({
+            id: attempt.id,
+            provider: attempt.provider,
+            mode: attempt.mode.toLowerCase(),
+            status: attempt.status.toLowerCase(),
+            providerOrderId: attempt.providerOrderId,
+            errorMessage: attempt.errorMessage,
+            submittedAt: attempt.submittedAt?.toISOString() ?? null,
+            completedAt: attempt.completedAt?.toISOString() ?? null,
+            createdAt: attempt.createdAt.toISOString(),
+            updatedAt: attempt.updatedAt.toISOString(),
+          })),
         },
       },
       { headers: rateHeaders },
@@ -114,10 +142,7 @@ export async function GET(
   } catch (error) {
     if (error instanceof RuntimeConfigurationError) {
       return Response.json(
-        {
-          ok: false,
-          message: "Order tracking is not configured yet.",
-        },
+        { ok: false, message: "Order tracking is not configured yet." },
         { status: 503, headers: rateHeaders },
       );
     }

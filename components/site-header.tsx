@@ -23,18 +23,21 @@ export function SiteHeader() {
           <Link href="/orders/lookup" className="transition hover:text-white">
             Track order
           </Link>
+          <Link href="/account" className="transition hover:text-white">
+            Account
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
           <Link
-            href="/orders/lookup"
-            className="hidden rounded-xl border border-white/10 bg-white/[0.035] px-3.5 py-2 text-xs font-bold text-slate-200 transition hover:bg-white/[0.07] sm:block"
+            href="/account"
+            className="rounded-xl border border-white/10 bg-white/[0.035] px-3.5 py-2 text-xs font-bold text-slate-200 transition hover:bg-white/[0.07]"
           >
-            Track
+            Account
           </Link>
           <Link
             href="/games/mobile-legends"
-            className="rounded-xl bg-white px-3.5 py-2 text-xs font-black text-slate-950 transition hover:bg-violet-200"
+            className="hidden rounded-xl bg-white px-3.5 py-2 text-xs font-black text-slate-950 transition hover:bg-violet-200 sm:block"
           >
             Top up MLBB
           </Link>

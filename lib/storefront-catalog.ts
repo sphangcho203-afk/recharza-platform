@@ -17,6 +17,7 @@ export type StorefrontPricingSnapshot = {
 };
 
 function mapSupplierProduct(product: {
+  id: string;
   offerId: string;
   categoryId: string;
   name: string;
@@ -33,6 +34,7 @@ function mapSupplierProduct(product: {
     amountInPaise: product.retailPriceInPaise,
     deliveryLabel: "Live supplier catalogue",
     source: "fazercards-live",
+    supplierProductId: product.id,
     supplierCategoryId: product.categoryId,
     supplierOfferId: product.offerId,
     region: product.region,
@@ -52,6 +54,7 @@ export async function getMobileLegendsPackages(): Promise<MobileLegendsPackage[]
       orderBy: [{ retailPriceInPaise: "asc" }, { name: "asc" }],
       take: 36,
       select: {
+        id: true,
         offerId: true,
         categoryId: true,
         name: true,
@@ -90,6 +93,7 @@ export async function getMobileLegendsPackageForCheckout(packageId: string) {
         published: true,
       },
       select: {
+        id: true,
         offerId: true,
         categoryId: true,
         name: true,
