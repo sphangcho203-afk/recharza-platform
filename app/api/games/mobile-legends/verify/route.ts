@@ -1,4 +1,8 @@
 import { getRequestSession } from "@/lib/auth";
+import {
+  isPackageAvailableForMarket,
+  parseMobileLegendsMarket,
+} from "@/lib/mobile-legends-market";
 import { validateMobileLegendsPlayer } from "@/lib/order-validation";
 import { getPrisma } from "@/lib/prisma";
 import { consumeRateLimit, createRateLimitHeaders } from "@/lib/rate-limit";
@@ -39,6 +43,17 @@ export async function POST(request: Request) {
     }
 
     const data = payload as Record<string, unknown>;
+    const selectedMarket = parseMobileLegendsMarket(data.marketCode);
+    if (!selectedMarket) {
+      return Response.json(
+        {
+          valid: false,
+          message: "Choose India, Indonesia or Philippines before validating the player.",
+        },
+        { status: 400, headers: rateHeaders },
+      );
+    }
+
     const local = validateMobileLegendsPlayer(data.playerId, data.zoneId);
     if (!local.valid) {
       return Response.json(local, { status: 400, headers: rateHeaders });
@@ -49,6 +64,7 @@ export async function POST(request: Request) {
       return Response.json(
         {
           ...local,
+          marketCode: selectedMarket.code,
           confirmed: false,
           nickname: null,
           verificationMode: "local-format",
@@ -65,14 +81,25 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!isPackageAvailableForMarket(selectedPackage.region, selectedMarket.code)) {
+      return Response.json(
+        {
+          valid: false,
+          message: `That package is not approved for the ${selectedMarket.label} market.`,
+        },
+        { status: 409, headers: rateHeaders },
+      );
+    }
+
     if (selectedPackage.source !== "fazercards-live" || !selectedPackage.supplierProductId) {
       return Response.json(
         {
           ...local,
+          marketCode: selectedMarket.code,
           confirmed: false,
           nickname: null,
           verificationMode: "local-format",
-          message: "Player format is valid. Indicative packages cannot run supplier nickname validation.",
+          message: `Player format is valid for the ${selectedMarket.label} route. Indicative packages cannot run supplier nickname validation.`,
         },
         { headers: rateHeaders },
       );
@@ -83,10 +110,11 @@ export async function POST(request: Request) {
       return Response.json(
         {
           ...local,
+          marketCode: selectedMarket.code,
           confirmed: false,
           nickname: null,
           verificationMode: "local-format",
-          message: "Player format is valid. Sign in to run supplier nickname validation.",
+          message: `Player format is valid for the ${selectedMarket.label} route. Sign in to run supplier nickname validation.`,
         },
         { headers: rateHeaders },
       );
@@ -129,6 +157,7 @@ export async function POST(request: Request) {
         verificationMode: supplier.mode,
         playerId: local.playerId,
         zoneId: local.zoneId,
+        marketCode: selectedMarket.code,
         message: supplier.message,
       },
       { status: supplier.valid ? 200 : 400, headers: rateHeaders },
