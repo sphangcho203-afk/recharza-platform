@@ -6,11 +6,11 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { formatInr, type MobileLegendsPackage } from "@/lib/mobile-legends";
 import type { MobileLegendsMarket } from "@/lib/mobile-legends-market";
 
-type VerificationState =
-  | { status: "idle"; message: string; nickname: null }
-  | { status: "loading"; message: string; nickname: null }
-  | { status: "success"; message: string; nickname: string | null }
-  | { status: "error"; message: string; nickname: null };
+type VerificationState = {
+  status: "idle" | "loading" | "success" | "error";
+  message: string;
+  nickname: string | null;
+};
 
 type AccountState =
   | { status: "loading"; email: null }
@@ -35,15 +35,9 @@ type CreatedOrder = {
 type OrderResponse = {
   ok: boolean;
   duplicate?: boolean;
-  code?: string;
   message?: string;
   order?: CreatedOrder;
-  paymentSession?: {
-    provider: string | null;
-    status: "not_started";
-    checkoutUrl: null;
-    message: string;
-  };
+  paymentSession?: { message: string };
 };
 
 const initialVerification: VerificationState = {
@@ -85,6 +79,7 @@ export function MobileLegendsOrderForm({
 
   useEffect(() => {
     let active = true;
+
     fetch("/api/auth/session", { cache: "no-store" })
       .then((response) => response.json())
       .then((result: { authenticated?: boolean; customer?: { email?: string } }) => {
@@ -103,15 +98,6 @@ export function MobileLegendsOrderForm({
       active = false;
     };
   }, []);
-
-  useEffect(() => {
-    setPackageId(firstPackage.id);
-    setVerification(initialVerification);
-    setOrder(null);
-    setOrderError("");
-    setPaymentMessage("");
-    idempotencyKey.current = null;
-  }, [firstPackage.id, market.code]);
 
   function resetOrderState() {
     idempotencyKey.current = null;
@@ -138,12 +124,7 @@ export function MobileLegendsOrderForm({
       const response = await fetch("/api/games/mobile-legends/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          playerId,
-          zoneId,
-          packageId,
-          marketCode: market.code,
-        }),
+        body: JSON.stringify({ playerId, zoneId, packageId, marketCode: market.code }),
       });
       const result = (await response.json()) as {
         valid: boolean;
@@ -151,15 +132,11 @@ export function MobileLegendsOrderForm({
         nickname?: string | null;
       };
 
-      setVerification(
-        result.valid
-          ? {
-              status: "success",
-              message: result.message,
-              nickname: result.nickname ?? null,
-            }
-          : { status: "error", message: result.message, nickname: null },
-      );
+      setVerification({
+        status: result.valid ? "success" : "error",
+        message: result.message,
+        nickname: result.valid ? (result.nickname ?? null) : null,
+      });
     } catch {
       setVerification({
         status: "error",
