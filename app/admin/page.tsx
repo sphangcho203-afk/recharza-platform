@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { AdminCatalogueConsole } from "@/components/admin-catalogue-console";
+import { AdminInterfaceMap } from "@/components/admin-interface-map";
 import { InternalHeader } from "@/components/internal-header";
 import { ModuleStateBadge } from "@/components/module-state-badge";
 import { OperatorConsole } from "@/components/operator-console";
@@ -11,6 +13,7 @@ import {
   getVisibleModules,
   isInteractiveModule,
 } from "@/lib/product-system";
+import { getPrisma } from "@/lib/prisma";
 import { requireWorkspaceSession } from "@/lib/server-session";
 
 export const dynamic = "force-dynamic";
@@ -18,19 +21,47 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Admin Control | Recharza",
   description:
-    "Private administration workspace for catalogue, pricing, suppliers, payments, staff, and orders.",
+    "Private administration workspace for every Recharza interface, catalogue, pricing, supplier, payment, staff, and order control.",
   robots: { index: false, follow: false },
 };
 
-const stats = [
-  ["Orders awaiting review", "4", "Requires staff attention"],
-  ["Published offers", "0", "Run a reviewed supplier sync"],
-  ["Open support tickets", "3", "Support workflow is planned"],
-  ["Reconciliation alerts", "0", "No unmatched events"],
-];
+async function getAdminMetrics() {
+  const prisma = getPrisma();
+  const now = new Date();
+  const [ordersAwaitingReview, publishedOffers, failedFulfilments, activeSessions] =
+    await Promise.all([
+      prisma.order.count({
+        where: {
+          status: {
+            in: ["CREATED", "AWAITING_PAYMENT", "PAYMENT_PENDING"],
+          },
+        },
+      }),
+      prisma.supplierProduct.count({
+        where: { published: true, available: true },
+      }),
+      prisma.fulfilmentAttempt.count({
+        where: { status: "FAILED" },
+      }),
+      prisma.authSession.count({
+        where: {
+          revokedAt: null,
+          expiresAt: { gt: now },
+        },
+      }),
+    ]);
+
+  return [
+    ["Orders awaiting review", String(ordersAwaitingReview), "Current protected queue"],
+    ["Published offers", String(publishedOffers), "Available storefront products"],
+    ["Failed fulfilments", String(failedFulfilments), "Requires recovery or escalation"],
+    ["Active sessions", String(activeSessions), "Verified customer and staff sessions"],
+  ] as const;
+}
 
 export default async function AdminPage() {
   const session = await requireWorkspaceSession("admin", "/admin");
+  const [stats] = await Promise.all([getAdminMetrics()]);
   const modules = getVisibleModules(adminModules);
   const liveCount = modules.filter((module) => module.state === "live").length;
   const betaCount = modules.filter((module) => module.state === "beta").length;
@@ -57,7 +88,8 @@ export default async function AdminPage() {
                 Admin control centre
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
-                Live controls remain actionable. Beta modules are usable with caution. Planned modules are visible for roadmap context but cannot pretend to work.
+                One protected workspace controls website interfaces, regional versions,
+                product media, publication, pricing, supplier data, and order operations.
               </p>
             </div>
             <div className="grid w-fit grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-white/[0.025] p-2 text-center">
@@ -93,9 +125,9 @@ export default async function AdminPage() {
               <article className="system-panel p-5">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-black">System readiness</h2>
+                    <h2 className="text-lg font-black">Platform control map</h2>
                     <p className="mt-1 text-sm text-slate-500">
-                      One registry controls module state, navigation, and roadmap visibility.
+                      Every admin capability is registered with an honest lifecycle state.
                     </p>
                   </div>
                   <ModuleStateBadge state="live" />
@@ -121,7 +153,8 @@ export default async function AdminPage() {
               <article className="system-panel p-5">
                 <h2 className="text-lg font-black">Available controls</h2>
                 <p className="mt-1 text-sm text-slate-500">
-                  Only live and beta modules expose actions.
+                  Live modules open real controls. Planned modules remain disabled until
+                  persistence, authorization, audit, and recovery behavior exist.
                 </p>
                 <div className="mt-4 grid gap-2">
                   {modules.map((module) => {
@@ -147,21 +180,49 @@ export default async function AdminPage() {
             </div>
           </section>
 
-          <section id="suppliers" className="mt-8 scroll-mt-24">
+          <section id="interfaces" className="mt-10 scroll-mt-24">
+            <div className="mb-4">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
+                Whole-platform access
+              </p>
+              <h2 className="mt-1 text-2xl font-black">Website interface map</h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Open every public, customer, staff, administrative, tracking, and regional
+                version without exposing internal navigation to customers.
+              </p>
+            </div>
+            <AdminInterfaceMap />
+          </section>
+
+          <section id="catalogue" className="mt-10 scroll-mt-24">
+            <div className="mb-4">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-fuchsia-300">
+                Games, packages, icons, and media
+              </p>
+              <h2 className="mt-1 text-2xl font-black">Catalogue control</h2>
+              <p className="mt-2 text-sm text-slate-500">
+                Publish or pause supplier products and override product names or reviewed
+                image sources with a complete audit trail.
+              </p>
+            </div>
+            <AdminCatalogueConsole />
+          </section>
+
+          <section id="suppliers" className="mt-10 scroll-mt-24">
             <OperatorHealthPanel />
           </section>
 
-          <section id="pricing" className="mt-8 scroll-mt-24">
+          <section id="pricing" className="mt-10 scroll-mt-24">
             <div className="mb-4">
               <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-300">
                 Catalogue and pricing
               </p>
-              <h2 className="mt-1 text-2xl font-black">Supplier controls</h2>
+              <h2 className="mt-1 text-2xl font-black">Supplier and pricing controls</h2>
             </div>
             <SupplierPricingConsole />
           </section>
 
-          <section id="orders" className="mt-8 scroll-mt-24">
+          <section id="orders" className="mt-10 scroll-mt-24">
             <div className="mb-4">
               <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
                 Order operations
