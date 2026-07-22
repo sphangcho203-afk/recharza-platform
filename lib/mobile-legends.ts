@@ -1,3 +1,8 @@
+import {
+  resolveProductMedia,
+  type ProductMedia,
+} from "@/lib/catalog/product-media";
+
 export type MobileLegendsPackage = {
   id: string;
   name: string;
@@ -11,6 +16,7 @@ export type MobileLegendsPackage = {
   supplierOfferId?: string;
   region?: string | null;
   expectedMarginInPaise?: number;
+  media: ProductMedia;
 };
 
 type IndicativePackageRow = readonly [
@@ -63,6 +69,10 @@ export const fallbackMobileLegendsPackages: MobileLegendsPackage[] = indicativeP
     source: "fazercards-indicative",
     supplierOfferId,
     region: null,
+    media: resolveProductMedia({
+      gameSlug: "mobile-legends",
+      productName: name,
+    }),
   }),
 );
 
