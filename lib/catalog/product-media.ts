@@ -12,9 +12,16 @@ const knownMediaHosts = new Set([
   "play-lh.googleusercontent.com",
   "upload.wikimedia.org",
   "www.pubgmobile.com",
+  "www.battlegroundsmobileindia.com",
   "dl.dir.freefiremobile.com",
   "freefiremobile-a.akamaihd.net",
   "cdn2.unrealengine.com",
+]);
+
+const extensionlessMediaHosts = new Set([
+  "play-lh.googleusercontent.com",
+  "img.joytify.com",
+  "www.battlegroundsmobileindia.com",
 ]);
 
 const imageKeyPattern = /(image|img|icon|logo|thumbnail|thumb|cover|banner|artwork|picture|media|asset)/i;
@@ -77,7 +84,12 @@ export function isTrustedProductMediaUrl(value: unknown) {
 
     const hostname = url.hostname.toLowerCase();
     const allowed = knownMediaHosts.has(hostname) || configuredMediaHosts().has(hostname);
-    return allowed && (imageExtensionPattern.test(url.pathname) || imageKeyPattern.test(url.pathname));
+    const looksLikeMedia =
+      extensionlessMediaHosts.has(hostname) ||
+      imageExtensionPattern.test(url.pathname) ||
+      imageKeyPattern.test(url.pathname);
+
+    return allowed && looksLikeMedia;
   } catch {
     return false;
   }
