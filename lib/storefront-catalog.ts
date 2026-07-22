@@ -5,6 +5,14 @@ import {
   getFallbackMobileLegendsPackage,
   type MobileLegendsPackage,
 } from "@/lib/mobile-legends";
+import {
+  prioritizeMobileLegendsPackages,
+  targetMobileLegendsPackageCount,
+} from "@/lib/mobile-legends-package-catalog";
+import {
+  isPackageAvailableForMarket,
+  type MobileLegendsMarketCode,
+} from "@/lib/mobile-legends-market";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
@@ -29,8 +37,8 @@ function mapSupplierProduct(product: {
     id: product.offerId,
     name: product.name,
     description: product.region
-      ? `Fazercards live offer for ${product.region}. Confirm the player's account region before checkout.`
-      : "Fazercards live supplier offer. Confirm all player details before checkout.",
+      ? `FazerCards live offer for ${product.region}. Confirm the player's account region before checkout.`
+      : "FazerCards live supplier offer. Confirm all player details before checkout.",
     amountInPaise: product.retailPriceInPaise,
     deliveryLabel: "Live supplier catalogue",
     source: "fazercards-live",
@@ -42,7 +50,9 @@ function mapSupplierProduct(product: {
   };
 }
 
-export async function getMobileLegendsPackages(): Promise<MobileLegendsPackage[]> {
+export async function getMobileLegendsPackages(
+  marketCode?: MobileLegendsMarketCode,
+): Promise<MobileLegendsPackage[]> {
   try {
     const products = await getPrisma().supplierProduct.findMany({
       where: {
@@ -52,7 +62,7 @@ export async function getMobileLegendsPackages(): Promise<MobileLegendsPackage[]
         published: true,
       },
       orderBy: [{ retailPriceInPaise: "asc" }, { name: "asc" }],
-      take: 36,
+      take: 500,
       select: {
         id: true,
         offerId: true,
@@ -64,8 +74,16 @@ export async function getMobileLegendsPackages(): Promise<MobileLegendsPackage[]
       },
     });
 
-    if (products.length > 0) {
-      return products.map(mapSupplierProduct);
+    const mapped = products.map(mapSupplierProduct);
+    const marketPackages = marketCode
+      ? mapped.filter((item) => isPackageAvailableForMarket(item.region, marketCode))
+      : mapped;
+
+    if (marketPackages.length > 0) {
+      return prioritizeMobileLegendsPackages(
+        marketPackages,
+        targetMobileLegendsPackageCount,
+      );
     }
   } catch (error) {
     if (!(error instanceof RuntimeConfigurationError)) {
@@ -73,7 +91,10 @@ export async function getMobileLegendsPackages(): Promise<MobileLegendsPackage[]
     }
   }
 
-  return fallbackMobileLegendsPackages;
+  return prioritizeMobileLegendsPackages(
+    fallbackMobileLegendsPackages,
+    targetMobileLegendsPackageCount,
+  );
 }
 
 export async function getMobileLegendsPackageForCheckout(packageId: string) {
