@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { AccountConsole } from "@/components/account-console";
+import { CustomerDashboard } from "@/components/customer-dashboard";
 import { SiteHeader } from "@/components/site-header";
 import { sanitizeReturnPath } from "@/lib/auth";
 
@@ -23,7 +23,8 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const rawReturnTo = Array.isArray(params.returnTo) ? params.returnTo[0] : params.returnTo;
   const rawReason = Array.isArray(params.reason) ? params.reason[0] : params.reason;
   const returnTo = sanitizeReturnPath(rawReturnTo, "/account");
-  const protectedWorkspace = returnTo === "/admin" || returnTo === "/staff" || returnTo === "/operator";
+  const protectedWorkspace =
+    returnTo === "/admin" || returnTo === "/staff" || returnTo === "/operator";
 
   return (
     <main className="min-h-screen overflow-x-clip bg-[var(--surface-0)] text-white">
@@ -50,19 +51,19 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
             </div>
           ) : null}
 
-          <p className={`${rawReason ? "mt-7" : "mt-7"} text-xs font-black uppercase tracking-[0.2em] text-violet-300`}>
+          <p className="mt-7 text-xs font-black uppercase tracking-[0.2em] text-violet-300">
             Customer dashboard
           </p>
           <h1 className="mt-3 max-w-3xl text-4xl font-black tracking-[-0.05em] sm:text-5xl">
             Orders, players, rewards, and support in one place.
           </h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-slate-400">
-            Sign in with a secure email link to access your private order history and customer tools. No password collection, because humanity has already invented enough forgotten passwords.
+            Sign in with a secure email link to access your private order history and customer tools. Live, beta, and planned features are labelled clearly instead of pretending everything already works.
           </p>
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <AccountConsole />
+        <CustomerDashboard />
       </section>
     </main>
   );
