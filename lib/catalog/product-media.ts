@@ -24,7 +24,8 @@ const extensionlessMediaHosts = new Set([
   "www.battlegroundsmobileindia.com",
 ]);
 
-const imageKeyPattern = /(image|img|icon|logo|thumbnail|thumb|cover|banner|artwork|picture|media|asset)/i;
+const imageKeyPattern =
+  /(image|img|icon|logo|thumbnail|thumb|cover|banner|artwork|picture|media|asset)/i;
 const imageExtensionPattern = /\.(?:avif|gif|jpe?g|png|webp)(?:$|\?)/i;
 
 const mobileLegendsMedia = {
@@ -75,6 +76,12 @@ function configuredMediaHosts() {
   );
 }
 
+function asObject(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
 export function isTrustedProductMediaUrl(value: unknown) {
   if (typeof value !== "string") return false;
 
@@ -95,11 +102,19 @@ export function isTrustedProductMediaUrl(value: unknown) {
   }
 }
 
-function collectImageUrls(value: unknown, output: string[], depth: number, parentKey = "") {
+function collectImageUrls(
+  value: unknown,
+  output: string[],
+  depth: number,
+  parentKey = "",
+) {
   if (depth > 5 || output.length >= 12) return;
 
   if (typeof value === "string") {
-    if ((imageKeyPattern.test(parentKey) || imageExtensionPattern.test(value)) && isTrustedProductMediaUrl(value)) {
+    if (
+      (imageKeyPattern.test(parentKey) || imageExtensionPattern.test(value)) &&
+      isTrustedProductMediaUrl(value)
+    ) {
       output.push(value.trim());
     }
     return;
@@ -110,16 +125,39 @@ function collectImageUrls(value: unknown, output: string[], depth: number, paren
     return;
   }
 
-  if (!value || typeof value !== "object") return;
+  const object = asObject(value);
+  if (!object) return;
 
-  for (const [key, item] of Object.entries(value as Record<string, unknown>)) {
+  for (const [key, item] of Object.entries(object)) {
     collectImageUrls(item, output, depth + 1, key);
   }
 }
 
+function getAdminMediaOverride(raw: unknown) {
+  const override = asObject(asObject(raw)?.adminMediaOverride);
+  const imageUrl = override?.imageUrl;
+  const imageAlt = override?.imageAlt;
+
+  if (!isTrustedProductMediaUrl(imageUrl)) return null;
+
+  return {
+    imageUrl: String(imageUrl).trim(),
+    imageAlt:
+      typeof imageAlt === "string" && imageAlt.trim()
+        ? imageAlt.trim().slice(0, 180)
+        : null,
+  };
+}
+
 export function extractSupplierProductMedia(raw: unknown) {
   const output: string[] = [];
-  collectImageUrls(raw, output, 0);
+  const supplierRaw = asObject(raw);
+  if (supplierRaw) {
+    const withoutOverrides = { ...supplierRaw };
+    delete withoutOverrides.adminMediaOverride;
+    delete withoutOverrides.adminStorefrontName;
+    collectImageUrls(withoutOverrides, output, 0);
+  }
   return Array.from(new Set(output));
 }
 
@@ -142,22 +180,30 @@ export function resolveProductMedia(input: {
   productName: string;
   supplierRaw?: unknown;
 }): ProductMedia {
+  const override = getAdminMediaOverride(input.supplierRaw);
   const supplierSources = extractSupplierProductMedia(input.supplierRaw);
   const catalogSources =
     input.gameSlug === "mobile-legends"
       ? getMobileLegendsCatalogMedia(input.productName)
-      : gameMediaDefaults[input.gameSlug] ?? [];
-  const sources = Array.from(new Set([...supplierSources, ...catalogSources])).filter(
-    isTrustedProductMediaUrl,
-  );
+      : getGameIconSources(input.gameSlug);
+  const sources = Array.from(
+    new Set([
+      ...(override ? [override.imageUrl] : []),
+      ...supplierSources,
+      ...catalogSources,
+    ]),
+  ).filter(isTrustedProductMediaUrl);
 
   return {
     sources,
-    alt: `${input.productName} product artwork`,
+    alt: override?.imageAlt ?? `${input.productName} product artwork`,
     source: supplierSources.length > 0 ? "supplier" : "catalog",
   };
 }
 
 export function getGameIconSources(gameSlug: string) {
-  return gameMediaDefaults[gameSlug] ?? [];
+  const normalized = gameSlug.startsWith("mobile-legends")
+    ? "mobile-legends"
+    : gameSlug;
+  return gameMediaDefaults[normalized] ?? [];
 }
