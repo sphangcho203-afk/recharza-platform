@@ -11,6 +11,24 @@ export const runtime = "nodejs";
 const AUTH_LIMIT = 5;
 const AUTH_WINDOW_MS = 15 * 60 * 1000;
 
+function resolveReturnPath(request: Request, bodyReturnTo: unknown) {
+  const bodyPath = sanitizeReturnPath(bodyReturnTo);
+  const referer = request.headers.get("referer");
+
+  if (!referer) return bodyPath;
+
+  try {
+    const refererUrl = new URL(referer);
+    if (refererUrl.origin !== new URL(request.url).origin) return bodyPath;
+    if (refererUrl.pathname !== "/account") return bodyPath;
+
+    const guardedPath = refererUrl.searchParams.get("returnTo");
+    return guardedPath ? sanitizeReturnPath(guardedPath, bodyPath) : bodyPath;
+  } catch {
+    return bodyPath;
+  }
+}
+
 export async function POST(request: Request) {
   let rateHeaders: Record<string, string> = {};
 
@@ -36,7 +54,7 @@ export async function POST(request: Request) {
     const fingerprint = createClientFingerprint(request);
     const magicLink = await createMagicLink({
       email: body?.email,
-      returnTo: sanitizeReturnPath(body?.returnTo),
+      returnTo: resolveReturnPath(request, body?.returnTo),
       requestedFingerprint: fingerprint,
     });
 
