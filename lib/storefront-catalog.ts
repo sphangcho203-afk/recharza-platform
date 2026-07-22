@@ -1,5 +1,6 @@
 import "server-only";
 
+import { resolveProductMedia } from "@/lib/catalog/product-media";
 import {
   fallbackMobileLegendsPackages,
   getFallbackMobileLegendsPackage,
@@ -24,7 +25,7 @@ export type StorefrontPricingSnapshot = {
   minimumPrices: Record<string, number | null>;
 };
 
-function mapSupplierProduct(product: {
+type SupplierProductView = {
   id: string;
   offerId: string;
   categoryId: string;
@@ -32,7 +33,10 @@ function mapSupplierProduct(product: {
   region: string | null;
   retailPriceInPaise: number;
   expectedMarginInPaise: number;
-}): MobileLegendsPackage {
+  raw: unknown;
+};
+
+function mapSupplierProduct(product: SupplierProductView): MobileLegendsPackage {
   return {
     id: product.offerId,
     name: product.name,
@@ -47,8 +51,24 @@ function mapSupplierProduct(product: {
     supplierOfferId: product.offerId,
     region: product.region,
     expectedMarginInPaise: product.expectedMarginInPaise,
+    media: resolveProductMedia({
+      gameSlug: "mobile-legends",
+      productName: product.name,
+      supplierRaw: product.raw,
+    }),
   };
 }
+
+const supplierProductSelect = {
+  id: true,
+  offerId: true,
+  categoryId: true,
+  name: true,
+  region: true,
+  retailPriceInPaise: true,
+  expectedMarginInPaise: true,
+  raw: true,
+} as const;
 
 export async function getMobileLegendsPackages(
   marketCode?: MobileLegendsMarketCode,
@@ -63,18 +83,10 @@ export async function getMobileLegendsPackages(
       },
       orderBy: [{ retailPriceInPaise: "asc" }, { name: "asc" }],
       take: 500,
-      select: {
-        id: true,
-        offerId: true,
-        categoryId: true,
-        name: true,
-        region: true,
-        retailPriceInPaise: true,
-        expectedMarginInPaise: true,
-      },
+      select: supplierProductSelect,
     });
 
-    const mapped = products.map(mapSupplierProduct);
+    const mapped = products.map((product) => mapSupplierProduct(product));
     const marketPackages = marketCode
       ? mapped.filter((item) => isPackageAvailableForMarket(item.region, marketCode))
       : mapped;
@@ -113,15 +125,7 @@ export async function getMobileLegendsPackageForCheckout(packageId: string) {
         available: true,
         published: true,
       },
-      select: {
-        id: true,
-        offerId: true,
-        categoryId: true,
-        name: true,
-        region: true,
-        retailPriceInPaise: true,
-        expectedMarginInPaise: true,
-      },
+      select: supplierProductSelect,
     });
 
     return product ? mapSupplierProduct(product) : null;
