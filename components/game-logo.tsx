@@ -28,6 +28,7 @@ export function GameLogo({
       loading={priority ? "eager" : "lazy"}
       className={`max-h-full max-w-full object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.34)] ${treatment}`}
       fallbackClassName="h-full w-full rounded-xl"
+      fallbackLabel={game.title.slice(0, 2)}
     />
   );
 
