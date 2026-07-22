@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { ResilientImage } from "@/components/resilient-image";
+import { getGameIconSources } from "@/lib/catalog/product-media";
 import type { Game } from "@/lib/games";
 import { formatInr } from "@/lib/mobile-legends";
 
@@ -16,14 +17,16 @@ function getStatusLabel(game: Game) {
 
 export function GameCard({ game }: GameCardProps) {
   const interactive = Boolean(game.available && game.href);
-  const mediaSources = [...game.artworkSources, ...game.logoSources];
+  const iconSlug = game.slug.startsWith("mobile-legends") ? "mobile-legends" : game.slug;
+  const iconSources = getGameIconSources(iconSlug);
+  const mediaSources = [...iconSources, ...game.artworkSources, ...game.logoSources];
 
   const card = (
     <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0e0e15] p-3 shadow-[0_12px_36px_rgba(0,0,0,0.24)] transition duration-300 hover:-translate-y-0.5 hover:border-white/20 sm:p-4">
       <div className="relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-[#11121b]">
         <ResilientImage
           sources={mediaSources}
-          alt={game.artworkAlt}
+          alt={`${game.title} official game icon`}
           fallbackLabel={game.title}
           className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]"
           style={{ objectPosition: game.artworkPosition ?? "center" }}
