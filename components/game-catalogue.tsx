@@ -4,36 +4,24 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { GameCard } from "@/components/game-card";
-import { GameLogo } from "@/components/game-logo";
+import { ResilientImage } from "@/components/resilient-image";
 import type { Game } from "@/lib/games";
 
 type CatalogueFilter = "all" | "checkout" | "battle-royale" | "shooter" | "rpg";
 
 const filters: Array<{ id: CatalogueFilter; label: string }> = [
-  { id: "all", label: "All" },
-  { id: "checkout", label: "Ready" },
+  { id: "all", label: "All games" },
+  { id: "checkout", label: "Available" },
   { id: "battle-royale", label: "Battle royale" },
   { id: "shooter", label: "Shooter" },
   { id: "rpg", label: "RPG" },
 ];
 
 function matchesFilter(game: Game, filter: CatalogueFilter) {
-  if (filter === "checkout") {
-    return game.available === true;
-  }
-
-  if (filter === "battle-royale") {
-    return game.family === "battle-royale";
-  }
-
-  if (filter === "shooter") {
-    return game.family === "shooter";
-  }
-
-  if (filter === "rpg") {
-    return game.family === "rpg";
-  }
-
+  if (filter === "checkout") return game.available === true;
+  if (filter === "battle-royale") return game.family === "battle-royale";
+  if (filter === "shooter") return game.family === "shooter";
+  if (filter === "rpg") return game.family === "rpg";
   return true;
 }
 
@@ -48,38 +36,28 @@ export function GameCatalogue({ games }: { games: Game[] }) {
     const normalizedQuery = query.trim().toLowerCase();
 
     return mainGames.filter((game) => {
-      if (!matchesFilter(game, filter)) {
-        return false;
-      }
+      if (!matchesFilter(game, filter)) return false;
+      if (!normalizedQuery) return true;
 
-      if (!normalizedQuery) {
-        return true;
-      }
-
-      const searchable = [
-        game.title,
-        game.publisher,
-        game.category,
-        ...game.packages,
-      ]
+      return [game.title, game.publisher, game.category, ...game.packages]
         .join(" ")
-        .toLowerCase();
-
-      return searchable.includes(normalizedQuery);
+        .toLowerCase()
+        .includes(normalizedQuery);
     });
   }, [filter, mainGames, query]);
 
+  const normalizedQuery = query.trim().toLowerCase();
   const showRegions =
-    !query ||
-    ["mobile legends", "mlbb", "india", "indonesia", "philippines", "arabia"].some(
-      (term) => term.includes(query.trim().toLowerCase()) || query.trim().toLowerCase().includes(term),
+    !normalizedQuery ||
+    ["mobile legends", "mlbb", "india", "indonesia", "philippines"].some(
+      (term) => term.includes(normalizedQuery) || normalizedQuery.includes(term),
     );
 
   return (
-    <div className="mt-8">
-      <div className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-3 sm:flex-row sm:items-center sm:justify-between">
-        <label className="relative block sm:max-w-sm sm:flex-1">
-          <span className="sr-only">Search games</span>
+    <div className="mt-8 min-w-0">
+      <div className="rounded-2xl border border-white/10 bg-white/[0.025] p-3 sm:p-4">
+        <label className="relative block">
+          <span className="sr-only">Search games or markets</span>
           <svg
             aria-hidden="true"
             viewBox="0 0 24 24"
@@ -95,26 +73,25 @@ export function GameCatalogue({ games }: { games: Game[] }) {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search games"
-            className="h-11 w-full rounded-xl border border-white/10 bg-black/20 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400/50"
+            placeholder="Search Mobile Legends, BGMI, Genshin…"
+            className="h-12 w-full rounded-xl border border-white/10 bg-black/25 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400/60 focus:ring-2 focus:ring-violet-400/15"
           />
         </label>
 
         <div
-          className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="mt-3 flex max-w-full gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="group"
           aria-label="Catalogue filters"
         >
           {filters.map((item) => {
             const active = filter === item.id;
-
             return (
               <button
                 key={item.id}
                 type="button"
                 aria-pressed={active}
                 onClick={() => setFilter(item.id)}
-                className={`shrink-0 rounded-xl px-3.5 py-2.5 text-xs font-bold transition ${
+                className={`min-h-11 shrink-0 rounded-xl px-4 py-2.5 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
                   active
                     ? "bg-white text-slate-950"
                     : "border border-white/10 bg-white/[0.035] text-slate-400 hover:text-white"
@@ -128,36 +105,41 @@ export function GameCatalogue({ games }: { games: Game[] }) {
       </div>
 
       {showRegions && mlbb ? (
-        <section className="mt-6 rounded-2xl border border-white/10 bg-[#0d0d16] p-4 sm:p-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-300">
-                Mobile Legends markets
-              </p>
-              <p className="mt-1 text-sm text-slate-400">
-                Same game and logo. Choose the account market before checkout.
-              </p>
-            </div>
-            <GameLogo game={mlbb} compact />
+        <section id="mlbb-regions" className="mt-6 scroll-mt-24 rounded-2xl border border-white/10 bg-[#0d0d16] p-4 sm:p-5">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-300">
+              Mobile Legends markets
+            </p>
+            <h3 className="mt-1 text-xl font-black text-white">Choose the market linked to your account</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              India, Indonesia, and Philippines use the same game icon with different catalogue routing.
+            </p>
           </div>
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
             {regionGames.map((game) => (
               <Link
                 key={game.slug}
                 href={game.href ?? "/games/mobile-legends"}
-                className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 transition hover:border-violet-400/35 hover:bg-violet-400/[0.06]"
+                className="group flex min-h-20 min-w-0 items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3 transition hover:border-violet-400/35 hover:bg-violet-400/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-black/30 text-xl">
-                  {game.region?.flag}
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-sm font-bold text-white">{game.region?.label}</span>
-                  <span className="mt-0.5 block truncate text-[11px] text-slate-500">
-                    Select market
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/10 bg-[#151521]">
+                  <ResilientImage
+                    sources={mlbb.artworkSources}
+                    alt="Mobile Legends game icon"
+                    className="h-full w-full object-cover"
+                    fallbackClassName="h-full w-full"
+                    fallbackLabel="ML"
+                  />
+                  <span className="absolute -bottom-0.5 -right-0.5 grid h-6 w-6 place-items-center rounded-full border border-black/70 bg-black/85 text-sm">
+                    {game.region?.flag}
                   </span>
+                </div>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-black text-white">{game.region?.label}</span>
+                  <span className="mt-1 block truncate text-xs text-slate-500">Open MLBB top-up</span>
                 </span>
-                <span className="ml-auto text-slate-600 transition group-hover:translate-x-0.5 group-hover:text-violet-300">
+                <span aria-hidden="true" className="shrink-0 text-violet-300 transition group-hover:translate-x-0.5">
                   →
                 </span>
               </Link>
@@ -177,7 +159,7 @@ export function GameCatalogue({ games }: { games: Game[] }) {
               setQuery("");
               setFilter("all");
             }}
-            className="font-bold text-violet-300 transition hover:text-violet-200"
+            className="min-h-11 rounded-lg px-2 font-bold text-violet-300 transition hover:text-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
           >
             Reset filters
           </button>
@@ -185,7 +167,7 @@ export function GameCatalogue({ games }: { games: Game[] }) {
       </div>
 
       {visibleGames.length > 0 ? (
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-4 grid min-w-0 grid-cols-1 gap-4 min-[360px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {visibleGames.map((game) => (
             <GameCard key={game.slug} game={game} />
           ))}
