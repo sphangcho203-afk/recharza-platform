@@ -5,18 +5,19 @@ import { ResilientImage } from "@/components/resilient-image";
 import { SiteHeader } from "@/components/site-header";
 import { games } from "@/lib/games";
 import { formatInr } from "@/lib/mobile-legends";
+import { mobileLegendsMarkets } from "@/lib/mobile-legends-market";
 import { getStorefrontPricingSnapshot } from "@/lib/storefront-catalog";
 
 export const dynamic = "force-dynamic";
 
 const customerBenefits = [
   {
-    title: "Choose the correct market",
-    description: "Select India, Indonesia, or Philippines before entering your Mobile Legends player details.",
+    title: "Choose the correct game market",
+    description: "Select the fulfilment catalogue linked to the Mobile Legends account before entering player details.",
   },
   {
-    title: "Review before checkout",
-    description: "Confirm the package, player ID, server, and total before the order continues.",
+    title: "Pay with a clear price snapshot",
+    description: "Review the protected INR settlement amount together with a live local-currency display estimate.",
   },
   {
     title: "Track every update",
@@ -25,8 +26,8 @@ const customerBenefits = [
 ];
 
 const steps = [
-  ["01", "Pick a game", "Choose the game and the regional market connected to your account."],
-  ["02", "Enter player details", "Review the player ID, server, and package before continuing."],
+  ["01", "Pick a game market", "Choose the game and supplier fulfilment market connected to the player account."],
+  ["02", "Verify and bill", "Confirm player details, billing country, address, package, and display currency."],
   ["03", "Track the order", "Follow the order from review through fulfilment on one private page."],
 ];
 
@@ -62,16 +63,16 @@ export default async function Home() {
           <div className="min-w-0">
             <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-200">
               <span className="h-2 w-2 rounded-full bg-emerald-300" />
-              Mobile Legends available now
+              Regional Mobile Legends catalogue
             </div>
 
             <h1 className="mt-5 max-w-2xl text-4xl font-black leading-[1.02] tracking-[-0.05em] sm:text-5xl lg:text-6xl">
               Game top-ups,
-              <span className="block text-violet-300">without the wrong-market mess.</span>
+              <span className="block text-violet-300">priced for the correct market.</span>
             </h1>
 
             <p className="mt-4 max-w-xl text-base leading-7 text-slate-400 sm:text-lg">
-              Find your game, choose the correct market, review your player details, and keep the order easy to track.
+              Lock the player-account market, browse approved regional packs, verify the destination, and review local-currency and billing details before creating the order.
             </p>
 
             <div className="mt-6 flex flex-col gap-3 min-[420px]:flex-row">
@@ -79,7 +80,7 @@ export default async function Home() {
                 href="/games/mobile-legends"
                 className="min-h-12 rounded-xl bg-white px-5 py-3.5 text-center text-sm font-black text-slate-950 transition hover:bg-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
-                Top up Mobile Legends
+                Choose an MLBB market
               </Link>
               <Link
                 href="#games"
@@ -95,12 +96,12 @@ export default async function Home() {
                 <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">Game brands</p>
               </div>
               <div>
-                <p className="text-xl font-black text-white">3</p>
+                <p className="text-xl font-black text-white">{mobileLegendsMarkets.length}</p>
                 <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">MLBB markets</p>
               </div>
               <div>
-                <p className="text-xl font-black text-white">24/7</p>
-                <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">Order tracking</p>
+                <p className="text-xl font-black text-white">15</p>
+                <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">Display currencies</p>
               </div>
             </div>
           </div>
@@ -160,7 +161,7 @@ export default async function Home() {
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">Game store</p>
           <h2 className="mt-2 text-3xl font-black tracking-[-0.04em] sm:text-4xl">Find your game</h2>
           <p className="mt-3 text-sm leading-6 text-slate-400">
-            Mobile Legends is available through India, Indonesia, and Philippines. More games will unlock as their top-up routes are completed.
+            Mobile Legends now has a broader supplier-market registry. A market becomes commercially usable only after its exact FazerCards category is reviewed, synchronized, and published.
           </p>
         </div>
 
