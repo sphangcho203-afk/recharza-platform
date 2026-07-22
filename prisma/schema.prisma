@@ -110,6 +110,7 @@ model Order {
   accessTokenHash     String
   status              OrderStatus @default(CREATED)
   gameSlug            String
+  marketCode          String?
   packageId           String
   packageName         String
   amountInPaise       Int
@@ -137,6 +138,7 @@ model Order {
   @@index([playerId, zoneId, createdAt])
   @@index([status, createdAt])
   @@index([supplierProductId])
+  @@index([gameSlug, marketCode, createdAt])
 }
 
 model OrderEvent {

@@ -1,10 +1,11 @@
+import { parseMobileLegendsMarket } from "@/lib/mobile-legends-market";
+import { verifyOrderAccessToken } from "@/lib/order-security";
 import { getPrisma } from "@/lib/prisma";
 import {
   consumeRateLimit,
   createRateLimitHeaders,
 } from "@/lib/rate-limit";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
-import { verifyOrderAccessToken } from "@/lib/order-security";
 
 export const runtime = "nodejs";
 
@@ -90,6 +91,8 @@ export async function GET(
       );
     }
 
+    const market = parseMobileLegendsMarket(order.marketCode);
+
     return Response.json(
       {
         ok: true,
@@ -97,6 +100,7 @@ export async function GET(
           id: order.publicId,
           status: order.status.toLowerCase(),
           gameSlug: order.gameSlug,
+          market: market ? { code: market.code, label: market.label, flag: market.flag } : null,
           package: {
             id: order.packageId,
             name: order.packageName,

@@ -11,6 +11,7 @@ type ResilientImageProps = {
   style?: CSSProperties;
   loading?: "eager" | "lazy";
   fallbackClassName?: string;
+  fallbackLabel?: string;
 };
 
 export function ResilientImage({
@@ -20,6 +21,7 @@ export function ResilientImage({
   style,
   loading = "lazy",
   fallbackClassName = "",
+  fallbackLabel,
 }: ResilientImageProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const [failed, setFailed] = useState(sources.length === 0);
@@ -29,9 +31,9 @@ export function ResilientImage({
       <div
         aria-label={`${alt} unavailable`}
         role="img"
-        className={`grid place-items-center bg-[linear-gradient(135deg,rgba(124,58,237,0.22),rgba(15,23,42,0.75))] text-xs font-bold uppercase tracking-[0.16em] text-white/55 ${fallbackClassName}`}
+        className={`grid place-items-center bg-[radial-gradient(circle_at_25%_20%,rgba(124,58,237,0.28),transparent_48%),linear-gradient(145deg,#151522,#090910)] px-4 text-center text-sm font-black text-white/80 ${fallbackClassName}`}
       >
-        Media unavailable
+        <span className="max-w-full leading-tight">{fallbackLabel ?? alt}</span>
       </div>
     );
   }
