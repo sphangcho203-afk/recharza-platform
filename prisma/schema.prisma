@@ -57,16 +57,16 @@ enum FulfilmentMode {
 }
 
 model Customer {
-  id              String        @id @default(cuid())
-  email           String        @unique
+  id              String          @id @default(cuid())
+  email           String          @unique
   displayName     String?
-  username        String?       @unique
-  role            AccountRole   @default(CUSTOMER)
-  authSubject     String?       @unique
+  username        String?         @unique
+  role            AccountRole     @default(CUSTOMER)
+  authSubject     String?         @unique
   emailVerifiedAt DateTime?
   lastLoginAt     DateTime?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
   orders          Order[]
   sessions        AuthSession[]
   magicLinks      AuthMagicLink[]
@@ -74,15 +74,15 @@ model Customer {
 }
 
 model AuthSession {
-  id             String    @id @default(cuid())
-  tokenHash      String    @unique
-  customerId     String
-  customer       Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  expiresAt      DateTime
-  lastUsedAt     DateTime  @default(now())
-  revokedAt      DateTime?
-  userAgentHash  String?
-  createdAt      DateTime  @default(now())
+  id            String   @id @default(cuid())
+  tokenHash     String   @unique
+  customerId    String
+  customer      Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt     DateTime
+  lastUsedAt    DateTime @default(now())
+  revokedAt     DateTime?
+  userAgentHash String?
+  createdAt     DateTime @default(now())
 
   @@index([customerId, expiresAt])
   @@index([expiresAt, revokedAt])
@@ -104,41 +104,55 @@ model AuthMagicLink {
 }
 
 model Order {
-  id                  String      @id @default(cuid())
-  publicId            String      @unique
-  idempotencyKey      String      @unique
-  accessTokenHash     String
-  status              OrderStatus @default(CREATED)
-  gameSlug            String
-  marketCode          String?
-  packageId           String
-  packageName         String
-  amountInPaise       Int
-  currency            String      @default("INR")
-  playerId            String
-  zoneId              String
-  verificationMode    String
-  verifiedNickname    String?
-  paymentProvider     String?
-  paymentSessionId    String?     @unique
-  supplierProductId   String?
-  supplierCategoryId  String?
-  supplierOfferId     String?
-  customerId          String
-  customer            Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  supplierProduct     SupplierProduct? @relation(fields: [supplierProductId], references: [id], onDelete: SetNull)
-  events              OrderEvent[]
-  webhooks            PaymentWebhook[]
-  auditLogs           AdminAuditLog[]
-  fulfilmentAttempts  FulfilmentAttempt[]
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
+  id                      String      @id @default(cuid())
+  publicId                String      @unique
+  idempotencyKey          String      @unique
+  accessTokenHash         String
+  status                  OrderStatus @default(CREATED)
+  gameSlug                String
+  marketCode              String?
+  packageId               String
+  packageName             String
+  amountInPaise           Int
+  currency                String      @default("INR")
+  presentmentCurrency     String      @default("INR")
+  presentmentAmountMinor  Int?
+  fxRateFromInrMicros     Int?
+  fxQuotedAt              DateTime?
+  billingName             String?
+  billingEmail            String?
+  billingPhone            String?
+  billingLine1            String?
+  billingLine2            String?
+  billingCity             String?
+  billingState            String?
+  billingPostalCode       String?
+  billingCountryCode      String?
+  playerId                String
+  zoneId                  String
+  verificationMode        String
+  verifiedNickname        String?
+  paymentProvider         String?
+  paymentSessionId        String?     @unique
+  supplierProductId       String?
+  supplierCategoryId      String?
+  supplierOfferId         String?
+  customerId              String
+  customer                Customer    @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  supplierProduct         SupplierProduct? @relation(fields: [supplierProductId], references: [id], onDelete: SetNull)
+  events                  OrderEvent[]
+  webhooks                PaymentWebhook[]
+  auditLogs               AdminAuditLog[]
+  fulfilmentAttempts      FulfilmentAttempt[]
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
 
   @@index([customerId, createdAt])
   @@index([playerId, zoneId, createdAt])
   @@index([status, createdAt])
   @@index([supplierProductId])
   @@index([gameSlug, marketCode, createdAt])
+  @@index([billingCountryCode, presentmentCurrency, createdAt])
 }
 
 model OrderEvent {
@@ -202,27 +216,27 @@ model PricingConfiguration {
 }
 
 model SupplierProduct {
-  id                      String   @id @default(cuid())
-  provider                String
-  categoryId              String
-  offerId                 String
-  gameSlug                String
-  name                    String
-  region                  String?
-  supplierCurrency        String   @default("USD")
-  supplierPriceUsdMicros  Int
-  landedCostInPaise       Int
-  retailPriceInPaise      Int
-  expectedMarginInPaise   Int
-  expectedMarginBps       Int
-  available               Boolean  @default(true)
-  published               Boolean  @default(false)
-  fields                  Json?
-  raw                     Json?
-  syncedAt                DateTime @default(now())
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
-  orders                  Order[]
+  id                     String   @id @default(cuid())
+  provider               String
+  categoryId             String
+  offerId                String
+  gameSlug               String
+  name                   String
+  region                 String?
+  supplierCurrency       String   @default("USD")
+  supplierPriceUsdMicros Int
+  landedCostInPaise      Int
+  retailPriceInPaise     Int
+  expectedMarginInPaise  Int
+  expectedMarginBps      Int
+  available              Boolean  @default(true)
+  published              Boolean  @default(false)
+  fields                 Json?
+  raw                    Json?
+  syncedAt               DateTime @default(now())
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  orders                 Order[]
 
   @@unique([provider, offerId], name: "provider_offer")
   @@index([gameSlug, published, available, retailPriceInPaise])
@@ -245,21 +259,21 @@ model SupplierSyncRun {
 }
 
 model FulfilmentAttempt {
-  id                 String            @id @default(cuid())
-  orderId            String
-  order              Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  provider           String
-  mode               FulfilmentMode
-  status             FulfilmentStatus  @default(PLANNED)
-  idempotencyKey     String            @unique
-  providerOrderId    String?           @unique
-  requestPayload     Json?
-  responsePayload    Json?
-  errorMessage       String?
-  submittedAt        DateTime?
-  completedAt        DateTime?
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
+  id              String            @id @default(cuid())
+  orderId         String
+  order           Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider        String
+  mode            FulfilmentMode
+  status          FulfilmentStatus  @default(PLANNED)
+  idempotencyKey  String            @unique
+  providerOrderId String?           @unique
+  requestPayload  Json?
+  responsePayload Json?
+  errorMessage    String?
+  submittedAt     DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 
   @@index([orderId, createdAt])
   @@index([provider, status, createdAt])
