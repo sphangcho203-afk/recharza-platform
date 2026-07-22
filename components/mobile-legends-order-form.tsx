@@ -8,6 +8,7 @@ import {
   initialBillingForm,
   type BillingFormState,
 } from "@/components/billing-address-fields";
+import { ProductOfferCard } from "@/components/product-offer-card";
 import {
   convertInrPaiseToCurrencyMinor,
   formatCurrencyMinor,
@@ -284,11 +285,13 @@ export function MobileLegendsOrderForm({
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">01 · Package</p>
             <h2 className="mt-2 text-2xl font-black tracking-tight">Choose a regional offer</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">Up to 30 supplier-approved packs are prioritized for a clean catalogue instead of an endless SKU landfill.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-400">
+              Each offer uses supplier media first, then a verified product-specific image fallback.
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <span className="rounded-full border border-blue-300/20 bg-blue-300/10 px-3 py-1 text-xs font-bold text-blue-100">
-              {market.flag} {market.label} locked
+              {market.flag} {market.label} version
             </span>
             <span className={`rounded-full border px-3 py-1 text-xs font-bold ${usesLiveSupplierPricing ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200" : "border-amber-300/20 bg-amber-300/10 text-amber-200"}`}>
               {usesLiveSupplierPricing ? "Live supplier pricing" : "Indicative fallback pricing"}
@@ -296,31 +299,20 @@ export function MobileLegendsOrderForm({
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-4 xl:grid-cols-5">
-          {packages.map((item) => {
-            const selected = item.id === packageId;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                aria-pressed={selected}
-                onClick={() => {
-                  setPackageId(item.id);
-                  resetVerification();
-                }}
-                className={`relative min-h-36 overflow-hidden rounded-2xl border p-3 text-left transition sm:p-4 ${selected ? "border-violet-400 bg-violet-400/12 shadow-[0_0_0_1px_rgba(167,139,250,0.2),0_20px_50px_rgba(0,0,0,0.24)]" : "border-white/10 bg-black/15 hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.05]"}`}
-              >
-                {item.featured ? (
-                  <span className="absolute right-2 top-2 rounded-full bg-violet-400/15 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-violet-200">Popular</span>
-                ) : null}
-                <span className="block pr-10 text-sm font-bold leading-5 text-white">{item.name}</span>
-                <span className="mt-4 block text-xl font-black tracking-tight text-white">{formatPresentment(item.amountInPaise)}</span>
-                {billing.presentmentCurrency !== "INR" ? (
-                  <span className="mt-1 block text-[11px] font-bold text-slate-500">Settlement {formatInr(item.amountInPaise)}</span>
-                ) : null}
-              </button>
-            );
-          })}
+        <div className="mt-5 grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          {packages.map((item) => (
+            <ProductOfferCard
+              key={item.id}
+              item={item}
+              selected={item.id === packageId}
+              displayPrice={formatPresentment(item.amountInPaise)}
+              settlementPrice={billing.presentmentCurrency !== "INR" ? formatInr(item.amountInPaise) : undefined}
+              onSelect={() => {
+                setPackageId(item.id);
+                resetVerification();
+              }}
+            />
+          ))}
         </div>
       </section>
 
