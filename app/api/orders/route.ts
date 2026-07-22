@@ -1,6 +1,9 @@
 import { randomUUID } from "node:crypto";
 
 import { getRequestSession } from "@/lib/auth";
+import { validateBillingSelection } from "@/lib/commerce/billing";
+import { convertInrPaiseToCurrencyMinor } from "@/lib/commerce/currencies";
+import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import {
   isPackageAvailableForMarket,
   parseMobileLegendsMarket,
@@ -36,6 +39,19 @@ type StoredOrder = {
   packageName: string;
   amountInPaise: number;
   currency: string;
+  presentmentCurrency: string;
+  presentmentAmountMinor: number | null;
+  fxRateFromInrMicros: number | null;
+  fxQuotedAt: Date | null;
+  billingName: string | null;
+  billingEmail: string | null;
+  billingPhone: string | null;
+  billingLine1: string | null;
+  billingLine2: string | null;
+  billingCity: string | null;
+  billingState: string | null;
+  billingPostalCode: string | null;
+  billingCountryCode: string | null;
   playerId: string;
   zoneId: string;
   verificationMode: string;
@@ -81,6 +97,22 @@ function createOrderResponse(
         amountInPaise: order.amountInPaise,
         currency: order.currency,
       },
+      presentment:
+        order.presentmentAmountMinor !== null
+          ? {
+              amountMinor: order.presentmentAmountMinor,
+              currency: order.presentmentCurrency,
+              fxQuotedAt: order.fxQuotedAt?.toISOString() ?? null,
+            }
+          : null,
+      billing:
+        order.billingName && order.billingCountryCode && order.billingCity
+          ? {
+              fullName: order.billingName,
+              countryCode: order.billingCountryCode,
+              city: order.billingCity,
+            }
+          : null,
       player: {
         playerId: order.playerId,
         zoneId: order.zoneId,
@@ -101,7 +133,9 @@ function createOrderResponse(
       status: "not_started",
       checkoutUrl: null,
       message:
-        "The verified order is saved. Open secure tracking to continue with Razorpay Test Mode when configured.",
+        order.presentmentCurrency === "INR"
+          ? "The verified order is saved. Open secure tracking to continue with Razorpay Test Mode when configured."
+          : `The order is saved with a ${order.presentmentCurrency} display snapshot. Payment remains protected in INR until an approved multi-currency gateway is configured.`,
     },
   };
 }
@@ -204,7 +238,7 @@ export async function POST(request: Request) {
         {
           ok: false,
           code: "MARKET_REQUIRED",
-          message: "Choose India, Indonesia or Philippines before creating the order.",
+          message: "Choose a supported Mobile Legends fulfilment market before creating the order.",
         },
         { status: 400, headers: rateHeaders },
       );
@@ -236,6 +270,37 @@ export async function POST(request: Request) {
         { status: 409, headers: rateHeaders },
       );
     }
+
+    const billingResult = validateBillingSelection(data.billing);
+    if (!billingResult.ok) {
+      return Response.json(
+        { ok: false, code: "BILLING_INVALID", message: billingResult.message },
+        { status: 400, headers: rateHeaders },
+      );
+    }
+
+    const fxSnapshot = await getCurrencyRateSnapshot();
+    const presentmentCurrency = billingResult.selection.presentmentCurrency;
+    const fxRateFromInrMicros = fxSnapshot.ratesFromInrMicros[presentmentCurrency] ?? 0;
+
+    if (!fxRateFromInrMicros) {
+      return Response.json(
+        {
+          ok: false,
+          code: "FX_UNAVAILABLE",
+          message: "The selected currency quote is temporarily unavailable. Choose INR or retry later.",
+        },
+        { status: 503, headers: rateHeaders },
+      );
+    }
+
+    const presentmentAmountMinor = convertInrPaiseToCurrencyMinor(
+      selectedPackage.amountInPaise,
+      presentmentCurrency,
+      fxRateFromInrMicros,
+    );
+    const parsedFxQuotedAt = new Date(fxSnapshot.quotedAt);
+    const fxQuotedAt = Number.isNaN(parsedFxQuotedAt.getTime()) ? new Date() : parsedFxQuotedAt;
 
     const player = validateMobileLegendsPlayer(data.playerId, data.zoneId);
     if (!player.valid) {
@@ -295,6 +360,7 @@ export async function POST(request: Request) {
     const publicId = createPublicOrderId();
     const accessToken = deriveOrderAccessToken(publicId, idempotencyKey);
     const accessTokenHash = hashOrderAccessToken(accessToken);
+    const billing = billingResult.selection.address;
 
     let order: StoredOrder;
     try {
@@ -310,6 +376,19 @@ export async function POST(request: Request) {
           packageName: selectedPackage.name,
           amountInPaise: selectedPackage.amountInPaise,
           currency: "INR",
+          presentmentCurrency,
+          presentmentAmountMinor,
+          fxRateFromInrMicros,
+          fxQuotedAt,
+          billingName: billing.fullName,
+          billingEmail: billing.email,
+          billingPhone: billing.phone,
+          billingLine1: billing.line1,
+          billingLine2: billing.line2,
+          billingCity: billing.city,
+          billingState: billing.state,
+          billingPostalCode: billing.postalCode,
+          billingCountryCode: billing.countryCode,
           playerId: player.playerId,
           zoneId: player.zoneId,
           verifiedNickname,
@@ -321,7 +400,7 @@ export async function POST(request: Request) {
           events: {
             create: {
               type: "ORDER_CREATED",
-              message: `Verified-account order persisted for the ${selectedMarket.label} market with a server-resolved catalogue price.`,
+              message: `Verified-account order persisted for the ${selectedMarket.label} market with server-resolved pricing, currency and billing snapshots.`,
               metadata: {
                 catalogueSource: selectedPackage.source,
                 supplierProductId: selectedPackage.supplierProductId ?? null,
@@ -329,6 +408,14 @@ export async function POST(request: Request) {
                 supplierOfferId: selectedPackage.supplierOfferId ?? null,
                 marketCode: selectedMarket.code,
                 supplierPackageRegion: selectedPackage.region ?? null,
+                settlementCurrency: "INR",
+                settlementAmountInPaise: selectedPackage.amountInPaise,
+                presentmentCurrency,
+                presentmentAmountMinor,
+                fxRateFromInrMicros,
+                fxQuotedAt: fxQuotedAt.toISOString(),
+                fxMode: fxSnapshot.mode,
+                billingCountryCode: billing.countryCode,
                 verificationMode,
                 supplierValidationConfirmed,
                 accountRole: session.customer.role,
