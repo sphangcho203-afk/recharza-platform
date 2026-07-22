@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useState, type CSSProperties } from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 
 type ResilientImageProps = {
   sources: string[];
@@ -14,6 +14,18 @@ type ResilientImageProps = {
   fallbackLabel?: string;
 };
 
+function createInitials(value: string) {
+  const parts = value
+    .replace(/[^a-zA-Z0-9\s]/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (!parts.length) return "R";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+}
+
 export function ResilientImage({
   sources,
   alt,
@@ -23,24 +35,28 @@ export function ResilientImage({
   fallbackClassName = "",
   fallbackLabel,
 }: ResilientImageProps) {
+  const usableSources = useMemo(() => sources.filter(Boolean), [sources]);
   const [sourceIndex, setSourceIndex] = useState(0);
-  const [failed, setFailed] = useState(sources.length === 0);
+  const [failed, setFailed] = useState(usableSources.length === 0);
+  const initials = createInitials(fallbackLabel ?? alt);
 
   if (failed) {
     return (
       <div
         aria-label={`${alt} unavailable`}
         role="img"
-        className={`grid place-items-center bg-[radial-gradient(circle_at_25%_20%,rgba(124,58,237,0.28),transparent_48%),linear-gradient(145deg,#151522,#090910)] px-4 text-center text-sm font-black text-white/80 ${fallbackClassName}`}
+        className={`grid place-items-center bg-[radial-gradient(circle_at_25%_20%,rgba(56,189,248,0.24),transparent_45%),linear-gradient(145deg,#171727,#090910)] text-center font-black text-white/85 ${fallbackClassName}`}
       >
-        <span className="max-w-full leading-tight">{fallbackLabel ?? alt}</span>
+        <span aria-hidden="true" className="text-2xl tracking-[-0.08em] sm:text-3xl">
+          {initials}
+        </span>
       </div>
     );
   }
 
   return (
     <img
-      src={sources[sourceIndex]}
+      src={usableSources[sourceIndex]}
       alt={alt}
       loading={loading}
       decoding="async"
@@ -48,7 +64,7 @@ export function ResilientImage({
       className={className}
       style={style}
       onError={() => {
-        if (sourceIndex + 1 < sources.length) {
+        if (sourceIndex + 1 < usableSources.length) {
           setSourceIndex((current) => current + 1);
           return;
         }

@@ -10,8 +10,8 @@ import type { Game } from "@/lib/games";
 type CatalogueFilter = "all" | "checkout" | "battle-royale" | "shooter" | "rpg";
 
 const filters: Array<{ id: CatalogueFilter; label: string }> = [
-  { id: "all", label: "All" },
-  { id: "checkout", label: "Ready" },
+  { id: "all", label: "All games" },
+  { id: "checkout", label: "Available" },
   { id: "battle-royale", label: "Battle royale" },
   { id: "shooter", label: "Shooter" },
   { id: "rpg", label: "RPG" },
@@ -57,10 +57,10 @@ export function GameCatalogue({ games }: { games: Game[] }) {
     );
 
   return (
-    <div className="mt-7">
-      <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-        <label className="relative block md:max-w-sm">
-          <span className="sr-only">Search games</span>
+    <div className="mt-7 min-w-0">
+      <div className="grid min-w-0 gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
+        <label className="relative block min-w-0 md:max-w-sm">
+          <span className="sr-only">Search games or markets</span>
           <svg
             aria-hidden="true"
             viewBox="0 0 24 24"
@@ -76,13 +76,13 @@ export function GameCatalogue({ games }: { games: Game[] }) {
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search games"
-            className="h-11 w-full rounded-xl border border-white/10 bg-black/20 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400/50"
+            placeholder="Search games or markets"
+            className="h-12 w-full min-w-0 rounded-xl border border-white/10 bg-black/20 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/15"
           />
         </label>
 
         <div
-          className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex max-w-full gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="group"
           aria-label="Catalogue filters"
         >
@@ -94,7 +94,7 @@ export function GameCatalogue({ games }: { games: Game[] }) {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setFilter(item.id)}
-                className={`shrink-0 rounded-xl px-3 py-2 text-xs font-bold transition ${
+                className={`min-h-11 shrink-0 rounded-xl px-3.5 py-2.5 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
                   active
                     ? "bg-white text-slate-950"
                     : "border border-white/10 bg-white/[0.035] text-slate-400 hover:text-white"
@@ -110,15 +110,15 @@ export function GameCatalogue({ games }: { games: Game[] }) {
       {showRegions && mlbb ? (
         <section
           id="mlbb-regions"
-          className="mt-5 scroll-mt-20 overflow-hidden rounded-2xl border border-white/10 bg-[#0d0d16]"
+          className="mt-5 scroll-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-[#0d0d16]"
         >
           <div className="border-b border-white/10 px-4 py-4 sm:px-5">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
               Mobile Legends markets
             </p>
-            <h3 className="mt-1 text-lg font-black text-white">Choose once, then checkout stays locked.</h3>
-            <p className="mt-1 text-sm text-slate-500">
-              India, Indonesia and Philippines are the supported catalogue routes.
+            <h3 className="mt-1 text-lg font-black text-white">Choose the market linked to your account</h3>
+            <p className="mt-1 text-sm leading-6 text-slate-500">
+              India, Indonesia, and Philippines use the same Mobile Legends game icon with separate checkout routing.
             </p>
           </div>
 
@@ -127,26 +127,27 @@ export function GameCatalogue({ games }: { games: Game[] }) {
               <Link
                 key={game.slug}
                 href={game.href ?? "/games/mobile-legends"}
-                className="group grid grid-cols-[4.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-2.5 transition hover:border-violet-400/35 hover:bg-violet-400/[0.06] sm:grid-cols-1 sm:p-3"
+                className="group grid min-h-20 min-w-0 grid-cols-[3.75rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-2.5 transition hover:border-violet-400/35 hover:bg-violet-400/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 sm:grid-cols-[4rem_minmax(0,1fr)] sm:p-3"
               >
-                <div className="aspect-square overflow-hidden rounded-xl bg-black/30 sm:w-full">
+                <div className="relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-black/30">
                   <ResilientImage
-                    sources={game.artworkSources}
-                    alt={game.artworkAlt}
-                    fallbackLabel={game.title}
+                    sources={[...game.artworkSources, ...game.logoSources]}
+                    alt="Mobile Legends game icon"
+                    fallbackLabel="ML"
                     className="h-full w-full object-cover"
                     fallbackClassName="h-full w-full"
                   />
-                </div>
-                <span className="min-w-0 sm:mt-1">
-                  <span className="block text-sm font-black text-white">
-                    {game.region?.flag} {game.region?.label}
+                  <span className="absolute bottom-1 right-1 grid h-6 w-6 place-items-center rounded-full border border-black/70 bg-black/85 text-sm" aria-hidden="true">
+                    {game.region?.flag}
                   </span>
-                  <span className="mt-0.5 block text-[11px] leading-4 text-slate-500">
+                </div>
+                <span className="min-w-0">
+                  <span className="block truncate text-sm font-black text-white">{game.region?.label}</span>
+                  <span className="mt-0.5 block truncate text-[11px] leading-4 text-slate-500">
                     Open locked market checkout
                   </span>
                 </span>
-                <span className="text-slate-600 transition group-hover:translate-x-0.5 group-hover:text-violet-300 sm:hidden">
+                <span className="shrink-0 text-slate-600 transition group-hover:translate-x-0.5 group-hover:text-violet-300 sm:hidden" aria-hidden="true">
                   →
                 </span>
               </Link>
@@ -166,7 +167,7 @@ export function GameCatalogue({ games }: { games: Game[] }) {
               setQuery("");
               setFilter("all");
             }}
-            className="font-bold text-violet-300 transition hover:text-violet-200"
+            className="min-h-11 rounded-lg px-2 font-bold text-violet-300 transition hover:text-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
           >
             Reset filters
           </button>
@@ -174,7 +175,7 @@ export function GameCatalogue({ games }: { games: Game[] }) {
       </div>
 
       {visibleGames.length > 0 ? (
-        <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:gap-4 xl:grid-cols-4">
+        <div className="mt-4 grid min-w-0 grid-cols-1 gap-3 min-[360px]:grid-cols-2 md:grid-cols-3 lg:gap-4 xl:grid-cols-4">
           {visibleGames.map((game) => (
             <GameCard key={game.slug} game={game} />
           ))}
