@@ -36,10 +36,25 @@ type SupplierProductView = {
   raw: unknown;
 };
 
+function asObject(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function getStorefrontName(name: string, raw: unknown) {
+  const override = asObject(raw)?.adminStorefrontName;
+  return typeof override === "string" && override.trim()
+    ? override.trim().slice(0, 120)
+    : name;
+}
+
 function mapSupplierProduct(product: SupplierProductView): MobileLegendsPackage {
+  const displayName = getStorefrontName(product.name, product.raw);
+
   return {
     id: product.offerId,
-    name: product.name,
+    name: displayName,
     description: product.region
       ? `FazerCards live offer for ${product.region}. Confirm the player's account region before checkout.`
       : "FazerCards live supplier offer. Confirm all player details before checkout.",
@@ -53,7 +68,7 @@ function mapSupplierProduct(product: SupplierProductView): MobileLegendsPackage 
     expectedMarginInPaise: product.expectedMarginInPaise,
     media: resolveProductMedia({
       gameSlug: "mobile-legends",
-      productName: product.name,
+      productName: displayName,
       supplierRaw: product.raw,
     }),
   };
