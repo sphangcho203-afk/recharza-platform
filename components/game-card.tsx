@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { GameLogo } from "@/components/game-logo";
 import { ResilientImage } from "@/components/resilient-image";
 import type { Game } from "@/lib/games";
 import { formatInr } from "@/lib/mobile-legends";
@@ -11,7 +10,7 @@ type GameCardProps = {
 
 function getStatusLabel(game: Game) {
   if (game.status === "checkout") {
-    return "Top up now";
+    return "Top up";
   }
 
   if (game.status === "catalogue") {
@@ -25,79 +24,70 @@ export function GameCard({ game }: GameCardProps) {
   const interactive = Boolean(game.available && game.href);
 
   const card = (
-    <article className="group overflow-hidden rounded-3xl border border-white/10 bg-[#10101a] shadow-[0_16px_50px_rgba(0,0,0,0.24)] transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_22px_65px_rgba(0,0,0,0.34)]">
-      <div className="relative aspect-[16/10] overflow-hidden bg-[#11121b]">
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#10101a] p-3 shadow-[0_14px_42px_rgba(0,0,0,0.24)] transition duration-300 hover:-translate-y-0.5 hover:border-white/20 hover:shadow-[0_20px_55px_rgba(0,0,0,0.32)] sm:p-4">
+      <div className="relative aspect-square overflow-hidden rounded-2xl border border-white/10 bg-[#171724]">
         <ResilientImage
-          sources={game.artworkSources}
-          alt={game.artworkAlt}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.035]"
+          sources={game.artworkSources.length > 0 ? game.artworkSources : game.logoSources}
+          alt={game.logoAlt}
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]"
           style={{ objectPosition: game.artworkPosition ?? "center" }}
           fallbackClassName="h-full w-full"
+          fallbackLabel={game.title.slice(0, 2)}
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#10101a] via-[#10101a]/25 to-black/5" />
-        <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-3.5">
-          <span className="rounded-full border border-white/15 bg-black/45 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.13em] text-white/85 backdrop-blur-md">
-            {game.category}
-          </span>
-          <span
-            className="rounded-full border border-white/15 bg-black/45 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.13em] text-white/85 backdrop-blur-md"
-            style={{ boxShadow: `0 0 22px ${game.accent}33` }}
-          >
-            {game.status === "checkout" ? "Ready" : "Planned"}
-          </span>
+        <div className="absolute left-2.5 top-2.5 rounded-full border border-white/15 bg-black/65 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/90 backdrop-blur-md">
+          {game.status === "checkout" ? "Available" : "Soon"}
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-4">
-          <GameLogo game={game} />
-          {game.startingPriceInPaise ? (
-            <div className="rounded-2xl border border-white/10 bg-black/50 px-3 py-2 text-right backdrop-blur-md">
-              <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/55">From</p>
-              <p className="mt-0.5 text-lg font-black text-white">
-                {formatInr(game.startingPriceInPaise)}
-              </p>
-            </div>
-          ) : null}
-        </div>
+        {game.badge ? (
+          <div className="absolute right-2.5 top-2.5 max-w-[60%] truncate rounded-full border border-white/15 bg-black/65 px-2.5 py-1 text-[9px] font-bold text-white/85 backdrop-blur-md">
+            {game.badge}
+          </div>
+        ) : null}
       </div>
 
-      <div className="p-4.5 p-4 sm:p-5">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h3 className="truncate text-lg font-bold text-white">{game.title}</h3>
-            <p className="mt-1 truncate text-xs text-slate-400">{game.publisher}</p>
-          </div>
-          {game.badge ? (
-            <span className="shrink-0 rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold text-slate-300">
-              {game.badge}
-            </span>
-          ) : null}
-        </div>
+      <div className="flex min-w-0 flex-1 flex-col pt-3.5">
+        <p className="truncate text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
+          {game.publisher}
+        </p>
+        <h3 className="mt-1 min-h-12 text-base font-black leading-6 text-white sm:text-lg">
+          {game.title}
+        </h3>
+        <p className="mt-1 truncate text-xs text-slate-400">{game.category}</p>
 
-        <div className="mt-4 flex flex-wrap gap-1.5">
-          {game.packages.slice(0, 3).map((item) => (
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {game.packages.slice(0, 2).map((item) => (
             <span
               key={item}
-              className="rounded-full border border-white/8 bg-white/[0.035] px-2.5 py-1 text-[11px] text-slate-300"
+              className="max-w-full truncate rounded-full border border-white/8 bg-white/[0.035] px-2.5 py-1 text-[10px] text-slate-300"
             >
               {item}
             </span>
           ))}
         </div>
 
-        <div className="mt-5 flex items-center justify-between gap-3 border-t border-white/8 pt-4">
-          <p className="text-xs text-slate-500">
-            {interactive ? "Secure server-priced checkout" : "Supplier integration pending"}
-          </p>
-          <span
-            className={`shrink-0 rounded-xl px-3 py-2 text-xs font-bold transition ${
-              interactive
-                ? "bg-white text-slate-950 group-hover:bg-violet-200"
-                : "border border-white/10 bg-white/5 text-slate-400"
-            }`}
-          >
-            {getStatusLabel(game)}
-          </span>
+        <div className="mt-auto pt-4">
+          <div className="flex min-h-11 items-center justify-between gap-2 rounded-xl border border-white/8 bg-black/20 px-3 py-2.5">
+            <div className="min-w-0">
+              <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-600">
+                {game.startingPriceInPaise ? "From" : "Status"}
+              </p>
+              <p className="truncate text-sm font-black text-white">
+                {game.startingPriceInPaise
+                  ? formatInr(game.startingPriceInPaise)
+                  : "Not available yet"}
+              </p>
+            </div>
+            <span
+              className={`shrink-0 rounded-lg px-3 py-2 text-[11px] font-black transition ${
+                interactive
+                  ? "bg-white text-slate-950 group-hover:bg-violet-200"
+                  : "bg-white/5 text-slate-500"
+              }`}
+            >
+              {getStatusLabel(game)}
+            </span>
+          </div>
         </div>
       </div>
     </article>
@@ -107,7 +97,7 @@ export function GameCard({ game }: GameCardProps) {
     return (
       <Link
         href={game.href}
-        className="block rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-4 focus-visible:ring-offset-[#06060f]"
+        className="block h-full min-w-0 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-4 focus-visible:ring-offset-[#06060f]"
         aria-label={`${getStatusLabel(game)} for ${game.title}`}
       >
         {card}
@@ -115,5 +105,5 @@ export function GameCard({ game }: GameCardProps) {
     );
   }
 
-  return card;
+  return <div className="h-full min-w-0">{card}</div>;
 }
