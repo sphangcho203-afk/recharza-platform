@@ -4,6 +4,27 @@
   color-scheme: dark;
   --background: #06060f;
   --foreground: #f8fafc;
+  --surface-0: #07070c;
+  --surface-1: #090911;
+  --surface-2: #101018;
+  --surface-3: #151522;
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --text-primary: #f8fafc;
+  --text-secondary: #a1a1b5;
+  --text-muted: #646478;
+  --brand-primary: #8b5cf6;
+  --brand-secondary: #d946ef;
+  --brand-cyan: #22d3ee;
+  --status-success: #6ee7b7;
+  --status-warning: #fde68a;
+  --status-danger: #fda4af;
+  --focus-ring: rgba(167, 139, 250, 0.72);
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --shadow-panel: 0 18px 60px rgba(0, 0, 0, 0.26);
 }
 
 * {
@@ -26,8 +47,42 @@ body {
 }
 
 button,
-a {
+a,
+input,
+textarea,
+select,
+summary {
   -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.system-panel {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface-2) 88%, transparent);
+  box-shadow: var(--shadow-panel);
+}
+
+.system-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-2) 76%, transparent);
+}
+
+.system-empty-state {
+  display: grid;
+  min-height: 12rem;
+  place-items: center;
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.12);
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
 }
 
 .hero-grid {

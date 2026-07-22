@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { type FormEvent, useEffect, useMemo, useState } from "react";
 
+import { ModuleStateBadge } from "@/components/module-state-badge";
 import { formatInr } from "@/lib/mobile-legends";
 
-type AccountCustomer = {
+type Customer = {
   id: string;
   email: string;
   displayName: string | null;
@@ -14,7 +15,7 @@ type AccountCustomer = {
   emailVerified: boolean;
 };
 
-type AccountOrder = {
+type CustomerOrder = {
   id: string;
   status: string;
   gameSlug: string;
@@ -27,85 +28,87 @@ type AccountOrder = {
   updatedAt: string;
 };
 
-type SessionResponse = {
-  ok: boolean;
-  authenticated: boolean;
-  customer?: AccountCustomer;
-  message?: string;
+type Snapshot = {
+  customer: Customer | null;
+  orders: CustomerOrder[];
+  message: string;
+  error: boolean;
 };
 
-type OrdersResponse = {
-  ok: boolean;
-  orders?: AccountOrder[];
-  message?: string;
-};
-
-async function fetchAccountSnapshot() {
+async function fetchSnapshot(): Promise<Snapshot> {
   const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" });
-  const session = (await sessionResponse.json()) as SessionResponse;
+  const session = (await sessionResponse.json()) as {
+    ok: boolean;
+    authenticated: boolean;
+    customer?: Customer;
+    message?: string;
+  };
 
   if (!sessionResponse.ok || !session.ok || !session.authenticated || !session.customer) {
     return {
       customer: null,
-      orders: [] as AccountOrder[],
+      orders: [],
       message: "Enter your email to receive a one-time sign-in link.",
-      isError: false,
+      error: false,
     };
   }
 
   const ordersResponse = await fetch("/api/account/orders", { cache: "no-store" });
-  const orderResult = (await ordersResponse.json()) as OrdersResponse;
+  const ordersResult = (await ordersResponse.json()) as {
+    ok: boolean;
+    orders?: CustomerOrder[];
+    message?: string;
+  };
 
   return {
     customer: session.customer,
-    orders: orderResult.ok && orderResult.orders ? orderResult.orders : [],
+    orders: ordersResult.ok && ordersResult.orders ? ordersResult.orders : [],
     message:
-      ordersResponse.ok && orderResult.ok
+      ordersResponse.ok && ordersResult.ok
         ? "Verified account session active."
-        : orderResult.message ?? "Order history could not be loaded.",
-    isError: !ordersResponse.ok || !orderResult.ok,
+        : ordersResult.message ?? "Order history could not be loaded.",
+    error: !ordersResponse.ok || !ordersResult.ok,
   };
 }
 
-export function AccountConsole() {
+export function CustomerDashboard() {
   const [email, setEmail] = useState("");
-  const [customer, setCustomer] = useState<AccountCustomer | null>(null);
-  const [orders, setOrders] = useState<AccountOrder[]>([]);
+  const [customer, setCustomer] = useState<Customer | null>(null);
+  const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState("Checking your account session...");
-  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState(false);
   const [developmentPreviewUrl, setDevelopmentPreviewUrl] = useState("");
 
   const savedPlayers = useMemo(() => {
-    const unique = new Map<string, AccountOrder>();
+    const uniquePlayers = new Map<string, CustomerOrder>();
     for (const order of orders) {
       const key = `${order.gameSlug}:${order.market?.code ?? "global"}:${order.player.playerId}:${order.player.zoneId}`;
-      if (!unique.has(key)) unique.set(key, order);
+      if (!uniquePlayers.has(key)) uniquePlayers.set(key, order);
     }
-    return Array.from(unique.values()).slice(0, 4);
+    return Array.from(uniquePlayers.values()).slice(0, 6);
   }, [orders]);
 
-  const favoriteGames = useMemo(
-    () => Array.from(new Set(orders.map((order) => order.gameSlug))).slice(0, 4),
+  const fulfilmentCount = useMemo(
+    () => orders.reduce((total, order) => total + order.fulfilmentAttempts, 0),
     [orders],
   );
 
-  async function loadAccount() {
+  async function load() {
     setLoading(true);
-    setIsError(false);
-
+    setError(false);
     try {
-      const snapshot = await fetchAccountSnapshot();
+      const snapshot = await fetchSnapshot();
       setCustomer(snapshot.customer);
       setOrders(snapshot.orders);
       setMessage(snapshot.message);
-      setIsError(snapshot.isError);
+      setError(snapshot.error);
     } catch {
       setCustomer(null);
       setOrders([]);
-      setIsError(true);
       setMessage("The account service could not be reached.");
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -113,21 +116,20 @@ export function AccountConsole() {
 
   useEffect(() => {
     let active = true;
-
-    fetchAccountSnapshot()
+    fetchSnapshot()
       .then((snapshot) => {
         if (!active) return;
         setCustomer(snapshot.customer);
         setOrders(snapshot.orders);
         setMessage(snapshot.message);
-        setIsError(snapshot.isError);
+        setError(snapshot.error);
       })
       .catch(() => {
         if (!active) return;
         setCustomer(null);
         setOrders([]);
-        setIsError(true);
         setMessage("The account service could not be reached.");
+        setError(true);
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -141,7 +143,7 @@ export function AccountConsole() {
   async function requestLink(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSending(true);
-    setIsError(false);
+    setError(false);
     setDevelopmentPreviewUrl("");
     setMessage("Preparing a secure sign-in link...");
 
@@ -156,11 +158,11 @@ export function AccountConsole() {
         message?: string;
         developmentPreviewUrl?: string;
       };
-      setIsError(!response.ok || !result.ok);
+      setError(!response.ok || !result.ok);
       setMessage(result.message ?? "Check your email for the secure sign-in link.");
       setDevelopmentPreviewUrl(result.developmentPreviewUrl ?? "");
     } catch {
-      setIsError(true);
+      setError(true);
       setMessage("The sign-in service could not be reached.");
     } finally {
       setSending(false);
@@ -178,7 +180,7 @@ export function AccountConsole() {
     return (
       <div className="grid gap-3" aria-label="Loading account">
         <div className="h-28 animate-pulse rounded-2xl border border-white/10 bg-white/[0.035]" />
-        <div className="h-56 animate-pulse rounded-2xl border border-white/10 bg-white/[0.025]" />
+        <div className="h-64 animate-pulse rounded-2xl border border-white/10 bg-white/[0.025]" />
       </div>
     );
   }
@@ -186,7 +188,9 @@ export function AccountConsole() {
   if (!customer) {
     return (
       <section className="mx-auto max-w-xl rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-2xl shadow-black/25 sm:p-7">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">Verified email access</p>
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+          Verified email access
+        </p>
         <h2 className="mt-2 text-3xl font-black tracking-tight">Sign in without a password.</h2>
         <p className="mt-3 text-sm leading-6 text-slate-400">
           A one-time link verifies email ownership and opens your private customer dashboard.
@@ -214,7 +218,7 @@ export function AccountConsole() {
         <p
           aria-live="polite"
           className={`mt-4 rounded-xl border px-4 py-3 text-sm ${
-            isError
+            error
               ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
               : "border-white/10 bg-black/15 text-slate-400"
           }`}
@@ -234,14 +238,15 @@ export function AccountConsole() {
   }
 
   const internalDestination = customer.role === "admin" ? "/admin" : "/staff";
-  const rewardPoints = orders.length * 120;
 
   return (
     <div className="grid gap-6">
-      <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-6">
+      <section className="system-panel p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
           <div className="min-w-0">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">Verified customer account</p>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
+              Verified customer account
+            </p>
             <h2 className="mt-2 break-words text-2xl font-black sm:text-3xl">
               {customer.displayName || customer.username || customer.email}
             </h2>
@@ -252,25 +257,34 @@ export function AccountConsole() {
               {customer.role}
             </span>
             {customer.role !== "customer" ? (
-              <Link href={internalDestination} className="min-h-11 rounded-xl border border-violet-400/25 bg-violet-400/10 px-3 py-3 text-xs font-black text-violet-100">
+              <Link
+                href={internalDestination}
+                className="min-h-11 rounded-xl border border-violet-400/25 bg-violet-400/10 px-3 py-3 text-xs font-black text-violet-100"
+              >
                 Open {customer.role} workspace
               </Link>
             ) : null}
-            <button type="button" onClick={logout} className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-black text-slate-200">
+            <button
+              type="button"
+              onClick={logout}
+              className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-black text-slate-200"
+            >
               Sign out
             </button>
           </div>
         </div>
+        <p className={`mt-4 rounded-xl border px-4 py-3 text-sm ${error ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-white/10 bg-black/15 text-slate-400"}`}>
+          {message}
+        </p>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="Account summary">
+      <section className="grid gap-3 sm:grid-cols-3" aria-label="Account summary">
         {[
-          ["Orders", String(orders.length), "Linked to this account"],
-          ["Saved players", String(savedPlayers.length), "Recovered from order history"],
-          ["Reward points", String(rewardPoints), "Demo rewards balance"],
-          ["Support tickets", "0", "No open customer requests"],
+          ["Orders", String(orders.length), "Account-owned order records"],
+          ["Saved players", String(savedPlayers.length), "Derived from completed checkout details"],
+          ["Fulfilment attempts", String(fulfilmentCount), "Tracked across your orders"],
         ].map(([label, value, note]) => (
-          <article key={label} className="rounded-2xl border border-white/10 bg-[#10101a] p-5">
+          <article key={label} className="system-card p-5">
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{label}</p>
             <p className="mt-3 text-3xl font-black text-white">{value}</p>
             <p className="mt-2 text-xs text-slate-600">{note}</p>
@@ -283,14 +297,17 @@ export function AccountConsole() {
           <section>
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">Your orders</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">Your orders</p>
+                  <ModuleStateBadge state="live" />
+                </div>
                 <h2 className="mt-2 text-2xl font-black">Order history</h2>
               </div>
               <div className="flex gap-2">
                 <Link href="/games/mobile-legends" className="min-h-11 rounded-xl bg-white px-3 py-3 text-xs font-black text-slate-950 hover:bg-violet-200">
                   New top-up
                 </Link>
-                <button type="button" onClick={() => void loadAccount()} className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-black text-slate-200">
+                <button type="button" onClick={() => void load()} className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-black text-slate-200">
                   Refresh
                 </button>
               </div>
@@ -298,7 +315,7 @@ export function AccountConsole() {
 
             <div className="mt-5 grid gap-3">
               {orders.map((order) => (
-                <article key={order.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 sm:p-5">
+                <article key={order.id} className="system-card p-4 sm:p-5">
                   <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
                     <div className="min-w-0">
                       <p className="break-all text-xs font-bold uppercase tracking-[0.12em] text-violet-300">{order.id}</p>
@@ -324,22 +341,25 @@ export function AccountConsole() {
                 </article>
               ))}
               {!orders.length ? (
-                <div className="rounded-2xl border border-dashed border-white/10 bg-black/10 p-8 text-center text-sm text-slate-500">
-                  No orders are linked to this verified account yet.
+                <div className="system-empty-state">
+                  <div>
+                    <p className="font-black text-slate-300">No orders yet</p>
+                    <p className="mt-2 text-sm">Create a verified Mobile Legends order to begin your account history.</p>
+                  </div>
                 </div>
               ) : null}
             </div>
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-[#10101a] p-5">
+          <section className="system-panel p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h2 className="text-lg font-black">Saved player accounts</h2>
-                <p className="mt-1 text-sm text-slate-500">Player details recovered safely from your account-owned orders.</p>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-lg font-black">Saved player accounts</h2>
+                  <ModuleStateBadge state="beta" />
+                </div>
+                <p className="mt-1 text-sm text-slate-500">Read-only player details derived from your order history.</p>
               </div>
-              <button type="button" className="min-h-11 rounded-xl border border-white/10 px-3 text-xs font-bold text-slate-300 hover:bg-white/5">
-                Add player
-              </button>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {savedPlayers.map((order) => (
@@ -354,7 +374,7 @@ export function AccountConsole() {
               ))}
               {!savedPlayers.length ? (
                 <div className="rounded-xl border border-dashed border-white/10 p-5 text-sm text-slate-600 sm:col-span-2">
-                  Saved players will appear after an account-owned order is created.
+                  Saved players appear after an account-owned order is created.
                 </div>
               ) : null}
             </div>
@@ -362,63 +382,23 @@ export function AccountConsole() {
         </div>
 
         <aside className="grid content-start gap-5">
-          <section className="rounded-2xl border border-white/10 bg-[#10101a] p-5">
-            <h2 className="text-lg font-black">Profile</h2>
-            <div className="mt-4 grid gap-4 text-sm">
-              <div>
-                <p className="text-xs text-slate-600">Display name</p>
-                <p className="mt-1 font-bold text-white">{customer.displayName || customer.username || "Not set"}</p>
+          {[
+            ["Profile editing", "Display name and account preferences need a reviewed update endpoint."],
+            ["Rewards", "Points, tiers, redemption rules, and fraud controls are planned."],
+            ["Support tickets", "Ticket creation, assignment, replies, and escalation require persistent workflows."],
+            ["Session management", "Viewing and revoking individual devices is planned; sign-out works now."],
+          ].map(([title, description]) => (
+            <section key={title} className="system-panel p-5">
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-lg font-black">{title}</h2>
+                <ModuleStateBadge state="planned" />
               </div>
-              <div>
-                <p className="text-xs text-slate-600">Verified email</p>
-                <p className="mt-1 break-all text-slate-300">{customer.email}</p>
+              <p className="mt-3 text-sm leading-6 text-slate-500">{description}</p>
+              <div className="mt-4 rounded-xl border border-dashed border-white/10 bg-black/10 px-4 py-3 text-xs font-bold text-slate-600">
+                Not active in the current product system
               </div>
-              <button type="button" className="min-h-11 rounded-xl border border-white/10 text-xs font-bold hover:bg-white/5">
-                Edit profile
-              </button>
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-white/10 bg-[#10101a] p-5">
-            <h2 className="text-lg font-black">Favorite games</h2>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {favoriteGames.length ? favoriteGames.map((game) => (
-                <span key={game} className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300">
-                  {game.replaceAll("-", " ")}
-                </span>
-              )) : <p className="text-sm text-slate-600">Your played games will appear here.</p>}
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-white/10 bg-[#10101a] p-5">
-            <h2 className="text-lg font-black">Notifications</h2>
-            <div className="mt-4 grid gap-3">
-              <article className="rounded-xl border border-white/8 bg-black/20 p-3">
-                <p className="text-sm font-bold text-white">Account secured</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">Your verified email session is active.</p>
-              </article>
-              <article className="rounded-xl border border-violet-300/10 bg-violet-300/[0.05] p-3">
-                <p className="text-sm font-bold text-violet-100">Rewards progress</p>
-                <p className="mt-1 text-xs leading-5 text-slate-500">You currently have {rewardPoints} demo reward points.</p>
-              </article>
-            </div>
-          </section>
-
-          <section id="support" className="scroll-mt-24 rounded-2xl border border-violet-300/15 bg-violet-300/[0.06] p-5">
-            <h2 className="text-lg font-black">Support</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">Get help with an order, player ID, payment, or fulfilment problem.</p>
-            <button type="button" className="mt-4 min-h-11 w-full rounded-xl bg-white px-4 text-xs font-black text-slate-950 hover:bg-violet-200">
-              Create support ticket
-            </button>
-          </section>
-
-          <section className="rounded-2xl border border-white/10 bg-[#10101a] p-5">
-            <h2 className="text-lg font-black">Security and sessions</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500">Review account access and sign out sessions you no longer recognize.</p>
-            <button type="button" className="mt-4 min-h-11 w-full rounded-xl border border-white/10 text-xs font-bold hover:bg-white/5">
-              Manage sessions
-            </button>
-          </section>
+            </section>
+          ))}
         </aside>
       </div>
     </div>
