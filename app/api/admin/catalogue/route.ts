@@ -11,6 +11,21 @@ import { getPrisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
+const catalogueProductSelect = {
+  id: true,
+  provider: true,
+  offerId: true,
+  categoryId: true,
+  gameSlug: true,
+  name: true,
+  region: true,
+  retailPriceInPaise: true,
+  available: true,
+  published: true,
+  syncedAt: true,
+  raw: true,
+} as const;
+
 async function requireAdmin(request: Request) {
   const session = await getRequestSession(request);
   return session?.customer.role === "ADMIN" ? session : null;
@@ -29,10 +44,41 @@ function getStorefrontName(name: string, raw: unknown) {
     : name;
 }
 
+function serializeProduct(product: {
+  id: string;
+  provider: string;
+  offerId: string;
+  categoryId: string;
+  gameSlug: string;
+  name: string;
+  region: string | null;
+  retailPriceInPaise: number;
+  available: boolean;
+  published: boolean;
+  syncedAt: Date;
+  raw: unknown;
+}) {
+  const displayName = getStorefrontName(product.name, product.raw);
+
+  return {
+    ...product,
+    name: displayName,
+    syncedAt: product.syncedAt.toISOString(),
+    media: resolveProductMedia({
+      gameSlug: product.gameSlug,
+      productName: displayName,
+      supplierRaw: product.raw,
+    }),
+  };
+}
+
 export async function GET(request: Request) {
   const session = await requireAdmin(request);
   if (!session) {
-    return Response.json({ ok: false, message: "Administrator access is required." }, { status: 403 });
+    return Response.json(
+      { ok: false, message: "Administrator access is required." },
+      { status: 403 },
+    );
   }
 
   const products = await getPrisma().supplierProduct.findMany({
@@ -42,20 +88,7 @@ export async function GET(request: Request) {
       { retailPriceInPaise: "asc" },
     ],
     take: 500,
-    select: {
-      id: true,
-      provider: true,
-      offerId: true,
-      categoryId: true,
-      gameSlug: true,
-      name: true,
-      region: true,
-      retailPriceInPaise: true,
-      available: true,
-      published: true,
-      syncedAt: true,
-      raw: true,
-    },
+    select: catalogueProductSelect,
   });
 
   return Response.json({
@@ -82,37 +115,34 @@ export async function GET(request: Request) {
       href: `/games/mobile-legends/${market.code}`,
       defaultCurrency: market.defaultCurrency,
     })),
-    products: products.map((product) => {
-      const displayName = getStorefrontName(product.name, product.raw);
-      return {
-        ...product,
-        name: displayName,
-        syncedAt: product.syncedAt.toISOString(),
-        media: resolveProductMedia({
-          gameSlug: product.gameSlug,
-          productName: displayName,
-          supplierRaw: product.raw,
-        }),
-      };
-    }),
+    products: products.map(serializeProduct),
   });
 }
 
 export async function PATCH(request: Request) {
   const session = await requireAdmin(request);
   if (!session) {
-    return Response.json({ ok: false, message: "Administrator access is required." }, { status: 403 });
+    return Response.json(
+      { ok: false, message: "Administrator access is required." },
+      { status: 403 },
+    );
   }
 
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
-    return Response.json({ ok: false, message: "A valid catalogue update is required." }, { status: 400 });
+    return Response.json(
+      { ok: false, message: "A valid catalogue update is required." },
+      { status: 400 },
+    );
   }
 
   const data = body as Record<string, unknown>;
   const productId = typeof data.productId === "string" ? data.productId.trim() : "";
   if (!productId) {
-    return Response.json({ ok: false, message: "productId is required." }, { status: 400 });
+    return Response.json(
+      { ok: false, message: "productId is required." },
+      { status: 400 },
+    );
   }
 
   const product = await getPrisma().supplierProduct.findUnique({
@@ -120,12 +150,19 @@ export async function PATCH(request: Request) {
     select: { id: true, name: true, raw: true },
   });
   if (!product) {
-    return Response.json({ ok: false, message: "Catalogue product was not found." }, { status: 404 });
+    return Response.json(
+      { ok: false, message: "Catalogue product was not found." },
+      { status: 404 },
+    );
   }
 
   const raw = asObject(product.raw);
-  const imageUrl = typeof data.imageUrl === "string" ? data.imageUrl.trim() : undefined;
-  const imageAlt = typeof data.imageAlt === "string" ? data.imageAlt.trim().slice(0, 180) : undefined;
+  const imageUrl =
+    typeof data.imageUrl === "string" ? data.imageUrl.trim() : undefined;
+  const imageAlt =
+    typeof data.imageAlt === "string"
+      ? data.imageAlt.trim().slice(0, 180)
+      : undefined;
   const storefrontName =
     typeof data.storefrontName === "string"
       ? data.storefrontName.trim().slice(0, 120)
@@ -144,7 +181,10 @@ export async function PATCH(request: Request) {
     }
 
     if (imageUrl) {
-      raw.adminMediaOverride = { imageUrl, imageAlt: imageAlt || `${product.name} artwork` };
+      raw.adminMediaOverride = {
+        imageUrl,
+        imageAlt: imageAlt || `${product.name} artwork`,
+      };
     } else {
       delete raw.adminMediaOverride;
     }
@@ -164,17 +204,7 @@ export async function PATCH(request: Request) {
   const updated = await getPrisma().supplierProduct.update({
     where: { id: productId },
     data: updateData,
-    select: {
-      id: true,
-      gameSlug: true,
-      name: true,
-      region: true,
-      published: true,
-      available: true,
-      retailPriceInPaise: true,
-      raw: true,
-      syncedAt: true,
-    },
+    select: catalogueProductSelect,
   });
 
   await getPrisma().adminAuditLog.create({
@@ -192,18 +222,5 @@ export async function PATCH(request: Request) {
     },
   });
 
-  const displayName = getStorefrontName(updated.name, updated.raw);
-  return Response.json({
-    ok: true,
-    product: {
-      ...updated,
-      name: displayName,
-      syncedAt: updated.syncedAt.toISOString(),
-      media: resolveProductMedia({
-        gameSlug: updated.gameSlug,
-        productName: displayName,
-        supplierRaw: updated.raw,
-      }),
-    },
-  });
+  return Response.json({ ok: true, product: serializeProduct(updated) });
 }
