@@ -72,6 +72,29 @@ export function AdminCatalogueConsole() {
   const [message, setMessage] = useState("Loading catalogue controls...");
   const [busyId, setBusyId] = useState<string | null>(null);
 
+  useEffect(() => {
+    let active = true;
+
+    readSnapshot()
+      .then((result) => {
+        if (!active) return;
+        setSnapshot(result);
+        setMessage(`${result.products.length} supplier products loaded.`);
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "Catalogue controls could not be loaded.",
+        );
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   async function load() {
     setMessage("Loading catalogue controls...");
     try {
@@ -79,13 +102,13 @@ export function AdminCatalogueConsole() {
       setSnapshot(result);
       setMessage(`${result.products.length} supplier products loaded.`);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Catalogue controls could not be loaded.");
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Catalogue controls could not be loaded.",
+      );
     }
   }
-
-  useEffect(() => {
-    void load();
-  }, []);
 
   const products = snapshot?.products ?? [];
   const visibleProducts = useMemo(() => {
@@ -159,7 +182,9 @@ export function AdminCatalogueConsole() {
 
   const publishedCount = products.filter((product) => product.published).length;
   const availableCount = products.filter((product) => product.available).length;
-  const supplierMediaCount = products.filter((product) => product.media.source === "supplier").length;
+  const supplierMediaCount = products.filter(
+    (product) => product.media.source === "supplier",
+  ).length;
 
   return (
     <div className="grid gap-5">
@@ -171,7 +196,9 @@ export function AdminCatalogueConsole() {
           ["Supplier media", String(supplierMediaCount), "Products with upstream artwork"],
         ].map(([label, value, note]) => (
           <article key={label} className="system-card p-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">{label}</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">
+              {label}
+            </p>
             <p className="mt-2 text-2xl font-black text-white">{value}</p>
             <p className="mt-1 text-xs text-slate-600">{note}</p>
           </article>
@@ -183,7 +210,9 @@ export function AdminCatalogueConsole() {
           <div className="grid gap-3 border-b border-white/10 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
             <div>
               <h3 className="text-lg font-black text-white">Product catalogue</h3>
-              <p className="mt-1 text-sm text-slate-500">Publish, pause, inspect and open the media editor.</p>
+              <p className="mt-1 text-sm text-slate-500">
+                Publish, pause, inspect and open the media editor.
+              </p>
             </div>
             <button
               type="button"
@@ -203,7 +232,10 @@ export function AdminCatalogueConsole() {
 
           <div className="max-h-[46rem] divide-y divide-white/8 overflow-y-auto">
             {visibleProducts.map((product) => (
-              <article key={product.id} className="grid gap-4 p-4 sm:grid-cols-[4.5rem_minmax(0,1fr)_auto] sm:items-center">
+              <article
+                key={product.id}
+                className="grid gap-4 p-4 sm:grid-cols-[4.5rem_minmax(0,1fr)_auto] sm:items-center"
+              >
                 <div className="aspect-square overflow-hidden rounded-xl border border-white/10 bg-black/25">
                   <ResilientImage
                     sources={product.media.sources}
@@ -220,23 +252,47 @@ export function AdminCatalogueConsole() {
                       {product.region ?? "Global"}
                     </span>
                   </div>
-                  <p className="mt-1 text-sm font-bold text-violet-200">{formatInr(product.retailPriceInPaise)}</p>
-                  <p className="mt-1 truncate font-mono text-[10px] text-slate-600">{product.offerId}</p>
+                  <p className="mt-1 text-sm font-bold text-violet-200">
+                    {formatInr(product.retailPriceInPaise)}
+                  </p>
+                  <p className="mt-1 truncate font-mono text-[10px] text-slate-600">
+                    {product.offerId}
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-2 sm:justify-end">
                   <button
                     type="button"
                     disabled={busyId === product.id}
-                    onClick={() => void patchProduct(product.id, { published: !product.published }, product.published ? "Product unpublished." : "Product published.")}
-                    className={`min-h-10 rounded-xl border px-3 text-[11px] font-black ${product.published ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200" : "border-white/10 bg-white/5 text-slate-400"}`}
+                    onClick={() =>
+                      void patchProduct(
+                        product.id,
+                        { published: !product.published },
+                        product.published ? "Product unpublished." : "Product published.",
+                      )
+                    }
+                    className={`min-h-10 rounded-xl border px-3 text-[11px] font-black ${
+                      product.published
+                        ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200"
+                        : "border-white/10 bg-white/5 text-slate-400"
+                    }`}
                   >
                     {product.published ? "Published" : "Unpublished"}
                   </button>
                   <button
                     type="button"
                     disabled={busyId === product.id}
-                    onClick={() => void patchProduct(product.id, { available: !product.available }, product.available ? "Product paused." : "Product activated.")}
-                    className={`min-h-10 rounded-xl border px-3 text-[11px] font-black ${product.available ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100" : "border-rose-300/20 bg-rose-300/10 text-rose-200"}`}
+                    onClick={() =>
+                      void patchProduct(
+                        product.id,
+                        { available: !product.available },
+                        product.available ? "Product paused." : "Product activated.",
+                      )
+                    }
+                    className={`min-h-10 rounded-xl border px-3 text-[11px] font-black ${
+                      product.available
+                        ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100"
+                        : "border-rose-300/20 bg-rose-300/10 text-rose-200"
+                    }`}
                   >
                     {product.available ? "Available" : "Paused"}
                   </button>
@@ -251,13 +307,17 @@ export function AdminCatalogueConsole() {
               </article>
             ))}
             {!visibleProducts.length ? (
-              <div className="p-10 text-center text-sm text-slate-600">No catalogue product matched.</div>
+              <div className="p-10 text-center text-sm text-slate-600">
+                No catalogue product matched.
+              </div>
             ) : null}
           </div>
         </section>
 
         <aside className="system-panel h-fit p-5 xl:sticky xl:top-24">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">Media and display override</p>
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
+            Media and display override
+          </p>
           {selected ? (
             <div className="mt-4 grid gap-4">
               <div className="aspect-[16/10] overflow-hidden rounded-2xl border border-white/10 bg-black/25">
@@ -273,7 +333,12 @@ export function AdminCatalogueConsole() {
                 Storefront name
                 <input
                   value={edit.storefrontName}
-                  onChange={(event) => setEdit((current) => ({ ...current, storefrontName: event.target.value }))}
+                  onChange={(event) =>
+                    setEdit((current) => ({
+                      ...current,
+                      storefrontName: event.target.value,
+                    }))
+                  }
                   className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
                 />
               </label>
@@ -281,7 +346,9 @@ export function AdminCatalogueConsole() {
                 Primary image URL
                 <input
                   value={edit.imageUrl}
-                  onChange={(event) => setEdit((current) => ({ ...current, imageUrl: event.target.value }))}
+                  onChange={(event) =>
+                    setEdit((current) => ({ ...current, imageUrl: event.target.value }))
+                  }
                   placeholder="https://reviewed-cdn.example/product.png"
                   className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
                 />
@@ -290,7 +357,9 @@ export function AdminCatalogueConsole() {
                 Image description
                 <input
                   value={edit.imageAlt}
-                  onChange={(event) => setEdit((current) => ({ ...current, imageAlt: event.target.value }))}
+                  onChange={(event) =>
+                    setEdit((current) => ({ ...current, imageAlt: event.target.value }))
+                  }
                   className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
                 />
               </label>
@@ -298,7 +367,9 @@ export function AdminCatalogueConsole() {
                 <button
                   type="button"
                   disabled={busyId === selected.id}
-                  onClick={() => void patchProduct(selected.id, edit, "Storefront media updated.")}
+                  onClick={() =>
+                    void patchProduct(selected.id, edit, "Storefront media updated.")
+                  }
                   className="min-h-11 rounded-xl bg-violet-500 px-3 text-xs font-black text-white hover:bg-violet-400 disabled:opacity-50"
                 >
                   Save override
@@ -306,14 +377,21 @@ export function AdminCatalogueConsole() {
                 <button
                   type="button"
                   disabled={busyId === selected.id}
-                  onClick={() => void patchProduct(selected.id, { imageUrl: "", storefrontName: "" }, "Overrides cleared.")}
+                  onClick={() =>
+                    void patchProduct(
+                      selected.id,
+                      { imageUrl: "", storefrontName: "" },
+                      "Overrides cleared.",
+                    )
+                  }
                   className="min-h-11 rounded-xl border border-white/10 px-3 text-xs font-black text-slate-300 hover:bg-white/5 disabled:opacity-50"
                 >
                   Clear override
                 </button>
               </div>
               <p className="text-xs leading-5 text-slate-600">
-                Only HTTPS media from reviewed publisher, supplier, or configured CDN hosts is accepted.
+                Only HTTPS media from reviewed publisher, supplier, or configured CDN hosts
+                is accepted.
               </p>
             </div>
           ) : (
@@ -324,7 +402,10 @@ export function AdminCatalogueConsole() {
         </aside>
       </div>
 
-      <p aria-live="polite" className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-slate-400">
+      <p
+        aria-live="polite"
+        className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-slate-400"
+      >
         {message}
       </p>
     </div>
