@@ -1,4 +1,5 @@
 import { getRequestSession } from "@/lib/auth";
+import { parseMobileLegendsMarket } from "@/lib/mobile-legends-market";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
@@ -19,6 +20,7 @@ export async function GET(request: Request) {
         publicId: true,
         status: true,
         gameSlug: true,
+        marketCode: true,
         packageName: true,
         amountInPaise: true,
         currency: true,
@@ -34,25 +36,30 @@ export async function GET(request: Request) {
 
     return Response.json({
       ok: true,
-      orders: orders.map((order) => ({
-        id: order.publicId,
-        status: order.status.toLowerCase(),
-        gameSlug: order.gameSlug,
-        package: {
-          name: order.packageName,
-          amountInPaise: order.amountInPaise,
-          currency: order.currency,
-        },
-        player: {
-          playerId: order.playerId,
-          zoneId: order.zoneId,
-          nickname: order.verifiedNickname,
-        },
-        paymentProvider: order.paymentProvider,
-        fulfilmentAttempts: order._count.fulfilmentAttempts,
-        createdAt: order.createdAt.toISOString(),
-        updatedAt: order.updatedAt.toISOString(),
-      })),
+      orders: orders.map((order) => {
+        const market = parseMobileLegendsMarket(order.marketCode);
+
+        return {
+          id: order.publicId,
+          status: order.status.toLowerCase(),
+          gameSlug: order.gameSlug,
+          market: market ? { code: market.code, label: market.label, flag: market.flag } : null,
+          package: {
+            name: order.packageName,
+            amountInPaise: order.amountInPaise,
+            currency: order.currency,
+          },
+          player: {
+            playerId: order.playerId,
+            zoneId: order.zoneId,
+            nickname: order.verifiedNickname,
+          },
+          paymentProvider: order.paymentProvider,
+          fulfilmentAttempts: order._count.fulfilmentAttempts,
+          createdAt: order.createdAt.toISOString(),
+          updatedAt: order.updatedAt.toISOString(),
+        };
+      }),
     });
   } catch (error) {
     if (!(error instanceof RuntimeConfigurationError)) {
