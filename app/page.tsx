@@ -37,36 +37,52 @@ function getFeaturedValue(
   }
   if (game.status === "checkout") return "Checkout available";
   if (game.status === "catalogue") {
-    return flags.showDevelopmentBadges ? game.badge ?? "Architecture preview" : "Preview";
+    return flags.showDevelopmentBadges
+      ? game.badge ?? "Architecture preview"
+      : "Preview";
   }
   return flags.showDevelopmentBadges ? "Coming soon" : "Not available";
 }
 
-function SecondaryFeaturedTile({
+function FeaturedArtwork({
   game,
   flags,
+  primary = false,
 }: {
   game: Game;
   flags: StorefrontContent["privateFlags"];
+  primary?: boolean;
 }) {
-  const content = (
-    <article className="relative aspect-square min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#10101a]">
+  const artwork = (
+    <article
+      className={`relative min-w-0 overflow-hidden border border-white/10 bg-[#10101a] ${
+        primary
+          ? "row-span-2 aspect-square rounded-3xl shadow-[0_24px_70px_rgba(0,0,0,0.34)]"
+          : "aspect-square rounded-2xl"
+      }`}
+    >
       <ResilientImage
         sources={[...game.artworkSources, ...game.logoSources]}
         alt={game.artworkAlt}
         fallbackLabel={game.title}
-        className="absolute inset-0 h-full w-full object-cover"
+        loading={primary ? "eager" : "lazy"}
+        className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]"
         style={{ objectPosition: game.artworkPosition ?? "center" }}
         fallbackClassName="absolute inset-0 h-full w-full"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 p-3">
-        <p className="line-clamp-2 text-sm font-black leading-tight text-white">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/5 to-transparent" />
+      <div className={`absolute inset-x-0 bottom-0 ${primary ? "p-4 sm:p-5" : "p-3"}`}>
+        <p className={`${primary ? "text-xs" : "text-sm"} font-bold text-white/75`}>
           {game.title}
         </p>
-        <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-white/60">
+        <p className={`${primary ? "mt-1 text-xl sm:text-2xl" : "mt-1 text-[10px] uppercase tracking-wider"} font-black text-white`}>
           {getFeaturedValue(game, flags)}
         </p>
+        {primary && game.available && game.href ? (
+          <span className="mt-3 inline-flex min-h-11 items-center rounded-lg bg-white px-3 py-2 text-xs font-black text-slate-950">
+            Open game →
+          </span>
+        ) : null}
       </div>
     </article>
   );
@@ -74,12 +90,12 @@ function SecondaryFeaturedTile({
   return game.available && game.href ? (
     <Link
       href={game.href}
-      className="rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+      className="group rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
     >
-      {content}
+      {artwork}
     </Link>
   ) : (
-    content
+    artwork
   );
 }
 
@@ -88,47 +104,49 @@ export default async function Home() {
     getStorefrontPricingSnapshot(),
     getPublishedStorefrontContent(),
   ]);
-  const enrichedGames = games.map((game) => {
-    const liveMinimum = pricing.minimumPrices[game.pricingKey ?? game.slug];
 
+  const enrichedGames: Game[] = games.map((game) => {
+    const liveMinimum = pricing.minimumPrices[game.pricingKey ?? game.slug];
     return {
       ...game,
       startingPriceInPaise:
-        typeof liveMinimum === "number" ? liveMinimum : game.startingPriceInPaise,
+        typeof liveMinimum === "number"
+          ? liveMinimum
+          : game.startingPriceInPaise,
       pricingMode:
-        typeof liveMinimum === "number" ? ("live" as const) : game.pricingMode,
+        typeof liveMinimum === "number" ? "live" : game.pricingMode,
     };
   });
 
-  const hiddenGameSlugs = new Set(storefront.hiddenGameSlugs);
-  const visibleGames = enrichedGames.filter((game) => {
-    if (game.kind === "mobile-legends-region") {
-      return !hiddenGameSlugs.has("mobile-legends");
-    }
-    return !hiddenGameSlugs.has(game.slug);
-  });
+  const hiddenSlugs = new Set(storefront.hiddenGameSlugs);
+  const visibleGames = enrichedGames.filter((game) =>
+    game.kind === "mobile-legends-region"
+      ? !hiddenSlugs.has("mobile-legends")
+      : !hiddenSlugs.has(game.slug),
+  );
   const visibleMainGames = visibleGames.filter((game) => game.kind === "game");
-  const featuredGames = storefront.featuredGameSlugs
-    .map((slug) => visibleMainGames.find((game) => game.slug === slug))
-    .filter((game): game is Game => Boolean(game));
+  const featuredGames = storefront.featuredGameSlugs.flatMap((slug) => {
+    const game = visibleMainGames.find((item) => item.slug === slug);
+    return game ? [game] : [];
+  });
   const resolvedFeaturedGames = featuredGames.length
     ? featuredGames
     : visibleMainGames.slice(0, 3);
   const primaryFeatured = resolvedFeaturedGames[0] ?? null;
   const secondaryFeatured = resolvedFeaturedGames.slice(1, 3);
-  const visibleNavigation = customerNavigation.filter(
-    (item) => storefront.navigation.visibleIds.includes(item.id),
+  const visibleNavigation = customerNavigation.filter((item) =>
+    storefront.navigation.visibleIds.includes(item.id),
   );
-  const visiblePolicies = STOREFRONT_POLICY_KEYS.map((key) => ({
-    key,
-    policy: getPublishedPolicy(storefront, key),
-  })).filter(
-    (entry): entry is { key: (typeof STOREFRONT_POLICY_KEYS)[number]; policy: NonNullable<ReturnType<typeof getPublishedPolicy>> } =>
-      Boolean(entry.policy),
-  );
+  const visiblePolicies = STOREFRONT_POLICY_KEYS.flatMap((key) => {
+    const policy = getPublishedPolicy(storefront, key);
+    return policy ? [{ key, policy }] : [];
+  });
 
   return (
-    <main id="top" className="min-h-screen overflow-x-clip bg-[#07070c] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
+    <main
+      id="top"
+      className="min-h-screen overflow-x-clip bg-[#07070c] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white"
+    >
       <SiteHeader content={storefront} />
 
       {storefront.announcement.enabled ? (
@@ -158,23 +176,19 @@ export default async function Home() {
             <div className="absolute left-[4%] top-[-16rem] h-[30rem] w-[30rem] rounded-full bg-violet-700/14 blur-[130px]" />
             <div className="absolute right-[-10rem] top-10 h-[26rem] w-[26rem] rounded-full bg-cyan-500/10 blur-[120px]" />
           </div>
-
           <div className="relative mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:px-8 lg:py-18">
             <div className="min-w-0">
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-200">
                 <span className="h-2 w-2 rounded-full bg-emerald-300" />
                 {storefront.hero.eyebrow}
               </div>
-
               <h1 className="mt-5 max-w-2xl text-4xl font-black leading-[1.02] tracking-[-0.05em] sm:text-5xl lg:text-6xl">
                 {storefront.hero.title}
                 <span className="block text-violet-300">{storefront.hero.accent}</span>
               </h1>
-
               <p className="mt-4 max-w-xl text-base leading-7 text-slate-400 sm:text-lg">
                 {storefront.hero.description}
               </p>
-
               <div className="mt-6 flex flex-col gap-3 min-[420px]:flex-row">
                 <Link
                   href={storefront.hero.primaryCtaHref}
@@ -189,7 +203,6 @@ export default async function Home() {
                   {storefront.hero.secondaryCtaLabel}
                 </Link>
               </div>
-
               <div className="mt-7 grid max-w-lg grid-cols-3 gap-2 border-t border-white/10 pt-5 text-center sm:text-left">
                 <div>
                   <p className="text-xl font-black text-white">{visibleMainGames.length}</p>
@@ -201,61 +214,20 @@ export default async function Home() {
                 </div>
                 <div>
                   <p className="text-xl font-black text-white">15</p>
-                  <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">Display currencies</p>
+                  <p className="mt-0.5 text-[10px] uppercase tracking-wider text-slate-500">Currencies</p>
                 </div>
               </div>
             </div>
 
             {primaryFeatured ? (
               <div className="grid min-w-0 grid-cols-[1.2fr_0.8fr] gap-3">
-                {primaryFeatured.available && primaryFeatured.href ? (
-                  <Link
-                    href={primaryFeatured.href}
-                    className="group relative row-span-2 aspect-square min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-[#10101a] shadow-[0_24px_70px_rgba(0,0,0,0.34)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
-                  >
-                    <ResilientImage
-                      sources={[...primaryFeatured.artworkSources, ...primaryFeatured.logoSources]}
-                      alt={primaryFeatured.artworkAlt}
-                      fallbackLabel={primaryFeatured.title}
-                      loading="eager"
-                      className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]"
-                      style={{ objectPosition: primaryFeatured.artworkPosition ?? "center" }}
-                      fallbackClassName="absolute inset-0 h-full w-full"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/5 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-                      <p className="text-xs font-bold text-white/70">{primaryFeatured.title}</p>
-                      <p className="mt-1 text-xl font-black text-white sm:text-2xl">
-                        {getFeaturedValue(primaryFeatured, storefront.privateFlags)}
-                      </p>
-                      <span className="mt-3 inline-flex min-h-11 items-center rounded-lg bg-white px-3 py-2 text-xs font-black text-slate-950">
-                        Open game →
-                      </span>
-                    </div>
-                  </Link>
-                ) : (
-                  <article className="relative row-span-2 aspect-square min-w-0 overflow-hidden rounded-3xl border border-white/10 bg-[#10101a] shadow-[0_24px_70px_rgba(0,0,0,0.34)]">
-                    <ResilientImage
-                      sources={[...primaryFeatured.artworkSources, ...primaryFeatured.logoSources]}
-                      alt={primaryFeatured.artworkAlt}
-                      fallbackLabel={primaryFeatured.title}
-                      loading="eager"
-                      className="absolute inset-0 h-full w-full object-cover"
-                      style={{ objectPosition: primaryFeatured.artworkPosition ?? "center" }}
-                      fallbackClassName="absolute inset-0 h-full w-full"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/5 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-                      <p className="text-xs font-bold text-white/70">{primaryFeatured.title}</p>
-                      <p className="mt-1 text-xl font-black text-white sm:text-2xl">
-                        {getFeaturedValue(primaryFeatured, storefront.privateFlags)}
-                      </p>
-                    </div>
-                  </article>
-                )}
-
+                <FeaturedArtwork
+                  game={primaryFeatured}
+                  flags={storefront.privateFlags}
+                  primary
+                />
                 {secondaryFeatured.map((game) => (
-                  <SecondaryFeaturedTile
+                  <FeaturedArtwork
                     key={game.slug}
                     game={game}
                     flags={storefront.privateFlags}
@@ -268,7 +240,10 @@ export default async function Home() {
       ) : null}
 
       {storefront.catalogue.enabled ? (
-        <section id="games" className="mx-auto max-w-7xl scroll-mt-24 px-4 py-12 sm:px-6 lg:px-8 lg:py-18">
+        <section
+          id="games"
+          className="mx-auto max-w-7xl scroll-mt-24 px-4 py-12 sm:px-6 lg:px-8 lg:py-18"
+        >
           <div className="max-w-2xl">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">
               {storefront.catalogue.eyebrow}
@@ -280,7 +255,6 @@ export default async function Home() {
               {storefront.catalogue.description}
             </p>
           </div>
-
           <GameCatalogue
             games={visibleGames}
             showRegionalMarkets={storefront.catalogue.showRegionalMarkets}
@@ -298,7 +272,10 @@ export default async function Home() {
             </p>
             <div className="mt-5 grid gap-3 md:grid-cols-3">
               {storefront.process.steps.map((step) => (
-                <article key={`${step.number}-${step.title}`} className="rounded-2xl border border-white/10 bg-[#0d0d15] p-5">
+                <article
+                  key={`${step.number}-${step.title}`}
+                  className="rounded-2xl border border-white/10 bg-[#0d0d15] p-5"
+                >
                   <p className="font-mono text-sm font-black text-violet-300">{step.number}</p>
                   <h3 className="mt-4 text-lg font-black text-white">{step.title}</h3>
                   <p className="mt-2 text-sm leading-6 text-slate-500">{step.description}</p>
@@ -313,7 +290,10 @@ export default async function Home() {
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="grid gap-3 sm:grid-cols-3">
             {storefront.benefits.items.map((item) => (
-              <article key={item.title} className="rounded-2xl border border-white/10 bg-[#0d0d15] p-5">
+              <article
+                key={item.title}
+                className="rounded-2xl border border-white/10 bg-[#0d0d15] p-5"
+              >
                 <h3 className="text-sm font-black text-white">{item.title}</h3>
                 <p className="mt-2 text-sm leading-6 text-slate-500">{item.description}</p>
               </article>
