@@ -11,8 +11,16 @@ type GameCardProps = {
 
 function getStatusLabel(game: Game) {
   if (game.status === "checkout") return "Top up";
-  if (game.status === "catalogue") return "Open market";
+  if (game.status === "catalogue") {
+    return game.slug.startsWith("mobile-legends") ? "Open market" : "Explore beta";
+  }
   return "Coming soon";
+}
+
+function getStatusValue(game: Game) {
+  if (game.startingPriceInPaise) return formatInr(game.startingPriceInPaise);
+  if (game.status === "catalogue") return game.badge ?? "Architecture preview";
+  return "Not available";
 }
 
 export function GameCard({ game }: GameCardProps) {
@@ -70,9 +78,7 @@ export function GameCard({ game }: GameCardProps) {
                 {game.startingPriceInPaise ? "From" : "Status"}
               </p>
               <p className="mt-0.5 truncate text-sm font-black text-white sm:text-base">
-                {game.startingPriceInPaise
-                  ? formatInr(game.startingPriceInPaise)
-                  : "Not available"}
+                {getStatusValue(game)}
               </p>
             </div>
             <span
