@@ -5,6 +5,7 @@ import { ResilientImage } from "@/components/resilient-image";
 import { SiteHeader } from "@/components/site-header";
 import type { Game } from "@/lib/games";
 import { games } from "@/lib/games";
+import { getPublicMediaPlacements } from "@/lib/media-assets";
 import { formatInr } from "@/lib/mobile-legends";
 import { mobileLegendsMarkets } from "@/lib/mobile-legends-market";
 import { customerNavigation } from "@/lib/product-system";
@@ -100,15 +101,30 @@ function FeaturedArtwork({
 }
 
 export default async function Home() {
-  const [pricing, storefront] = await Promise.all([
+  const [pricing, storefront, mediaPlacements] = await Promise.all([
     getStorefrontPricingSnapshot(),
     getPublishedStorefrontContent(),
+    getPublicMediaPlacements(),
   ]);
 
   const enrichedGames: Game[] = games.map((game) => {
     const liveMinimum = pricing.minimumPrices[game.pricingKey ?? game.slug];
+    const mediaSlug = game.slug.startsWith("mobile-legends")
+      ? "mobile-legends"
+      : game.slug;
+    const logoPlacement = mediaPlacements.get(`game.${mediaSlug}.logo`);
+    const artworkPlacement = mediaPlacements.get(`game.${mediaSlug}.artwork`);
+
     return {
       ...game,
+      logoSources: logoPlacement
+        ? [logoPlacement.url, ...game.logoSources]
+        : game.logoSources,
+      artworkSources: artworkPlacement
+        ? [artworkPlacement.url, ...game.artworkSources]
+        : game.artworkSources,
+      logoAlt: logoPlacement?.altText ?? game.logoAlt,
+      artworkAlt: artworkPlacement?.altText ?? game.artworkAlt,
       startingPriceInPaise:
         typeof liveMinimum === "number"
           ? liveMinimum
@@ -118,6 +134,7 @@ export default async function Home() {
     };
   });
 
+  const heroBackground = mediaPlacements.get("storefront.hero.background");
   const hiddenSlugs = new Set(storefront.hiddenGameSlugs);
   const visibleGames = enrichedGames.filter((game) =>
     game.kind === "mobile-legends-region"
@@ -173,6 +190,18 @@ export default async function Home() {
       {storefront.hero.enabled ? (
         <section className="relative overflow-hidden border-b border-white/10">
           <div className="pointer-events-none absolute inset-0">
+            {heroBackground ? (
+              <>
+                <ResilientImage
+                  sources={[heroBackground.url]}
+                  alt={heroBackground.altText}
+                  loading="eager"
+                  className="absolute inset-0 h-full w-full object-cover opacity-35"
+                  fallbackClassName="absolute inset-0 h-full w-full"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(7,7,12,0.97),rgba(7,7,12,0.72)_48%,rgba(7,7,12,0.88))]" />
+              </>
+            ) : null}
             <div className="absolute left-[4%] top-[-16rem] h-[30rem] w-[30rem] rounded-full bg-violet-700/14 blur-[130px]" />
             <div className="absolute right-[-10rem] top-10 h-[26rem] w-[26rem] rounded-full bg-cyan-500/10 blur-[120px]" />
           </div>

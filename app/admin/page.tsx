@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { AdminCatalogueConsole } from "@/components/admin-catalogue-console";
 import { AdminControlCenter } from "@/components/admin-control-center";
 import { AdminInterfaceMap } from "@/components/admin-interface-map";
+import { AdminMediaConsole } from "@/components/admin-media-console";
 import { AdminPaymentConsole } from "@/components/admin-payment-console";
 import { AdminPeopleConsole } from "@/components/admin-people-console";
 import { AdminStorefrontConsole } from "@/components/admin-storefront-console";
@@ -13,8 +14,10 @@ import { OperatorHealthPanel } from "@/components/operator-health-panel";
 import { SupplierPricingConsole } from "@/components/supplier-pricing-console";
 import { WorkspaceNavigation } from "@/components/workspace-navigation";
 import { getAdminControlSnapshot } from "@/lib/admin-control-center";
+import { createMediaAdminDatasets } from "@/lib/admin-media-datasets";
 import { getAdminPaymentSnapshot } from "@/lib/admin-payments";
 import { getAdminPeopleSnapshot } from "@/lib/admin-people";
+import { getAdminMediaSnapshot } from "@/lib/media-assets";
 import {
   adminModules,
   getVisibleModules,
@@ -28,7 +31,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Admin Control Center | Recharza",
   description:
-    "Private whole-store control center for Recharza commands, databases, website interfaces, catalogue, pricing, suppliers, payments, people, permissions, content, policies, security, audit, and order operations.",
+    "Private whole-store control center for Recharza commands, databases, website interfaces, catalogue, media, pricing, suppliers, payments, people, permissions, content, policies, security, audit, and order operations.",
   robots: { index: false, follow: false },
 };
 
@@ -39,13 +42,29 @@ export default async function AdminPage() {
     peopleSnapshot,
     paymentSnapshot,
     storefrontSnapshot,
+    mediaSnapshot,
   ] = await Promise.all([
     requireWorkspaceSession("admin", "/admin"),
     getAdminControlSnapshot(),
     getAdminPeopleSnapshot(),
     getAdminPaymentSnapshot(),
     getAdminStorefrontSnapshot(),
+    getAdminMediaSnapshot(),
   ]);
+  const controlSnapshot = {
+    ...snapshot,
+    metrics: [
+      ...snapshot.metrics,
+      {
+        id: "media",
+        label: "Media assets",
+        value: String(mediaSnapshot.metrics.totalAssets),
+        note: `${mediaSnapshot.metrics.approvedAssets} approved · ${mediaSnapshot.metrics.assignedPlacements} placements`,
+        tone: mediaSnapshot.metrics.reviewAssets > 0 ? ("warning" as const) : ("neutral" as const),
+      },
+    ],
+    datasets: [...snapshot.datasets, ...createMediaAdminDatasets(mediaSnapshot)],
+  };
   const modules = getVisibleModules(adminModules);
   const liveCount = modules.filter((module) => module.state === "live").length;
   const betaCount = modules.filter((module) => module.state === "beta").length;
@@ -73,7 +92,7 @@ export default async function AdminPage() {
               </h1>
               <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-400">
                 Control and inspect the storefront, customers, staff, permissions, orders,
-                products, pricing, payments, suppliers, fulfilment, content, policies,
+                products, pricing, payments, suppliers, fulfilment, media, content, policies,
                 sessions, audit evidence, and every protected interface from one
                 administration system.
               </p>
@@ -94,8 +113,9 @@ export default async function AdminPage() {
             </div>
           </section>
 
-          <AdminControlCenter snapshot={snapshot} />
+          <AdminControlCenter snapshot={controlSnapshot} />
           <AdminStorefrontConsole initialSnapshot={storefrontSnapshot} />
+          <AdminMediaConsole initialSnapshot={mediaSnapshot} />
           <AdminPeopleConsole
             currentAdminId={session.customer.id}
             initialPeople={peopleSnapshot.people}
