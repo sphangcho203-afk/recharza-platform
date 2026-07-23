@@ -33,7 +33,9 @@ export type AdminDataset = {
     | "fulfilment"
     | "sessions"
     | "audit"
-    | "supplier-sync";
+    | "supplier-sync"
+    | "media-assets"
+    | "media-placements";
   label: string;
   description: string;
   total: number;
