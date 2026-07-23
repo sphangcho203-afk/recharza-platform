@@ -168,10 +168,6 @@ function readMetadataString(metadata: unknown, key: string) {
   return readString(asObject(metadata)[key]);
 }
 
-function readMetadataInteger(metadata: unknown, key: string) {
-  return readInteger(asObject(metadata)[key]);
-}
-
 function resolveProviderState(): AdminPaymentSnapshot["provider"] {
   const keyId = process.env.RAZORPAY_KEY_ID?.trim() ?? "";
   const keySecret = process.env.RAZORPAY_KEY_SECRET?.trim() ?? "";
@@ -229,6 +225,27 @@ function resolvePaymentState(order: {
   if (order.status === "CANCELLED") return "cancelled";
   if (order.status === "AWAITING_PAYMENT") return "awaiting_customer";
   return order.status.toLowerCase();
+}
+
+function serializeCase(paymentCase: InternalPaymentCase): AdminPaymentCase {
+  return {
+    id: paymentCase.id,
+    type: paymentCase.type,
+    status: paymentCase.status,
+    title: paymentCase.title,
+    reason: paymentCase.reason,
+    requestedAmountInPaise: paymentCase.requestedAmountInPaise,
+    currency: paymentCase.currency,
+    orderId: paymentCase.orderId,
+    webhookId: paymentCase.webhookId,
+    provider: paymentCase.provider,
+    providerOrderId: paymentCase.providerOrderId,
+    providerPaymentId: paymentCase.providerPaymentId,
+    createdByEmail: paymentCase.createdByEmail,
+    createdAt: paymentCase.createdAt,
+    updatedAt: paymentCase.updatedAt,
+    events: paymentCase.events,
+  };
 }
 
 export async function getAdminPaymentCaseLedger(): Promise<InternalPaymentCase[]> {
@@ -325,7 +342,6 @@ export async function getAdminPaymentSnapshot(): Promise<AdminPaymentSnapshot> {
       orderBy: { updatedAt: "desc" },
       take: 200,
       select: {
-        id: true,
         publicId: true,
         status: true,
         gameSlug: true,
@@ -385,9 +401,10 @@ export async function getAdminPaymentSnapshot(): Promise<AdminPaymentSnapshot> {
 
   const serializedOrders: AdminPaymentOrder[] = orders.map((order) => {
     const latestEvent = order.events[0] ?? null;
-    const providerPaymentId = order.events
-      .map((event) => readMetadataString(event.metadata, "paymentId"))
-      .find(Boolean) ?? null;
+    const providerPaymentId =
+      order.events
+        .map((event) => readMetadataString(event.metadata, "paymentId"))
+        .find(Boolean) ?? null;
 
     return {
       id: order.publicId,
@@ -439,7 +456,9 @@ export async function getAdminPaymentSnapshot(): Promise<AdminPaymentSnapshot> {
     ["PAID", "FULFILLING", "COMPLETED"].includes(order.status),
   );
   const capturedValue = paidOrders.reduce((sum, order) => sum + order.amountInPaise, 0);
-  const failedWebhookCount = serializedWebhooks.filter((webhook) => webhook.status === "FAILED").length;
+  const failedWebhookCount = serializedWebhooks.filter(
+    (webhook) => webhook.status === "FAILED",
+  ).length;
   const awaitingWebhookCount = serializedOrders.filter(
     (order) => order.paymentState === "awaiting_webhook",
   ).length;
@@ -449,6 +468,7 @@ export async function getAdminPaymentSnapshot(): Promise<AdminPaymentSnapshot> {
   const refundExposure = openCases
     .filter((paymentCase) => paymentCase.type === "REFUND_REVIEW")
     .reduce((sum, paymentCase) => sum + (paymentCase.requestedAmountInPaise ?? 0), 0);
+  const provider = resolveProviderState();
 
   const formatInr = (amountInPaise: number) =>
     new Intl.NumberFormat("en-IN", {
@@ -458,7 +478,7 @@ export async function getAdminPaymentSnapshot(): Promise<AdminPaymentSnapshot> {
     }).format(amountInPaise / 100);
 
   return {
-    provider: resolveProviderState(),
+    provider,
     metrics: [
       {
         id: "captured-value",
@@ -498,8 +518,7 @@ export async function getAdminPaymentSnapshot(): Promise<AdminPaymentSnapshot> {
     ],
     orders: serializedOrders,
     webhooks: serializedWebhooks,
-    cases: cases.map(({ orderDatabaseId: _orderDatabaseId, ...paymentCase }) => paymentCase),
-    provider: resolveProviderState(),
+    cases: cases.map(serializeCase),
     generatedAt: new Date().toISOString(),
   };
 }
