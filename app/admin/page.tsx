@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { AdminCatalogueConsole } from "@/components/admin-catalogue-console";
 import { AdminControlCenter } from "@/components/admin-control-center";
 import { AdminInterfaceMap } from "@/components/admin-interface-map";
+import { AdminPeopleConsole } from "@/components/admin-people-console";
 import { InternalHeader } from "@/components/internal-header";
 import { ModuleStateBadge } from "@/components/module-state-badge";
 import { OperatorConsole } from "@/components/operator-console";
@@ -22,7 +23,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Admin Control Center | Recharza",
   description:
-    "Private whole-store control center for Recharza commands, databases, website interfaces, catalogue, pricing, suppliers, payments, security, audit, and order operations.",
+    "Private whole-store control center for Recharza commands, databases, website interfaces, catalogue, pricing, suppliers, payments, people, permissions, security, audit, and order operations.",
   robots: { index: false, follow: false },
 };
 
@@ -57,9 +58,9 @@ export default async function AdminPage() {
                 Recharza command authority
               </h1>
               <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-400">
-                Control and inspect the storefront, customers, orders, products, pricing,
-                payments, suppliers, fulfilment, sessions, audit evidence, and every protected
-                interface from one administration system.
+                Control and inspect the storefront, customers, staff, permissions, orders,
+                products, pricing, payments, suppliers, fulfilment, sessions, audit evidence,
+                and every protected interface from one administration system.
               </p>
             </div>
             <div className="grid w-fit grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-white/[0.025] p-2 text-center">
@@ -79,6 +80,7 @@ export default async function AdminPage() {
           </section>
 
           <AdminControlCenter snapshot={snapshot} />
+          <AdminPeopleConsole currentAdminId={session.customer.id} />
 
           <section id="overview" className="mt-10 scroll-mt-24">
             <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
