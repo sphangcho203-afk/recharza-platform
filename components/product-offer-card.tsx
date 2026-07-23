@@ -1,13 +1,25 @@
 "use client";
 
 import { ResilientImage } from "@/components/resilient-image";
-import type { MobileLegendsPackage } from "@/lib/mobile-legends";
+
+type OfferItem = {
+  name: string;
+  deliveryLabel: string;
+  featured?: boolean;
+  media: {
+    sources: string[];
+    alt: string;
+    source: "supplier" | "catalog" | "publisher";
+  };
+};
 
 type ProductOfferCardProps = {
-  item: MobileLegendsPackage;
+  item: OfferItem;
   selected: boolean;
   displayPrice: string;
   settlementPrice?: string;
+  fallbackSources?: string[];
+  fallbackLabel?: string;
   onSelect: () => void;
 };
 
@@ -16,6 +28,8 @@ export function ProductOfferCard({
   selected,
   displayPrice,
   settlementPrice,
+  fallbackSources = [],
+  fallbackLabel = "Product",
   onSelect,
 }: ProductOfferCardProps) {
   return (
@@ -33,15 +47,15 @@ export function ProductOfferCard({
 
       <span className="relative block aspect-[16/10] overflow-hidden border-b border-white/10 bg-black/30">
         <ResilientImage
-          sources={item.media.sources}
+          sources={[...item.media.sources, ...fallbackSources]}
           alt={item.media.alt}
-          fallbackLabel="ML"
+          fallbackLabel={fallbackLabel}
           className="h-full w-full object-contain p-5 transition duration-500 group-hover:scale-[1.045]"
           fallbackClassName="h-full w-full"
         />
         <span className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0d0d16] to-transparent" />
         <span className="absolute left-2.5 top-2.5 rounded-full border border-white/15 bg-black/70 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/85 backdrop-blur-md">
-          {item.media.source === "supplier" ? "Supplier media" : "Product media"}
+          {item.media.source === "supplier" ? "Supplier media" : "Verified product media"}
         </span>
         {item.featured ? (
           <span className="absolute right-2.5 top-2.5 rounded-full border border-violet-300/25 bg-violet-400/20 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-violet-100 backdrop-blur-md">
