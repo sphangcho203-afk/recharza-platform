@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 type AccessStatus =
   | "ACTIVE"
@@ -86,20 +86,39 @@ function roleTone(role: AccountRole) {
   return "border-white/10 bg-white/5 text-slate-300";
 }
 
-export function AdminPeopleConsole({ currentAdminId }: { currentAdminId: string }) {
-  const [people, setPeople] = useState<Person[]>([]);
-  const [permissionDefinitions, setPermissionDefinitions] = useState<PermissionDefinition[]>([]);
-  const [selectedId, setSelectedId] = useState("");
+export function AdminPeopleConsole({
+  currentAdminId,
+  initialPeople,
+  initialPermissionDefinitions,
+}: {
+  currentAdminId: string;
+  initialPeople: Person[];
+  initialPermissionDefinitions: PermissionDefinition[];
+}) {
+  const initialSelected = initialPeople[0] ?? null;
+  const [people, setPeople] = useState<Person[]>(initialPeople);
+  const [permissionDefinitions, setPermissionDefinitions] = useState<PermissionDefinition[]>(
+    initialPermissionDefinitions,
+  );
+  const [selectedId, setSelectedId] = useState(initialSelected?.id ?? "");
   const [query, setQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<"ALL" | AccountRole>("ALL");
   const [statusFilter, setStatusFilter] = useState<"ALL" | AccessStatus>("ALL");
   const [reason, setReason] = useState("");
-  const [draftRole, setDraftRole] = useState<"CUSTOMER" | "STAFF">("CUSTOMER");
-  const [draftStatus, setDraftStatus] = useState<AccessStatus>("ACTIVE");
-  const [draftPermissions, setDraftPermissions] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [draftRole, setDraftRole] = useState<"CUSTOMER" | "STAFF">(
+    initialSelected?.role === "STAFF" ? "STAFF" : "CUSTOMER",
+  );
+  const [draftStatus, setDraftStatus] = useState<AccessStatus>(
+    initialSelected?.accessStatus ?? "ACTIVE",
+  );
+  const [draftPermissions, setDraftPermissions] = useState<string[]>(
+    initialSelected?.permissions ?? [],
+  );
+  const [loading, setLoading] = useState(false);
   const [acting, setActing] = useState(false);
-  const [message, setMessage] = useState("Loading protected customer and staff records...");
+  const [message, setMessage] = useState(
+    `${initialPeople.length} protected account record(s) loaded.`,
+  );
   const [isError, setIsError] = useState(false);
 
   const selected = people.find((person) => person.id === selectedId) ?? null;
@@ -128,6 +147,14 @@ export function AdminPeopleConsole({ currentAdminId }: { currentAdminId: string 
     [people],
   );
 
+  function selectPerson(person: Person) {
+    setSelectedId(person.id);
+    setDraftRole(person.role === "STAFF" ? "STAFF" : "CUSTOMER");
+    setDraftStatus(person.accessStatus);
+    setDraftPermissions(person.permissions);
+    setReason("");
+  }
+
   async function loadPeople(preferredId?: string) {
     setLoading(true);
     setIsError(false);
@@ -140,13 +167,17 @@ export function AdminPeopleConsole({ currentAdminId }: { currentAdminId: string 
 
       setPeople(result.people);
       setPermissionDefinitions(result.permissionDefinitions);
-      const nextId =
-        preferredId && result.people.some((person) => person.id === preferredId)
-          ? preferredId
-          : selectedId && result.people.some((person) => person.id === selectedId)
-            ? selectedId
-            : result.people[0]?.id ?? "";
-      setSelectedId(nextId);
+      const nextPerson =
+        (preferredId
+          ? result.people.find((person) => person.id === preferredId)
+          : undefined) ??
+        (selectedId
+          ? result.people.find((person) => person.id === selectedId)
+          : undefined) ??
+        result.people[0] ??
+        null;
+      if (nextPerson) selectPerson(nextPerson);
+      else setSelectedId("");
       setMessage(`${result.people.length} protected account record(s) loaded.`);
     } catch (error) {
       setIsError(true);
@@ -155,20 +186,6 @@ export function AdminPeopleConsole({ currentAdminId }: { currentAdminId: string 
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    void loadPeople();
-    // Initial protected load only.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (!selected) return;
-    setDraftRole(selected.role === "STAFF" ? "STAFF" : "CUSTOMER");
-    setDraftStatus(selected.accessStatus);
-    setDraftPermissions(selected.permissions);
-    setReason("");
-  }, [selectedId, selected?.updatedAt]);
 
   function replacePerson(person: Person) {
     setPeople((current) => current.map((item) => (item.id === person.id ? person : item)));
@@ -201,7 +218,7 @@ export function AdminPeopleConsole({ currentAdminId }: { currentAdminId: string 
       }
 
       replacePerson(result.customer);
-      setReason("");
+      selectPerson(result.customer);
       setMessage(
         `${successMessage}${
           typeof result.revokedSessions === "number"
@@ -309,7 +326,7 @@ export function AdminPeopleConsole({ currentAdminId }: { currentAdminId: string 
                 <button
                   key={person.id}
                   type="button"
-                  onClick={() => setSelectedId(person.id)}
+                  onClick={() => selectPerson(person)}
                   className={`mb-2 grid w-full min-w-0 gap-3 rounded-xl border p-3 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
                     active
                       ? "border-violet-300/40 bg-violet-300/10"
