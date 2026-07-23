@@ -1,6 +1,10 @@
 import { createHash, randomBytes } from "node:crypto";
 
-import type { AccountRole } from "@/generated/prisma/client";
+import type {
+  AccountAccessStatus,
+  AccountRole,
+} from "@/generated/prisma/client";
+import { isSessionAllowed, isSignInAllowed } from "@/lib/access-control";
 import { getPrisma } from "@/lib/prisma";
 
 const SESSION_COOKIE = "recharza_session";
@@ -14,6 +18,9 @@ export type AuthenticatedCustomer = {
   displayName: string | null;
   username: string | null;
   role: AccountRole;
+  accessStatus: AccountAccessStatus;
+  staffPermissions: string[];
+  staffPermissionsConfigured: boolean;
   emailVerifiedAt: Date | null;
 };
 
@@ -69,6 +76,30 @@ function hashUserAgent(request: Request) {
   return userAgent ? createHash("sha256").update(userAgent).digest("hex").slice(0, 32) : null;
 }
 
+function serializeAuthenticatedCustomer(customer: {
+  id: string;
+  email: string;
+  displayName: string | null;
+  username: string | null;
+  role: AccountRole;
+  accessStatus: AccountAccessStatus;
+  staffPermissions: string[];
+  staffPermissionsConfigured: boolean;
+  emailVerifiedAt: Date | null;
+}): AuthenticatedCustomer {
+  return {
+    id: customer.id,
+    email: customer.email,
+    displayName: customer.displayName,
+    username: customer.username,
+    role: customer.role,
+    accessStatus: customer.accessStatus,
+    staffPermissions: customer.staffPermissions,
+    staffPermissionsConfigured: customer.staffPermissionsConfigured,
+    emailVerifiedAt: customer.emailVerifiedAt,
+  };
+}
+
 export function getSessionCookieName() {
   return SESSION_COOKIE;
 }
@@ -105,6 +136,8 @@ export async function createMagicLink(input: {
     update: role === "CUSTOMER" ? {} : { role },
     create: { email, role },
   });
+
+  if (!isSignInAllowed(customer.accessStatus)) return null;
 
   const token = createOpaqueToken();
   const tokenHash = hashToken(token);
@@ -144,7 +177,14 @@ export async function consumeMagicLink(token: unknown, request: Request) {
     include: { customer: true },
   });
 
-  if (!magicLink || magicLink.usedAt || magicLink.expiresAt <= new Date()) return null;
+  if (
+    !magicLink ||
+    magicLink.usedAt ||
+    magicLink.expiresAt <= new Date() ||
+    !isSignInAllowed(magicLink.customer.accessStatus)
+  ) {
+    return null;
+  }
 
   const sessionToken = createOpaqueToken();
   const sessionHash = hashToken(sessionToken);
@@ -152,6 +192,11 @@ export async function consumeMagicLink(token: unknown, request: Request) {
   const bootstrapRole = resolveBootstrapRole(magicLink.customer.email);
 
   const result = await prisma.$transaction(async (transaction) => {
+    const currentCustomer = await transaction.customer.findUnique({
+      where: { id: magicLink.customerId },
+    });
+    if (!currentCustomer || !isSignInAllowed(currentCustomer.accessStatus)) return null;
+
     const consumed = await transaction.authMagicLink.updateMany({
       where: { id: magicLink.id, usedAt: null, expiresAt: { gt: new Date() } },
       data: { usedAt: new Date() },
@@ -161,7 +206,7 @@ export async function consumeMagicLink(token: unknown, request: Request) {
     const customer = await transaction.customer.update({
       where: { id: magicLink.customerId },
       data: {
-        emailVerifiedAt: magicLink.customer.emailVerifiedAt ?? new Date(),
+        emailVerifiedAt: currentCustomer.emailVerifiedAt ?? new Date(),
         lastLoginAt: new Date(),
         ...(bootstrapRole === "CUSTOMER" ? {} : { role: bootstrapRole }),
       },
@@ -193,7 +238,9 @@ export async function getRequestSession(request: Request): Promise<AuthSessionRe
   });
 
   if (!session || session.revokedAt || session.expiresAt <= new Date()) return null;
-  if (!session.customer.emailVerifiedAt) return null;
+  if (!session.customer.emailVerifiedAt || !isSessionAllowed(session.customer.accessStatus)) {
+    return null;
+  }
 
   if (Date.now() - session.lastUsedAt.getTime() > SESSION_TOUCH_INTERVAL_MS) {
     void prisma.authSession.update({
@@ -205,14 +252,7 @@ export async function getRequestSession(request: Request): Promise<AuthSessionRe
   return {
     sessionId: session.id,
     expiresAt: session.expiresAt,
-    customer: {
-      id: session.customer.id,
-      email: session.customer.email,
-      displayName: session.customer.displayName,
-      username: session.customer.username,
-      role: session.customer.role,
-      emailVerifiedAt: session.customer.emailVerifiedAt,
-    },
+    customer: serializeAuthenticatedCustomer(session.customer),
   };
 }
 
