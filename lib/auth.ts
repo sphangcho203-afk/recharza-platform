@@ -4,7 +4,11 @@ import type {
   AccountAccessStatus,
   AccountRole,
 } from "@/generated/prisma/client";
-import { isSessionAllowed, isSignInAllowed } from "@/lib/access-control";
+import {
+  canCreateOrders,
+  isSessionAllowed,
+  isSignInAllowed,
+} from "@/lib/access-control";
 import { getPrisma } from "@/lib/prisma";
 
 const SESSION_COOKIE = "recharza_session";
@@ -239,6 +243,15 @@ export async function getRequestSession(request: Request): Promise<AuthSessionRe
 
   if (!session || session.revokedAt || session.expiresAt <= new Date()) return null;
   if (!session.customer.emailVerifiedAt || !isSessionAllowed(session.customer.accessStatus)) {
+    return null;
+  }
+
+  const requestUrl = new URL(request.url);
+  if (
+    request.method === "POST" &&
+    requestUrl.pathname === "/api/orders" &&
+    !canCreateOrders(session.customer.accessStatus)
+  ) {
     return null;
   }
 
