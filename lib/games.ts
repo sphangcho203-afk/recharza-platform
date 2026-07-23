@@ -90,7 +90,7 @@ export const games: Game[] = [
     category: "Battle Royale",
     family: "battle-royale",
     kind: "game",
-    status: "coming-soon",
+    status: "catalogue",
     logoSources: [
       "https://dl.dir.freefiremobile.com/common/web_event/official2/dist/client/img/max_logo.b96cbd2.png",
       "https://dl.dir.freefiremobile.com/common/web_event/official2/dist/client/img/full_logo.969f536.png",
@@ -104,8 +104,12 @@ export const games: Game[] = [
     logoTreatment: "native",
     artworkPosition: "center",
     accent: "#f5b72b",
+    badge: "Architecture beta",
+    available: true,
+    href: "/games/free-fire",
     packages: ["Diamonds", "Membership", "Level Up Pass"],
     pricingMode: "staged",
+    pricingKey: "free-fire",
   },
   {
     slug: "pubg-mobile",
