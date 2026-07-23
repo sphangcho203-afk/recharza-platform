@@ -7,27 +7,46 @@ import { formatInr } from "@/lib/mobile-legends";
 
 type GameCardProps = {
   game: Game;
+  showDevelopmentBadges?: boolean;
+  showPricingSnapshots?: boolean;
 };
 
-function getStatusLabel(game: Game) {
+function getStatusLabel(game: Game, showDevelopmentBadges: boolean) {
   if (game.status === "checkout") return "Top up";
   if (game.status === "catalogue") {
+    if (!showDevelopmentBadges) return "Explore";
     return game.slug.startsWith("mobile-legends") ? "Open market" : "Explore beta";
   }
-  return "Coming soon";
+  return showDevelopmentBadges ? "Coming soon" : "Unavailable";
 }
 
-function getStatusValue(game: Game) {
-  if (game.startingPriceInPaise) return formatInr(game.startingPriceInPaise);
-  if (game.status === "catalogue") return game.badge ?? "Architecture preview";
+function getStatusValue(
+  game: Game,
+  showPricingSnapshots: boolean,
+  showDevelopmentBadges: boolean,
+) {
+  if (showPricingSnapshots && game.startingPriceInPaise) {
+    return formatInr(game.startingPriceInPaise);
+  }
+  if (game.status === "checkout") return "Available";
+  if (game.status === "catalogue") {
+    return showDevelopmentBadges
+      ? game.badge ?? "Architecture preview"
+      : "Preview";
+  }
   return "Not available";
 }
 
-export function GameCard({ game }: GameCardProps) {
+export function GameCard({
+  game,
+  showDevelopmentBadges = true,
+  showPricingSnapshots = true,
+}: GameCardProps) {
   const interactive = Boolean(game.available && game.href);
   const iconSlug = game.slug.startsWith("mobile-legends") ? "mobile-legends" : game.slug;
   const iconSources = getGameIconSources(iconSlug);
   const mediaSources = [...iconSources, ...game.artworkSources, ...game.logoSources];
+  const showsPrice = Boolean(showPricingSnapshots && game.startingPriceInPaise);
 
   const card = (
     <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0e0e15] p-3 shadow-[0_12px_36px_rgba(0,0,0,0.24)] transition duration-300 hover:-translate-y-0.5 hover:border-white/20 sm:p-4">
@@ -44,7 +63,7 @@ export function GameCard({ game }: GameCardProps) {
           <span className="max-w-[62%] truncate rounded-full border border-white/15 bg-black/65 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-white/90 backdrop-blur-md">
             {game.category}
           </span>
-          {game.badge ? (
+          {showDevelopmentBadges && game.badge ? (
             <span className="max-w-[48%] truncate rounded-full border border-white/15 bg-black/65 px-2.5 py-1 text-[9px] font-black text-white/90 backdrop-blur-md">
               {game.badge}
             </span>
@@ -75,10 +94,14 @@ export function GameCard({ game }: GameCardProps) {
           <div className="flex min-h-12 items-center justify-between gap-2 rounded-xl border border-white/10 bg-black/20 px-3 py-2.5">
             <div className="min-w-0">
               <p className="text-[9px] font-black uppercase tracking-[0.13em] text-slate-600">
-                {game.startingPriceInPaise ? "From" : "Status"}
+                {showsPrice ? "From" : "Status"}
               </p>
               <p className="mt-0.5 truncate text-sm font-black text-white sm:text-base">
-                {getStatusValue(game)}
+                {getStatusValue(
+                  game,
+                  showPricingSnapshots,
+                  showDevelopmentBadges,
+                )}
               </p>
             </div>
             <span
@@ -88,7 +111,7 @@ export function GameCard({ game }: GameCardProps) {
                   : "bg-white/5 text-slate-500"
               }`}
             >
-              {getStatusLabel(game)}
+              {getStatusLabel(game, showDevelopmentBadges)}
             </span>
           </div>
         </div>
@@ -101,7 +124,7 @@ export function GameCard({ game }: GameCardProps) {
       <Link
         href={game.href}
         className="block h-full min-w-0 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-4 focus-visible:ring-offset-[#06060f]"
-        aria-label={`${getStatusLabel(game)} for ${game.title}`}
+        aria-label={`${getStatusLabel(game, showDevelopmentBadges)} for ${game.title}`}
       >
         {card}
       </Link>
