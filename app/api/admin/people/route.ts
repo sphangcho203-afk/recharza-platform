@@ -4,10 +4,13 @@ import type {
 } from "@/generated/prisma/client";
 import {
   LEGACY_STAFF_PERMISSIONS,
-  STAFF_PERMISSION_DEFINITIONS,
   resolveStaffPermissions,
   sanitizeStaffPermissions,
 } from "@/lib/access-control";
+import {
+  getAdminPeopleSnapshot,
+  getAdminPersonById,
+} from "@/lib/admin-people";
 import { getRequestSession } from "@/lib/auth";
 import { getPrisma } from "@/lib/prisma";
 
@@ -32,88 +35,6 @@ async function requireAdmin(request: Request) {
   return session?.customer.role === "ADMIN" ? session : null;
 }
 
-function serializeCustomer(
-  customer: {
-    id: string;
-    email: string;
-    displayName: string | null;
-    username: string | null;
-    role: AccountRole;
-    accessStatus: AccountAccessStatus;
-    restrictionReason: string | null;
-    restrictionUpdatedAt: Date | null;
-    staffPermissions: string[];
-    staffPermissionsConfigured: boolean;
-    emailVerifiedAt: Date | null;
-    lastLoginAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
-    _count: { orders: number; sessions: number };
-  },
-  activeSessions: number,
-) {
-  return {
-    id: customer.id,
-    email: customer.email,
-    displayName: customer.displayName,
-    username: customer.username,
-    role: customer.role,
-    accessStatus: customer.accessStatus,
-    restrictionReason: customer.restrictionReason,
-    restrictionUpdatedAt: customer.restrictionUpdatedAt?.toISOString() ?? null,
-    permissions: resolveStaffPermissions({
-      role: customer.role,
-      staffPermissions: customer.staffPermissions,
-      staffPermissionsConfigured: customer.staffPermissionsConfigured,
-    }),
-    permissionsConfigured: customer.staffPermissionsConfigured,
-    verifiedAt: customer.emailVerifiedAt?.toISOString() ?? null,
-    lastLoginAt: customer.lastLoginAt?.toISOString() ?? null,
-    createdAt: customer.createdAt.toISOString(),
-    updatedAt: customer.updatedAt.toISOString(),
-    counts: {
-      orders: customer._count.orders,
-      sessions: customer._count.sessions,
-      activeSessions,
-    },
-  };
-}
-
-async function loadCustomer(customerId: string) {
-  const prisma = getPrisma();
-  const [customer, activeSessions] = await Promise.all([
-    prisma.customer.findUnique({
-      where: { id: customerId },
-      select: {
-        id: true,
-        email: true,
-        displayName: true,
-        username: true,
-        role: true,
-        accessStatus: true,
-        restrictionReason: true,
-        restrictionUpdatedAt: true,
-        staffPermissions: true,
-        staffPermissionsConfigured: true,
-        emailVerifiedAt: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true,
-        _count: { select: { orders: true, sessions: true } },
-      },
-    }),
-    prisma.authSession.count({
-      where: {
-        customerId,
-        revokedAt: null,
-        expiresAt: { gt: new Date() },
-      },
-    }),
-  ]);
-
-  return customer ? serializeCustomer(customer, activeSessions) : null;
-}
-
 export async function GET(request: Request) {
   const session = await requireAdmin(request);
   if (!session) {
@@ -123,49 +44,12 @@ export async function GET(request: Request) {
     );
   }
 
-  const prisma = getPrisma();
-  const now = new Date();
-  const [customers, activeSessionGroups] = await Promise.all([
-    prisma.customer.findMany({
-      orderBy: [{ role: "desc" }, { createdAt: "desc" }],
-      take: 500,
-      select: {
-        id: true,
-        email: true,
-        displayName: true,
-        username: true,
-        role: true,
-        accessStatus: true,
-        restrictionReason: true,
-        restrictionUpdatedAt: true,
-        staffPermissions: true,
-        staffPermissionsConfigured: true,
-        emailVerifiedAt: true,
-        lastLoginAt: true,
-        createdAt: true,
-        updatedAt: true,
-        _count: { select: { orders: true, sessions: true } },
-      },
-    }),
-    prisma.authSession.groupBy({
-      by: ["customerId"],
-      where: { revokedAt: null, expiresAt: { gt: now } },
-      _count: { _all: true },
-    }),
-  ]);
-
-  const activeSessions = new Map(
-    activeSessionGroups.map((group) => [group.customerId, group._count._all]),
-  );
-
+  const snapshot = await getAdminPeopleSnapshot();
   return Response.json(
     {
       ok: true,
       currentAdminId: session.customer.id,
-      permissionDefinitions: STAFF_PERMISSION_DEFINITIONS,
-      people: customers.map((customer) =>
-        serializeCustomer(customer, activeSessions.get(customer.id) ?? 0),
-      ),
+      ...snapshot,
     },
     { headers: { "Cache-Control": "no-store" } },
   );
@@ -214,19 +98,42 @@ export async function PATCH(request: Request) {
     );
   }
 
+  const accessStatus =
+    operation === "set-access" && typeof body?.accessStatus === "string"
+      ? (body.accessStatus.toUpperCase() as AccountAccessStatus)
+      : null;
+  if (operation === "set-access" && (!accessStatus || !ACCESS_STATUSES.has(accessStatus))) {
+    return Response.json(
+      { ok: false, message: "Choose a valid account access state." },
+      { status: 400 },
+    );
+  }
+
+  const role =
+    operation === "set-role" && typeof body?.role === "string"
+      ? (body.role.toUpperCase() as AccountRole)
+      : null;
+  if (operation === "set-role" && (!role || !MANAGEABLE_ROLES.has(role))) {
+    return Response.json(
+      { ok: false, message: "Only customer and staff roles can be assigned here." },
+      { status: 400 },
+    );
+  }
+
+  if (operation === "set-permissions" && target.role !== "STAFF") {
+    return Response.json(
+      { ok: false, message: "Permissions can only be assigned to a staff account." },
+      { status: 409 },
+    );
+  }
+
+  const permissions =
+    operation === "set-permissions" ? sanitizeStaffPermissions(body?.permissions) : [];
   const now = new Date();
   let revokedSessions = 0;
 
   await prisma.$transaction(async (transaction) => {
-    if (operation === "set-access") {
-      const accessStatus =
-        typeof body?.accessStatus === "string"
-          ? (body.accessStatus.toUpperCase() as AccountAccessStatus)
-          : null;
-      if (!accessStatus || !ACCESS_STATUSES.has(accessStatus)) {
-        throw new Error("INVALID_ACCESS_STATUS");
-      }
-
+    if (operation === "set-access" && accessStatus) {
       await transaction.customer.update({
         where: { id: target.id },
         data: {
@@ -261,11 +168,7 @@ export async function PATCH(request: Request) {
       return;
     }
 
-    if (operation === "set-role") {
-      const role =
-        typeof body?.role === "string" ? (body.role.toUpperCase() as AccountRole) : null;
-      if (!role || !MANAGEABLE_ROLES.has(role)) throw new Error("INVALID_ROLE");
-
+    if (operation === "set-role" && role) {
       const promotingToStaff = role === "STAFF" && target.role !== "STAFF";
       await transaction.customer.update({
         where: { id: target.id },
@@ -306,9 +209,6 @@ export async function PATCH(request: Request) {
     }
 
     if (operation === "set-permissions") {
-      if (target.role !== "STAFF") throw new Error("TARGET_NOT_STAFF");
-      const permissions = sanitizeStaffPermissions(body?.permissions);
-
       await transaction.customer.update({
         where: { id: target.id },
         data: {
@@ -353,12 +253,9 @@ export async function PATCH(request: Request) {
         },
       },
     });
-  }).catch((error: unknown) => {
-    if (error instanceof Error) throw error;
-    throw new Error("PEOPLE_ACCESS_UPDATE_FAILED");
   });
 
-  const customer = await loadCustomer(target.id);
+  const customer = await getAdminPersonById(target.id);
   return Response.json({
     ok: true,
     operation,
