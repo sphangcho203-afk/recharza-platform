@@ -16,7 +16,22 @@ export type NavigationItem = {
 
 export type WorkspaceModule = NavigationItem & {
   metricLabel?: string;
-  icon: "home" | "orders" | "catalogue" | "pricing" | "supplier" | "payments" | "customers" | "staff" | "promotions" | "support" | "audit" | "settings" | "queue" | "escalations" | "activity";
+  icon:
+    | "home"
+    | "orders"
+    | "catalogue"
+    | "pricing"
+    | "supplier"
+    | "payments"
+    | "customers"
+    | "staff"
+    | "promotions"
+    | "support"
+    | "audit"
+    | "settings"
+    | "queue"
+    | "escalations"
+    | "activity";
 };
 
 export const customerNavigation: NavigationItem[] = [
@@ -55,26 +70,217 @@ export const customerNavigation: NavigationItem[] = [
 ];
 
 export const adminModules: WorkspaceModule[] = [
-  { id: "overview", label: "Overview", href: "/admin#overview", description: "Business health and priorities.", state: "live", audiences: ["admin"], icon: "home" },
-  { id: "orders", label: "Orders", href: "/admin#orders", description: "Review and recover orders.", state: "live", audiences: ["admin"], icon: "orders", metricLabel: "Needs review" },
-  { id: "catalogue", label: "Products", href: "/admin#catalogue", description: "Published games, markets, and packages.", state: "beta", audiences: ["admin"], icon: "catalogue" },
-  { id: "pricing", label: "Pricing rules", href: "/admin#pricing", description: "Margin, FX, gateway, and rounding policy.", state: "live", audiences: ["admin"], icon: "pricing" },
-  { id: "suppliers", label: "Suppliers", href: "/admin#suppliers", description: "Supplier sync, health, and fulfilment gates.", state: "live", audiences: ["admin"], icon: "supplier" },
-  { id: "payments", label: "Payments", href: "/admin#payments", description: "Test checkout and webhook reconciliation.", state: "beta", audiences: ["admin"], icon: "payments" },
-  { id: "customers", label: "Customers", href: "/admin#customers", description: "Verified accounts and order ownership.", state: "planned", audiences: ["admin"], icon: "customers" },
-  { id: "staff", label: "Staff and roles", href: "/admin#staff", description: "Roles, access, and shift controls.", state: "planned", audiences: ["admin"], icon: "staff" },
-  { id: "promotions", label: "Promotions", href: "/admin#promotions", description: "Campaigns, vouchers, and offers.", state: "planned", audiences: ["admin"], icon: "promotions" },
-  { id: "support", label: "Support tickets", href: "/admin#support", description: "Customer cases and escalations.", state: "planned", audiences: ["admin"], icon: "support" },
-  { id: "audit", label: "Audit log", href: "/admin#audit", description: "Staff actions and security evidence.", state: "beta", audiences: ["admin"], icon: "audit" },
-  { id: "settings", label: "Settings", href: "/admin#settings", description: "Store, email, maintenance, and deployment controls.", state: "planned", audiences: ["admin"], icon: "settings" },
+  {
+    id: "overview",
+    label: "Overview",
+    href: "/admin#overview",
+    description: "Business health, module status, and priorities.",
+    state: "live",
+    audiences: ["admin"],
+    icon: "home",
+  },
+  {
+    id: "interfaces",
+    label: "Website interfaces",
+    href: "/admin#interfaces",
+    description: "Open every customer, staff, admin, tracking, and regional interface.",
+    state: "live",
+    audiences: ["admin"],
+    icon: "home",
+  },
+  {
+    id: "orders",
+    label: "Orders",
+    href: "/admin#orders",
+    description: "Review, recover, fulfil, cancel, and audit orders.",
+    state: "live",
+    audiences: ["admin"],
+    icon: "orders",
+    metricLabel: "Needs review",
+  },
+  {
+    id: "catalogue",
+    label: "Games and products",
+    href: "/admin#catalogue",
+    description: "Publish games, regional packages, product names, icons, and bundle media.",
+    state: "live",
+    audiences: ["admin"],
+    icon: "catalogue",
+  },
+  {
+    id: "pricing",
+    label: "Pricing and FX",
+    href: "/admin#pricing",
+    description: "Supplier cost, margin, FX buffer, gateway fees, and rounding policy.",
+    state: "live",
+    audiences: ["admin"],
+    icon: "pricing",
+  },
+  {
+    id: "suppliers",
+    label: "Suppliers",
+    href: "/admin#suppliers",
+    description: "Supplier sync, health, category approval, and fulfilment gates.",
+    state: "live",
+    audiences: ["admin"],
+    icon: "supplier",
+  },
+  {
+    id: "payments",
+    label: "Payments",
+    href: "/admin#payments",
+    description: "Gateways, payment sessions, refunds, disputes, and reconciliation.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "payments",
+  },
+  {
+    id: "customers",
+    label: "Customers",
+    href: "/admin#customers",
+    description: "Verified identities, order ownership, saved players, and restrictions.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "customers",
+  },
+  {
+    id: "staff",
+    label: "Staff and roles",
+    href: "/admin#staff",
+    description: "Role grants, access review, shifts, permissions, and revocation.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "staff",
+  },
+  {
+    id: "promotions",
+    label: "Promotions",
+    href: "/admin#promotions",
+    description: "Campaigns, vouchers, regional offers, referrals, and rewards.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "promotions",
+  },
+  {
+    id: "support",
+    label: "Support tickets",
+    href: "/admin#support",
+    description: "Customer cases, attachments, assignments, SLAs, and escalations.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "support",
+  },
+  {
+    id: "localization",
+    label: "Regions and localization",
+    href: "/admin#localization",
+    description: "Countries, languages, currencies, billing rules, and regional storefronts.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "settings",
+  },
+  {
+    id: "content",
+    label: "Content and SEO",
+    href: "/admin#content",
+    description: "Homepage sections, banners, metadata, policy pages, and announcements.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "catalogue",
+  },
+  {
+    id: "domains",
+    label: "Domains and routing",
+    href: "/admin#domains",
+    description: "Customer, account, staff, admin, identity, and status hostnames.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "settings",
+  },
+  {
+    id: "security",
+    label: "Security",
+    href: "/admin#security",
+    description: "MFA, sessions, rate limits, suspicious access, secrets, and emergency locks.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "audit",
+  },
+  {
+    id: "integrations",
+    label: "Integrations and webhooks",
+    href: "/admin#integrations",
+    description: "Supplier APIs, payment webhooks, email, analytics, and automation.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "supplier",
+  },
+  {
+    id: "audit",
+    label: "Audit and logs",
+    href: "/admin#audit",
+    description: "Administrator actions, system events, exports, and security evidence.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "audit",
+  },
+  {
+    id: "settings",
+    label: "Platform settings",
+    href: "/admin#settings",
+    description: "Feature flags, maintenance, deployment, backups, and global defaults.",
+    state: "planned",
+    audiences: ["admin"],
+    icon: "settings",
+  },
 ];
 
 export const staffModules: WorkspaceModule[] = [
-  { id: "queue", label: "Assigned work", href: "/staff#queue", description: "Orders and cases assigned to the shift.", state: "beta", audiences: ["staff", "admin"], icon: "queue" },
-  { id: "orders", label: "Order operations", href: "/staff#orders", description: "Protected order review and fulfilment recovery.", state: "live", audiences: ["staff", "admin"], icon: "orders" },
-  { id: "support", label: "Support inbox", href: "/staff#support", description: "Assigned customer conversations.", state: "planned", audiences: ["staff", "admin"], icon: "support" },
-  { id: "escalations", label: "Escalations", href: "/staff#escalations", description: "Exceptions requiring admin review.", state: "planned", audiences: ["staff", "admin"], icon: "escalations" },
-  { id: "activity", label: "Shift activity", href: "/staff#activity", description: "Completed work and response metrics.", state: "beta", audiences: ["staff", "admin"], icon: "activity" },
+  {
+    id: "queue",
+    label: "Assigned work",
+    href: "/staff#queue",
+    description: "Orders and cases assigned to the shift.",
+    state: "beta",
+    audiences: ["staff", "admin"],
+    icon: "queue",
+  },
+  {
+    id: "orders",
+    label: "Order operations",
+    href: "/staff#orders",
+    description: "Protected order review and fulfilment recovery.",
+    state: "live",
+    audiences: ["staff", "admin"],
+    icon: "orders",
+  },
+  {
+    id: "support",
+    label: "Support inbox",
+    href: "/staff#support",
+    description: "Assigned customer conversations.",
+    state: "planned",
+    audiences: ["staff", "admin"],
+    icon: "support",
+  },
+  {
+    id: "escalations",
+    label: "Escalations",
+    href: "/staff#escalations",
+    description: "Exceptions requiring admin review.",
+    state: "planned",
+    audiences: ["staff", "admin"],
+    icon: "escalations",
+  },
+  {
+    id: "activity",
+    label: "Shift activity",
+    href: "/staff#activity",
+    description: "Completed work and response metrics.",
+    state: "beta",
+    audiences: ["staff", "admin"],
+    icon: "activity",
+  },
 ];
 
 export function getAudienceForRole(role: AccountRole): ProductAudience {

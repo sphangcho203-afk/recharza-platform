@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       return Response.json(
         {
           valid: false,
-          message: "Choose India, Indonesia or Philippines before validating the player.",
+          message: "Choose a supported Mobile Legends fulfilment market before validating the player.",
         },
         { status: 400, headers: rateHeaders },
       );

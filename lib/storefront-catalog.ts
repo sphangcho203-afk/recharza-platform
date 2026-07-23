@@ -1,10 +1,19 @@
 import "server-only";
 
+import { resolveProductMedia } from "@/lib/catalog/product-media";
 import {
   fallbackMobileLegendsPackages,
   getFallbackMobileLegendsPackage,
   type MobileLegendsPackage,
 } from "@/lib/mobile-legends";
+import {
+  prioritizeMobileLegendsPackages,
+  targetMobileLegendsPackageCount,
+} from "@/lib/mobile-legends-package-catalog";
+import {
+  isPackageAvailableForMarket,
+  type MobileLegendsMarketCode,
+} from "@/lib/mobile-legends-market";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
@@ -16,7 +25,7 @@ export type StorefrontPricingSnapshot = {
   minimumPrices: Record<string, number | null>;
 };
 
-function mapSupplierProduct(product: {
+type SupplierProductView = {
   id: string;
   offerId: string;
   categoryId: string;
@@ -24,13 +33,31 @@ function mapSupplierProduct(product: {
   region: string | null;
   retailPriceInPaise: number;
   expectedMarginInPaise: number;
-}): MobileLegendsPackage {
+  raw: unknown;
+};
+
+function asObject(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function getStorefrontName(name: string, raw: unknown) {
+  const override = asObject(raw)?.adminStorefrontName;
+  return typeof override === "string" && override.trim()
+    ? override.trim().slice(0, 120)
+    : name;
+}
+
+function mapSupplierProduct(product: SupplierProductView): MobileLegendsPackage {
+  const displayName = getStorefrontName(product.name, product.raw);
+
   return {
     id: product.offerId,
-    name: product.name,
+    name: displayName,
     description: product.region
-      ? `Fazercards live offer for ${product.region}. Confirm the player's account region before checkout.`
-      : "Fazercards live supplier offer. Confirm all player details before checkout.",
+      ? `FazerCards live offer for ${product.region}. Confirm the player's account region before checkout.`
+      : "FazerCards live supplier offer. Confirm all player details before checkout.",
     amountInPaise: product.retailPriceInPaise,
     deliveryLabel: "Live supplier catalogue",
     source: "fazercards-live",
@@ -39,10 +66,28 @@ function mapSupplierProduct(product: {
     supplierOfferId: product.offerId,
     region: product.region,
     expectedMarginInPaise: product.expectedMarginInPaise,
+    media: resolveProductMedia({
+      gameSlug: "mobile-legends",
+      productName: displayName,
+      supplierRaw: product.raw,
+    }),
   };
 }
 
-export async function getMobileLegendsPackages(): Promise<MobileLegendsPackage[]> {
+const supplierProductSelect = {
+  id: true,
+  offerId: true,
+  categoryId: true,
+  name: true,
+  region: true,
+  retailPriceInPaise: true,
+  expectedMarginInPaise: true,
+  raw: true,
+} as const;
+
+export async function getMobileLegendsPackages(
+  marketCode?: MobileLegendsMarketCode,
+): Promise<MobileLegendsPackage[]> {
   try {
     const products = await getPrisma().supplierProduct.findMany({
       where: {
@@ -52,20 +97,20 @@ export async function getMobileLegendsPackages(): Promise<MobileLegendsPackage[]
         published: true,
       },
       orderBy: [{ retailPriceInPaise: "asc" }, { name: "asc" }],
-      take: 36,
-      select: {
-        id: true,
-        offerId: true,
-        categoryId: true,
-        name: true,
-        region: true,
-        retailPriceInPaise: true,
-        expectedMarginInPaise: true,
-      },
+      take: 500,
+      select: supplierProductSelect,
     });
 
-    if (products.length > 0) {
-      return products.map(mapSupplierProduct);
+    const mapped = products.map((product) => mapSupplierProduct(product));
+    const marketPackages = marketCode
+      ? mapped.filter((item) => isPackageAvailableForMarket(item.region, marketCode))
+      : mapped;
+
+    if (marketPackages.length > 0) {
+      return prioritizeMobileLegendsPackages(
+        marketPackages,
+        targetMobileLegendsPackageCount,
+      );
     }
   } catch (error) {
     if (!(error instanceof RuntimeConfigurationError)) {
@@ -73,7 +118,10 @@ export async function getMobileLegendsPackages(): Promise<MobileLegendsPackage[]
     }
   }
 
-  return fallbackMobileLegendsPackages;
+  return prioritizeMobileLegendsPackages(
+    fallbackMobileLegendsPackages,
+    targetMobileLegendsPackageCount,
+  );
 }
 
 export async function getMobileLegendsPackageForCheckout(packageId: string) {
@@ -92,15 +140,7 @@ export async function getMobileLegendsPackageForCheckout(packageId: string) {
         available: true,
         published: true,
       },
-      select: {
-        id: true,
-        offerId: true,
-        categoryId: true,
-        name: true,
-        region: true,
-        retailPriceInPaise: true,
-        expectedMarginInPaise: true,
-      },
+      select: supplierProductSelect,
     });
 
     return product ? mapSupplierProduct(product) : null;
