@@ -189,6 +189,15 @@ export const adminModules: WorkspaceModule[] = [
     icon: "catalogue",
   },
   {
+    id: "media",
+    label: "Media asset library",
+    href: "/admin#media",
+    description: "Upload, review, approve, classify, assign, export, and deliver store, game, brand, banner, and social imagery.",
+    state: "live",
+    audiences: ["admin"],
+    icon: "catalogue",
+  },
+  {
     id: "domains",
     label: "Domains and routing",
     href: "/admin#domains",
