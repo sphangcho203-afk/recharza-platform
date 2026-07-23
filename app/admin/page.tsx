@@ -14,6 +14,7 @@ import { OperatorHealthPanel } from "@/components/operator-health-panel";
 import { SupplierPricingConsole } from "@/components/supplier-pricing-console";
 import { WorkspaceNavigation } from "@/components/workspace-navigation";
 import { getAdminControlSnapshot } from "@/lib/admin-control-center";
+import { createMediaAdminDatasets } from "@/lib/admin-media-datasets";
 import { getAdminPaymentSnapshot } from "@/lib/admin-payments";
 import { getAdminPeopleSnapshot } from "@/lib/admin-people";
 import { getAdminMediaSnapshot } from "@/lib/media-assets";
@@ -50,6 +51,20 @@ export default async function AdminPage() {
     getAdminStorefrontSnapshot(),
     getAdminMediaSnapshot(),
   ]);
+  const controlSnapshot = {
+    ...snapshot,
+    metrics: [
+      ...snapshot.metrics,
+      {
+        id: "media",
+        label: "Media assets",
+        value: String(mediaSnapshot.metrics.totalAssets),
+        note: `${mediaSnapshot.metrics.approvedAssets} approved · ${mediaSnapshot.metrics.assignedPlacements} placements`,
+        tone: mediaSnapshot.metrics.reviewAssets > 0 ? ("warning" as const) : ("neutral" as const),
+      },
+    ],
+    datasets: [...snapshot.datasets, ...createMediaAdminDatasets(mediaSnapshot)],
+  };
   const modules = getVisibleModules(adminModules);
   const liveCount = modules.filter((module) => module.state === "live").length;
   const betaCount = modules.filter((module) => module.state === "beta").length;
@@ -98,7 +113,7 @@ export default async function AdminPage() {
             </div>
           </section>
 
-          <AdminControlCenter snapshot={snapshot} />
+          <AdminControlCenter snapshot={controlSnapshot} />
           <AdminStorefrontConsole initialSnapshot={storefrontSnapshot} />
           <AdminMediaConsole initialSnapshot={mediaSnapshot} />
           <AdminPeopleConsole
