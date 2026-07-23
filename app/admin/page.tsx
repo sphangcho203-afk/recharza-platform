@@ -5,6 +5,7 @@ import { AdminControlCenter } from "@/components/admin-control-center";
 import { AdminInterfaceMap } from "@/components/admin-interface-map";
 import { AdminPaymentConsole } from "@/components/admin-payment-console";
 import { AdminPeopleConsole } from "@/components/admin-people-console";
+import { AdminStorefrontConsole } from "@/components/admin-storefront-console";
 import { InternalHeader } from "@/components/internal-header";
 import { ModuleStateBadge } from "@/components/module-state-badge";
 import { OperatorConsole } from "@/components/operator-console";
@@ -20,22 +21,30 @@ import {
   isInteractiveModule,
 } from "@/lib/product-system";
 import { requireWorkspaceSession } from "@/lib/server-session";
+import { getAdminStorefrontSnapshot } from "@/lib/storefront-content";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Admin Control Center | Recharza",
   description:
-    "Private whole-store control center for Recharza commands, databases, website interfaces, catalogue, pricing, suppliers, payments, people, permissions, security, audit, and order operations.",
+    "Private whole-store control center for Recharza commands, databases, website interfaces, catalogue, pricing, suppliers, payments, people, permissions, content, policies, security, audit, and order operations.",
   robots: { index: false, follow: false },
 };
 
 export default async function AdminPage() {
-  const [session, snapshot, peopleSnapshot, paymentSnapshot] = await Promise.all([
+  const [
+    session,
+    snapshot,
+    peopleSnapshot,
+    paymentSnapshot,
+    storefrontSnapshot,
+  ] = await Promise.all([
     requireWorkspaceSession("admin", "/admin"),
     getAdminControlSnapshot(),
     getAdminPeopleSnapshot(),
     getAdminPaymentSnapshot(),
+    getAdminStorefrontSnapshot(),
   ]);
   const modules = getVisibleModules(adminModules);
   const liveCount = modules.filter((module) => module.state === "live").length;
@@ -64,8 +73,9 @@ export default async function AdminPage() {
               </h1>
               <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-400">
                 Control and inspect the storefront, customers, staff, permissions, orders,
-                products, pricing, payments, suppliers, fulfilment, sessions, audit evidence,
-                and every protected interface from one administration system.
+                products, pricing, payments, suppliers, fulfilment, content, policies,
+                sessions, audit evidence, and every protected interface from one
+                administration system.
               </p>
             </div>
             <div className="grid w-fit grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-white/[0.025] p-2 text-center">
@@ -85,6 +95,7 @@ export default async function AdminPage() {
           </section>
 
           <AdminControlCenter snapshot={snapshot} />
+          <AdminStorefrontConsole initialSnapshot={storefrontSnapshot} />
           <AdminPeopleConsole
             currentAdminId={session.customer.id}
             initialPeople={peopleSnapshot.people}
