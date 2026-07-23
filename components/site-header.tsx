@@ -7,12 +7,22 @@ import {
   getVisibleModules,
   isInteractiveModule,
 } from "@/lib/product-system";
+import {
+  getPublishedStorefrontContent,
+  type StorefrontContent,
+} from "@/lib/storefront-content";
 
-const navigation = getVisibleModules(customerNavigation).filter((item) =>
-  isInteractiveModule(item.state),
-);
+type SiteHeaderProps = {
+  content?: Pick<StorefrontContent, "navigation">;
+};
 
-export function SiteHeader() {
+export async function SiteHeader({ content }: SiteHeaderProps = {}) {
+  const storefront = content ?? (await getPublishedStorefrontContent());
+  const visibleIds = new Set(storefront.navigation.visibleIds);
+  const navigation = getVisibleModules(customerNavigation).filter(
+    (item) => isInteractiveModule(item.state) && visibleIds.has(item.id),
+  );
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[var(--surface-0)]/94 backdrop-blur-xl">
       <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
@@ -37,14 +47,16 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 md:flex">
-          <Link
-            href="/games/mobile-legends"
-            className="min-h-11 rounded-xl bg-white px-4 py-3 text-xs font-black text-slate-950 transition hover:bg-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
-          >
-            Top up MLBB
-          </Link>
-        </div>
+        {storefront.navigation.ctaEnabled ? (
+          <div className="hidden items-center gap-2 md:flex">
+            <Link
+              href={storefront.navigation.ctaHref}
+              className="min-h-11 rounded-xl bg-white px-4 py-3 text-xs font-black text-slate-950 transition hover:bg-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+            >
+              {storefront.navigation.ctaLabel}
+            </Link>
+          </div>
+        ) : null}
 
         <details className="group relative md:hidden">
           <summary className="grid h-11 w-11 cursor-pointer list-none place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-white marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 [&::-webkit-details-marker]:hidden">
@@ -72,12 +84,14 @@ export function SiteHeader() {
                 {item.state === "beta" ? <ModuleStateBadge state="beta" /> : null}
               </Link>
             ))}
-            <Link
-              href="/games/mobile-legends"
-              className="mt-1 block min-h-12 rounded-xl bg-white px-3 py-3.5 text-center text-sm font-black text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
-            >
-              Top up Mobile Legends
-            </Link>
+            {storefront.navigation.ctaEnabled ? (
+              <Link
+                href={storefront.navigation.ctaHref}
+                className="mt-1 block min-h-12 rounded-xl bg-white px-3 py-3.5 text-center text-sm font-black text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+              >
+                {storefront.navigation.ctaLabel}
+              </Link>
+            ) : null}
           </nav>
         </details>
       </div>
