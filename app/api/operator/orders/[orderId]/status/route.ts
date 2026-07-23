@@ -20,11 +20,11 @@ export async function POST(
   context: { params: Promise<{ orderId: string }> },
 ) {
   try {
-    const operator = await verifyOperatorAccess(request);
+    const operator = await verifyOperatorAccess(request, "orders.manage");
 
     if (!operator) {
       return Response.json(
-        { ok: false, message: "Verified staff access is required." },
+        { ok: false, message: "Order-management permission is required." },
         { status: 401 },
       );
     }
