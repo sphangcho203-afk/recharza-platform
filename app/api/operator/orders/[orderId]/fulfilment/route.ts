@@ -10,10 +10,10 @@ export async function POST(
   context: { params: Promise<{ orderId: string }> },
 ) {
   try {
-    const actor = await verifyOperatorAccess(request);
+    const actor = await verifyOperatorAccess(request, "fulfilment.manage");
     if (!actor) {
       return Response.json(
-        { ok: false, message: "Verified staff access is required." },
+        { ok: false, message: "Fulfilment-management permission is required." },
         { status: 401 },
       );
     }
