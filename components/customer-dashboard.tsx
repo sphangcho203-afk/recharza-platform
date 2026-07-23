@@ -11,7 +11,6 @@ type Customer = {
   email: string;
   displayName: string | null;
   username: string | null;
-  role: "customer" | "staff" | "admin";
   emailVerified: boolean;
 };
 
@@ -35,20 +34,32 @@ type Snapshot = {
   error: boolean;
 };
 
+const customerModules = [
+  ["overview", "Overview"],
+  ["orders", "Orders"],
+  ["game-accounts", "Game accounts"],
+  ["wallet", "Wallet"],
+  ["rewards", "Rewards"],
+  ["redeem-codes", "Redeem codes"],
+  ["addresses", "Addresses"],
+  ["support", "Support"],
+  ["notifications", "Notifications"],
+  ["security", "Security"],
+] as const;
+
 async function fetchSnapshot(): Promise<Snapshot> {
   const sessionResponse = await fetch("/api/auth/session", { cache: "no-store" });
   const session = (await sessionResponse.json()) as {
     ok: boolean;
     authenticated: boolean;
     customer?: Customer;
-    message?: string;
   };
 
   if (!sessionResponse.ok || !session.ok || !session.authenticated || !session.customer) {
     return {
       customer: null,
       orders: [],
-      message: "Enter your email to receive a one-time sign-in link.",
+      message: "Enter your email to receive a secure one-time sign-in link.",
       error: false,
     };
   }
@@ -65,10 +76,17 @@ async function fetchSnapshot(): Promise<Snapshot> {
     orders: ordersResult.ok && ordersResult.orders ? ordersResult.orders : [],
     message:
       ordersResponse.ok && ordersResult.ok
-        ? "Verified account session active."
+        ? "Customer account session active."
         : ordersResult.message ?? "Order history could not be loaded.",
     error: !ordersResponse.ok || !ordersResult.ok,
   };
+}
+
+function gameLabel(slug: string) {
+  return slug
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
 }
 
 export function CustomerDashboard() {
@@ -77,23 +95,28 @@ export function CustomerDashboard() {
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [message, setMessage] = useState("Checking your account session...");
+  const [message, setMessage] = useState("Checking your customer session...");
   const [error, setError] = useState(false);
   const [developmentPreviewUrl, setDevelopmentPreviewUrl] = useState("");
 
-  const savedPlayers = useMemo(() => {
-    const uniquePlayers = new Map<string, CustomerOrder>();
+  const savedAccounts = useMemo(() => {
+    const unique = new Map<string, CustomerOrder>();
     for (const order of orders) {
       const key = `${order.gameSlug}:${order.market?.code ?? "global"}:${order.player.playerId}:${order.player.zoneId}`;
-      if (!uniquePlayers.has(key)) uniquePlayers.set(key, order);
+      if (!unique.has(key)) unique.set(key, order);
     }
-    return Array.from(uniquePlayers.values()).slice(0, 6);
+    return Array.from(unique.values()).slice(0, 8);
   }, [orders]);
 
-  const fulfilmentCount = useMemo(
-    () => orders.reduce((total, order) => total + order.fulfilmentAttempts, 0),
+  const completedOrders = useMemo(
+    () => orders.filter((order) => order.status.toLowerCase() === "completed").length,
     [orders],
   );
+  const totalSpent = useMemo(
+    () => orders.reduce((total, order) => total + order.package.amountInPaise, 0),
+    [orders],
+  );
+  const rewardPoints = Math.floor(totalSpent / 1000);
 
   async function load() {
     setLoading(true);
@@ -115,29 +138,7 @@ export function CustomerDashboard() {
   }
 
   useEffect(() => {
-    let active = true;
-    fetchSnapshot()
-      .then((snapshot) => {
-        if (!active) return;
-        setCustomer(snapshot.customer);
-        setOrders(snapshot.orders);
-        setMessage(snapshot.message);
-        setError(snapshot.error);
-      })
-      .catch(() => {
-        if (!active) return;
-        setCustomer(null);
-        setOrders([]);
-        setMessage("The account service could not be reached.");
-        setError(true);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
+    void load();
   }, []);
 
   async function requestLink(event: FormEvent<HTMLFormElement>) {
@@ -145,7 +146,7 @@ export function CustomerDashboard() {
     setSending(true);
     setError(false);
     setDevelopmentPreviewUrl("");
-    setMessage("Preparing a secure sign-in link...");
+    setMessage("Preparing a secure customer sign-in link...");
 
     try {
       const response = await fetch("/api/auth/request-link", {
@@ -189,11 +190,11 @@ export function CustomerDashboard() {
     return (
       <section className="mx-auto max-w-xl rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-2xl shadow-black/25 sm:p-7">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
-          Verified email access
+          Customer account
         </p>
         <h2 className="mt-2 text-3xl font-black tracking-tight">Sign in without a password.</h2>
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          A one-time link verifies email ownership and opens your private customer dashboard.
+          Every public sign-in opens a customer account. Staff and administrator permissions are assigned only through protected internal controls and never through this page.
         </p>
         <form onSubmit={requestLink} className="mt-5">
           <label className="text-sm font-semibold text-slate-200">
@@ -237,169 +238,158 @@ export function CustomerDashboard() {
     );
   }
 
-  const internalDestination = customer.role === "admin" ? "/admin" : "/staff";
-
   return (
-    <div className="grid gap-6">
-      <section className="system-panel p-5 sm:p-6">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-          <div className="min-w-0">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
-              Verified customer account
-            </p>
-            <h2 className="mt-2 break-words text-2xl font-black sm:text-3xl">
-              {customer.displayName || customer.username || customer.email}
-            </h2>
-            <p className="mt-2 break-all text-sm text-slate-400">{customer.email}</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-200">
-              {customer.role}
-            </span>
-            {customer.role !== "customer" ? (
-              <Link
-                href={internalDestination}
-                className="min-h-11 rounded-xl border border-violet-400/25 bg-violet-400/10 px-3 py-3 text-xs font-black text-violet-100"
-              >
-                Open {customer.role} workspace
-              </Link>
-            ) : null}
-            <button
-              type="button"
-              onClick={logout}
-              className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-black text-slate-200"
+    <div className="grid gap-6 lg:grid-cols-[14rem_minmax(0,1fr)]">
+      <aside className="h-fit rounded-2xl border border-white/10 bg-white/[0.025] p-2 lg:sticky lg:top-24">
+        <nav className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid" aria-label="Customer dashboard">
+          {customerModules.map(([id, label], index) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              className={`min-h-11 shrink-0 rounded-xl px-3 py-3 text-sm font-bold transition ${index === 0 ? "bg-white text-slate-950" : "text-slate-400 hover:bg-white/5 hover:text-white"}`}
             >
-              Sign out
+              {label}
+            </a>
+          ))}
+        </nav>
+      </aside>
+
+      <div className="min-w-0 space-y-6">
+        <section id="overview" className="system-panel scroll-mt-24 p-5 sm:p-6">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+            <div className="min-w-0">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
+                Verified customer account
+              </p>
+              <h2 className="mt-2 break-words text-2xl font-black sm:text-3xl">
+                {customer.displayName || customer.username || customer.email}
+              </h2>
+              <p className="mt-2 break-all text-sm text-slate-400">{customer.email}</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link href="/#games" className="min-h-11 rounded-xl bg-white px-3 py-3 text-xs font-black text-slate-950 hover:bg-violet-200">
+                Browse games
+              </Link>
+              <button type="button" onClick={logout} className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-black text-slate-200">
+                Sign out
+              </button>
+            </div>
+          </div>
+          <p className={`mt-4 rounded-xl border px-4 py-3 text-sm ${error ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-white/10 bg-black/15 text-slate-400"}`}>
+            {message}
+          </p>
+        </section>
+
+        <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Account summary">
+          {[
+            ["Total orders", String(orders.length), "Account-owned records"],
+            ["Completed", String(completedOrders), "Delivered orders"],
+            ["Total spent", formatInr(totalSpent), "Recorded settlement value"],
+            ["Reward points", String(rewardPoints), "Preview points balance"],
+          ].map(([label, value, note]) => (
+            <article key={label} className="system-card p-5">
+              <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{label}</p>
+              <p className="mt-3 text-3xl font-black text-white">{value}</p>
+              <p className="mt-2 text-xs text-slate-600">{note}</p>
+            </article>
+          ))}
+        </section>
+
+        <section id="orders" className="scroll-mt-24">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">Orders</p>
+                <ModuleStateBadge state="live" />
+              </div>
+              <h2 className="mt-2 text-2xl font-black">Order history</h2>
+            </div>
+            <button type="button" onClick={() => void load()} className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-black text-slate-200">
+              Refresh
             </button>
           </div>
-        </div>
-        <p className={`mt-4 rounded-xl border px-4 py-3 text-sm ${error ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-white/10 bg-black/15 text-slate-400"}`}>
-          {message}
-        </p>
-      </section>
 
-      <section className="grid gap-3 sm:grid-cols-3" aria-label="Account summary">
-        {[
-          ["Orders", String(orders.length), "Account-owned order records"],
-          ["Saved players", String(savedPlayers.length), "Derived from completed checkout details"],
-          ["Fulfilment attempts", String(fulfilmentCount), "Tracked across your orders"],
-        ].map(([label, value, note]) => (
-          <article key={label} className="system-card p-5">
-            <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{label}</p>
-            <p className="mt-3 text-3xl font-black text-white">{value}</p>
-            <p className="mt-2 text-xs text-slate-600">{note}</p>
-          </article>
-        ))}
-      </section>
-
-      <div className="grid gap-6 lg:grid-cols-[1.35fr_0.65fr]">
-        <div className="grid min-w-0 gap-6">
-          <section>
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">Your orders</p>
-                  <ModuleStateBadge state="live" />
+          <div className="mt-5 grid gap-3">
+            {orders.map((order) => (
+              <article key={order.id} className="system-card p-4 sm:p-5">
+                <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+                  <div className="min-w-0">
+                    <p className="break-all text-xs font-bold uppercase tracking-[0.12em] text-violet-300">{order.id}</p>
+                    <h3 className="mt-2 text-xl font-black">{order.package.name}</h3>
+                    <p className="mt-1 text-sm text-slate-400">
+                      {gameLabel(order.gameSlug)}
+                      {order.market ? ` · ${order.market.flag} ${order.market.label}` : ""}
+                    </p>
+                  </div>
+                  <span className="w-fit rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-bold uppercase text-slate-200">
+                    {order.status.replaceAll("_", " ")}
+                  </span>
                 </div>
-                <h2 className="mt-2 text-2xl font-black">Order history</h2>
+                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+                  <div className="text-sm text-slate-400">
+                    <strong className="text-white">{formatInr(order.package.amountInPaise)}</strong> · {new Date(order.createdAt).toLocaleDateString()}
+                  </div>
+                  <Link href={`/orders/${encodeURIComponent(order.id)}`} className="min-h-11 rounded-xl border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-black text-violet-100">
+                    Open tracking
+                  </Link>
+                </div>
+              </article>
+            ))}
+            {!orders.length ? (
+              <div className="system-empty-state">
+                <div>
+                  <p className="font-black text-slate-300">No orders yet</p>
+                  <p className="mt-2 text-sm">Browse the multi-game catalogue to create your first order.</p>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Link href="/games/mobile-legends" className="min-h-11 rounded-xl bg-white px-3 py-3 text-xs font-black text-slate-950 hover:bg-violet-200">
-                  New top-up
-                </Link>
-                <button type="button" onClick={() => void load()} className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-xs font-black text-slate-200">
-                  Refresh
-                </button>
+            ) : null}
+          </div>
+        </section>
+
+        <section id="game-accounts" className="system-panel scroll-mt-24 p-5">
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-black">Saved game accounts</h2>
+            <ModuleStateBadge state="beta" />
+          </div>
+          <p className="mt-1 text-sm text-slate-500">Read-only destinations derived from account-owned orders.</p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {savedAccounts.map((order) => (
+              <article key={`${order.gameSlug}-${order.player.playerId}-${order.player.zoneId}`} className="rounded-xl border border-white/8 bg-black/20 p-4">
+                <h3 className="font-bold text-white">{gameLabel(order.gameSlug)}</h3>
+                <p className="mt-2 break-all font-mono text-xs text-slate-300">{order.player.playerId}</p>
+                <p className="mt-1 break-all font-mono text-[11px] text-slate-600">{order.player.zoneId}</p>
+              </article>
+            ))}
+            {!savedAccounts.length ? (
+              <div className="rounded-xl border border-dashed border-white/10 p-5 text-sm text-slate-600 sm:col-span-2">
+                Saved accounts appear after an order is created.
               </div>
-            </div>
+            ) : null}
+          </div>
+        </section>
 
-            <div className="mt-5 grid gap-3">
-              {orders.map((order) => (
-                <article key={order.id} className="system-card p-4 sm:p-5">
-                  <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
-                    <div className="min-w-0">
-                      <p className="break-all text-xs font-bold uppercase tracking-[0.12em] text-violet-300">{order.id}</p>
-                      <h3 className="mt-2 text-xl font-black">{order.package.name}</h3>
-                      <p className="mt-1 text-sm text-slate-400">
-                        {order.market ? `${order.market.flag} ${order.market.label} · ` : ""}
-                        Player {order.player.nickname || order.player.playerId} ({order.player.zoneId})
-                      </p>
-                    </div>
-                    <span className="w-fit rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-bold uppercase text-slate-200">
-                      {order.status.replaceAll("_", " ")}
-                    </span>
-                  </div>
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-                    <div className="text-sm text-slate-400">
-                      <strong className="text-white">{formatInr(order.package.amountInPaise)}</strong>{" "}
-                      · {new Date(order.createdAt).toLocaleDateString()} · {order.fulfilmentAttempts} fulfilment attempt(s)
-                    </div>
-                    <Link href={`/orders/${encodeURIComponent(order.id)}`} className="min-h-11 rounded-xl border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-black text-violet-100">
-                      Open tracking
-                    </Link>
-                  </div>
-                </article>
-              ))}
-              {!orders.length ? (
-                <div className="system-empty-state">
-                  <div>
-                    <p className="font-black text-slate-300">No orders yet</p>
-                    <p className="mt-2 text-sm">Create a verified Mobile Legends order to begin your account history.</p>
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </section>
-
-          <section className="system-panel p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-lg font-black">Saved player accounts</h2>
-                  <ModuleStateBadge state="beta" />
-                </div>
-                <p className="mt-1 text-sm text-slate-500">Read-only player details derived from your order history.</p>
-              </div>
-            </div>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {savedPlayers.map((order) => (
-                <article key={`${order.player.playerId}-${order.player.zoneId}-${order.market?.code ?? "global"}`} className="rounded-xl border border-white/8 bg-black/20 p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <h3 className="truncate font-bold text-white">{order.player.nickname || "Mobile Legends player"}</h3>
-                    {order.market ? <span className="shrink-0 text-sm" title={order.market.label}>{order.market.flag}</span> : null}
-                  </div>
-                  <p className="mt-3 break-all font-mono text-sm text-slate-300">{order.player.playerId} ({order.player.zoneId})</p>
-                  <p className="mt-2 text-xs text-slate-600">{order.market?.label ?? "Global"} market</p>
-                </article>
-              ))}
-              {!savedPlayers.length ? (
-                <div className="rounded-xl border border-dashed border-white/10 p-5 text-sm text-slate-600 sm:col-span-2">
-                  Saved players appear after an account-owned order is created.
-                </div>
-              ) : null}
-            </div>
-          </section>
-        </div>
-
-        <aside className="grid content-start gap-5">
+        <div className="grid gap-5 md:grid-cols-2">
           {[
-            ["Profile editing", "Display name and account preferences need a reviewed update endpoint."],
-            ["Rewards", "Points, tiers, redemption rules, and fraud controls are planned."],
-            ["Support tickets", "Ticket creation, assignment, replies, and escalation require persistent workflows."],
-            ["Session management", "Viewing and revoking individual devices is planned; sign-out works now."],
-          ].map(([title, description]) => (
-            <section key={title} className="system-panel p-5">
+            ["wallet", "Wallet and credits", "Planned", "Store credits, refunds, and transaction history."],
+            ["rewards", "Rewards", "Planned", "Points, tiers, referrals, and redemption rules."],
+            ["redeem-codes", "Redeem-code history", "Planned", "Purchased codes, delivery status, and secure reveal history."],
+            ["addresses", "Billing addresses", "Planned", "Saved addresses with customer-controlled editing and deletion."],
+            ["support", "Support tickets", "Planned", "Create cases, attach evidence, receive replies, and track resolution."],
+            ["notifications", "Notifications", "Planned", "Order, payment, fulfilment, security, and promotion preferences."],
+            ["security", "Security and sessions", "Beta", "Current sign-out works. Device review and session revocation are next."],
+          ].map(([id, title, state, description]) => (
+            <section id={id} key={id} className="system-panel scroll-mt-24 p-5">
               <div className="flex items-center justify-between gap-3">
                 <h2 className="text-lg font-black">{title}</h2>
-                <ModuleStateBadge state="planned" />
+                <ModuleStateBadge state={state === "Beta" ? "beta" : "planned"} />
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-500">{description}</p>
               <div className="mt-4 rounded-xl border border-dashed border-white/10 bg-black/10 px-4 py-3 text-xs font-bold text-slate-600">
-                Not active in the current product system
+                {state === "Beta" ? "Partially active" : "Not active yet"}
               </div>
             </section>
           ))}
-        </aside>
+        </div>
       </div>
     </div>
   );
