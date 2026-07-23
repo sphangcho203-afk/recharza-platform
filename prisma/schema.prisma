@@ -63,6 +63,23 @@ enum FulfilmentMode {
   SUPPLIER_WRITE
 }
 
+enum MediaAssetKind {
+  GENERAL
+  BRAND
+  GAME_LOGO
+  GAME_ARTWORK
+  BANNER
+  SOCIAL
+  PRODUCT
+}
+
+enum MediaAssetStatus {
+  DRAFT
+  REVIEW
+  APPROVED
+  ARCHIVED
+}
+
 model Customer {
   id                         String              @id @default(cuid())
   email                      String              @unique
@@ -83,6 +100,7 @@ model Customer {
   sessions                   AuthSession[]
   magicLinks                 AuthMagicLink[]
   staffAuditLogs             AdminAuditLog[]      @relation("StaffAuditActor")
+  mediaAssets                MediaAsset[]         @relation("MediaAssetCreator")
 
   @@index([role, accessStatus, createdAt])
 }
@@ -291,6 +309,41 @@ model FulfilmentAttempt {
 
   @@index([orderId, createdAt])
   @@index([provider, status, createdAt])
+}
+
+model MediaAsset {
+  id                  String           @id @default(cuid())
+  name                String
+  fileName            String
+  mimeType            String
+  byteSize            Int
+  checksum            String           @unique
+  data                Bytes
+  kind                MediaAssetKind   @default(GENERAL)
+  status              MediaAssetStatus @default(DRAFT)
+  altText             String
+  notes               String?
+  tags                String[]         @default([])
+  createdByCustomerId String?
+  createdByCustomer   Customer?        @relation("MediaAssetCreator", fields: [createdByCustomerId], references: [id], onDelete: SetNull)
+  placements          MediaPlacement[]
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  @@index([status, kind, createdAt])
+  @@index([createdByCustomerId, createdAt])
+}
+
+model MediaPlacement {
+  id           String     @id @default(cuid())
+  placementKey String     @unique
+  label        String
+  assetId      String
+  asset        MediaAsset @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  publishedAt  DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([assetId, updatedAt])
 }
 
 model RateLimitBucket {
