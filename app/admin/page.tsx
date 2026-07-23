@@ -11,6 +11,7 @@ import { OperatorHealthPanel } from "@/components/operator-health-panel";
 import { SupplierPricingConsole } from "@/components/supplier-pricing-console";
 import { WorkspaceNavigation } from "@/components/workspace-navigation";
 import { getAdminControlSnapshot } from "@/lib/admin-control-center";
+import { getAdminPeopleSnapshot } from "@/lib/admin-people";
 import {
   adminModules,
   getVisibleModules,
@@ -28,9 +29,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage() {
-  const [session, snapshot] = await Promise.all([
+  const [session, snapshot, peopleSnapshot] = await Promise.all([
     requireWorkspaceSession("admin", "/admin"),
     getAdminControlSnapshot(),
+    getAdminPeopleSnapshot(),
   ]);
   const modules = getVisibleModules(adminModules);
   const liveCount = modules.filter((module) => module.state === "live").length;
@@ -80,7 +82,11 @@ export default async function AdminPage() {
           </section>
 
           <AdminControlCenter snapshot={snapshot} />
-          <AdminPeopleConsole currentAdminId={session.customer.id} />
+          <AdminPeopleConsole
+            currentAdminId={session.customer.id}
+            initialPeople={peopleSnapshot.people}
+            initialPermissionDefinitions={peopleSnapshot.permissionDefinitions}
+          />
 
           <section id="overview" className="mt-10 scroll-mt-24">
             <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
