@@ -25,7 +25,17 @@ function matchesFilter(game: Game, filter: CatalogueFilter) {
   return true;
 }
 
-export function GameCatalogue({ games }: { games: Game[] }) {
+export function GameCatalogue({
+  games,
+  showRegionalMarkets = true,
+  showDevelopmentBadges = true,
+  showPricingSnapshots = true,
+}: {
+  games: Game[];
+  showRegionalMarkets?: boolean;
+  showDevelopmentBadges?: boolean;
+  showPricingSnapshots?: boolean;
+}) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<CatalogueFilter>("all");
   const mainGames = useMemo(() => games.filter((game) => game.kind === "game"), [games]);
@@ -51,10 +61,11 @@ export function GameCatalogue({ games }: { games: Game[] }) {
 
   const normalizedQuery = query.trim().toLowerCase();
   const showRegions =
-    !normalizedQuery ||
-    ["mobile legends", "mlbb", "india", "indonesia", "philippines"].some(
-      (term) => term.includes(normalizedQuery) || normalizedQuery.includes(term),
-    );
+    showRegionalMarkets &&
+    (!normalizedQuery ||
+      ["mobile legends", "mlbb", ...regionGames.map((game) => game.region?.label.toLowerCase() ?? "")].some(
+        (term) => term.includes(normalizedQuery) || normalizedQuery.includes(term),
+      ));
 
   return (
     <div className="mt-7 min-w-0">
@@ -118,7 +129,7 @@ export function GameCatalogue({ games }: { games: Game[] }) {
             </p>
             <h3 className="mt-1 text-lg font-black text-white">Choose the market linked to your account</h3>
             <p className="mt-1 text-sm leading-6 text-slate-500">
-              India, Indonesia, and Philippines use the same Mobile Legends game icon with separate checkout routing.
+              {regionGames.length} regional versions share the Mobile Legends identity while keeping checkout routing and supplier-market selection separate.
             </p>
           </div>
 
@@ -177,7 +188,12 @@ export function GameCatalogue({ games }: { games: Game[] }) {
       {visibleGames.length > 0 ? (
         <div className="mt-4 grid min-w-0 grid-cols-1 gap-3 min-[360px]:grid-cols-2 md:grid-cols-3 lg:gap-4 xl:grid-cols-4">
           {visibleGames.map((game) => (
-            <GameCard key={game.slug} game={game} />
+            <GameCard
+              key={game.slug}
+              game={game}
+              showDevelopmentBadges={showDevelopmentBadges}
+              showPricingSnapshots={showPricingSnapshots}
+            />
           ))}
         </div>
       ) : (
