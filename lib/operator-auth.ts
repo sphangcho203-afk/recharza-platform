@@ -1,6 +1,11 @@
 import { createHash, timingSafeEqual } from "node:crypto";
 
-import { getRequestSession, hasStaffRole } from "@/lib/auth";
+import {
+  hasStaffPermission,
+  resolveStaffPermissions,
+  type StaffPermission,
+} from "@/lib/access-control";
+import { getRequestSession } from "@/lib/auth";
 import { requireEnvironmentVariable } from "@/lib/runtime-config";
 
 function extractBearerToken(request: Request) {
@@ -29,15 +34,32 @@ function verifyOptionalBearerEnvironmentSecret(request: Request, variableName: s
     actorCustomerId: null,
     role: "EMERGENCY_TOKEN" as const,
     mode: "bearer" as const,
+    permissions: ["emergency.override"] as const,
   };
 }
 
-export async function verifyOperatorAccess(request: Request) {
+export async function verifyOperatorAccess(
+  request: Request,
+  requiredPermission: StaffPermission = "orders.read",
+) {
   const bearer = verifyOptionalBearerEnvironmentSecret(request, "ADMIN_ACCESS_TOKEN");
   if (bearer) return bearer;
 
   const session = await getRequestSession(request);
-  if (!session || !hasStaffRole(session.customer.role)) return null;
+  if (!session) return null;
+
+  if (
+    !hasStaffPermission(
+      {
+        role: session.customer.role,
+        staffPermissions: session.customer.staffPermissions,
+        staffPermissionsConfigured: session.customer.staffPermissionsConfigured,
+      },
+      requiredPermission,
+    )
+  ) {
+    return null;
+  }
 
   return {
     actorFingerprint: createHash("sha256")
@@ -47,6 +69,11 @@ export async function verifyOperatorAccess(request: Request) {
     actorCustomerId: session.customer.id,
     role: session.customer.role,
     mode: "session" as const,
+    permissions: resolveStaffPermissions({
+      role: session.customer.role,
+      staffPermissions: session.customer.staffPermissions,
+      staffPermissionsConfigured: session.customer.staffPermissionsConfigured,
+    }),
   };
 }
 

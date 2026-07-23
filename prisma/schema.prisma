@@ -37,6 +37,13 @@ enum AccountRole {
   ADMIN
 }
 
+enum AccountAccessStatus {
+  ACTIVE
+  ORDER_RESTRICTED
+  SIGN_IN_RESTRICTED
+  SUSPENDED
+}
+
 enum AuthTokenPurpose {
   SIGN_IN
 }
@@ -57,20 +64,27 @@ enum FulfilmentMode {
 }
 
 model Customer {
-  id              String          @id @default(cuid())
-  email           String          @unique
-  displayName     String?
-  username        String?         @unique
-  role            AccountRole     @default(CUSTOMER)
-  authSubject     String?         @unique
-  emailVerifiedAt DateTime?
-  lastLoginAt     DateTime?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  orders          Order[]
-  sessions        AuthSession[]
-  magicLinks      AuthMagicLink[]
-  staffAuditLogs  AdminAuditLog[] @relation("StaffAuditActor")
+  id                         String              @id @default(cuid())
+  email                      String              @unique
+  displayName                String?
+  username                   String?             @unique
+  role                       AccountRole         @default(CUSTOMER)
+  accessStatus               AccountAccessStatus @default(ACTIVE)
+  restrictionReason          String?
+  restrictionUpdatedAt       DateTime?
+  staffPermissions           String[]            @default([])
+  staffPermissionsConfigured Boolean             @default(false)
+  authSubject                String?             @unique
+  emailVerifiedAt            DateTime?
+  lastLoginAt                DateTime?
+  createdAt                  DateTime             @default(now())
+  updatedAt                  DateTime             @updatedAt
+  orders                     Order[]
+  sessions                   AuthSession[]
+  magicLinks                 AuthMagicLink[]
+  staffAuditLogs             AdminAuditLog[]      @relation("StaffAuditActor")
+
+  @@index([role, accessStatus, createdAt])
 }
 
 model AuthSession {

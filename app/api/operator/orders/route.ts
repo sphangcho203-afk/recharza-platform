@@ -38,10 +38,10 @@ function maskEmail(email: string) {
 
 export async function GET(request: Request) {
   try {
-    const actor = await verifyOperatorAccess(request);
+    const actor = await verifyOperatorAccess(request, "orders.read");
     if (!actor) {
       return Response.json(
-        { ok: false, message: "Verified staff access is required." },
+        { ok: false, message: "Order-read permission is required." },
         { status: 401 },
       );
     }
