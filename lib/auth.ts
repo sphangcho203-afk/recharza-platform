@@ -137,7 +137,7 @@ export async function createMagicLink(input: {
   const role = resolveBootstrapRole(email);
   const customer = await prisma.customer.upsert({
     where: { email },
-    update: role === "CUSTOMER" ? {} : { role },
+    update: {},
     create: { email, role },
   });
 
@@ -193,7 +193,6 @@ export async function consumeMagicLink(token: unknown, request: Request) {
   const sessionToken = createOpaqueToken();
   const sessionHash = hashToken(sessionToken);
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
-  const bootstrapRole = resolveBootstrapRole(magicLink.customer.email);
 
   const result = await prisma.$transaction(async (transaction) => {
     const currentCustomer = await transaction.customer.findUnique({
@@ -212,7 +211,6 @@ export async function consumeMagicLink(token: unknown, request: Request) {
       data: {
         emailVerifiedAt: currentCustomer.emailVerifiedAt ?? new Date(),
         lastLoginAt: new Date(),
-        ...(bootstrapRole === "CUSTOMER" ? {} : { role: bootstrapRole }),
       },
     });
 
