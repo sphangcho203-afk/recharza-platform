@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { AdminCatalogueConsole } from "@/components/admin-catalogue-console";
 import { AdminControlCenter } from "@/components/admin-control-center";
 import { AdminInterfaceMap } from "@/components/admin-interface-map";
+import { AdminPaymentConsole } from "@/components/admin-payment-console";
 import { AdminPeopleConsole } from "@/components/admin-people-console";
 import { InternalHeader } from "@/components/internal-header";
 import { ModuleStateBadge } from "@/components/module-state-badge";
@@ -11,6 +12,7 @@ import { OperatorHealthPanel } from "@/components/operator-health-panel";
 import { SupplierPricingConsole } from "@/components/supplier-pricing-console";
 import { WorkspaceNavigation } from "@/components/workspace-navigation";
 import { getAdminControlSnapshot } from "@/lib/admin-control-center";
+import { getAdminPaymentSnapshot } from "@/lib/admin-payments";
 import { getAdminPeopleSnapshot } from "@/lib/admin-people";
 import {
   adminModules,
@@ -29,10 +31,11 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage() {
-  const [session, snapshot, peopleSnapshot] = await Promise.all([
+  const [session, snapshot, peopleSnapshot, paymentSnapshot] = await Promise.all([
     requireWorkspaceSession("admin", "/admin"),
     getAdminControlSnapshot(),
     getAdminPeopleSnapshot(),
+    getAdminPaymentSnapshot(),
   ]);
   const modules = getVisibleModules(adminModules);
   const liveCount = modules.filter((module) => module.state === "live").length;
@@ -87,6 +90,7 @@ export default async function AdminPage() {
             initialPeople={peopleSnapshot.people}
             initialPermissionDefinitions={peopleSnapshot.permissionDefinitions}
           />
+          <AdminPaymentConsole initialSnapshot={paymentSnapshot} />
 
           <section id="overview" className="mt-10 scroll-mt-24">
             <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
