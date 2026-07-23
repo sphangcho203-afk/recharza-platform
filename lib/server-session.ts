@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import type { AccountRole } from "@/generated/prisma/client";
+import { isSessionAllowed } from "@/lib/access-control";
 import { getSessionCookieName, type AuthSessionResult } from "@/lib/auth";
 import { canAccessWorkspace, type Workspace } from "@/lib/product-system";
 import { getPrisma } from "@/lib/prisma";
@@ -26,7 +27,9 @@ export async function getServerSession(): Promise<AuthSessionResult | null> {
   });
 
   if (!session || session.revokedAt || session.expiresAt <= new Date()) return null;
-  if (!session.customer.emailVerifiedAt) return null;
+  if (!session.customer.emailVerifiedAt || !isSessionAllowed(session.customer.accessStatus)) {
+    return null;
+  }
 
   return {
     sessionId: session.id,
@@ -37,6 +40,9 @@ export async function getServerSession(): Promise<AuthSessionResult | null> {
       displayName: session.customer.displayName,
       username: session.customer.username,
       role: session.customer.role,
+      accessStatus: session.customer.accessStatus,
+      staffPermissions: session.customer.staffPermissions,
+      staffPermissionsConfigured: session.customer.staffPermissionsConfigured,
       emailVerifiedAt: session.customer.emailVerifiedAt,
     },
   };
