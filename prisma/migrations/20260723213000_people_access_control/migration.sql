@@ -16,3 +16,29 @@ ALTER TABLE "Customer"
 
 CREATE INDEX "Customer_role_accessStatus_createdAt_idx"
   ON "Customer"("role", "accessStatus", "createdAt");
+
+-- Reject order inserts for any account that is not fully active. The application
+-- also performs access checks, but this trigger protects future write paths too.
+CREATE FUNCTION "enforce_customer_order_access"()
+RETURNS TRIGGER AS $$
+DECLARE
+  current_access "AccountAccessStatus";
+BEGIN
+  SELECT "accessStatus"
+    INTO current_access
+    FROM "Customer"
+   WHERE "id" = NEW."customerId";
+
+  IF current_access IS DISTINCT FROM 'ACTIVE'::"AccountAccessStatus" THEN
+    RAISE EXCEPTION 'RECHARZA_ORDER_ACCESS_BLOCKED'
+      USING ERRCODE = 'P0001';
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER "Order_customer_access_gate"
+BEFORE INSERT ON "Order"
+FOR EACH ROW
+EXECUTE FUNCTION "enforce_customer_order_access"();
