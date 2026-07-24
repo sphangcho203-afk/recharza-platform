@@ -198,10 +198,14 @@ export const gameCheckoutDefinitions = checkoutDefinitions.map((definition) => (
   packageFamilies: [...definition.packageFamilies],
 }));
 
+export function getGameBySlug(slug: string) {
+  return gameCheckoutDefinitions.find((definition) => definition.gameSlug === slug) ?? null;
+}
+
 export function getGameCheckoutDefinition(value: unknown) {
   if (typeof value !== "string") return null;
   const slug = value.trim().toLowerCase();
-  return gameCheckoutDefinitions.find((definition) => definition.gameSlug === slug) ?? null;
+  return getGameBySlug(slug);
 }
 
 export function getPublicGameCheckoutDefinition(value: unknown) {
