@@ -1,11 +1,13 @@
-import { getRequestSession } from "@/lib/auth";
 import {
   isPackageAvailableForMarket,
   parseMobileLegendsMarket,
 } from "@/lib/mobile-legends-market";
 import { validateMobileLegendsPlayer } from "@/lib/order-validation";
 import { getPrisma } from "@/lib/prisma";
-import { consumeRateLimit, createRateLimitHeaders } from "@/lib/rate-limit";
+import {
+  consumeRateLimit,
+  createRateLimitHeaders,
+} from "@/lib/rate-limit";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 import { getMobileLegendsPackageForCheckout } from "@/lib/storefront-catalog";
 import { validateFazerCardsPlayer } from "@/lib/suppliers/fazercards-operations";
@@ -29,7 +31,10 @@ export async function POST(request: Request) {
 
     if (!rateLimit.allowed) {
       return Response.json(
-        { valid: false, message: "Too many validation attempts. Wait before retrying." },
+        {
+          valid: false,
+          message: "Too many validation attempts. Wait before retrying.",
+        },
         { status: 429, headers: rateHeaders },
       );
     }
@@ -48,7 +53,8 @@ export async function POST(request: Request) {
       return Response.json(
         {
           valid: false,
-          message: "Choose a supported Mobile Legends fulfilment market before validating the player.",
+          message:
+            "Choose a supported Mobile Legends account region before validating the player.",
         },
         { status: 400, headers: rateHeaders },
       );
@@ -56,10 +62,14 @@ export async function POST(request: Request) {
 
     const local = validateMobileLegendsPlayer(data.playerId, data.zoneId);
     if (!local.valid) {
-      return Response.json(local, { status: 400, headers: rateHeaders });
+      return Response.json(local, {
+        status: 400,
+        headers: rateHeaders,
+      });
     }
 
-    const packageId = typeof data.packageId === "string" ? data.packageId.trim() : "";
+    const packageId =
+      typeof data.packageId === "string" ? data.packageId.trim() : "";
     if (!packageId) {
       return Response.json(
         {
@@ -68,45 +78,44 @@ export async function POST(request: Request) {
           confirmed: false,
           nickname: null,
           verificationMode: "local-format",
+          message: `Player format is valid for ${selectedMarket.label}. Choose a package to run supplier validation.`,
         },
         { headers: rateHeaders },
       );
     }
 
-    const selectedPackage = await getMobileLegendsPackageForCheckout(packageId);
+    const selectedPackage =
+      await getMobileLegendsPackageForCheckout(packageId);
     if (!selectedPackage) {
-      return Response.json(
-        { valid: false, message: "That package is no longer available. Refresh the catalogue." },
-        { status: 409, headers: rateHeaders },
-      );
-    }
-
-    if (!isPackageAvailableForMarket(selectedPackage.region, selectedMarket.code)) {
       return Response.json(
         {
           valid: false,
-          message: `That package is not approved for the ${selectedMarket.label} market.`,
+          message:
+            "That package is no longer available. Refresh the catalogue and choose again.",
         },
         { status: 409, headers: rateHeaders },
       );
     }
 
-    if (selectedPackage.source !== "fazercards-live" || !selectedPackage.supplierProductId) {
+    if (
+      !isPackageAvailableForMarket(
+        selectedPackage.region,
+        selectedMarket.code,
+      )
+    ) {
       return Response.json(
         {
-          ...local,
-          marketCode: selectedMarket.code,
-          confirmed: false,
-          nickname: null,
-          verificationMode: "local-format",
-          message: `Player format is valid for the ${selectedMarket.label} route. Indicative packages cannot run supplier nickname validation.`,
+          valid: false,
+          message: `That package is not approved for ${selectedMarket.label}.`,
         },
-        { headers: rateHeaders },
+        { status: 409, headers: rateHeaders },
       );
     }
 
-    const session = await getRequestSession(request);
-    if (!session) {
+    if (
+      selectedPackage.source !== "fazercards-live" ||
+      !selectedPackage.supplierProductId
+    ) {
       return Response.json(
         {
           ...local,
@@ -114,7 +123,7 @@ export async function POST(request: Request) {
           confirmed: false,
           nickname: null,
           verificationMode: "local-format",
-          message: `Player format is valid for the ${selectedMarket.label} route. Sign in to run supplier nickname validation.`,
+          message: `Player format is valid for ${selectedMarket.label}. This fallback offer does not expose supplier nickname validation.`,
         },
         { headers: rateHeaders },
       );
@@ -124,6 +133,9 @@ export async function POST(request: Request) {
       where: {
         id: selectedPackage.supplierProductId,
         provider: "fazercards",
+        gameSlug: "mobile-legends",
+        categoryId: selectedPackage.supplierCategoryId ?? undefined,
+        offerId: selectedPackage.supplierOfferId ?? undefined,
         available: true,
         published: true,
       },
@@ -136,7 +148,11 @@ export async function POST(request: Request) {
 
     if (!product) {
       return Response.json(
-        { valid: false, message: "The supplier offer is no longer approved." },
+        {
+          valid: false,
+          message:
+            "The supplier offer changed after the page loaded. Refresh and retry.",
+        },
         { status: 409, headers: rateHeaders },
       );
     }
@@ -160,19 +176,28 @@ export async function POST(request: Request) {
         marketCode: selectedMarket.code,
         message: supplier.message,
       },
-      { status: supplier.valid ? 200 : 400, headers: rateHeaders },
+      {
+        status: supplier.valid ? 200 : 400,
+        headers: rateHeaders,
+      },
     );
   } catch (error) {
     if (error instanceof RuntimeConfigurationError) {
       return Response.json(
-        { valid: false, message: "Supplier validation is not configured correctly." },
+        {
+          valid: false,
+          message: "Supplier validation is not configured correctly.",
+        },
         { status: 503, headers: rateHeaders },
       );
     }
 
     console.error("Mobile Legends validation failed", error);
     return Response.json(
-      { valid: false, message: "Player validation is temporarily unavailable." },
+      {
+        valid: false,
+        message: "Player validation is temporarily unavailable.",
+      },
       { status: 502, headers: rateHeaders },
     );
   }
