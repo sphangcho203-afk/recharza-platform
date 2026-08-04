@@ -34,7 +34,10 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
           <RecharzaMark compact />
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm text-slate-400 md:flex" aria-label="Customer navigation">
+        <nav
+          className="hidden items-center gap-6 text-sm text-slate-400 md:flex"
+          aria-label="Customer navigation"
+        >
           {navigation.map((item) => (
             <Link
               key={item.id}
@@ -42,26 +45,56 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
               className="inline-flex items-center gap-2 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
             >
               {item.label}
-              {item.state === "beta" ? <ModuleStateBadge state="beta" /> : null}
+              {item.state === "beta" ? (
+                <ModuleStateBadge state="beta" />
+              ) : null}
             </Link>
           ))}
         </nav>
 
-        {storefront.navigation.ctaEnabled ? (
-          <div className="hidden items-center gap-2 md:flex">
+        <div className="hidden items-center gap-2 md:flex">
+          <Link
+            href="/cart"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-black text-slate-200 transition hover:border-violet-400/30 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+          >
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 8H7" />
+              <circle cx="10" cy="20" r="1" />
+              <circle cx="18" cy="20" r="1" />
+            </svg>
+            Cart
+          </Link>
+          {storefront.navigation.ctaEnabled ? (
             <Link
               href={storefront.navigation.ctaHref}
               className="min-h-11 rounded-xl bg-white px-4 py-3 text-xs font-black text-slate-950 transition hover:bg-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
             >
               {storefront.navigation.ctaLabel}
             </Link>
-          </div>
-        ) : null}
+          ) : null}
+        </div>
 
         <details className="group relative md:hidden">
           <summary className="grid h-11 w-11 cursor-pointer list-none place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-white marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 [&::-webkit-details-marker]:hidden">
             <span className="sr-only">Open customer navigation</span>
-            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            >
               <path d="M4 7h16M4 12h16M4 17h16" />
             </svg>
           </summary>
@@ -81,9 +114,23 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
                     {item.description}
                   </span>
                 </span>
-                {item.state === "beta" ? <ModuleStateBadge state="beta" /> : null}
+                {item.state === "beta" ? (
+                  <ModuleStateBadge state="beta" />
+                ) : null}
               </Link>
             ))}
+            <Link
+              href="/cart"
+              className="grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+            >
+              <span>
+                <span className="block">Cart</span>
+                <span className="mt-0.5 block text-[11px] font-normal leading-4 text-slate-500">
+                  Packages and player destinations
+                </span>
+              </span>
+              <span aria-hidden="true">🛒</span>
+            </Link>
             {storefront.navigation.ctaEnabled ? (
               <Link
                 href={storefront.navigation.ctaHref}
