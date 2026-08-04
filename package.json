@@ -16,7 +16,9 @@
     "db:deploy": "prisma migrate deploy",
     "deploy:check": "node scripts/validate-deployment-env.mjs",
     "deploy:prepare": "npm run deploy:check && npm run db:deploy",
-    "smoke": "node scripts/smoke-test.mjs"
+    "ops:rollout:termux": "bash scripts/termux-phase1-rollout.sh",
+    "smoke": "node scripts/smoke-test.mjs",
+    "smoke:phase1": "node scripts/phase1-smoke-test.mjs"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.0.0",
