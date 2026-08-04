@@ -41,6 +41,18 @@ const emptyCart: CartSnapshot = {
   items: [],
 };
 
+function createDraftPlayers(cart: CartSnapshot) {
+  return Object.fromEntries(
+    cart.items.map((item) => [
+      item.id,
+      {
+        playerId: item.player.playerId ?? "",
+        zoneId: item.player.zoneId ?? "",
+      },
+    ]),
+  );
+}
+
 export function CartWorkspace({
   packages,
   market,
@@ -66,50 +78,50 @@ export function CartWorkspace({
 
   function applyCart(next: CartSnapshot) {
     setCart(next);
-    setDraftPlayers(
-      Object.fromEntries(
-        next.items.map((item) => [
-          item.id,
-          {
-            playerId: item.player.playerId ?? "",
-            zoneId: item.player.zoneId ?? "",
-          },
-        ]),
-      ),
-    );
-  }
-
-  async function loadCart() {
-    setLoading(true);
-    setError(false);
-    try {
-      const response = await fetch("/api/cart", { cache: "no-store" });
-      const result = (await response.json()) as {
-        ok?: boolean;
-        message?: string;
-        cart?: CartSnapshot;
-      };
-      if (!response.ok || !result.ok || !result.cart) {
-        setError(true);
-        setMessage(result.message ?? "The cart could not be loaded.");
-        return;
-      }
-      applyCart(result.cart);
-      setMessage(
-        result.cart.itemCount
-          ? `${result.cart.itemCount} item(s) ready in your cart.`
-          : "Your cart is ready for an offer.",
-      );
-    } catch {
-      setError(true);
-      setMessage("The cart service could not be reached.");
-    } finally {
-      setLoading(false);
-    }
+    setDraftPlayers(createDraftPlayers(next));
   }
 
   useEffect(() => {
-    void loadCart();
+    let active = true;
+
+    fetch("/api/cart", { cache: "no-store" })
+      .then(async (response) => ({
+        response,
+        result: (await response.json()) as {
+          ok?: boolean;
+          message?: string;
+          cart?: CartSnapshot;
+        },
+      }))
+      .then(({ response, result }) => {
+        if (!active) return;
+
+        if (!response.ok || !result.ok || !result.cart) {
+          setError(true);
+          setMessage(result.message ?? "The cart could not be loaded.");
+          return;
+        }
+
+        setCart(result.cart);
+        setDraftPlayers(createDraftPlayers(result.cart));
+        setMessage(
+          result.cart.itemCount
+            ? `${result.cart.itemCount} item(s) ready in your cart.`
+            : "Your cart is ready for an offer.",
+        );
+      })
+      .catch(() => {
+        if (!active) return;
+        setError(true);
+        setMessage("The cart service could not be reached.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   async function addSelectedPackage() {
@@ -156,11 +168,14 @@ export function CartWorkspace({
     setMessage("Validating the player destination...");
 
     try {
-      const response = await fetch(`/api/cart/items/${encodeURIComponent(itemId)}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(draft),
-      });
+      const response = await fetch(
+        `/api/cart/items/${encodeURIComponent(itemId)}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(draft),
+        },
+      );
       const result = (await response.json()) as {
         ok?: boolean;
         message?: string;
@@ -185,9 +200,10 @@ export function CartWorkspace({
     setBusyItem(itemId);
     setError(false);
     try {
-      const response = await fetch(`/api/cart/items/${encodeURIComponent(itemId)}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `/api/cart/items/${encodeURIComponent(itemId)}`,
+        { method: "DELETE" },
+      );
       const result = (await response.json()) as {
         ok?: boolean;
         message?: string;
