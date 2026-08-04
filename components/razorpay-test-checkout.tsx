@@ -36,10 +36,15 @@ type RazorpayFailureResponse = {
 
 type RazorpayInstance = {
   open(): void;
-  on(eventName: "payment.failed", handler: (response: RazorpayFailureResponse) => void): void;
+  on(
+    eventName: "payment.failed",
+    handler: (response: RazorpayFailureResponse) => void,
+  ): void;
 };
 
-type RazorpayConstructor = new (options: Record<string, unknown>) => RazorpayInstance;
+type RazorpayConstructor = new (
+  options: Record<string, unknown>,
+) => RazorpayInstance;
 
 declare global {
   interface Window {
@@ -71,7 +76,7 @@ function loadRazorpayScript() {
       existing.addEventListener("load", () => resolve(), { once: true });
       existing.addEventListener(
         "error",
-        () => reject(new Error("Razorpay Checkout could not be loaded.")),
+        () => reject(new Error("Secure Checkout could not be loaded.")),
         { once: true },
       );
       return;
@@ -81,7 +86,8 @@ function loadRazorpayScript() {
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Razorpay Checkout could not be loaded."));
+    script.onerror = () =>
+      reject(new Error("Secure Checkout could not be loaded."));
     document.head.appendChild(script);
   });
 
@@ -114,7 +120,7 @@ export function RazorpayTestCheckout({
     "idle" | "creating" | "open" | "verifying" | "success" | "error"
   >("idle");
   const [message, setMessage] = useState(
-    "Create or resume a Razorpay Test Mode session. No real money moves with test keys.",
+    "Complete payment securely. The order remains recoverable if Checkout is closed.",
   );
 
   if (!PAYABLE_STATUSES.has(orderStatus)) {
@@ -126,21 +132,24 @@ export function RazorpayTestCheckout({
     response: RazorpaySuccessResponse,
   ) {
     setState("verifying");
-    setMessage("Verifying the Checkout signature on the Recharza server...");
+    setMessage("Verifying the payment response on the Recharza server...");
 
-    const verificationResponse = await fetch("/api/payments/razorpay/verify", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
+    const verificationResponse = await fetch(
+      "/api/payments/razorpay/verify",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId,
+          providerOrderId: checkout.providerOrderId,
+          paymentId: response.razorpay_payment_id,
+          signature: response.razorpay_signature,
+        }),
       },
-      body: JSON.stringify({
-        orderId,
-        providerOrderId: checkout.providerOrderId,
-        paymentId: response.razorpay_payment_id,
-        signature: response.razorpay_signature,
-      }),
-    });
+    );
     const result = (await verificationResponse.json()) as {
       ok: boolean;
       message?: string;
@@ -155,22 +164,58 @@ export function RazorpayTestCheckout({
     setState("success");
     setMessage(
       result.message ??
-        "Payment response verified. Waiting for the signed webhook before fulfilment.",
+        "Payment response verified. Order processing has started.",
     );
     await onVerified();
+  }
+
+  async function tryInternalPayment() {
+    const response = await fetch(
+      `/api/orders/${encodeURIComponent(orderId)}/payment`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken.trim()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ outcome: "completed" }),
+      },
+    );
+    const result = (await response.json()) as {
+      ok?: boolean;
+      code?: string;
+      message?: string;
+    };
+
+    if (response.status === 409 && result.code === "EXTERNAL_PAYMENT_REQUIRED") {
+      return false;
+    }
+
+    if (!response.ok || !result.ok) {
+      throw new Error(result.message ?? "Payment could not be completed.");
+    }
+
+    setState("success");
+    setMessage(result.message ?? "Payment received. Order completed successfully.");
+    await onVerified();
+    return true;
   }
 
   async function openCheckout() {
     if (!accessToken.trim()) {
       setState("error");
-      setMessage("Open the secure order with its private token before starting payment.");
+      setMessage("Open the secure order before starting payment.");
       return;
     }
 
     setState("creating");
-    setMessage("Creating or recovering the Razorpay Test Mode order...");
+    setMessage("Preparing secure payment...");
 
     try {
+      if (await tryInternalPayment()) {
+        return;
+      }
+
       const response = await fetch(
         `/api/orders/${encodeURIComponent(orderId)}/payment-session`,
         {
@@ -182,14 +227,14 @@ export function RazorpayTestCheckout({
 
       if (!response.ok || !result.ok || !result.checkout) {
         setState("error");
-        setMessage(result.message ?? "Test Checkout is not available yet.");
+        setMessage(result.message ?? "Secure Checkout is not available yet.");
         return;
       }
 
       await loadRazorpayScript();
 
       if (!window.Razorpay) {
-        throw new Error("Razorpay Checkout did not initialise.");
+        throw new Error("Secure Checkout did not initialise.");
       }
 
       const checkout = result.checkout;
@@ -201,7 +246,7 @@ export function RazorpayTestCheckout({
         description: checkout.description,
         order_id: checkout.providerOrderId,
         prefill: { email: checkout.customerEmail },
-        notes: { recharza_order_id: orderId, mode: "test" },
+        notes: { recharza_order_id: orderId },
         theme: { color: "#8b5cf6" },
         handler: (paymentResponse: RazorpaySuccessResponse) => {
           void verifyPayment(checkout, paymentResponse);
@@ -210,7 +255,7 @@ export function RazorpayTestCheckout({
           ondismiss: () => {
             setState("idle");
             setMessage(
-              "Test Checkout was closed. The order remains safe and the same payment session can be reopened.",
+              "Checkout was closed. The order remains safe and payment can be reopened.",
             );
           },
         },
@@ -221,19 +266,19 @@ export function RazorpayTestCheckout({
         setMessage(
           failure.error?.description ||
             failure.error?.reason ||
-            "The simulated payment failed. You can retry the same order.",
+            "Payment failed. You can retry the same order.",
         );
       });
 
       setState("open");
-      setMessage("Razorpay Test Mode Checkout is open.");
+      setMessage("Secure Checkout is open.");
       razorpay.open();
     } catch (error) {
       setState("error");
       setMessage(
         error instanceof Error
           ? error.message
-          : "Test Checkout could not be opened. The order remains recoverable.",
+          : "Checkout could not be opened. The order remains recoverable.",
       );
     }
   }
@@ -245,31 +290,36 @@ export function RazorpayTestCheckout({
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-200">
-            Razorpay Test Mode
+            Secure payment
           </p>
-          <h3 className="mt-2 text-xl font-black text-white">Continue to simulated payment</h3>
+          <h3 className="mt-2 text-xl font-black text-white">
+            Complete this order
+          </h3>
           <p className="mt-2 text-sm leading-6 text-violet-100/75">
-            {packageName} · {formatInr(amountInPaise)}. The server creates the provider order and verifies the callback signature.
+            {packageName} · {formatInr(amountInPaise)}. Payment confirmation and
+            order status are recorded by the Recharza server.
           </p>
         </div>
-        <span className="w-fit rounded-full border border-amber-300/25 bg-amber-300/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-amber-100">
-          No real charge
+        <span className="w-fit rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-emerald-100">
+          Protected checkout
         </span>
       </div>
 
       <button
         type="button"
-        disabled={busy}
+        disabled={busy || state === "success"}
         onClick={() => void openCheckout()}
         className="mt-5 w-full rounded-2xl bg-white px-5 py-3.5 text-sm font-black text-slate-950 transition hover:bg-violet-100 disabled:cursor-wait disabled:opacity-60"
       >
         {state === "creating"
-          ? "Preparing Test Checkout..."
+          ? "Preparing payment..."
           : state === "verifying"
-            ? "Verifying payment response..."
+            ? "Verifying payment..."
             : state === "open"
-              ? "Test Checkout open"
-              : "Open Razorpay Test Checkout"}
+              ? "Checkout open"
+              : state === "success"
+                ? "Payment completed"
+                : "Pay securely"}
       </button>
 
       <p

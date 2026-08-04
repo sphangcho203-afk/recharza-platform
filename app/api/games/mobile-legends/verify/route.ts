@@ -1,16 +1,10 @@
-import {
-  isPackageAvailableForMarket,
-  parseMobileLegendsMarket,
-} from "@/lib/mobile-legends-market";
-import { validateMobileLegendsPlayer } from "@/lib/order-validation";
-import { getPrisma } from "@/lib/prisma";
+import { parseMobileLegendsMarket } from "@/lib/mobile-legends-market";
+import { validateMobileLegendsIdentity } from "@/lib/player-identity-provider";
 import {
   consumeRateLimit,
   createRateLimitHeaders,
 } from "@/lib/rate-limit";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
-import { getMobileLegendsPackageForCheckout } from "@/lib/storefront-catalog";
-import { validateFazerCardsPlayer } from "@/lib/suppliers/fazercards-operations";
 
 export const runtime = "nodejs";
 
@@ -60,124 +54,24 @@ export async function POST(request: Request) {
       );
     }
 
-    const local = validateMobileLegendsPlayer(data.playerId, data.zoneId);
-    if (!local.valid) {
-      return Response.json(local, {
-        status: 400,
-        headers: rateHeaders,
-      });
-    }
-
-    const packageId =
-      typeof data.packageId === "string" ? data.packageId.trim() : "";
-    if (!packageId) {
-      return Response.json(
-        {
-          ...local,
-          marketCode: selectedMarket.code,
-          confirmed: false,
-          nickname: null,
-          verificationMode: "local-format",
-          message: `Player format is valid for ${selectedMarket.label}. Choose a package to run supplier validation.`,
-        },
-        { headers: rateHeaders },
-      );
-    }
-
-    const selectedPackage =
-      await getMobileLegendsPackageForCheckout(packageId);
-    if (!selectedPackage) {
-      return Response.json(
-        {
-          valid: false,
-          message:
-            "That package is no longer available. Refresh the catalogue and choose again.",
-        },
-        { status: 409, headers: rateHeaders },
-      );
-    }
-
-    if (
-      !isPackageAvailableForMarket(
-        selectedPackage.region,
-        selectedMarket.code,
-      )
-    ) {
-      return Response.json(
-        {
-          valid: false,
-          message: `That package is not approved for ${selectedMarket.label}.`,
-        },
-        { status: 409, headers: rateHeaders },
-      );
-    }
-
-    if (
-      selectedPackage.source !== "fazercards-live" ||
-      !selectedPackage.supplierProductId
-    ) {
-      return Response.json(
-        {
-          ...local,
-          marketCode: selectedMarket.code,
-          confirmed: false,
-          nickname: null,
-          verificationMode: "local-format",
-          message: `Player format is valid for ${selectedMarket.label}. This fallback offer does not expose supplier nickname validation.`,
-        },
-        { headers: rateHeaders },
-      );
-    }
-
-    const product = await getPrisma().supplierProduct.findFirst({
-      where: {
-        id: selectedPackage.supplierProductId,
-        provider: "fazercards",
-        gameSlug: "mobile-legends",
-        categoryId: selectedPackage.supplierCategoryId ?? undefined,
-        offerId: selectedPackage.supplierOfferId ?? undefined,
-        available: true,
-        published: true,
-      },
-      select: {
-        categoryId: true,
-        offerId: true,
-        fields: true,
-      },
-    });
-
-    if (!product) {
-      return Response.json(
-        {
-          valid: false,
-          message:
-            "The supplier offer changed after the page loaded. Refresh and retry.",
-        },
-        { status: 409, headers: rateHeaders },
-      );
-    }
-
-    const supplier = await validateFazerCardsPlayer({
-      categoryId: product.categoryId,
-      offerId: product.offerId,
-      playerId: local.playerId,
-      zoneId: local.zoneId,
-      fieldSchema: product.fields,
+    const identity = await validateMobileLegendsIdentity({
+      playerId: data.playerId,
+      zoneId: data.zoneId,
     });
 
     return Response.json(
       {
-        valid: supplier.valid,
-        confirmed: supplier.confirmed,
-        nickname: supplier.nickname,
-        verificationMode: supplier.mode,
-        playerId: local.playerId,
-        zoneId: local.zoneId,
+        valid: identity.valid,
+        confirmed: identity.confirmed,
+        nickname: identity.nickname,
+        verificationMode: identity.verificationMode,
+        playerId: identity.playerId,
+        zoneId: identity.zoneId,
         marketCode: selectedMarket.code,
-        message: supplier.message,
+        message: identity.message,
       },
       {
-        status: supplier.valid ? 200 : 400,
+        status: identity.valid ? 200 : 400,
         headers: rateHeaders,
       },
     );
@@ -186,7 +80,7 @@ export async function POST(request: Request) {
       return Response.json(
         {
           valid: false,
-          message: "Supplier validation is not configured correctly.",
+          message: "Account validation is not configured correctly.",
         },
         { status: 503, headers: rateHeaders },
       );
@@ -196,7 +90,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         valid: false,
-        message: "Player validation is temporarily unavailable.",
+        message: "Account validation is temporarily unavailable.",
       },
       { status: 502, headers: rateHeaders },
     );
