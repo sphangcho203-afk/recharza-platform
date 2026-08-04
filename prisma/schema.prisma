@@ -80,11 +80,27 @@ enum MediaAssetStatus {
   ARCHIVED
 }
 
+enum EmailDeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+enum EmailMessageKind {
+  ACCOUNT_CREATED
+  PASSWORD_RESET
+  PASSWORD_CHANGED
+  ORDER_COMPLETED
+  ORDER_FAILED
+}
+
 model Customer {
   id                         String              @id @default(cuid())
   email                      String              @unique
   displayName                String?
   username                   String?             @unique
+  passwordHash               String?
+  passwordUpdatedAt          DateTime?
   role                       AccountRole         @default(CUSTOMER)
   accessStatus               AccountAccessStatus @default(ACTIVE)
   restrictionReason          String?
@@ -99,10 +115,14 @@ model Customer {
   orders                     Order[]
   sessions                   AuthSession[]
   magicLinks                 AuthMagicLink[]
+  passwordResetTokens        PasswordResetToken[]
+  carts                      Cart[]
+  emailDeliveries            EmailDelivery[]
   staffAuditLogs             AdminAuditLog[]      @relation("StaffAuditActor")
   mediaAssets                MediaAsset[]         @relation("MediaAssetCreator")
 
   @@index([role, accessStatus, createdAt])
+  @@index([username])
 }
 
 model AuthSession {
@@ -133,6 +153,55 @@ model AuthMagicLink {
 
   @@index([customerId, createdAt])
   @@index([expiresAt, usedAt])
+}
+
+model PasswordResetToken {
+  id         String    @id @default(cuid())
+  tokenHash  String    @unique
+  customerId String
+  customer   Customer  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([customerId, createdAt])
+  @@index([expiresAt, usedAt])
+}
+
+model Cart {
+  id           String     @id @default(cuid())
+  customerId   String?
+  customer     Customer?  @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  guestKeyHash String?    @unique
+  status       String     @default("ACTIVE")
+  items        CartItem[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([customerId, status, updatedAt])
+  @@index([status, updatedAt])
+}
+
+model CartItem {
+  id               String   @id @default(cuid())
+  cartId           String
+  cart             Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  gameSlug         String
+  marketCode       String?
+  packageId        String
+  packageName      String
+  amountInPaise    Int
+  currency         String   @default("INR")
+  quantity         Int      @default(1)
+  playerId         String?
+  zoneId           String?
+  verifiedNickname String?
+  verificationMode String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([cartId, createdAt])
+  @@index([gameSlug, marketCode, packageId])
 }
 
 model Order {
@@ -176,6 +245,7 @@ model Order {
   webhooks                PaymentWebhook[]
   auditLogs               AdminAuditLog[]
   fulfilmentAttempts      FulfilmentAttempt[]
+  emailDeliveries         EmailDelivery[]
   createdAt               DateTime    @default(now())
   updatedAt               DateTime    @updatedAt
 
@@ -197,6 +267,30 @@ model OrderEvent {
   createdAt DateTime @default(now())
 
   @@index([orderId, createdAt])
+}
+
+model EmailDelivery {
+  id                String              @id @default(cuid())
+  kind              EmailMessageKind
+  recipient         String
+  subject           String
+  status            EmailDeliveryStatus @default(PENDING)
+  providerMessageId String?
+  errorMessage      String?
+  payload           Json?
+  attempts          Int                 @default(0)
+  customerId        String?
+  customer          Customer?           @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  orderId           String?
+  order             Order?              @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  sentAt            DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@index([status, createdAt])
+  @@index([customerId, createdAt])
+  @@index([orderId, createdAt])
+  @@index([recipient, createdAt])
 }
 
 model PaymentWebhook {
