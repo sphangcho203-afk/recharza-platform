@@ -25,26 +25,24 @@ export function StorefrontArtwork({
   loading = "lazy",
   objectPosition = "center",
 }: StorefrontArtworkProps) {
-  if (artworkKey) {
-    return (
-      <span
-        role="img"
-        aria-label={alt}
-        className={`block bg-cover ${className}`}
-        style={getStorefrontArtworkStyle(artworkKey)}
-      />
-    );
-  }
-
   return (
-    <ResilientImage
-      sources={sources}
-      alt={alt}
-      fallbackLabel={fallbackLabel}
-      loading={loading}
-      className={className}
-      style={{ objectPosition }}
-      fallbackClassName={fallbackClassName}
-    />
+    <span className={`relative block overflow-hidden ${className}`}>
+      <ResilientImage
+        sources={sources}
+        alt={alt}
+        fallbackLabel={fallbackLabel}
+        loading={loading}
+        className="absolute inset-0 h-full w-full object-cover"
+        style={{ objectPosition }}
+        fallbackClassName={fallbackClassName}
+      />
+      {artworkKey ? (
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 block bg-cover"
+          style={getStorefrontArtworkStyle(artworkKey)}
+        />
+      ) : null}
+    </span>
   );
 }
