@@ -1,3 +1,4 @@
+import { isSignInAllowed } from "@/lib/access-control";
 import {
   createCustomerSession,
   createSessionCookie,
@@ -122,6 +123,17 @@ export async function POST(request: Request) {
       prisma.customer.findUnique({ where: { email } }),
       prisma.customer.findUnique({ where: { username } }),
     ]);
+
+    if (emailCustomer && !isSignInAllowed(emailCustomer.accessStatus)) {
+      return Response.json(
+        {
+          ok: false,
+          message:
+            "Account access is restricted for this email. Contact Recharza support.",
+        },
+        { status: 403, headers: rateHeaders },
+      );
+    }
 
     if (usernameCustomer && usernameCustomer.id !== emailCustomer?.id) {
       return Response.json(
