@@ -35,6 +35,15 @@ function internalPaymentEnabled() {
   return process.env.DEPLOYMENT_ENV !== "production";
 }
 
+function resolveInternalOutcome(requestedOutcome: unknown) {
+  const configured = process.env.INTERNAL_PAYMENT_OUTCOME
+    ?.trim()
+    .toLowerCase();
+  if (configured === "failed") return "failed" as const;
+  if (configured === "completed") return "completed" as const;
+  return requestedOutcome === "failed" ? ("failed" as const) : ("completed" as const);
+}
+
 export async function POST(
   request: Request,
   context: { params: Promise<{ orderId: string }> },
@@ -81,7 +90,7 @@ export async function POST(
       payload && typeof payload === "object"
         ? (payload as Record<string, unknown>)
         : {};
-    const outcome = data.outcome === "failed" ? "failed" : "completed";
+    const outcome = resolveInternalOutcome(data.outcome);
 
     const { orderId } = await context.params;
     const prisma = getPrisma();
