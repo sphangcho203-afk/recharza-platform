@@ -1,5 +1,6 @@
 import "server-only";
 
+import { validateMobileLegendsIdentity } from "@/lib/player-identity-provider";
 import { requireEnvironmentVariable } from "@/lib/runtime-config";
 
 const DEFAULT_BASE_URL = "https://api.fzr.cards/api/v2";
@@ -17,7 +18,9 @@ function asString(value: unknown) {
 }
 
 function getBaseUrl() {
-  return (process.env.FAZERCARDS_API_BASE_URL?.trim() || DEFAULT_BASE_URL).replace(/\/$/, "");
+  return (
+    process.env.FAZERCARDS_API_BASE_URL?.trim() || DEFAULT_BASE_URL
+  ).replace(/\/$/, "");
 }
 
 function resolvePath(name: string) {
@@ -32,7 +35,9 @@ async function parseFazerCardsResponse(response: Response) {
   try {
     payload = JSON.parse(text);
   } catch {
-    throw new Error(`FazerCards returned non-JSON with status ${response.status}.`);
+    throw new Error(
+      `FazerCards returned non-JSON with status ${response.status}.`,
+    );
   }
 
   const object = asObject(payload);
@@ -46,8 +51,13 @@ async function parseFazerCardsResponse(response: Response) {
   return object ?? {};
 }
 
-async function postFazerCards(path: string, body: Record<string, unknown>) {
-  const apiKey = requireEnvironmentVariable("FAZERCARDS_API_KEY", { minLength: 12 });
+async function postFazerCards(
+  path: string,
+  body: Record<string, unknown>,
+) {
+  const apiKey = requireEnvironmentVariable("FAZERCARDS_API_KEY", {
+    minLength: 12,
+  });
   const response = await fetch(`${getBaseUrl()}${path}`, {
     method: "POST",
     headers: {
@@ -63,7 +73,9 @@ async function postFazerCards(path: string, body: Record<string, unknown>) {
 }
 
 async function getFazerCards(path: string) {
-  const apiKey = requireEnvironmentVariable("FAZERCARDS_API_KEY", { minLength: 12 });
+  const apiKey = requireEnvironmentVariable("FAZERCARDS_API_KEY", {
+    minLength: 12,
+  });
   const response = await fetch(`${getBaseUrl()}${path}`, {
     method: "GET",
     headers: {
@@ -80,31 +92,10 @@ function findNestedObject(object: ApiObject | null, key: string) {
   return asObject(object?.[key]);
 }
 
-function readNickname(payload: ApiObject) {
-  const data = findNestedObject(payload, "data");
-  return (
-    asString(payload.nickname) ||
-    asString(payload.username) ||
-    asString(payload.ign) ||
-    asString(data?.nickname) ||
-    asString(data?.username) ||
-    asString(data?.ign) ||
-    null
-  );
-}
-
-function readExplicitValidity(payload: ApiObject) {
-  const data = findNestedObject(payload, "data");
-  const candidates = [payload.valid, payload.is_valid, data?.valid, data?.is_valid];
-  for (const value of candidates) {
-    if (typeof value === "boolean") return value;
-  }
-  return null;
-}
-
 function readSupplierStatus(payload: ApiObject) {
   const data = findNestedObject(payload, "data");
-  const order = findNestedObject(payload, "order") ?? findNestedObject(data, "order");
+  const order =
+    findNestedObject(payload, "order") ?? findNestedObject(data, "order");
   return (
     asString(payload.status) ||
     asString(payload.order_status) ||
@@ -118,7 +109,16 @@ function readSupplierStatus(payload: ApiObject) {
 
 function normalizeSupplierState(value: string) {
   const normalized = value.trim().toLowerCase().replace(/[\s.-]+/g, "_");
-  if (["completed", "complete", "success", "successful", "delivered", "fulfilled"].includes(normalized)) {
+  if (
+    [
+      "completed",
+      "complete",
+      "success",
+      "successful",
+      "delivered",
+      "fulfilled",
+    ].includes(normalized)
+  ) {
     return "completed" as const;
   }
   if (["failed", "failure", "rejected", "error"].includes(normalized)) {
@@ -127,13 +127,21 @@ function normalizeSupplierState(value: string) {
   if (["cancelled", "canceled", "void", "refunded"].includes(normalized)) {
     return "cancelled" as const;
   }
-  if (["processing", "pending", "submitted", "in_progress", "queued"].includes(normalized)) {
+  if (
+    ["processing", "pending", "submitted", "in_progress", "queued"].includes(
+      normalized,
+    )
+  ) {
     return "processing" as const;
   }
   return "unknown" as const;
 }
 
-function buildSupplierFields(fieldSchema: unknown, playerId: string, zoneId: string) {
+function buildSupplierFields(
+  fieldSchema: unknown,
+  playerId: string,
+  zoneId: string,
+) {
   const fields: Record<string, string> = {
     player_id: playerId,
     zone_id: zoneId,
@@ -152,7 +160,9 @@ function buildSupplierFields(fieldSchema: unknown, playerId: string, zoneId: str
 
     const normalized = `${key} ${asString(field?.label)}`.toLowerCase();
     if (/zone|server/.test(normalized)) fields[key] = zoneId;
-    else if (/player|user|account|game.?id|uid/.test(normalized)) fields[key] = playerId;
+    else if (/player|user|account|game.?id|uid/.test(normalized)) {
+      fields[key] = playerId;
+    }
   }
 
   return fields;
@@ -181,48 +191,17 @@ export async function validateFazerCardsPlayer(input: {
   zoneId: string;
   fieldSchema: unknown;
 }) {
-  const path = resolvePath("FAZERCARDS_PLAYER_VALIDATION_PATH");
-  if (!path) {
-    return {
-      confirmed: false,
-      valid: true,
-      nickname: null,
-      mode: "local-format" as const,
-      message: "Player format is valid. Supplier nickname validation is not configured yet.",
-    };
-  }
-
-  const fields = buildSupplierFields(input.fieldSchema, input.playerId, input.zoneId);
-  const payload = await postFazerCards(path, {
-    category_id: input.categoryId,
-    offer_id: input.offerId,
-    player_id: input.playerId,
-    zone_id: input.zoneId,
-    fields,
+  const identity = await validateMobileLegendsIdentity({
+    playerId: input.playerId,
+    zoneId: input.zoneId,
   });
-  const valid = readExplicitValidity(payload);
 
-  if (valid === null) {
-    return {
-      confirmed: false,
-      valid: false,
-      nickname: null,
-      mode: "supplier-unrecognized" as const,
-      message: "The supplier response did not include an explicit validation result.",
-    };
-  }
-
-  const nickname = readNickname(payload);
   return {
-    confirmed: true,
-    valid,
-    nickname,
-    mode: "fazercards-live" as const,
-    message: valid
-      ? nickname
-        ? `Supplier confirmed player ${nickname}.`
-        : "Supplier confirmed the player destination."
-      : "The supplier rejected the player or zone details.",
+    confirmed: identity.confirmed,
+    valid: identity.valid,
+    nickname: identity.nickname,
+    mode: identity.verificationMode,
+    message: identity.message,
   };
 }
 
@@ -236,7 +215,11 @@ export async function createFazerCardsTopup(input: {
   idempotencyKey: string;
 }) {
   const config = getFazerCardsOperationConfiguration();
-  const fields = buildSupplierFields(input.fieldSchema, input.playerId, input.zoneId);
+  const fields = buildSupplierFields(
+    input.fieldSchema,
+    input.playerId,
+    input.zoneId,
+  );
   const requestPayload = {
     category_id: input.categoryId,
     offer_id: input.offerId,
@@ -260,7 +243,10 @@ export async function createFazerCardsTopup(input: {
     };
   }
 
-  const responsePayload = await postFazerCards(config.orderCreatePath, requestPayload);
+  const responsePayload = await postFazerCards(
+    config.orderCreatePath,
+    requestPayload,
+  );
   const data = findNestedObject(responsePayload, "data");
   const providerOrderId =
     asString(responsePayload.order_id) ||
@@ -269,14 +255,18 @@ export async function createFazerCardsTopup(input: {
     asString(data?.id);
 
   if (!providerOrderId) {
-    throw new Error("FazerCards order creation succeeded without a recognizable provider order ID.");
+    throw new Error(
+      "FazerCards order creation succeeded without a recognizable provider order ID.",
+    );
   }
 
   return {
     mode: "supplier-write" as const,
     providerOrderId,
     providerStatus:
-      asString(responsePayload.status) || asString(data?.status) || "submitted",
+      asString(responsePayload.status) ||
+      asString(data?.status) ||
+      "submitted",
     requestPayload,
     responsePayload,
   };
