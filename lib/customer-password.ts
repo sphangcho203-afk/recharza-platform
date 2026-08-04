@@ -2,10 +2,9 @@ import {
   randomBytes,
   scrypt as scryptCallback,
   timingSafeEqual,
+  type ScryptOptions,
 } from "node:crypto";
-import { promisify } from "node:util";
 
-const scrypt = promisify(scryptCallback);
 const FORMAT = "scrypt-v1";
 const KEY_LENGTH = 64;
 const COST = 16_384;
@@ -14,6 +13,23 @@ const PARALLELIZATION = 1;
 
 export const CUSTOMER_PASSWORD_MIN_LENGTH = 10;
 export const CUSTOMER_PASSWORD_MAX_LENGTH = 128;
+
+function deriveKey(
+  password: string,
+  salt: Buffer,
+  keyLength: number,
+  options: ScryptOptions,
+) {
+  return new Promise<Buffer>((resolve, reject) => {
+    scryptCallback(password, salt, keyLength, options, (error, derived) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve(derived);
+    });
+  });
+}
 
 export function validateCustomerPassword(value: unknown) {
   if (typeof value !== "string") {
@@ -46,12 +62,12 @@ export function validateCustomerPassword(value: unknown) {
 
 export async function hashCustomerPassword(password: string) {
   const salt = randomBytes(16);
-  const derived = (await scrypt(password, salt, KEY_LENGTH, {
+  const derived = await deriveKey(password, salt, KEY_LENGTH, {
     N: COST,
     r: BLOCK_SIZE,
     p: PARALLELIZATION,
     maxmem: 64 * 1024 * 1024,
-  })) as Buffer;
+  });
 
   return [
     FORMAT,
@@ -93,12 +109,12 @@ export async function verifyCustomerPassword(password: string, encoded: string) 
   try {
     const salt = Buffer.from(saltValue, "base64url");
     const expected = Buffer.from(hashValue, "base64url");
-    const actual = (await scrypt(password, salt, expected.length, {
+    const actual = await deriveKey(password, salt, expected.length, {
       N: parsedCost,
       r: parsedBlockSize,
       p: parsedParallelization,
       maxmem: 64 * 1024 * 1024,
-    })) as Buffer;
+    });
 
     return expected.length === actual.length && timingSafeEqual(expected, actual);
   } catch {
