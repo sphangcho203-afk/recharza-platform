@@ -9,11 +9,40 @@ export async function GET(request: Request) {
   try {
     const session = await getRequestSession(request);
     if (!session) {
-      return Response.json({ ok: false, message: "Sign in to view your orders." }, { status: 401 });
+      return Response.json(
+        { ok: false, message: "Sign in to view your orders." },
+        { status: 401 },
+      );
     }
 
-    const orders = await getPrisma().order.findMany({
-      where: { customerId: session.customer.id },
+    const prisma = getPrisma();
+    const ownership = await prisma.customer.findUnique({
+      where: { id: session.customer.id },
+      select: {
+        emailVerifiedAt: true,
+        passwordUpdatedAt: true,
+      },
+    });
+
+    if (!ownership) {
+      return Response.json(
+        { ok: false, message: "Account not found." },
+        { status: 404 },
+      );
+    }
+
+    const credentialBoundary =
+      !ownership.emailVerifiedAt && ownership.passwordUpdatedAt
+        ? ownership.passwordUpdatedAt
+        : null;
+
+    const orders = await prisma.order.findMany({
+      where: {
+        customerId: session.customer.id,
+        ...(credentialBoundary
+          ? { createdAt: { gte: credentialBoundary } }
+          : {}),
+      },
       orderBy: { createdAt: "desc" },
       take: 50,
       select: {
@@ -43,7 +72,9 @@ export async function GET(request: Request) {
           id: order.publicId,
           status: order.status.toLowerCase(),
           gameSlug: order.gameSlug,
-          market: market ? { code: market.code, label: market.label, flag: market.flag } : null,
+          market: market
+            ? { code: market.code, label: market.label, flag: market.flag }
+            : null,
           package: {
             name: order.packageName,
             amountInPaise: order.amountInPaise,
@@ -65,6 +96,9 @@ export async function GET(request: Request) {
     if (!(error instanceof RuntimeConfigurationError)) {
       console.error("Account order history failed", error);
     }
-    return Response.json({ ok: false, message: "Order history is temporarily unavailable." }, { status: 503 });
+    return Response.json(
+      { ok: false, message: "Order history is temporarily unavailable." },
+      { status: 503 },
+    );
   }
 }
