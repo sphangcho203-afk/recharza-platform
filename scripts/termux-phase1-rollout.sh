@@ -27,6 +27,10 @@ require_env() {
   [[ -n "$value" ]] || fail "$name is missing or empty in .env"
 }
 
+is_termux_android() {
+  [[ "${PREFIX:-}" == *"com.termux"* ]] || [[ "$(uname -o 2>/dev/null || true)" == "Android" ]]
+}
+
 [[ -d .git ]] || fail "Run this inside the Recharza repository."
 [[ -f package.json ]] || fail "package.json was not found."
 [[ -f prisma/schema.prisma ]] || fail "Prisma schema was not found."
@@ -100,8 +104,16 @@ fi
 log "Validating Prisma schema"
 npm run db:validate
 
-log "Applying committed migrations"
-npm run db:deploy
+if is_termux_android; then
+  log "Verifying the hosted Neon schema"
+  npm run db:verify:foundation -- --require-remote
+else
+  log "Applying committed migrations"
+  npm run db:deploy
+
+  log "Verifying the database foundation"
+  npm run db:verify:foundation
+fi
 
 log "Generating Prisma Client"
 npm run db:generate
@@ -138,7 +150,7 @@ Manual journey:
   3. forgot password -> request and consume the email link
   4. /cart -> add a package and validate player details
   5. /games/mobile-legends/india -> complete billing and order
-  6. finish the internal payment outcome
+  6. complete the internal payment
   7. confirm order history and email delivery records
 
 Local work saved by this script remains in Git stash and is not deleted.
