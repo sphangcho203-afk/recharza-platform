@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type FormEvent, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type FormEvent, useMemo, useRef, useState } from "react";
 
 import {
   BillingAddressFields,
@@ -416,7 +416,7 @@ export function MobileLegendsCheckoutShell({
                     <input
                       type="search"
                       value={packageQuery}
-                      onChange={(event) => setPackageQuery(event.target.value)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => setPackageQuery(event.target.value)}
                       placeholder="Search diamonds or passes"
                       className="min-h-11 w-full rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
                     />
@@ -500,7 +500,7 @@ export function MobileLegendsCheckoutShell({
                       inputMode="numeric"
                       autoComplete="off"
                       value={playerId}
-                      onChange={(event) => {
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
                         setPlayerId(event.target.value.replace(/\D/g, ""));
                         resetVerification();
                       }}
@@ -515,7 +515,7 @@ export function MobileLegendsCheckoutShell({
                       inputMode="numeric"
                       autoComplete="off"
                       value={zoneId}
-                      onChange={(event) => {
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
                         setZoneId(event.target.value.replace(/\D/g, ""));
                         resetVerification();
                       }}
