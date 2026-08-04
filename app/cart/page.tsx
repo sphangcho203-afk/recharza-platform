@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 export default async function CartPage() {
   const market =
-    mobileLegendsMarkets.find((item) => item.code === "in") ??
+    mobileLegendsMarkets.find((item) => item.code === "india") ??
     mobileLegendsMarkets[0];
   const packages = await getMobileLegendsPackages(market.code);
 
