@@ -1,7 +1,9 @@
 import {
   mobileLegendsMarkets,
   type MobileLegendsMarket,
+  type MobileLegendsMarketCode,
 } from "@/lib/mobile-legends-market";
+import type { StorefrontArtworkKey } from "@/lib/storefront-artwork";
 
 export type GameLogoTreatment = "native" | "invert" | "light-panel";
 export type GameKind = "game" | "mobile-legends-region";
@@ -18,6 +20,7 @@ export type Game = {
   status: GameStatus;
   logoSources: string[];
   artworkSources: string[];
+  artworkKey?: StorefrontArtworkKey;
   logoAlt: string;
   artworkAlt: string;
   logoTreatment: GameLogoTreatment;
@@ -35,6 +38,21 @@ export type Game = {
 
 export const mobileLegendsRegions = mobileLegendsMarkets;
 
+const mobileLegendsRegionArtwork: Record<
+  MobileLegendsMarketCode,
+  StorefrontArtworkKey
+> = {
+  india: "mobile-legends-india",
+  indonesia: "mobile-legends-indonesia",
+  philippines: "mobile-legends-philippines",
+  brazil: "mobile-legends-brazil",
+  malaysia: "mobile-legends-malaysia",
+  singapore: "mobile-legends-singapore",
+  turkey: "mobile-legends-turkey",
+  "united-states": "mobile-legends-united-states",
+  global: "mobile-legends-global",
+};
+
 const mobileLegendsBase = {
   publisher: "MOONTON",
   category: "MOBA",
@@ -44,11 +62,10 @@ const mobileLegendsBase = {
   ],
   artworkSources: [
     "https://play-lh.googleusercontent.com/D8r13ijO9c-0_1N-CP4d63mR1w6YhDuR2mBQUl27ELJAx0sKdaKtM5vCUnSLODKBVzUx7rZ9cW4Ir9jYiufsSQ=w480-h480",
-    "https://static-jupiter-cms-axis.xlaxiata.my.id/1332/pasted-image-2026-01-29T00-07-50-831Z_cropped_processed_by_imagy.webp",
     "https://upload.wikimedia.org/wikipedia/en/8/86/Mobile_Legends_Bang_Bang.jpg",
   ],
   logoAlt: "Mobile Legends: Bang Bang logo",
-  artworkAlt: "Mobile Legends: Bang Bang 5v5 game artwork",
+  artworkAlt: "Mobile Legends: Bang Bang game artwork",
   logoTreatment: "native" as const,
   artworkPosition: "center",
   accent: "#5b7cff",
@@ -64,23 +81,24 @@ export const games: Game[] = [
     title: "Mobile Legends",
     kind: "game",
     status: "checkout",
-    badge: "Choose market",
     available: true,
     href: "/games/mobile-legends",
     pricingMode: "fallback",
+    artworkKey: "mobile-legends-india",
   },
   ...mobileLegendsRegions.map(
     (region): Game => ({
       ...mobileLegendsBase,
       slug: `mobile-legends-${region.code}`,
-      title: `Mobile Legends · ${region.label}`,
+      title: "Mobile Legends",
       kind: "mobile-legends-region",
-      status: "catalogue",
-      badge: region.label,
+      status: "checkout",
       available: true,
-      href: `/games/mobile-legends?region=${region.code}`,
+      href: `/games/mobile-legends/${region.code}`,
       pricingMode: "fallback",
       region,
+      artworkKey: mobileLegendsRegionArtwork[region.code],
+      artworkAlt: `Mobile Legends ${region.label} market artwork`,
     }),
   ),
   {
@@ -97,14 +115,13 @@ export const games: Game[] = [
     ],
     artworkSources: [
       "https://freefiremobile-a.akamaihd.net/common/web_event/official2.ff.garena.all/img/20228/e14db15cad1206214fe56520563e2aa7.jpg",
-      "https://freefiremobile-a.akamaihd.net/common/web_event/official2.ff.garena.all/img/20228/f10082aee7db7a5bf0e28c5a6383e4b7.jpg",
     ],
+    artworkKey: "free-fire",
     logoAlt: "Free Fire MAX logo",
     artworkAlt: "Free Fire MAX game artwork",
     logoTreatment: "native",
     artworkPosition: "center",
     accent: "#f5b72b",
-    badge: "Architecture beta",
     available: true,
     href: "/games/free-fire",
     packages: ["Diamonds", "Membership", "Level Up Pass"],
@@ -121,12 +138,11 @@ export const games: Game[] = [
     status: "coming-soon",
     logoSources: [
       "https://www.pubgmobile.com/images/event/brandassets/img-logo1.png",
-      "https://www.pubgmobile.com/images/event/brandassets/down-logo5.png",
     ],
     artworkSources: [
-      "https://play-lh.googleusercontent.com/O8jPCZ2EXAt7wGlbZhkhA-3vPIWVBpz8tZrRnsr7uVeqp0UD1AQwIEl_N9So80kdp8gDvIksC64GypylkQV_=w480-h480",
       "https://upload.wikimedia.org/wikipedia/en/9/9f/Pubgbattlegrounds.png",
     ],
+    artworkKey: "pubg-mobile",
     logoAlt: "PUBG Mobile logo",
     artworkAlt: "PUBG Mobile game artwork",
     logoTreatment: "native",
@@ -137,7 +153,7 @@ export const games: Game[] = [
   },
   {
     slug: "bgmi",
-    title: "BGMI",
+    title: "Battlegrounds Mobile India",
     publisher: "KRAFTON",
     category: "Battle Royale",
     family: "battle-royale",
@@ -147,15 +163,14 @@ export const games: Game[] = [
       "https://upload.wikimedia.org/wikipedia/commons/9/99/Battlegrounds_Mobile_India%2C_BGMI_LOGO_white_-_1082x360.png",
     ],
     artworkSources: [
-      "https://www.battlegroundsmobileindia.com/api/fileDownload/901/2",
       "https://upload.wikimedia.org/wikipedia/en/6/6f/Battlegrounds_Mobile_India.jpg",
     ],
+    artworkKey: "bgmi",
     logoAlt: "Battlegrounds Mobile India logo",
     artworkAlt: "Battlegrounds Mobile India game artwork",
     logoTreatment: "native",
     artworkPosition: "center",
     accent: "#ff8a2b",
-    badge: "India",
     packages: ["Unknown Cash", "Royale Pass", "Prime Plus"],
     pricingMode: "staged",
   },
@@ -171,9 +186,9 @@ export const games: Game[] = [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Call_of_Duty_Mobile_2023_logo.svg/1280px-Call_of_Duty_Mobile_2023_logo.svg.png",
     ],
     artworkSources: [
-      "https://play-lh.googleusercontent.com/cfGSXkDwxa1jW3TlhhkDJBN16-1_KEtEDhnILPcs9rXcC25g14XY6MRGCtlXHFHs0g=w480-h480",
       "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Call_of_Duty_Mobile_Logo.png/512px-Call_of_Duty_Mobile_Logo.png",
     ],
+    artworkKey: "call-of-duty-mobile",
     logoAlt: "Call of Duty Mobile logo",
     artworkAlt: "Call of Duty Mobile game artwork",
     logoTreatment: "invert",
@@ -195,8 +210,8 @@ export const games: Game[] = [
     ],
     artworkSources: [
       "https://upload.wikimedia.org/wikipedia/en/b/ba/Valorant_cover.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Valorant_logo_-_pink_color_version.svg/960px-Valorant_logo_-_pink_color_version.svg.png",
     ],
+    artworkKey: "valorant",
     logoAlt: "VALORANT logo",
     artworkAlt: "VALORANT game artwork",
     logoTreatment: "invert",
@@ -218,8 +233,8 @@ export const games: Game[] = [
     ],
     artworkSources: [
       "https://upload.wikimedia.org/wikipedia/en/5/5d/Genshin_Impact_cover.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Genshin_Impact_wordmark.svg/960px-Genshin_Impact_wordmark.svg.png",
     ],
+    artworkKey: "genshin-impact",
     logoAlt: "Genshin Impact logo",
     artworkAlt: "Genshin Impact game artwork",
     logoTreatment: "invert",
@@ -241,8 +256,8 @@ export const games: Game[] = [
     ],
     artworkSources: [
       "https://cdn2.unrealengine.com/fnbr-35-00-c6ms1-discover-playlist-tiles-keyart-480x270-480x270-d8d88e6f0b9d.jpg",
-      "https://cdn2.unrealengine.com/fnbr-35-00-c6ms1-web-carousel-logo-1458x416-0adca73e5786.png",
     ],
+    artworkKey: "fortnite",
     logoAlt: "Fortnite logo",
     artworkAlt: "Fortnite game artwork",
     logoTreatment: "invert",
