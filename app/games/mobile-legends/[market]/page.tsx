@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { MobileLegendsCheckoutFlow } from "@/components/mobile-legends-checkout-flow";
+import { MobileLegendsCheckoutShell } from "@/components/mobile-legends-checkout-shell";
 import { ResilientImage } from "@/components/resilient-image";
 import { SiteHeader } from "@/components/site-header";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
@@ -63,35 +63,33 @@ export default async function MobileLegendsMarketPage({
           <div className="hero-grid absolute inset-0 opacity-20" />
         </div>
 
-        <div className="relative mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 sm:py-10 lg:grid-cols-[1fr_16rem] lg:items-center lg:px-8">
+        <div className="relative mx-auto grid max-w-7xl gap-5 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[1fr_12rem] lg:items-center lg:px-8">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.15em] text-blue-100">
               <span>{selectedMarket.flag}</span>
               {selectedMarket.label} checkout
             </div>
-            <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.05em] sm:text-5xl">
-              Select, verify, bill, and pay without leaving the page.
+            <h1 className="mt-4 max-w-3xl text-3xl font-black tracking-[-0.05em] sm:text-4xl">
+              Mobile Legends top-up without checkout detours.
             </h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
-              The {selectedMarket.label} catalogue, player validation, billing,
-              order creation, and Razorpay Test Mode handoff now live in one
-              continuous checkout. Account sign-in is optional instead of a
-              checkout wall.
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
+              Choose the package, validate the player, enter billing, create the
+              order, and open Razorpay Test Mode inside one controlled interface.
             </p>
-            <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold">
+            <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
                 {packages.length} approved offers
               </span>
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                Billing-email recovery
+                Guest recovery token
               </span>
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                One-screen payment handoff
+                Same-interface payment
               </span>
             </div>
           </div>
 
-          <div className="aspect-square overflow-hidden rounded-3xl border border-white/10 bg-[#10101a] shadow-2xl shadow-black/30">
+          <div className="hidden aspect-square overflow-hidden rounded-3xl border border-white/10 bg-[#10101a] shadow-2xl shadow-black/30 lg:block">
             <ResilientImage
               sources={mobileLegendsGame.artworkSources}
               alt={mobileLegendsGame.artworkAlt}
@@ -104,8 +102,8 @@ export default async function MobileLegendsMarketPage({
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-7 sm:px-6 lg:px-8 lg:py-9">
-        <div className="mb-5 grid gap-3 rounded-2xl border border-violet-400/20 bg-violet-400/10 px-4 py-4 text-sm text-violet-100 sm:grid-cols-[1fr_auto] sm:items-center">
+      <section className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
+        <div className="mb-4 grid gap-3 rounded-2xl border border-violet-400/20 bg-violet-400/10 px-4 py-3 text-sm text-violet-100 sm:grid-cols-[1fr_auto] sm:items-center">
           <span>
             <strong>
               {selectedMarket.flag} {selectedMarket.label}:
@@ -121,8 +119,8 @@ export default async function MobileLegendsMarketPage({
               }
             >
               {livePricing
-                ? `${packages.length} approved live offers`
-                : "Protected fallback pricing"}
+                ? `${packages.length} live offers`
+                : "Protected preview pricing"}
             </span>
             <span className="text-violet-200/70">·</span>
             <span
@@ -134,12 +132,12 @@ export default async function MobileLegendsMarketPage({
             >
               {fxSnapshot.mode === "live"
                 ? "Live currency conversion"
-                : "INR-only conversion fallback"}
+                : "INR-only fallback"}
             </span>
           </div>
         </div>
 
-        <MobileLegendsCheckoutFlow
+        <MobileLegendsCheckoutShell
           packages={packages}
           market={selectedMarket}
           fxSnapshot={fxSnapshot}
