@@ -151,11 +151,12 @@ export async function getMobileLegendsPackageForCheckout(packageId: string) {
 
     return product ? mapSupplierProduct(product) : null;
   } catch (error) {
-    if (!(error instanceof RuntimeConfigurationError)) {
-      console.error("Mobile Legends checkout catalogue unavailable", error);
+    if (error instanceof RuntimeConfigurationError) {
+      return null;
     }
 
-    return null;
+    console.error("Mobile Legends checkout catalogue unavailable", error);
+    throw error;
   }
 }
 
