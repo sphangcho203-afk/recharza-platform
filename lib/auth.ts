@@ -34,21 +34,27 @@ export type AuthSessionResult = {
   expiresAt: Date;
 };
 
-function hashToken(token: string) {
+export function hashAuthToken(token: string) {
   return createHash("sha256").update(token).digest("hex");
 }
 
-function createOpaqueToken() {
+export function createOpaqueAuthToken() {
   return randomBytes(32).toString("base64url");
 }
 
-function normalizeEmail(value: unknown) {
+export function normalizeAuthEmail(value: unknown) {
   if (typeof value !== "string") return null;
   const email = value.trim().toLowerCase();
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return null;
   }
   return email;
+}
+
+export function normalizeUsername(value: unknown) {
+  if (typeof value !== "string") return null;
+  const username = value.trim().toLowerCase();
+  return /^[a-z0-9_]{3,24}$/.test(username) ? username : null;
 }
 
 function parseEmailAllowlist(name: string) {
@@ -60,7 +66,7 @@ function parseEmailAllowlist(name: string) {
   );
 }
 
-function resolveBootstrapRole(email: string): AccountRole {
+export function resolveBootstrapRole(email: string): AccountRole {
   if (parseEmailAllowlist("AUTH_ADMIN_EMAILS").has(email)) return "ADMIN";
   if (parseEmailAllowlist("AUTH_STAFF_EMAILS").has(email)) return "STAFF";
   return "CUSTOMER";
@@ -77,7 +83,9 @@ function parseCookies(request: Request) {
 
 function hashUserAgent(request: Request) {
   const userAgent = request.headers.get("user-agent")?.trim();
-  return userAgent ? createHash("sha256").update(userAgent).digest("hex").slice(0, 32) : null;
+  return userAgent
+    ? createHash("sha256").update(userAgent).digest("hex").slice(0, 32)
+    : null;
 }
 
 function serializeAuthenticatedCustomer(customer: {
@@ -121,8 +129,29 @@ export function clearSessionCookie() {
 export function sanitizeReturnPath(value: unknown, fallback = "/account") {
   if (typeof value !== "string") return fallback;
   const path = value.trim();
-  if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) return fallback;
+  if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\")) {
+    return fallback;
+  }
   return path.slice(0, 500);
+}
+
+export async function createCustomerSession(customerId: string, request: Request) {
+  const sessionToken = createOpaqueAuthToken();
+  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+  const session = await getPrisma().authSession.create({
+    data: {
+      tokenHash: hashAuthToken(sessionToken),
+      customerId,
+      expiresAt,
+      userAgentHash: hashUserAgent(request),
+    },
+  });
+
+  return {
+    sessionId: session.id,
+    sessionToken,
+    expiresAt,
+  };
 }
 
 export async function createMagicLink(input: {
@@ -130,7 +159,7 @@ export async function createMagicLink(input: {
   requestedFingerprint: string;
   returnTo?: unknown;
 }) {
-  const email = normalizeEmail(input.email);
+  const email = normalizeAuthEmail(input.email);
   if (!email) return null;
 
   const prisma = getPrisma();
@@ -143,8 +172,8 @@ export async function createMagicLink(input: {
 
   if (!isSignInAllowed(customer.accessStatus)) return null;
 
-  const token = createOpaqueToken();
-  const tokenHash = hashToken(token);
+  const token = createOpaqueAuthToken();
+  const tokenHash = hashAuthToken(token);
   const expiresAt = new Date(Date.now() + MAGIC_LINK_TTL_MS);
 
   await prisma.$transaction([
@@ -162,7 +191,9 @@ export async function createMagicLink(input: {
     }),
   ]);
 
-  const appUrl = (process.env.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000").replace(/\/$/, "");
+  const appUrl = (
+    process.env.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000"
+  ).replace(/\/$/, "");
   const returnTo = sanitizeReturnPath(input.returnTo);
   const url = new URL("/api/auth/consume", appUrl);
   url.searchParams.set("token", token);
@@ -172,9 +203,11 @@ export async function createMagicLink(input: {
 }
 
 export async function consumeMagicLink(token: unknown, request: Request) {
-  if (typeof token !== "string" || token.length < 32 || token.length > 256) return null;
+  if (typeof token !== "string" || token.length < 32 || token.length > 256) {
+    return null;
+  }
 
-  const tokenHash = hashToken(token.trim());
+  const tokenHash = hashAuthToken(token.trim());
   const prisma = getPrisma();
   const magicLink = await prisma.authMagicLink.findUnique({
     where: { tokenHash },
@@ -190,15 +223,17 @@ export async function consumeMagicLink(token: unknown, request: Request) {
     return null;
   }
 
-  const sessionToken = createOpaqueToken();
-  const sessionHash = hashToken(sessionToken);
+  const sessionToken = createOpaqueAuthToken();
+  const sessionHash = hashAuthToken(sessionToken);
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
 
   const result = await prisma.$transaction(async (transaction) => {
     const currentCustomer = await transaction.customer.findUnique({
       where: { id: magicLink.customerId },
     });
-    if (!currentCustomer || !isSignInAllowed(currentCustomer.accessStatus)) return null;
+    if (!currentCustomer || !isSignInAllowed(currentCustomer.accessStatus)) {
+      return null;
+    }
 
     const consumed = await transaction.authMagicLink.updateMany({
       where: { id: magicLink.id, usedAt: null, expiresAt: { gt: new Date() } },
@@ -229,18 +264,29 @@ export async function consumeMagicLink(token: unknown, request: Request) {
   return result ? { sessionToken, expiresAt, customer: result } : null;
 }
 
-export async function getRequestSession(request: Request): Promise<AuthSessionResult | null> {
+export async function getRequestSession(
+  request: Request,
+): Promise<AuthSessionResult | null> {
   const token = parseCookies(request).get(SESSION_COOKIE);
   if (!token || token.length < 32 || token.length > 256) return null;
 
   const prisma = getPrisma();
   const session = await prisma.authSession.findUnique({
-    where: { tokenHash: hashToken(token) },
+    where: { tokenHash: hashAuthToken(token) },
     include: { customer: true },
   });
 
-  if (!session || session.revokedAt || session.expiresAt <= new Date()) return null;
-  if (!session.customer.emailVerifiedAt || !isSessionAllowed(session.customer.accessStatus)) {
+  if (!session || session.revokedAt || session.expiresAt <= new Date()) {
+    return null;
+  }
+
+  const hasCredentialAccess = Boolean(
+    session.customer.passwordHash || session.customer.emailVerifiedAt,
+  );
+  if (
+    !hasCredentialAccess ||
+    !isSessionAllowed(session.customer.accessStatus)
+  ) {
     return null;
   }
 
@@ -254,10 +300,12 @@ export async function getRequestSession(request: Request): Promise<AuthSessionRe
   }
 
   if (Date.now() - session.lastUsedAt.getTime() > SESSION_TOUCH_INTERVAL_MS) {
-    void prisma.authSession.update({
-      where: { id: session.id },
-      data: { lastUsedAt: new Date() },
-    }).catch(() => undefined);
+    void prisma.authSession
+      .update({
+        where: { id: session.id },
+        data: { lastUsedAt: new Date() },
+      })
+      .catch(() => undefined);
   }
 
   return {
@@ -271,7 +319,7 @@ export async function revokeRequestSession(request: Request) {
   const token = parseCookies(request).get(SESSION_COOKIE);
   if (!token) return;
   await getPrisma().authSession.updateMany({
-    where: { tokenHash: hashToken(token), revokedAt: null },
+    where: { tokenHash: hashAuthToken(token), revokedAt: null },
     data: { revokedAt: new Date() },
   });
 }
