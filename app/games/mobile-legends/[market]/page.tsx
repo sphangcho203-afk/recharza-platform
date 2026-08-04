@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { MobileLegendsCheckoutShell } from "@/components/mobile-legends-checkout-shell";
-import { ResilientImage } from "@/components/resilient-image";
 import { SiteHeader } from "@/components/site-header";
+import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { games } from "@/lib/games";
 import {
@@ -28,7 +28,7 @@ export async function generateMetadata({
   return selectedMarket
     ? {
         title: `Mobile Legends ${selectedMarket.label} Top-Up`,
-        description: `Integrated ${selectedMarket.label} Mobile Legends catalogue, player validation, billing, order creation, and payment handoff.`,
+        description: `Integrated ${selectedMarket.label} Mobile Legends catalogue, player validation, billing, order creation, and payment.`,
       }
     : { title: "Mobile Legends Top-Up" };
 }
@@ -41,9 +41,10 @@ export default async function MobileLegendsMarketPage({
   const selectedMarket = parseMobileLegendsMarket((await params).market);
   if (!selectedMarket) notFound();
 
-  const mobileLegendsGame = games.find(
-    (game) => game.slug === "mobile-legends",
-  )!;
+  const regionalGame =
+    games.find(
+      (game) => game.slug === `mobile-legends-${selectedMarket.code}`,
+    ) ?? games.find((game) => game.slug === "mobile-legends")!;
   const [packages, fxSnapshot] = await Promise.all([
     getMobileLegendsPackages(selectedMarket.code),
     getCurrencyRateSnapshot(),
@@ -53,7 +54,7 @@ export default async function MobileLegendsMarketPage({
   );
 
   return (
-    <main className="min-h-screen bg-[#06060f] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
+    <main className="min-h-screen overflow-x-clip bg-[#06060f] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
       <SiteHeader />
 
       <section className="relative overflow-hidden border-b border-white/10">
@@ -63,7 +64,7 @@ export default async function MobileLegendsMarketPage({
           <div className="hero-grid absolute inset-0 opacity-20" />
         </div>
 
-        <div className="relative mx-auto grid max-w-7xl gap-5 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[1fr_12rem] lg:items-center lg:px-8">
+        <div className="relative mx-auto grid max-w-7xl gap-5 px-4 py-6 sm:px-6 sm:py-8 lg:grid-cols-[1fr_16rem] lg:items-center lg:px-8">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.15em] text-blue-100">
               <span>{selectedMarket.flag}</span>
@@ -74,7 +75,7 @@ export default async function MobileLegendsMarketPage({
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
               Choose the package, validate the player, enter billing, create the
-              order, and open Razorpay Test Mode inside one controlled interface.
+              order, and complete payment inside one controlled interface.
             </p>
             <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
@@ -89,14 +90,16 @@ export default async function MobileLegendsMarketPage({
             </div>
           </div>
 
-          <div className="hidden aspect-square overflow-hidden rounded-3xl border border-white/10 bg-[#10101a] shadow-2xl shadow-black/30 lg:block">
-            <ResilientImage
-              sources={mobileLegendsGame.artworkSources}
-              alt={mobileLegendsGame.artworkAlt}
+          <div className="hidden aspect-[4/3] overflow-hidden rounded-3xl border border-white/10 bg-[#10101a] shadow-2xl shadow-black/30 lg:block">
+            <StorefrontArtwork
+              artworkKey={regionalGame.artworkKey}
+              sources={regionalGame.artworkSources}
+              alt={regionalGame.artworkAlt}
               fallbackLabel="ML"
               loading="eager"
-              className="h-full w-full object-cover"
+              className="h-full w-full"
               fallbackClassName="h-full w-full"
+              objectPosition={regionalGame.artworkPosition}
             />
           </div>
         </div>
