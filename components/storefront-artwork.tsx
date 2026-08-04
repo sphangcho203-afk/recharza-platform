@@ -1,8 +1,5 @@
 import { ResilientImage } from "@/components/resilient-image";
-import {
-  getStorefrontArtworkStyle,
-  type StorefrontArtworkKey,
-} from "@/lib/storefront-artwork";
+import type { StorefrontArtworkKey } from "@/lib/storefront-artwork";
 
 type StorefrontArtworkProps = {
   artworkKey?: StorefrontArtworkKey;
@@ -26,7 +23,10 @@ export function StorefrontArtwork({
   objectPosition = "center",
 }: StorefrontArtworkProps) {
   return (
-    <span className={`relative block overflow-hidden ${className}`}>
+    <span
+      className={`relative block overflow-hidden ${className}`}
+      data-artwork-key={artworkKey}
+    >
       <ResilientImage
         sources={sources}
         alt={alt}
@@ -36,13 +36,6 @@ export function StorefrontArtwork({
         style={{ objectPosition }}
         fallbackClassName={fallbackClassName}
       />
-      {artworkKey ? (
-        <span
-          aria-hidden="true"
-          className="absolute inset-0 block bg-cover"
-          style={getStorefrontArtworkStyle(artworkKey)}
-        />
-      ) : null}
     </span>
   );
 }
