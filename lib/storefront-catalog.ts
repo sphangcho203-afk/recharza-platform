@@ -53,7 +53,7 @@ function mapSupplierProduct(product: SupplierProductView): MobileLegendsPackage 
   const displayName = getStorefrontName(product.name, product.raw);
 
   return {
-    id: product.offerId,
+    id: product.id,
     name: displayName,
     description: product.region
       ? `FazerCards live offer for ${product.region}. Confirm the player's account region before checkout.`
@@ -125,7 +125,10 @@ export async function getMobileLegendsPackages(
 }
 
 export async function getMobileLegendsPackageForCheckout(packageId: string) {
-  const fallback = getFallbackMobileLegendsPackage(packageId);
+  const normalizedPackageId = packageId.trim();
+  if (!normalizedPackageId) return null;
+
+  const fallback = getFallbackMobileLegendsPackage(normalizedPackageId);
 
   if (fallback) {
     return fallback;
@@ -135,21 +138,25 @@ export async function getMobileLegendsPackageForCheckout(packageId: string) {
     const product = await getPrisma().supplierProduct.findFirst({
       where: {
         provider: "fazercards",
-        offerId: packageId,
         gameSlug: "mobile-legends",
         available: true,
         published: true,
+        OR: [
+          { id: normalizedPackageId },
+          { offerId: normalizedPackageId },
+        ],
       },
       select: supplierProductSelect,
     });
 
     return product ? mapSupplierProduct(product) : null;
   } catch (error) {
-    if (!(error instanceof RuntimeConfigurationError)) {
-      console.error("Mobile Legends checkout catalogue unavailable", error);
+    if (error instanceof RuntimeConfigurationError) {
+      return null;
     }
 
-    return null;
+    console.error("Mobile Legends checkout catalogue unavailable", error);
+    throw error;
   }
 }
 
