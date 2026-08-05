@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 
 type GoogleOAuthPanelProps = {
   returnTo: string;
+  authError?: string;
 };
 
 const errorMessages: Record<string, string> = {
@@ -16,9 +17,12 @@ const errorMessages: Record<string, string> = {
   google_unavailable: "Google sign-in is temporarily unavailable. Email and password access still works.",
 };
 
-export function GoogleOAuthPanel({ returnTo }: GoogleOAuthPanelProps) {
+export function GoogleOAuthPanel({
+  returnTo,
+  authError,
+}: GoogleOAuthPanelProps) {
   const [visible, setVisible] = useState(false);
-  const [message, setMessage] = useState("");
+  const message = authError ? (errorMessages[authError] ?? "") : "";
 
   const href = useMemo(
     () => `/api/auth/google?returnTo=${encodeURIComponent(returnTo)}`,
@@ -26,12 +30,6 @@ export function GoogleOAuthPanel({ returnTo }: GoogleOAuthPanelProps) {
   );
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const authError = params.get("authError");
-    if (authError && errorMessages[authError]) {
-      setMessage(errorMessages[authError]);
-    }
-
     let active = true;
     fetch("/api/auth/session", { cache: "no-store" })
       .then((response) => response.json())
