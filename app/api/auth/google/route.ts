@@ -9,6 +9,10 @@ function accountErrorUrl(request: Request, returnTo: string) {
   return url;
 }
 
+function safeErrorName(error: unknown) {
+  return error instanceof Error ? error.name : "UnknownError";
+}
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const returnTo = requestUrl.searchParams.get("returnTo") ?? "/account";
@@ -25,7 +29,7 @@ export async function GET(request: Request) {
 
     return new Response(null, { status: 302, headers });
   } catch (error) {
-    console.error("Google OAuth could not start", error);
+    console.error("Google OAuth could not start", safeErrorName(error));
     return Response.redirect(accountErrorUrl(request, returnTo), 302);
   }
 }
