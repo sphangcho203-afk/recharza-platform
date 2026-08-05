@@ -37,6 +37,9 @@ jobs:
           RATE_LIMIT_SALT: ci-rate-limit-salt-32-characters-minimum
           CRON_SECRET: ci-maintenance-secret-32-characters-minimum
           AUTH_ADMIN_EMAILS: admin@example.test
+          GOOGLE_CLIENT_ID: ci-google-client.apps.googleusercontent.com
+          GOOGLE_CLIENT_SECRET: ci-google-client-secret-placeholder
+          GOOGLE_OAUTH_STATE_SECRET: ci-google-oauth-state-secret-32-characters-minimum
           RESEND_API_KEY: re_ci_placeholder
           RESEND_FROM_EMAIL: Recharza <accounts@example.test>
           RAZORPAY_KEY_ID: rzp_test_ci_placeholder
