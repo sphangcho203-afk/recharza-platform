@@ -20,7 +20,18 @@ const routes = [
   },
   { path: "/", expected: [200], label: "storefront" },
   { path: "/account", expected: [200], label: "account" },
-  { path: "/games/mobile-legends", expected: [200], label: "Mobile Legends checkout" },
+  { path: "/support", expected: [200], label: "support" },
+  {
+    path: "/cart",
+    expected: [307, 308],
+    expectedLocation: "/games/mobile-legends/india",
+    label: "legacy cart redirect",
+  },
+  {
+    path: "/games/mobile-legends/india",
+    expected: [200],
+    label: "Mobile Legends India checkout",
+  },
   { path: "/orders/lookup", expected: [200], label: "order lookup" },
   { path: "/operator", expected: [200], label: "operator console" },
 ];
@@ -33,19 +44,28 @@ for (const route of routes) {
 
   try {
     const response = await fetch(url, {
-      redirect: "follow",
-      headers: { "User-Agent": "Recharza-Staging-Smoke-Test/1.0" },
+      redirect: "manual",
+      headers: { "User-Agent": "Recharza-Staging-Smoke-Test/2.0" },
       signal: AbortSignal.timeout(15_000),
     });
     const duration = Date.now() - startedAt;
-    const passed = route.expected.includes(response.status);
+    const location = response.headers.get("location");
+    const statusPassed = route.expected.includes(response.status);
+    const locationPassed =
+      !route.expectedLocation || location === route.expectedLocation;
+    const passed = statusPassed && locationPassed;
+
     console.log(
-      `${passed ? "PASS" : "FAIL"} ${response.status} ${duration}ms ${route.label} ${route.path}`,
+      `${passed ? "PASS" : "FAIL"} ${response.status} ${duration}ms ${route.label} ${route.path}${location ? ` -> ${location}` : ""}`,
     );
 
-    if (!passed) {
+    if (!statusPassed) {
       failures.push(
         `${route.path} returned ${response.status}; expected ${route.expected.join(" or ")}.`,
+      );
+    } else if (!locationPassed) {
+      failures.push(
+        `${route.path} redirected to ${location ?? "nowhere"}; expected ${route.expectedLocation}.`,
       );
     }
   } catch (error) {
@@ -61,4 +81,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("All Recharza staging smoke tests passed.");
+console.log("All Recharza staging customer-flow smoke tests passed.");
