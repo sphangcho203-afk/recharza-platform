@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CustomerAccountShell } from "@/components/customer-account-shell";
+import { GoogleOAuthPanel } from "@/components/google-oauth-panel";
 import { SiteHeader } from "@/components/site-header";
 import { sanitizeReturnPath } from "@/lib/auth";
 
@@ -76,6 +77,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <GoogleOAuthPanel returnTo={returnTo} />
         <CustomerAccountShell />
       </section>
     </main>
