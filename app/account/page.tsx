@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CustomerAccountShell } from "@/components/customer-account-shell";
+import { GoogleOAuthPanel } from "@/components/google-oauth-panel";
 import { SiteHeader } from "@/components/site-header";
 import { sanitizeReturnPath } from "@/lib/auth";
 
@@ -15,6 +16,7 @@ type AccountPageProps = {
   searchParams: Promise<{
     returnTo?: string | string[];
     reason?: string | string[];
+    authError?: string | string[];
   }>;
 };
 
@@ -26,6 +28,9 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const rawReason = Array.isArray(params.reason)
     ? params.reason[0]
     : params.reason;
+  const rawAuthError = Array.isArray(params.authError)
+    ? params.authError[0]
+    : params.authError;
   const returnTo = sanitizeReturnPath(rawReturnTo, "/account");
   const protectedWorkspace =
     returnTo === "/admin" ||
@@ -76,6 +81,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         </div>
       </section>
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <GoogleOAuthPanel returnTo={returnTo} authError={rawAuthError} />
         <CustomerAccountShell />
       </section>
     </main>

@@ -62,6 +62,19 @@ if (hosted) {
       "AUTH_ADMIN_EMAILS must contain at least one valid administrator email.",
     );
   }
+
+  const googleClientId = value("GOOGLE_CLIENT_ID");
+  if (!googleClientId.endsWith(".apps.googleusercontent.com")) {
+    errors.push(
+      "GOOGLE_CLIENT_ID must be a Google web client ID ending in .apps.googleusercontent.com.",
+    );
+  }
+  requireValue(
+    "GOOGLE_CLIENT_SECRET",
+    "GOOGLE_CLIENT_SECRET is required for hosted Google OAuth.",
+  );
+  requireSecret("GOOGLE_OAUTH_STATE_SECRET");
+
   requireValue(
     "RESEND_API_KEY",
     "RESEND_API_KEY is required for hosted account and order email delivery.",

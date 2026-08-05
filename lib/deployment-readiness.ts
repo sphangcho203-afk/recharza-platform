@@ -47,6 +47,10 @@ function hasEmailList(name: string) {
     .some((entry) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(entry));
 }
 
+function isGoogleClientId(input: string) {
+  return input.endsWith(".apps.googleusercontent.com");
+}
+
 function resolveEnvironment(): DeploymentReadiness["environment"] {
   const configured = value("DEPLOYMENT_ENV").toLowerCase();
   if (configured === "production" || configured === "staging") return configured;
@@ -57,6 +61,11 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
   const environment = resolveEnvironment();
   const hosted = environment === "staging" || environment === "production";
   const appUrl = value("NEXT_PUBLIC_APP_URL");
+  const googleClientId = value("GOOGLE_CLIENT_ID");
+  const googleOAuthReady =
+    isGoogleClientId(googleClientId) &&
+    Boolean(value("GOOGLE_CLIENT_SECRET")) &&
+    isLongSecret("GOOGLE_OAUTH_STATE_SECRET");
   const razorpayKeyId = value("RAZORPAY_KEY_ID");
   const razorpayKeySecret = value("RAZORPAY_KEY_SECRET");
   const razorpayWebhookSecret = value("RAZORPAY_WEBHOOK_SECRET");
@@ -139,6 +148,16 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
       message: hasEmailList("AUTH_ADMIN_EMAILS")
         ? "At least one reviewed administrator email is configured."
         : "AUTH_ADMIN_EMAILS needs at least one valid address for hosted staging.",
+    },
+    {
+      id: "google-oauth",
+      label: "Google OAuth",
+      category: "accounts",
+      required: hosted,
+      ready: googleOAuthReady,
+      message: googleOAuthReady
+        ? "Google OAuth credentials and signed state protection are configured."
+        : "GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and a 32+ character GOOGLE_OAUTH_STATE_SECRET are required.",
     },
     {
       id: "email-delivery",
