@@ -78,9 +78,20 @@ export async function getCartForRequest(
         guestCart.id !== customerCart.id
       ) {
         await prisma.$transaction(async (transaction) => {
-          for (const item of guestCart.items) {
-            await transaction.cartItem.create({
-              data: {
+          const claimed = await transaction.cart.updateMany({
+            where: {
+              id: guestCart.id,
+              guestKeyHash,
+              status: "ACTIVE",
+            },
+            data: { status: "MERGING" },
+          });
+
+          if (claimed.count !== 1) return;
+
+          if (guestCart.items.length) {
+            await transaction.cartItem.createMany({
+              data: guestCart.items.map((item) => ({
                 cartId: customerCart!.id,
                 gameSlug: item.gameSlug,
                 marketCode: item.marketCode,
@@ -93,11 +104,13 @@ export async function getCartForRequest(
                 zoneId: item.zoneId,
                 verifiedNickname: item.verifiedNickname,
                 verificationMode: item.verificationMode,
-              },
+              })),
             });
           }
 
-          await transaction.cart.delete({ where: { id: guestCart.id } });
+          await transaction.cart.deleteMany({
+            where: { id: guestCart.id, status: "MERGING" },
+          });
         });
 
         customerCart = await prisma.cart.findUnique({
