@@ -30,6 +30,10 @@ function accountError(request: Request, code: string) {
   return redirectResponse(location, [clearGoogleOAuthCookie()]);
 }
 
+function safeErrorName(error: unknown) {
+  return error instanceof Error ? error.name : "UnknownError";
+}
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
 
@@ -153,7 +157,7 @@ export async function GET(request: Request) {
       clearGoogleOAuthCookie(),
     ]);
   } catch (error) {
-    console.error("Google OAuth callback failed", error);
+    console.error("Google OAuth callback failed", safeErrorName(error));
     return accountError(request, "google_unavailable");
   }
 }
