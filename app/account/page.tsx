@@ -8,7 +8,7 @@ import { sanitizeReturnPath } from "@/lib/auth";
 export const metadata: Metadata = {
   title: "My Account | Recharza",
   description:
-    "Create an account or sign in to manage orders, cart, saved players, billing, support, and security.",
+    "Create an account or sign in to view Recharza orders and manage account access.",
 };
 
 type AccountPageProps = {
@@ -63,15 +63,15 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
           ) : null}
 
           <p className="mt-6 text-xs font-black uppercase tracking-[0.2em] text-violet-300">
-            Customer command center
+            Recharza account
           </p>
           <h1 className="mt-3 max-w-3xl text-4xl font-black tracking-[-0.05em] sm:text-5xl">
-            Your cart, orders, players, billing, and security.
+            Your orders and account access, in one place.
           </h1>
           <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
-            Create an account with your name, username, email, and password, or
-            sign in to continue. Password recovery uses a secure single-use email
-            link instead of making the entire login system depend on email.
+            Create an account or sign in to view account-owned orders. Guest
+            checkout remains available, and password recovery uses a secure
+            single-use email link.
           </p>
         </div>
       </section>
