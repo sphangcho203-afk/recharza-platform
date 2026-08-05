@@ -14,7 +14,7 @@ async function check(input) {
     const response = await fetch(url, {
       method: input.method ?? "GET",
       headers: {
-        "User-Agent": "Recharza-Phase1-Smoke/1.0",
+        "User-Agent": "Recharza-Phase1-Smoke/2.0",
         ...(input.body ? { "Content-Type": "application/json" } : {}),
       },
       body: input.body ? JSON.stringify(input.body) : undefined,
@@ -23,14 +23,23 @@ async function check(input) {
       signal: AbortSignal.timeout(15_000),
     });
     const duration = Date.now() - startedAt;
-    const passed = input.expected.includes(response.status);
+    const location = response.headers.get("location");
+    const statusPassed = input.expected.includes(response.status);
+    const locationPassed =
+      !input.expectedLocation || location === input.expectedLocation;
+    const passed = statusPassed && locationPassed;
+
     console.log(
-      `${passed ? "PASS" : "FAIL"} ${response.status} ${duration}ms ${input.label} ${input.path}`,
+      `${passed ? "PASS" : "FAIL"} ${response.status} ${duration}ms ${input.label} ${input.path}${location ? ` -> ${location}` : ""}`,
     );
 
-    if (!passed) {
+    if (!statusPassed) {
       failures.push(
         `${input.label} returned ${response.status}; expected ${input.expected.join(" or ")}.`,
+      );
+    } else if (!locationPassed) {
+      failures.push(
+        `${input.label} redirected to ${location ?? "nowhere"}; expected ${input.expectedLocation}.`,
       );
     }
   } catch (error) {
@@ -72,8 +81,19 @@ const checks = [
     expected: [200],
   },
   {
-    label: "cart workspace",
+    label: "legacy cart enters canonical checkout",
     path: "/cart",
+    expected: [307, 308],
+    expectedLocation: "/games/mobile-legends/india",
+  },
+  {
+    label: "support destination",
+    path: "/support",
+    expected: [200],
+  },
+  {
+    label: "Mobile Legends market selector",
+    path: "/games/mobile-legends",
     expected: [200],
   },
   {
@@ -105,18 +125,25 @@ const checks = [
     },
     expected: [401, 429],
   },
+  {
+    label: "invalid player request rejection",
+    path: "/api/games/mobile-legends/verify",
+    method: "POST",
+    body: {},
+    expected: [400, 429, 503],
+  },
 ];
 
-console.log(`Recharza Phase 1 smoke target: ${baseUrl}`);
+console.log(`Recharza Phase 1 customer-flow target: ${baseUrl}`);
 
 for (const input of checks) {
   await check(input);
 }
 
 if (failures.length) {
-  console.error(`\nPhase 1 smoke test failed with ${failures.length} problem(s):`);
+  console.error(`\nPhase 1 customer-flow smoke failed with ${failures.length} problem(s):`);
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
-console.log("\nAll Phase 1 smoke checks passed.");
+console.log("\nAll Phase 1 customer-flow smoke checks passed.");
