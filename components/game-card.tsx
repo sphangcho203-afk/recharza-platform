@@ -9,7 +9,8 @@ import { formatInr } from "@/lib/mobile-legends";
 
 type GameCardProps = {
   game: Game;
-  featured?: boolean;
+  variant?: "rail" | "feed";
+  priority?: boolean;
   showDevelopmentBadges?: boolean;
   showPricingSnapshots?: boolean;
 };
@@ -20,9 +21,28 @@ function actionLabel(game: Game, showDevelopmentBadges: boolean) {
   return showDevelopmentBadges ? "Coming soon" : "Unavailable";
 }
 
-function subtitle(game: Game) {
-  if (game.region) return `${game.region.flag} ${game.region.label}`;
-  return game.publisher;
+function unique(values: string[]) {
+  return Array.from(new Set(values));
+}
+
+function preferredArtworkSources(game: Game) {
+  const remote = game.artworkSources.filter((source) => source.startsWith("https://"));
+  const localCovers = game.artworkSources.filter(
+    (source) => source.startsWith("/") && !source.includes("/assets/founder/"),
+  );
+  const founder = game.artworkSources.filter((source) => source.includes("/assets/founder/"));
+
+  if (game.slug === "call-of-duty-mobile") {
+    return unique([...localCovers, ...remote, ...founder]);
+  }
+
+  return unique([...remote, ...localCovers, ...founder]);
+}
+
+function preferredLogoSources(game: Game) {
+  const actualLogos = game.logoSources.filter((source) => !source.includes("/assets/founder/"));
+  const founder = game.logoSources.filter((source) => source.includes("/assets/founder/"));
+  return unique([...actualLogos, ...founder]);
 }
 
 function logoTreatmentClass(game: Game) {
@@ -31,104 +51,117 @@ function logoTreatmentClass(game: Game) {
 
 export function GameCard({
   game,
+  variant = "feed",
+  priority = false,
   showDevelopmentBadges = true,
   showPricingSnapshots = true,
 }: GameCardProps) {
   const interactive = Boolean(game.available && game.href);
+  const label = actionLabel(game, showDevelopmentBadges);
   const price =
     showPricingSnapshots && game.startingPriceInPaise
       ? `From ${formatInr(game.startingPriceInPaise)}`
       : null;
-  const label = actionLabel(game, showDevelopmentBadges);
-  const badge =
-    game.badge ??
-    (game.region
-      ? `${game.region.flag} ${game.region.code.toUpperCase()}`
-      : interactive
-        ? "Live"
-        : label);
-  const accentStyle = {
-    "--game-accent": game.accent,
-  } as CSSProperties;
+  const accentStyle = { "--game-accent": game.accent } as CSSProperties;
+  const artworkSources = preferredArtworkSources(game);
+  const logoSources = preferredLogoSources(game);
+  const badge = interactive ? "Available" : label;
 
   const card = (
     <article
       style={accentStyle}
-      className={`group storefront-card h-full min-w-0 overflow-hidden rounded-2xl border bg-[#0a0c14] transition duration-200 ${
+      className={`group h-full overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[#090b12] transition duration-200 ${
         interactive
-          ? "border-white/[0.09] hover:-translate-y-1 hover:border-[color:var(--game-accent)] hover:shadow-[0_18px_55px_rgba(0,0,0,0.45)]"
-          : "border-white/[0.07] opacity-75"
+          ? "hover:-translate-y-1 hover:border-[color:var(--game-accent)] hover:shadow-[0_22px_70px_rgba(0,0,0,0.48)]"
+          : "opacity-75"
       }`}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#0d1019]">
+      <div
+        className={`relative overflow-hidden bg-[#0b0e16] ${
+          variant === "rail" ? "aspect-[4/5]" : "aspect-[16/10] sm:aspect-[4/3]"
+        }`}
+      >
         <StorefrontArtwork
           artworkKey={game.artworkKey}
-          sources={game.artworkSources}
+          sources={artworkSources}
           alt={game.artworkAlt}
           fallbackLabel={game.title}
-          sizes="(max-width: 767px) 50vw, (max-width: 1023px) 25vw, 20vw"
-          className="absolute inset-0 h-full w-full transition-transform duration-200 motion-safe:group-hover:scale-105"
+          priority={priority}
+          loading={priority ? "eager" : "lazy"}
+          sizes={
+            variant === "rail"
+              ? "(max-width: 919px) 78vw, (max-width: 1099px) 42vw, 24vw"
+              : "(max-width: 919px) 100vw, (max-width: 1099px) 50vw, 33vw"
+          }
+          className="absolute inset-0 h-full w-full transition-transform duration-300 motion-safe:group-hover:scale-[1.035]"
           fallbackClassName="absolute inset-0 h-full w-full"
           objectPosition={game.artworkPosition}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#070810] via-transparent to-black/10" />
-        <span className="absolute right-2.5 top-2.5 max-w-[75%] truncate rounded-lg border border-white/[0.12] bg-black/65 px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-white backdrop-blur-xl">
+        <div className="absolute inset-0 bg-gradient-to-t from-[#05070d] via-[#05070d]/10 to-black/5" />
+
+        <span
+          className={`absolute right-3 top-3 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] backdrop-blur-xl ${
+            interactive
+              ? "border-emerald-300/20 bg-emerald-950/70 text-emerald-100"
+              : "border-white/[0.1] bg-black/65 text-slate-300"
+          }`}
+        >
           {badge}
         </span>
-        <div className="absolute inset-x-0 bottom-0 p-3">
-          <div className="relative flex h-8 w-fit max-w-[8rem] items-center overflow-hidden rounded-lg border border-white/[0.1] bg-black/60 px-2.5 backdrop-blur-xl">
+
+        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4">
+          <div className="flex min-h-11 max-w-[70%] items-center rounded-xl border border-white/[0.12] bg-black/68 px-3 py-2 backdrop-blur-xl">
             <ResilientImage
-              sources={game.logoSources}
+              sources={logoSources}
               alt={game.logoAlt}
               fallbackLabel={game.title}
-              width={180}
-              height={64}
-              sizes="128px"
-              className={`h-5 w-auto max-w-[7rem] object-contain ${logoTreatmentClass(game)}`}
-              fallbackClassName="h-5 w-8"
+              width={240}
+              height={96}
+              sizes="160px"
+              className={`max-h-7 w-auto max-w-[9rem] object-contain ${logoTreatmentClass(game)}`}
+              fallbackClassName="h-7 w-12"
             />
           </div>
+          {game.region ? (
+            <span className="rounded-full border border-white/[0.12] bg-black/68 px-2.5 py-1.5 text-[10px] font-black text-white backdrop-blur-xl">
+              {game.region.flag} {game.region.label}
+            </span>
+          ) : null}
         </div>
       </div>
 
-      <div className="flex min-h-[8.6rem] flex-col p-3.5 sm:p-4">
-        <p className="truncate text-[9px] font-black uppercase tracking-[0.14em] text-slate-500 sm:text-[10px]">
-          {subtitle(game)}
-        </p>
-        <h3 className="mt-1.5 line-clamp-2 text-sm font-black leading-5 tracking-[-0.025em] text-white sm:text-base">
-          {game.title}
-        </h3>
-        <div className="mt-auto flex items-end justify-between gap-2 pt-3">
+      <div className="p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            {price ? (
-              <p
-                className="truncate text-xs font-black sm:text-sm"
-                style={{ color: game.accent }}
-              >
-                {price}
-              </p>
-            ) : (
-              <p className="truncate text-[10px] font-bold text-slate-500 sm:text-xs">
-                {game.packages[0] ?? label}
-              </p>
-            )}
-            <p className="mt-1 truncate text-[9px] font-bold text-slate-600">
-              {game.category}
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">
+              {game.region ? `${game.region.label} market` : game.publisher}
             </p>
+            <h3 className="mt-1.5 text-lg font-black leading-6 tracking-[-0.03em] text-white">
+              {game.title}
+            </h3>
           </div>
           <span
             aria-hidden="true"
-            className={`grid h-8 w-8 shrink-0 place-items-center rounded-lg border transition ${
+            className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border transition ${
               interactive
-                ? "border-white/[0.1] bg-white text-slate-950 group-hover:bg-cyan-50"
+                ? "border-white bg-white text-slate-950 group-hover:bg-cyan-50"
                 : "border-white/[0.08] bg-white/[0.03] text-slate-600"
             }`}
           >
             <StorefrontIcon name="arrow" className="h-4 w-4" />
           </span>
         </div>
+
+        <div className="mt-4 flex items-end justify-between gap-3 border-t border-white/[0.07] pt-3">
+          <div>
+            <p className="text-sm font-black" style={{ color: game.accent }}>
+              {price ?? game.packages[0] ?? label}
+            </p>
+            <p className="mt-1 text-[10px] font-bold text-slate-600">{game.category}</p>
+          </div>
+          <span className="text-xs font-black text-slate-400">{label}</span>
+        </div>
       </div>
-      <span className="sr-only">{label}</span>
     </article>
   );
 
@@ -136,7 +169,7 @@ export function GameCard({
     return (
       <Link
         href={game.href}
-        className="block h-full min-w-0 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-4 focus-visible:ring-offset-[#06060f]"
+        className="block h-full rounded-[1.35rem] outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 focus-visible:ring-offset-4 focus-visible:ring-offset-[#05060b]"
         aria-label={`${label} ${game.title}${game.region ? ` for ${game.region.label}` : ""}`}
       >
         {card}
@@ -144,5 +177,5 @@ export function GameCard({
     );
   }
 
-  return <div className="h-full min-w-0">{card}</div>;
+  return <div className="h-full">{card}</div>;
 }
