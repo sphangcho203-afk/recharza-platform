@@ -14,6 +14,27 @@ const SUPPORT_LIMIT = 6;
 const SUPPORT_WINDOW_MS = 30 * 60 * 1000;
 const MAX_BODY_BYTES = 16_000;
 
+function withSessionIdentity(
+  payload: unknown,
+  session: Awaited<ReturnType<typeof getRequestSession>>,
+) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload) || !session) {
+    return payload;
+  }
+
+  const data = payload as Record<string, unknown>;
+  const suppliedEmail =
+    typeof data.email === "string" && data.email.trim() ? data.email : null;
+  const suppliedName =
+    typeof data.name === "string" && data.name.trim() ? data.name : null;
+
+  return {
+    ...data,
+    email: suppliedEmail || session.customer.email,
+    name: suppliedName || session.customer.displayName || "",
+  };
+}
+
 export async function POST(request: Request) {
   let rateHeaders: Record<string, string> = {};
 
@@ -60,8 +81,13 @@ export async function POST(request: Request) {
       );
     }
 
-    const payload = await request.json().catch(() => null);
-    const validation = validateSupportTicketInput(payload);
+    const [payload, session] = await Promise.all([
+      request.json().catch(() => null),
+      getRequestSession(request).catch(() => null),
+    ]);
+    const validation = validateSupportTicketInput(
+      withSessionIdentity(payload, session),
+    );
     if (!validation.ok) {
       return Response.json(
         {
@@ -74,7 +100,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const session = await getRequestSession(request).catch(() => null);
     const data = validation.data;
     let orderDatabaseId: string | null = null;
 
@@ -91,8 +116,6 @@ export async function POST(request: Request) {
 
     const ticket = await createAndDeliverSupportTicket({
       ...data,
-      name: data.name || session?.customer.displayName || null,
-      email: data.email || session?.customer.email || null,
       source: "WEB",
       customerId: session?.customer.id ?? null,
       orderDatabaseId,
