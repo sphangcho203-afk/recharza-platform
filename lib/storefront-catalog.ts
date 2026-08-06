@@ -113,6 +113,13 @@ const supplierProductSelect = {
   raw: true,
 } as const;
 
+function getPreviewMobileLegendsPackages() {
+  return prioritizeMobileLegendsPackages(
+    fallbackMobileLegendsPackages,
+    targetMobileLegendsPackageCount,
+  );
+}
+
 export async function getMobileLegendsPackages(
   marketCode?: MobileLegendsMarketCode,
 ): Promise<MobileLegendsPackage[]> {
@@ -142,10 +149,12 @@ export async function getMobileLegendsPackages(
           )
         : products;
 
-      return prioritizeMobileLegendsPackages(
-        marketProducts.map((product) => mapSupplierProduct(product)),
-        targetMobileLegendsPackageCount,
-      );
+      if (marketProducts.length > 0) {
+        return prioritizeMobileLegendsPackages(
+          marketProducts.map((product) => mapSupplierProduct(product)),
+          targetMobileLegendsPackageCount,
+        );
+      }
     }
   } catch (error) {
     if (!(error instanceof RuntimeConfigurationError)) {
@@ -153,10 +162,7 @@ export async function getMobileLegendsPackages(
     }
   }
 
-  return prioritizeMobileLegendsPackages(
-    fallbackMobileLegendsPackages,
-    targetMobileLegendsPackageCount,
-  );
+  return getPreviewMobileLegendsPackages();
 }
 
 export async function getMobileLegendsPackageForCheckout(packageId: string) {
@@ -164,8 +170,7 @@ export async function getMobileLegendsPackageForCheckout(packageId: string) {
   if (!normalizedPackageId) return null;
 
   try {
-    const prisma = getPrisma();
-    const product = await prisma.supplierProduct.findFirst({
+    const product = await getPrisma().supplierProduct.findFirst({
       where: {
         id: normalizedPackageId,
         provider: "fazercards",
@@ -177,17 +182,6 @@ export async function getMobileLegendsPackageForCheckout(packageId: string) {
     });
 
     if (product) return mapSupplierProduct(product);
-
-    const publishedCount = await prisma.supplierProduct.count({
-      where: {
-        provider: "fazercards",
-        gameSlug: "mobile-legends",
-        available: true,
-        published: true,
-      },
-    });
-
-    if (publishedCount > 0) return null;
     return getFallbackMobileLegendsPackage(normalizedPackageId);
   } catch (error) {
     if (error instanceof RuntimeConfigurationError) {
