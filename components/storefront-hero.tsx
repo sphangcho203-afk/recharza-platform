@@ -71,7 +71,7 @@ export function StorefrontHero({
                 className="inline-flex min-h-13 items-center justify-center gap-2 rounded-2xl border border-white/[0.11] bg-white/[0.035] px-5 text-sm font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:border-violet-300/25 hover:bg-violet-300/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
                 <StorefrontIcon name="games" className="h-[18px] w-[18px] text-violet-300" />
-                Browse all games
+                {content.secondaryCtaLabel}
               </Link>
             </div>
 
