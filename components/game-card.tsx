@@ -1,11 +1,13 @@
 import Link from "next/link";
 
 import { StorefrontArtwork } from "@/components/storefront-artwork";
+import { StorefrontIcon } from "@/components/storefront-icon";
 import type { Game } from "@/lib/games";
 import { formatInr } from "@/lib/mobile-legends";
 
 type GameCardProps = {
   game: Game;
+  featured?: boolean;
   showDevelopmentBadges?: boolean;
   showPricingSnapshots?: boolean;
 };
@@ -15,16 +17,17 @@ function actionLabel(game: Game, showDevelopmentBadges: boolean) {
   if (game.status === "catalogue") {
     return showDevelopmentBadges ? "Explore" : "Preview";
   }
-  return showDevelopmentBadges ? "Soon" : "Unavailable";
+  return showDevelopmentBadges ? "Coming soon" : "Unavailable";
 }
 
 function subtitle(game: Game) {
-  if (game.region) return `${game.region.flag} ${game.region.label}`;
+  if (game.region) return `${game.region.flag} ${game.region.label} market`;
   return game.publisher;
 }
 
 export function GameCard({
   game,
+  featured = false,
   showDevelopmentBadges = true,
   showPricingSnapshots = true,
 }: GameCardProps) {
@@ -33,66 +36,121 @@ export function GameCard({
     showPricingSnapshots && game.startingPriceInPaise
       ? `From ${formatInr(game.startingPriceInPaise)}`
       : null;
+  const label = actionLabel(game, showDevelopmentBadges);
 
   const card = (
-    <article className="group relative aspect-[16/9] min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-[#0c101b] shadow-[0_14px_44px_rgba(0,0,0,0.28)] transition duration-300 hover:-translate-y-0.5 hover:border-white/20">
+    <article
+      className={`group relative min-w-0 overflow-hidden rounded-[1.6rem] border border-white/[0.09] bg-[#0a0d16] shadow-[0_18px_55px_rgba(0,0,0,0.3)] transition duration-300 ${
+        featured
+          ? "aspect-[16/10] xl:aspect-[2.08/1]"
+          : "aspect-[16/10]"
+      } ${
+        interactive
+          ? "hover:-translate-y-1 hover:border-violet-300/25 hover:shadow-[0_28px_75px_rgba(16,8,38,0.42)]"
+          : "opacity-80"
+      }`}
+    >
       <StorefrontArtwork
         artworkKey={game.artworkKey}
         sources={[...game.artworkSources, ...game.logoSources]}
         alt={game.artworkAlt}
         fallbackLabel={game.title}
-        className="absolute inset-0 h-full w-full transition duration-500 group-hover:scale-[1.025]"
+        className="absolute inset-0 h-full w-full transition duration-700 group-hover:scale-[1.045]"
         fallbackClassName="absolute inset-0 h-full w-full"
         objectPosition={game.artworkPosition}
       />
-      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(4,7,15,0.88)_0%,rgba(4,7,15,0.5)_48%,rgba(4,7,15,0.06)_100%)]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/10" />
+      <div
+        className={`absolute inset-0 ${
+          featured
+            ? "bg-[linear-gradient(90deg,rgba(3,6,13,0.96)_0%,rgba(3,6,13,0.78)_39%,rgba(3,6,13,0.12)_78%)]"
+            : "bg-[linear-gradient(180deg,rgba(3,6,13,0.08)_0%,rgba(3,6,13,0.18)_38%,rgba(3,6,13,0.94)_100%)]"
+        }`}
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(124,58,237,0.11),transparent_40%,rgba(34,211,238,0.04))] opacity-0 transition duration-500 group-hover:opacity-100" />
 
-      <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3">
-        <span className="max-w-[62%] truncate rounded-full border border-white/12 bg-black/55 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/85 backdrop-blur-md">
+      <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-3.5 sm:p-4">
+        <span className="max-w-[64%] truncate rounded-xl border border-white/[0.1] bg-black/48 px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-white/85 backdrop-blur-xl">
           {game.category}
         </span>
-        {game.region ? (
-          <span className="grid h-7 min-w-7 place-items-center rounded-full border border-white/12 bg-black/60 px-1.5 text-sm backdrop-blur-md" aria-label={game.region.label}>
-            {game.region.flag}
-          </span>
-        ) : null}
+        <span
+          className={`inline-flex min-h-7 items-center gap-1.5 rounded-xl border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] backdrop-blur-xl ${
+            interactive
+              ? "border-emerald-300/15 bg-emerald-300/[0.09] text-emerald-100"
+              : "border-white/[0.09] bg-black/45 text-slate-400"
+          }`}
+        >
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              interactive ? "bg-emerald-300" : "bg-slate-600"
+            }`}
+          />
+          {interactive ? "Available" : label}
+        </span>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-3 sm:p-4">
+      <div
+        className={`absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-4 sm:p-5 ${
+          featured ? "max-w-xl xl:inset-y-0 xl:left-0 xl:right-auto xl:w-[58%] xl:items-center xl:py-8" : ""
+        }`}
+      >
         <div className="min-w-0">
-          <h3 className="truncate text-base font-black leading-tight text-white sm:text-lg">
-            {game.title}
-          </h3>
-          <p className="mt-1 truncate text-[11px] font-semibold text-slate-300/75 sm:text-xs">
+          <p className="truncate text-[10px] font-black uppercase tracking-[0.16em] text-violet-200/90">
             {subtitle(game)}
           </p>
-          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+          <h3
+            className={`mt-1.5 font-black leading-[1.02] tracking-[-0.04em] text-white ${
+              featured ? "text-2xl sm:text-3xl xl:text-4xl" : "text-xl sm:text-2xl"
+            }`}
+          >
+            {game.title}
+          </h3>
+
+          {featured ? (
+            <p className="mt-3 hidden max-w-md text-sm leading-6 text-slate-300/75 sm:block">
+              {game.packages.slice(0, 3).join(" · ")}
+            </p>
+          ) : null}
+
+          <div className="mt-3 flex flex-wrap items-center gap-2">
             {price ? (
-              <span className="rounded-full border border-emerald-300/15 bg-emerald-300/10 px-2 py-1 text-[10px] font-black text-emerald-100">
+              <span className="rounded-xl border border-emerald-300/15 bg-emerald-300/[0.1] px-2.5 py-1.5 text-[10px] font-black text-emerald-100 backdrop-blur">
                 {price}
               </span>
             ) : game.packages[0] ? (
-              <span className="rounded-full border border-white/10 bg-black/35 px-2 py-1 text-[10px] font-bold text-slate-300">
+              <span className="max-w-[11rem] truncate rounded-xl border border-white/[0.09] bg-black/35 px-2.5 py-1.5 text-[10px] font-bold text-slate-300 backdrop-blur">
                 {game.packages[0]}
+              </span>
+            ) : null}
+
+            {game.region ? (
+              <span className="rounded-xl border border-white/[0.09] bg-black/35 px-2.5 py-1.5 text-[10px] font-bold text-slate-300 backdrop-blur">
+                {game.region.defaultCurrency}
               </span>
             ) : null}
           </div>
         </div>
 
         <span
-          className={`grid h-10 min-w-10 shrink-0 place-items-center rounded-full border text-sm font-black backdrop-blur transition ${
+          className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-2xl border px-3.5 text-xs font-black backdrop-blur transition ${
             interactive
-              ? "border-white/15 bg-white text-slate-950 group-hover:bg-violet-200"
-              : "border-white/10 bg-black/35 text-slate-500"
+              ? "border-white/[0.14] bg-white text-slate-950 group-hover:bg-violet-100"
+              : "border-white/[0.09] bg-black/40 text-slate-500"
           }`}
           aria-hidden="true"
         >
-          {interactive ? "→" : "·"}
+          <span className={featured ? "inline" : "hidden sm:inline"}>{label}</span>
+          {interactive ? (
+            <StorefrontIcon
+              name="arrow"
+              className="h-4 w-4 transition group-hover:translate-x-0.5"
+            />
+          ) : (
+            <span className="h-1.5 w-1.5 rounded-full bg-slate-600" />
+          )}
         </span>
       </div>
 
-      <span className="sr-only">{actionLabel(game, showDevelopmentBadges)}</span>
+      <span className="sr-only">{label}</span>
     </article>
   );
 
@@ -100,8 +158,8 @@ export function GameCard({
     return (
       <Link
         href={game.href}
-        className="block min-w-0 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-4 focus-visible:ring-offset-[#06060f]"
-        aria-label={`${actionLabel(game, showDevelopmentBadges)} ${game.title}${
+        className="block min-w-0 rounded-[1.6rem] outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-4 focus-visible:ring-offset-[#06060f]"
+        aria-label={`${label} ${game.title}${
           game.region ? ` for ${game.region.label}` : ""
         }`}
       >
