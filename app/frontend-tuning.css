@@ -1,0 +1,68 @@
+html {
+  scrollbar-gutter: stable;
+  overscroll-behavior-y: none;
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+main,
+section,
+article,
+header,
+footer,
+nav {
+  min-width: 0;
+}
+
+button,
+a,
+summary {
+  touch-action: manipulation;
+}
+
+@media (max-width: 767px) {
+  .storefront-orb,
+  .storefront-float,
+  .storefront-float-delayed,
+  .orb-drift,
+  .orb-drift-delayed,
+  .scanline,
+  .text-shimmer {
+    animation: none !important;
+    will-change: auto !important;
+  }
+
+  .storefront-page::before {
+    background-size: 72px 72px;
+    opacity: 0.45;
+  }
+
+  .storefront-ambient-grid,
+  .hero-grid {
+    opacity: 0.28 !important;
+  }
+
+  .storefront-card:hover,
+  .storefront-panel:hover,
+  a:hover article {
+    transform: none !important;
+  }
+}
+
+@supports (content-visibility: auto) {
+  footer,
+  #games {
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 900px;
+  }
+}

@@ -2,20 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { RecharzaMark } from "@/components/recharza-mark";
 import { SiteHeader } from "@/components/site-header";
+import { StorefrontIcon } from "@/components/storefront-icon";
 import {
-  getPublishedPolicy,
-  getPublishedStorefrontContent,
-  STOREFRONT_POLICY_KEYS,
-  type StorefrontPolicyKey,
-} from "@/lib/storefront-content";
+  parsePublicPolicyKey,
+  publicPolicies,
+} from "@/lib/public-policies";
 
-export const dynamic = "force-dynamic";
-
-function parsePolicyKey(value: string): StorefrontPolicyKey | null {
-  return STOREFRONT_POLICY_KEYS.includes(value as StorefrontPolicyKey)
-    ? (value as StorefrontPolicyKey)
-    : null;
+export function generateStaticParams() {
+  return Object.keys(publicPolicies).map((policy) => ({ policy }));
 }
 
 export async function generateMetadata({
@@ -23,17 +19,13 @@ export async function generateMetadata({
 }: {
   params: Promise<{ policy: string }>;
 }): Promise<Metadata> {
-  const { policy: rawPolicy } = await params;
-  const key = parsePolicyKey(rawPolicy);
+  const key = parsePublicPolicyKey((await params).policy);
   if (!key) return { title: "Policy not found | Recharza" };
 
-  const content = await getPublishedStorefrontContent();
-  const policy = getPublishedPolicy(content, key);
-  if (!policy) return { title: "Policy not found | Recharza" };
-
+  const policy = publicPolicies[key];
   return {
     title: `${policy.title} | Recharza`,
-    description: `${policy.title} for the Recharza game top-up platform.`,
+    description: policy.summary,
   };
 }
 
@@ -42,77 +34,99 @@ export default async function PolicyPage({
 }: {
   params: Promise<{ policy: string }>;
 }) {
-  const { policy: rawPolicy } = await params;
-  const key = parsePolicyKey(rawPolicy);
+  const key = parsePublicPolicyKey((await params).policy);
   if (!key) notFound();
 
-  const content = await getPublishedStorefrontContent();
-  const policy = getPublishedPolicy(content, key);
-  if (!policy) notFound();
-
-  const sections = policy.body
-    .split(/\n\s*\n/)
-    .map((section) => section.trim())
-    .filter(Boolean);
+  const policy = publicPolicies[key];
 
   return (
     <main className="min-h-screen bg-[var(--surface-0)] text-white">
-      <SiteHeader content={content} />
-      <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center rounded-xl border border-white/10 bg-white/[0.035] px-4 text-sm font-bold text-slate-300 transition hover:bg-white/[0.07] hover:text-white"
-        >
-          ← Back to Recharza
-        </Link>
+      <SiteHeader />
 
-        <article className="mt-6 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.025]">
-          <header className="border-b border-white/10 px-5 py-6 sm:px-8 sm:py-8">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
-              Published Recharza policy
-            </p>
-            <h1 className="mt-3 text-3xl font-black tracking-[-0.04em] sm:text-4xl">
-              {policy.title}
-            </h1>
-            <p className="mt-3 text-sm leading-6 text-slate-500">
-              This page displays the latest reviewed version published through the protected storefront content system.
-            </p>
-          </header>
+      <section className="border-b border-white/[0.08] bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.08),transparent_32rem),radial-gradient(circle_at_top_right,rgba(124,58,237,0.11),transparent_28rem)]">
+        <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+          <Link
+            href="/"
+            className="inline-flex min-h-10 items-center gap-2 rounded-xl text-sm font-black text-cyan-300 transition hover:text-cyan-200"
+          >
+            ← Back to Recharza
+          </Link>
 
-          <div className="grid gap-5 px-5 py-6 sm:px-8 sm:py-8">
-            {sections.map((section, index) => {
-              const lines = section.split("\n").map((line) => line.trim());
-              const possibleHeading = lines[0] ?? "";
-              const hasHeading =
-                lines.length > 1 &&
-                possibleHeading.length <= 100 &&
-                !/[.!?]$/.test(possibleHeading);
-
-              return (
-                <section
-                  key={`${index}-${possibleHeading}`}
-                  className="rounded-2xl border border-white/8 bg-black/15 p-5"
-                >
-                  {hasHeading ? (
-                    <h2 className="text-lg font-black text-white">
-                      {possibleHeading}
-                    </h2>
-                  ) : null}
-                  <div className={`${hasHeading ? "mt-3" : ""} grid gap-3`}>
-                    {(hasHeading ? lines.slice(1) : lines).map((line, lineIndex) => (
-                      <p
-                        key={`${lineIndex}-${line.slice(0, 24)}`}
-                        className="whitespace-pre-wrap text-sm leading-7 text-slate-400"
-                      >
-                        {line}
-                      </p>
-                    ))}
-                  </div>
-                </section>
-              );
-            })}
+          <div className="mt-8 grid gap-7 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-end">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-300">
+                Recharza legal centre
+              </p>
+              <h1 className="mt-3 text-4xl font-black tracking-[-0.055em] sm:text-5xl">
+                {policy.title}
+              </h1>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
+                {policy.summary}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/[0.09] bg-black/20 p-4">
+              <p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-500">
+                Last updated
+              </p>
+              <p className="mt-2 text-sm font-black text-white">
+                {policy.lastUpdated}
+              </p>
+            </div>
           </div>
+        </div>
+      </section>
+
+      <div className="mx-auto grid max-w-5xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[minmax(0,1fr)_17rem] lg:px-8">
+        <article className="grid gap-4">
+          {policy.sections.map((section) => (
+            <section
+              key={section.heading}
+              className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-6"
+            >
+              <h2 className="text-lg font-black tracking-[-0.025em] text-white sm:text-xl">
+                {section.heading}
+              </h2>
+              <div className="mt-3 grid gap-3">
+                {section.paragraphs.map((paragraph) => (
+                  <p
+                    key={paragraph}
+                    className="text-sm leading-7 text-slate-400 sm:text-[0.95rem]"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            </section>
+          ))}
         </article>
+
+        <aside className="h-fit rounded-2xl border border-white/[0.08] bg-[#0b0d14] p-5 lg:sticky lg:top-24">
+          <RecharzaMark />
+          <p className="mt-4 text-sm leading-6 text-slate-500">
+            Need help applying a policy to an order? Start with private tracking,
+            then contact support with the order ID.
+          </p>
+          <div className="mt-5 grid gap-2">
+            <Link
+              href="/orders/lookup"
+              className="inline-flex min-h-11 items-center justify-between rounded-xl border border-white/[0.09] bg-white/[0.035] px-3.5 text-sm font-black text-white transition hover:border-cyan-300/20 hover:bg-cyan-300/[0.05]"
+            >
+              Track order
+              <StorefrontIcon name="arrow" className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/support"
+              className="inline-flex min-h-11 items-center justify-between rounded-xl border border-white/[0.09] bg-white/[0.035] px-3.5 text-sm font-black text-white transition hover:border-violet-300/20 hover:bg-violet-300/[0.05]"
+            >
+              Contact support
+              <StorefrontIcon name="arrow" className="h-4 w-4" />
+            </Link>
+          </div>
+          <p className="mt-5 border-t border-white/[0.07] pt-4 text-[11px] leading-5 text-slate-600">
+            Game publishers are independent from Recharza. Their names and artwork
+            remain the property of their respective owners.
+          </p>
+        </aside>
       </div>
     </main>
   );
