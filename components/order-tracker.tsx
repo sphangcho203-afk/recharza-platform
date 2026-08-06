@@ -8,7 +8,8 @@ import { formatInr } from "@/lib/mobile-legends";
 type TrackedOrder = {
   id: string;
   status: string;
-  market: { code: string; label: string; flag: string } | null;
+  gameSlug: string;
+  market: { code: string; label: string; flag: string | null } | null;
   package: {
     name: string;
     amountInPaise: number;
@@ -53,6 +54,46 @@ type TrackingResponse = {
   message?: string;
   order?: TrackedOrder;
 };
+
+const gameLabels: Record<string, string> = {
+  "mobile-legends": "Mobile Legends",
+  "free-fire": "Free Fire MAX",
+  "pubg-mobile": "PUBG Mobile",
+  valorant: "VALORANT",
+  "genshin-impact": "Genshin Impact",
+};
+
+function getGameLabel(gameSlug: string) {
+  return (
+    gameLabels[gameSlug] ??
+    gameSlug
+      .replaceAll("-", " ")
+      .replace(/\b\w/g, (character) => character.toUpperCase())
+  );
+}
+
+function getDestinationLabel(order: TrackedOrder) {
+  if (order.player.nickname) {
+    return order.player.zoneId
+      ? `${order.player.nickname} · ${order.player.playerId} (${order.player.zoneId})`
+      : `${order.player.nickname} · ${order.player.playerId}`;
+  }
+
+  if (order.gameSlug === "genshin-impact" && order.player.zoneId) {
+    return `${order.player.playerId} · ${order.player.zoneId}`;
+  }
+
+  return order.player.zoneId
+    ? `${order.player.playerId} (${order.player.zoneId})`
+    : order.player.playerId;
+}
+
+function getMarketLabel(order: TrackedOrder) {
+  if (!order.market) return "Not specified";
+  return order.market.flag
+    ? `${order.market.flag} ${order.market.label}`
+    : order.market.label;
+}
 
 export function OrderTracker({ orderId }: { orderId: string }) {
   const [accessToken, setAccessToken] = useState("");
@@ -116,12 +157,20 @@ export function OrderTracker({ orderId }: { orderId: string }) {
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[0.75fr_1.25fr]">
-      <form onSubmit={submit} className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-6">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">Private order access</p>
-        <h2 className="mt-2 break-all text-2xl font-black text-white">{orderId}</h2>
+    <div className="grid min-w-0 gap-5 lg:grid-cols-[0.75fr_1.25fr]">
+      <form
+        onSubmit={submit}
+        className="min-w-0 rounded-3xl border border-white/10 bg-white/[0.04] p-4 sm:p-6"
+      >
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-300">
+          Private order access
+        </p>
+        <h2 className="mt-2 break-all text-2xl font-black text-white">
+          {orderId}
+        </h2>
         <p className="mt-3 text-sm leading-6 text-slate-400">
-          Your verified account lists the order. This separate token unlocks its sensitive timeline.
+          Your account may list the order. This separate token unlocks its
+          sensitive timeline.
         </p>
 
         <label className="mt-5 block text-sm font-semibold text-slate-200">
@@ -136,58 +185,82 @@ export function OrderTracker({ orderId }: { orderId: string }) {
           />
         </label>
 
-        <button type="button" onClick={useSavedToken} className="mt-3 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10">
+        <button
+          type="button"
+          onClick={useSavedToken}
+          className="mt-3 min-h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10"
+        >
           Use saved token from this browser
         </button>
-        <button type="submit" disabled={status === "loading"} className="mt-3 w-full rounded-xl bg-violet-500 px-5 py-3.5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60">
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="mt-3 min-h-12 w-full rounded-xl bg-violet-500 px-5 py-3.5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60"
+        >
           {status === "loading" ? "Loading order..." : "Open secure order"}
         </button>
 
-        <p aria-live="polite" className={`mt-4 rounded-xl border px-4 py-3 text-sm leading-6 ${status === "error" ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-white/10 bg-black/15 text-slate-400"}`}>
+        <p
+          aria-live="polite"
+          className={`mt-4 rounded-xl border px-4 py-3 text-sm leading-6 ${
+            status === "error"
+              ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
+              : "border-white/10 bg-black/15 text-slate-400"
+          }`}
+        >
           {message}
         </p>
       </form>
 
-      <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 sm:p-6">
+      <section className="min-w-0 rounded-3xl border border-white/10 bg-white/[0.04] p-4 sm:p-6">
         {order ? (
           <>
             <div className="flex flex-col justify-between gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-start">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">Persisted order</p>
-                <h2 className="mt-2 text-3xl font-black text-white">{order.package.name}</h2>
-                <p className="mt-2 text-sm text-slate-400">
-                  {order.market ? `${order.market.flag} ${order.market.label} market · ` : ""}
-                  {order.player.nickname ? `${order.player.nickname} · ` : ""}
-                  {order.player.playerId} ({order.player.zoneId})
+              <div className="min-w-0">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">
+                  {getGameLabel(order.gameSlug)} order
+                </p>
+                <h2 className="mt-2 break-words text-3xl font-black text-white">
+                  {order.package.name}
+                </h2>
+                <p className="mt-2 break-words text-sm text-slate-400">
+                  {order.market ? `${getMarketLabel(order)} · ` : ""}
+                  {getDestinationLabel(order)}
                 </p>
                 <p className="mt-1 text-xs text-slate-600">
                   Validation: {order.player.verificationMode.replaceAll("-", " ")}
                 </p>
               </div>
-              <span className="w-fit rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-200">
+              <span className="w-fit shrink-0 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-200">
                 {order.status.replaceAll("_", " ")}
               </span>
             </div>
 
-            <dl className="mt-5 grid grid-cols-2 gap-3 text-sm">
+            <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
               <div className="rounded-xl border border-white/10 bg-black/15 p-4">
                 <dt className="text-slate-500">Amount</dt>
-                <dd className="mt-1 text-lg font-black text-white">{formatInr(order.package.amountInPaise)}</dd>
+                <dd className="mt-1 text-lg font-black text-white">
+                  {formatInr(order.package.amountInPaise)}
+                </dd>
               </div>
               <div className="rounded-xl border border-white/10 bg-black/15 p-4">
                 <dt className="text-slate-500">Market</dt>
-                <dd className="mt-1 font-semibold text-white">
-                  {order.market ? `${order.market.flag} ${order.market.label}` : "Legacy order"}
+                <dd className="mt-1 break-words font-semibold text-white">
+                  {getMarketLabel(order)}
                 </dd>
               </div>
               <div className="rounded-xl border border-white/10 bg-black/15 p-4">
                 <dt className="text-slate-500">Receipt</dt>
-                <dd className="mt-1 break-words font-semibold text-white">{order.customerEmail}</dd>
+                <dd className="mt-1 break-words font-semibold text-white">
+                  {order.customerEmail}
+                </dd>
               </div>
               <div className="rounded-xl border border-white/10 bg-black/15 p-4">
                 <dt className="text-slate-500">Supplier product</dt>
                 <dd className="mt-1 font-semibold text-white">
-                  {order.supplier.offerAttached ? "Approved offer attached" : "Indicative / not attached"}
+                  {order.supplier.offerAttached
+                    ? "Approved offer attached"
+                    : "Indicative / not attached"}
                 </dd>
               </div>
             </dl>
@@ -204,25 +277,43 @@ export function OrderTracker({ orderId }: { orderId: string }) {
             <div className="mt-7">
               <div className="flex items-end justify-between gap-4">
                 <h3 className="text-lg font-black text-white">Fulfilment</h3>
-                <span className="text-xs text-slate-500">{order.fulfilment.length} attempt(s)</span>
+                <span className="text-xs text-slate-500">
+                  {order.fulfilment.length} attempt(s)
+                </span>
               </div>
               <div className="mt-4 space-y-3">
                 {order.fulfilment.map((attempt, index) => (
-                  <article key={attempt.id} className={`rounded-xl border p-4 ${attempt.status === "failed" ? "border-rose-400/20 bg-rose-400/10" : attempt.mode === "dry_run" ? "border-amber-300/20 bg-amber-300/10" : "border-emerald-400/20 bg-emerald-400/10"}`}>
+                  <article
+                    key={attempt.id}
+                    className={`rounded-xl border p-4 ${
+                      attempt.status === "failed"
+                        ? "border-rose-400/20 bg-rose-400/10"
+                        : attempt.mode === "dry_run"
+                          ? "border-amber-300/20 bg-amber-300/10"
+                          : "border-emerald-400/20 bg-emerald-400/10"
+                    }`}
+                  >
                     <div className="flex flex-col justify-between gap-1 sm:flex-row">
-                      <p className="text-xs font-bold uppercase tracking-wider text-white">Attempt {index + 1} · {attempt.mode.replaceAll("_", " ")}</p>
-                      <span className="text-xs font-bold uppercase text-slate-300">{attempt.status.replaceAll("_", " ")}</span>
+                      <p className="text-xs font-bold uppercase tracking-wider text-white">
+                        Attempt {index + 1} · {attempt.mode.replaceAll("_", " ")}
+                      </p>
+                      <span className="text-xs font-bold uppercase text-slate-300">
+                        {attempt.status.replaceAll("_", " ")}
+                      </span>
                     </div>
-                    <p className="mt-2 text-sm leading-6 text-slate-200">
+                    <p className="mt-2 break-words text-sm leading-6 text-slate-200">
                       {attempt.status === "planned"
                         ? "A safe supplier request plan is stored. No supplier write occurred."
                         : attempt.status === "failed"
-                          ? attempt.errorMessage ?? "The supplier attempt failed and needs staff review."
+                          ? attempt.errorMessage ??
+                            "The supplier attempt failed and needs staff review."
                           : attempt.providerOrderId
                             ? `Supplier order ${attempt.providerOrderId}`
                             : "The supplier attempt is being processed."}
                     </p>
-                    <time className="mt-2 block text-xs text-slate-500">{new Date(attempt.updatedAt).toLocaleString()}</time>
+                    <time className="mt-2 block text-xs text-slate-500">
+                      {new Date(attempt.updatedAt).toLocaleString()}
+                    </time>
                   </article>
                 ))}
                 {!order.fulfilment.length ? (
@@ -237,12 +328,21 @@ export function OrderTracker({ orderId }: { orderId: string }) {
               <h3 className="text-lg font-black text-white">Order timeline</h3>
               <div className="mt-4 space-y-3">
                 {order.events.map((event) => (
-                  <article key={event.id} className="rounded-xl border border-white/10 bg-black/15 p-4">
+                  <article
+                    key={event.id}
+                    className="rounded-xl border border-white/10 bg-black/15 p-4"
+                  >
                     <div className="flex flex-col justify-between gap-1 sm:flex-row">
-                      <p className="text-xs font-bold uppercase tracking-wider text-violet-300">{event.type.replaceAll("_", " ")}</p>
-                      <time className="text-xs text-slate-600">{new Date(event.createdAt).toLocaleString()}</time>
+                      <p className="break-words text-xs font-bold uppercase tracking-wider text-violet-300">
+                        {event.type.replaceAll("_", " ")}
+                      </p>
+                      <time className="text-xs text-slate-600">
+                        {new Date(event.createdAt).toLocaleString()}
+                      </time>
                     </div>
-                    <p className="mt-2 text-sm leading-6 text-slate-300">{event.message}</p>
+                    <p className="mt-2 break-words text-sm leading-6 text-slate-300">
+                      {event.message}
+                    </p>
                   </article>
                 ))}
               </div>
@@ -253,7 +353,8 @@ export function OrderTracker({ orderId }: { orderId: string }) {
             <div>
               <p className="text-4xl font-black text-white/15">RZ</p>
               <p className="mt-3 text-sm leading-6 text-slate-500">
-                The persisted order timeline appears here after token verification.
+                The persisted order timeline appears here after token
+                verification.
               </p>
             </div>
           </div>
