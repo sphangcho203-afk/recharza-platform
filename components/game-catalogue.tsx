@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { GameCard } from "@/components/game-card";
+import { StorefrontIcon } from "@/components/storefront-icon";
 import type { Game } from "@/lib/games";
 
 type CatalogueFilter =
@@ -14,13 +15,14 @@ type CatalogueFilter =
 
 const filters: Array<{ id: CatalogueFilter; label: string }> = [
   { id: "all", label: "All games" },
-  { id: "checkout", label: "Available" },
+  { id: "checkout", label: "Ready to top up" },
   { id: "battle-royale", label: "Battle royale" },
   { id: "shooter", label: "Shooter" },
   { id: "rpg", label: "RPG" },
 ];
 
 const supportedMobileLegendsMarketCodes = new Set([
+  "india",
   "global",
   "indonesia",
   "philippines",
@@ -29,13 +31,14 @@ const supportedMobileLegendsMarketCodes = new Set([
 ]);
 
 const defaultCatalogueOrder = [
+  "mobile-legends-india",
   "mobile-legends-global",
   "free-fire",
   "pubg-mobile",
-  "mobile-legends-indonesia",
   "genshin-impact",
-  "mobile-legends-philippines",
+  "mobile-legends-indonesia",
   "valorant",
+  "mobile-legends-philippines",
   "mobile-legends-malaysia",
   "mobile-legends-singapore",
   "bgmi",
@@ -152,33 +155,28 @@ export function GameCatalogue({
     });
   }, [defaultGames, filter, normalizedQuery, searchableGames]);
 
+  const featureFirstCard = !normalizedQuery && filter === "all";
+
   return (
-    <div className="mt-6 min-w-0">
-      <div className="grid min-w-0 gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-        <label className="relative block min-w-0 md:max-w-sm">
+    <div className="mt-7 min-w-0">
+      <div className="grid min-w-0 gap-3 border-y border-white/[0.08] py-4 lg:grid-cols-[minmax(17rem,0.85fr)_minmax(0,1.4fr)] lg:items-center">
+        <label className="relative block min-w-0">
           <span className="sr-only">Search games or markets</span>
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="m16.5 16.5 4 4" />
-          </svg>
+          <StorefrontIcon
+            name="search"
+            className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-slate-500"
+          />
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search games or Mobile Legends markets"
-            className="h-12 w-full min-w-0 rounded-xl border border-white/10 bg-black/20 pl-10 pr-4 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/15"
+            placeholder="Search games, packages, or MLBB markets"
+            className="h-13 w-full min-w-0 rounded-2xl border border-white/[0.09] bg-white/[0.035] pl-11 pr-4 text-sm font-semibold text-white outline-none transition placeholder:font-normal placeholder:text-slate-600 hover:border-white/[0.14] focus:border-violet-400/45 focus:bg-violet-300/[0.045] focus:ring-4 focus:ring-violet-400/10"
           />
         </label>
 
         <div
-          className="flex max-w-full gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex max-w-full gap-2 overflow-x-auto pb-1 lg:justify-end [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="group"
           aria-label="Catalogue filters"
         >
@@ -190,10 +188,10 @@ export function GameCatalogue({
                 type="button"
                 aria-pressed={active}
                 onClick={() => setFilter(item.id)}
-                className={`min-h-11 shrink-0 rounded-xl px-3.5 py-2.5 text-xs font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
+                className={`min-h-11 shrink-0 rounded-xl px-3.5 py-2.5 text-xs font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
                   active
-                    ? "bg-white text-slate-950"
-                    : "border border-white/10 bg-white/[0.035] text-slate-400 hover:text-white"
+                    ? "bg-white text-slate-950 shadow-[0_8px_24px_rgba(255,255,255,0.1)]"
+                    : "border border-white/[0.08] bg-white/[0.025] text-slate-400 hover:border-violet-300/20 hover:bg-violet-300/[0.06] hover:text-white"
                 }`}
               >
                 {item.label}
@@ -204,10 +202,10 @@ export function GameCatalogue({
       </div>
 
       <div className="mt-4 flex min-w-0 items-center justify-between gap-4 text-xs text-slate-500">
-        <p aria-live="polite">
+        <p aria-live="polite" className="font-semibold">
           {showingAllMobileLegendsMarkets
             ? `Showing all ${regionGames.length} supported Mobile Legends markets`
-            : `${visibleGames.length} ${visibleGames.length === 1 ? "game" : "games"}`}
+            : `${visibleGames.length} ${visibleGames.length === 1 ? "result" : "results"}`}
         </p>
         {(query || filter !== "all") && (
           <button
@@ -216,7 +214,7 @@ export function GameCatalogue({
               setQuery("");
               setFilter("all");
             }}
-            className="min-h-11 shrink-0 rounded-lg px-2 font-bold text-violet-300 transition hover:text-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-2.5 font-black text-violet-300 transition hover:bg-violet-300/[0.06] hover:text-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
           >
             Reset filters
           </button>
@@ -224,21 +222,32 @@ export function GameCatalogue({
       </div>
 
       {visibleGames.length > 0 ? (
-        <div className="mt-3 grid min-w-0 grid-cols-1 gap-3 min-[560px]:grid-cols-2 xl:grid-cols-3">
-          {visibleGames.map((game) => (
-            <GameCard
-              key={game.slug}
-              game={game}
-              showDevelopmentBadges={showDevelopmentBadges}
-              showPricingSnapshots={showPricingSnapshots}
-            />
-          ))}
+        <div className="mt-4 grid min-w-0 grid-cols-1 gap-4 min-[620px]:grid-cols-2 xl:grid-cols-3">
+          {visibleGames.map((game, index) => {
+            const featured = featureFirstCard && index === 0;
+            return (
+              <div
+                key={game.slug}
+                className={featured ? "min-w-0 xl:col-span-2" : "min-w-0"}
+              >
+                <GameCard
+                  game={game}
+                  featured={featured}
+                  showDevelopmentBadges={showDevelopmentBadges}
+                  showPricingSnapshots={showPricingSnapshots}
+                />
+              </div>
+            );
+          })}
         </div>
       ) : (
-        <div className="mt-4 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] px-6 py-12 text-center">
-          <p className="font-bold text-white">No game matched that search</p>
+        <div className="mt-5 rounded-3xl border border-dashed border-white/[0.12] bg-white/[0.02] px-6 py-16 text-center">
+          <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.035] text-slate-500">
+            <StorefrontIcon name="search" className="h-5 w-5" />
+          </span>
+          <p className="mt-4 font-black text-white">No game matched that search</p>
           <p className="mt-2 text-sm text-slate-500">
-            Try another title, region, or clear the filters.
+            Try another title, market, or package name.
           </p>
         </div>
       )}
