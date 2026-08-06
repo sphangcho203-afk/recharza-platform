@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Recharza Support Bot</title>
+  <desc id="desc">A neon Recharza R wearing a customer support headset.</desc>
+  <defs>
+    <linearGradient id="bg" x1="80" y1="52" x2="430" y2="460" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#111A35"/>
+      <stop offset="0.52" stop-color="#080B18"/>
+      <stop offset="1" stop-color="#13091F"/>
+    </linearGradient>
+    <linearGradient id="neon" x1="132" y1="120" x2="391" y2="394" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5EF2FF"/>
+      <stop offset="0.48" stop-color="#3284FF"/>
+      <stop offset="1" stop-color="#B54CFF"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="124" y1="102" x2="406" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C8FCFF"/>
+      <stop offset="0.5" stop-color="#69A8FF"/>
+      <stop offset="1" stop-color="#F0A4FF"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="translate(256 255) rotate(90) scale(220)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#245EFF" stop-opacity=".24"/>
+      <stop offset=".62" stop-color="#7545FF" stop-opacity=".08"/>
+      <stop offset="1" stop-color="#060812" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="9" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="15" stdDeviation="16" flood-color="#000" flood-opacity=".55"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="118" fill="#050711"/>
+  <rect x="18" y="18" width="476" height="476" rx="104" fill="url(#bg)" stroke="#20294A" stroke-width="3"/>
+  <circle cx="256" cy="256" r="208" fill="url(#glow)"/>
+
+  <g filter="url(#softGlow)" opacity=".55">
+    <path d="M112 269v-31c0-81 64-146 144-146s144 65 144 146v31" fill="none" stroke="url(#neon)" stroke-width="16" stroke-linecap="round"/>
+    <path d="M113 263c-28 0-47 21-47 51v32c0 30 19 51 47 51h21V263h-21Zm286 0c28 0 47 21 47 51v32c0 30-19 51-47 51h-21V263h21Z" fill="none" stroke="url(#neon)" stroke-width="8"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <path d="M112 269v-31c0-81 64-146 144-146s144 65 144 146v31" fill="none" stroke="url(#neon)" stroke-width="13" stroke-linecap="round"/>
+    <path d="M113 263c-28 0-47 21-47 51v32c0 30 19 51 47 51h21V263h-21Z" fill="#0A1023" stroke="url(#edge)" stroke-width="6"/>
+    <path d="M399 263c28 0 47 21 47 51v32c0 30-19 51-47 51h-21V263h21Z" fill="#0A1023" stroke="url(#edge)" stroke-width="6"/>
+    <path d="M127 286v88" stroke="url(#neon)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M385 286v88" stroke="url(#neon)" stroke-width="10" stroke-linecap="round"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <path d="M164 157h136c44 0 76 30 76 70 0 29-15 52-42 64l48 68h-68l-42-61h-39v61h-69V242h132c10 0 18-7 18-17 0-9-8-16-18-16H164v-52Z" fill="url(#neon)" stroke="url(#edge)" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M164 242h69v117h-69z" fill="url(#neon)"/>
+    <path d="M233 298 164 359V242h116l-47 56Z" fill="#167BFF" opacity=".72"/>
+    <path d="m272 298 42 61h68l-48-68c-13 6-29 7-62 7Z" fill="#A64CFF" opacity=".86"/>
+    <path d="M174 168h124c38 0 66 24 66 58" fill="none" stroke="#D4FDFF" stroke-width="5" stroke-linecap="round" opacity=".72"/>
+  </g>
+
+  <path d="M399 387c0 29-23 49-57 49h-38" fill="none" stroke="url(#neon)" stroke-width="10" stroke-linecap="round"/>
+  <rect x="281" y="419" width="54" height="28" rx="14" fill="#0B1023" stroke="url(#edge)" stroke-width="5"/>
+  <circle cx="308" cy="433" r="6" fill="#68F5FF"/>
+
+  <path d="M81 137h38M393 137h38M74 174h25M413 174h25" stroke="#43DFFF" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+  <circle cx="75" cy="137" r="4" fill="#43DFFF"/>
+  <circle cx="437" cy="137" r="4" fill="#A855F7"/>
+</svg>
