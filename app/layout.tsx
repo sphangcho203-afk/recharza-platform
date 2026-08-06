@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from "next";
+
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
+
 import "./globals.css";
 import "./frontend-tuning.css";
+import "./storefront-redesign.css";
 
 export const metadata: Metadata = {
   applicationName: "Recharza",
@@ -30,7 +34,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <MobileBottomNav />
+      </body>
     </html>
   );
 }

@@ -9,6 +9,8 @@ type StorefrontArtworkProps = {
   className?: string;
   fallbackClassName?: string;
   loading?: "eager" | "lazy";
+  priority?: boolean;
+  sizes?: string;
   objectPosition?: string;
 };
 
@@ -20,6 +22,8 @@ export function StorefrontArtwork({
   className = "h-full w-full",
   fallbackClassName = "h-full w-full",
   loading = "lazy",
+  priority = false,
+  sizes = "100vw",
   objectPosition = "center",
 }: StorefrontArtworkProps) {
   return (
@@ -32,7 +36,10 @@ export function StorefrontArtwork({
         alt={alt}
         fallbackLabel={fallbackLabel}
         loading={loading}
-        className="absolute inset-0 h-full w-full object-cover"
+        priority={priority}
+        fill
+        sizes={sizes}
+        className="object-cover"
         style={{ objectPosition }}
         fallbackClassName={fallbackClassName}
       />
