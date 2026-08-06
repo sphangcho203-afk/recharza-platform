@@ -121,8 +121,12 @@ export function isPackageAvailableForMarket(
   const market = mobileLegendsMarkets.find((item) => item.code === marketCode);
   if (!market) return false;
   const normalizedRegion = normalizeRegion(packageRegion);
+  const regionTokens = new Set(normalizedRegion.split(" ").filter(Boolean));
+
   return market.providerAliases.some((alias) => {
     const normalizedAlias = normalizeRegion(alias);
-    return normalizedRegion === normalizedAlias || normalizedRegion.includes(normalizedAlias);
+    if (normalizedRegion === normalizedAlias) return true;
+    if (normalizedAlias.length <= 3) return regionTokens.has(normalizedAlias);
+    return normalizedRegion.includes(normalizedAlias);
   });
 }

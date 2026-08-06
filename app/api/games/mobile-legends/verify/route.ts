@@ -1,10 +1,14 @@
-import { parseMobileLegendsMarket } from "@/lib/mobile-legends-market";
+import {
+  isPackageAvailableForMarket,
+  parseMobileLegendsMarket,
+} from "@/lib/mobile-legends-market";
 import { validateMobileLegendsIdentity } from "@/lib/player-identity-provider";
 import {
   consumeRateLimit,
   createRateLimitHeaders,
 } from "@/lib/rate-limit";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
+import { getMobileLegendsPackageForCheckout } from "@/lib/storefront-catalog";
 
 export const runtime = "nodejs";
 
@@ -54,6 +58,38 @@ export async function POST(request: Request) {
       );
     }
 
+    const packageId =
+      typeof data.packageId === "string" ? data.packageId.trim() : "";
+    const selectedPackage = packageId
+      ? await getMobileLegendsPackageForCheckout(packageId)
+      : null;
+
+    if (!selectedPackage) {
+      return Response.json(
+        {
+          valid: false,
+          message:
+            "That package changed or is unavailable. Refresh the catalogue and choose again.",
+        },
+        { status: 409, headers: rateHeaders },
+      );
+    }
+
+    if (
+      !isPackageAvailableForMarket(
+        selectedPackage.region,
+        selectedMarket.code,
+      )
+    ) {
+      return Response.json(
+        {
+          valid: false,
+          message: `That package is not approved for ${selectedMarket.label}.`,
+        },
+        { status: 409, headers: rateHeaders },
+      );
+    }
+
     const identity = await validateMobileLegendsIdentity({
       playerId: data.playerId,
       zoneId: data.zoneId,
@@ -68,6 +104,7 @@ export async function POST(request: Request) {
         playerId: identity.playerId,
         zoneId: identity.zoneId,
         marketCode: selectedMarket.code,
+        packageId: selectedPackage.id,
         message: identity.message,
       },
       {
