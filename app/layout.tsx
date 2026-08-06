@@ -1,13 +1,26 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./frontend-tuning.css";
 
 export const metadata: Metadata = {
+  applicationName: "Recharza",
   title: {
     default: "Recharza | Game Top-Ups",
     template: "%s | Recharza",
   },
   description:
-    "A modern multi-game top-up and digital recharge platform built for secure checkout, clear order tracking, and fast fulfilment.",
+    "A multi-game top-up platform with clear regional checkout, protected payment review and private order tracking.",
+  category: "gaming",
+  creator: "Recharza",
+  publisher: "Recharza",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#06070d",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({
