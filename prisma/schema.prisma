@@ -364,7 +364,7 @@ model SupplierProduct {
   updatedAt              DateTime @updatedAt
   orders                 Order[]
 
-  @@unique([provider, offerId], name: "provider_offer")
+  @@unique([provider, categoryId, offerId], name: "provider_category_offer")
   @@index([gameSlug, published, available, retailPriceInPaise])
   @@index([provider, categoryId, available])
   @@index([syncedAt])

@@ -93,8 +93,9 @@ export async function POST(request: Request) {
 
         await prisma.supplierProduct.upsert({
           where: {
-            provider_offer: {
+            provider_category_offer: {
               provider: "fazercards",
+              categoryId: category.categoryId,
               offerId: offer.offerId,
             },
           },
