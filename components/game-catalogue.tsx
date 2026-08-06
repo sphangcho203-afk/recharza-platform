@@ -97,22 +97,24 @@ function CatalogueRail({
   ariaLabel: string;
 }) {
   return (
-    <div
-      aria-label={ariaLabel}
-      className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0 xl:grid-cols-4"
-    >
-      {games.map((game) => (
-        <div
-          key={game.slug}
-          className="w-[84vw] max-w-[23rem] shrink-0 snap-start sm:w-[22rem] lg:w-auto lg:max-w-none"
-        >
-          <GameCard
-            game={game}
-            showDevelopmentBadges={showDevelopmentBadges}
-            showPricingSnapshots={showPricingSnapshots}
-          />
-        </div>
-      ))}
+    <div className="min-w-0 max-w-full overflow-hidden">
+      <div
+        aria-label={ariaLabel}
+        className="flex w-full max-w-full snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-3 pr-4 [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-3 lg:overflow-visible lg:pr-0 xl:grid-cols-4"
+      >
+        {games.map((game) => (
+          <div
+            key={game.slug}
+            className="w-[76vw] max-w-[20.5rem] shrink-0 snap-start lg:w-auto lg:max-w-none"
+          >
+            <GameCard
+              game={game}
+              showDevelopmentBadges={showDevelopmentBadges}
+              showPricingSnapshots={showPricingSnapshots}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -170,7 +172,7 @@ export function GameCatalogue({
   );
 
   return (
-    <div className="mt-7 min-w-0">
+    <div className="mt-7 min-w-0 max-w-full overflow-hidden">
       <div className="grid min-w-0 gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.018] p-3 lg:grid-cols-[minmax(17rem,0.85fr)_minmax(0,1.4fr)] lg:items-center lg:p-4">
         <label className="relative block min-w-0">
           <span className="sr-only">Search games or markets</span>
@@ -188,7 +190,7 @@ export function GameCatalogue({
         </label>
 
         <div
-          className="flex max-w-full gap-2 overflow-x-auto pb-1 lg:justify-end [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-1 lg:justify-end [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="group"
           aria-label="Catalogue filters"
         >
@@ -254,11 +256,11 @@ export function GameCatalogue({
         </section>
       ) : (
         <div className="mt-8 grid gap-10">
-          <section>
+          <section className="min-w-0 max-w-full">
             <div className="mb-4 flex items-end justify-between gap-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-300">Popular games</p>
-                <h3 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Choose the title first.</h3>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-300">Game catalogue</p>
+                <h3 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Choose the game.</h3>
               </div>
               <span className="hidden text-xs font-bold text-slate-600 sm:block">Swipe or scroll</span>
             </div>
@@ -271,11 +273,11 @@ export function GameCatalogue({
           </section>
 
           {regionGames.length > 0 ? (
-            <section>
+            <section className="min-w-0 max-w-full">
               <div className="mb-4 flex items-end justify-between gap-4">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-300">Mobile Legends markets</p>
-                  <h3 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Then choose the account region.</h3>
+                  <h3 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Choose the account region.</h3>
                 </div>
                 <Link
                   href="/games/mobile-legends"
