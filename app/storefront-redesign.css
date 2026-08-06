@@ -119,6 +119,49 @@
   .storefront-page p {
     overflow-wrap: anywhere;
   }
+
+  form nav[aria-label="Checkout steps"] {
+    display: flex !important;
+    max-width: 100%;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 0.25rem;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+  }
+
+  form nav[aria-label="Checkout steps"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  form nav[aria-label="Checkout steps"] > button {
+    min-width: 8.5rem;
+    scroll-snap-align: start;
+  }
+
+  form .sm\:grid-cols-2 {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  form .sm\:flex-row {
+    flex-direction: column !important;
+  }
+
+  form .sm\:items-start,
+  form .sm\:items-end,
+  form .sm\:items-center {
+    align-items: stretch !important;
+  }
+
+  form .sm\:max-w-xs {
+    max-width: none !important;
+  }
+
+  form .max-h-\[24rem\] {
+    max-height: none !important;
+    overflow: visible !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
