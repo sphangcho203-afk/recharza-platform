@@ -58,11 +58,12 @@ const mobileLegendsBase = {
   category: "MOBA",
   family: "moba" as const,
   logoSources: [
+    "/assets/games/mobile-legends/logo.webp",
     "https://upload.wikimedia.org/wikipedia/en/thumb/4/4e/Mobile_Legends_Bang_Bang_logo.png/512px-Mobile_Legends_Bang_Bang_logo.png",
   ],
   artworkSources: [
-    "https://play-lh.googleusercontent.com/D8r13ijO9c-0_1N-CP4d63mR1w6YhDuR2mBQUl27ELJAx0sKdaKtM5vCUnSLODKBVzUx7rZ9cW4Ir9jYiufsSQ=w480-h480",
-    "https://upload.wikimedia.org/wikipedia/en/8/86/Mobile_Legends_Bang_Bang.jpg",
+    "/assets/games/mobile-legends/cover-primary.webp",
+    "/assets/games/mobile-legends/cover-secondary.webp",
   ],
   logoAlt: "Mobile Legends: Bang Bang logo",
   artworkAlt: "Mobile Legends: Bang Bang game artwork",
@@ -109,13 +110,8 @@ export const games: Game[] = [
     family: "battle-royale",
     kind: "game",
     status: "checkout",
-    logoSources: [
-      "https://dl.dir.freefiremobile.com/common/web_event/official2/dist/client/img/max_logo.b96cbd2.png",
-      "https://dl.dir.freefiremobile.com/common/web_event/official2/dist/client/img/full_logo.969f536.png",
-    ],
-    artworkSources: [
-      "https://freefiremobile-a.akamaihd.net/common/web_event/official2.ff.garena.all/img/20228/e14db15cad1206214fe56520563e2aa7.jpg",
-    ],
+    logoSources: ["/assets/games/free-fire/logo.webp"],
+    artworkSources: ["/assets/games/free-fire/cover.webp"],
     artworkKey: "free-fire",
     logoAlt: "Free Fire MAX logo",
     artworkAlt: "Free Fire MAX game artwork",
@@ -139,9 +135,7 @@ export const games: Game[] = [
     logoSources: [
       "https://www.pubgmobile.com/images/event/brandassets/img-logo1.png",
     ],
-    artworkSources: [
-      "https://upload.wikimedia.org/wikipedia/en/9/9f/Pubgbattlegrounds.png",
-    ],
+    artworkSources: ["/assets/games/pubg-mobile/cover.webp"],
     artworkKey: "pubg-mobile",
     logoAlt: "PUBG Mobile logo",
     artworkAlt: "PUBG Mobile game artwork",
@@ -165,9 +159,7 @@ export const games: Game[] = [
     logoSources: [
       "https://upload.wikimedia.org/wikipedia/commons/9/99/Battlegrounds_Mobile_India%2C_BGMI_LOGO_white_-_1082x360.png",
     ],
-    artworkSources: [
-      "https://upload.wikimedia.org/wikipedia/en/6/6f/Battlegrounds_Mobile_India.jpg",
-    ],
+    artworkSources: ["/assets/games/bgmi/cover.webp"],
     artworkKey: "bgmi",
     logoAlt: "Battlegrounds Mobile India logo",
     artworkAlt: "Battlegrounds Mobile India game artwork",
@@ -188,9 +180,7 @@ export const games: Game[] = [
     logoSources: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Call_of_Duty_Mobile_2023_logo.svg/1280px-Call_of_Duty_Mobile_2023_logo.svg.png",
     ],
-    artworkSources: [
-      "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Call_of_Duty_Mobile_Logo.png/512px-Call_of_Duty_Mobile_Logo.png",
-    ],
+    artworkSources: ["/assets/games/call-of-duty-mobile/cover.webp"],
     artworkKey: "call-of-duty-mobile",
     logoAlt: "Call of Duty Mobile logo",
     artworkAlt: "Call of Duty Mobile game artwork",
@@ -211,9 +201,7 @@ export const games: Game[] = [
     logoSources: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Valorant_logo.svg/960px-Valorant_logo.svg.png",
     ],
-    artworkSources: [
-      "https://upload.wikimedia.org/wikipedia/en/b/ba/Valorant_cover.jpg",
-    ],
+    artworkSources: ["/assets/games/valorant/cover.webp"],
     artworkKey: "valorant",
     logoAlt: "VALORANT logo",
     artworkAlt: "VALORANT game artwork",
@@ -234,16 +222,12 @@ export const games: Game[] = [
     family: "rpg",
     kind: "game",
     status: "checkout",
-    logoSources: [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Genshin_Impact_wordmark.svg/960px-Genshin_Impact_wordmark.svg.png",
-    ],
-    artworkSources: [
-      "https://upload.wikimedia.org/wikipedia/en/5/5d/Genshin_Impact_cover.jpg",
-    ],
+    logoSources: ["/assets/games/genshin-impact/logo-paimon.webp"],
+    artworkSources: ["/assets/games/genshin-impact/logo-paimon.webp"],
     artworkKey: "genshin-impact",
     logoAlt: "Genshin Impact logo",
-    artworkAlt: "Genshin Impact game artwork",
-    logoTreatment: "invert",
+    artworkAlt: "Genshin Impact Paimon artwork",
+    logoTreatment: "native",
     artworkPosition: "center",
     accent: "#7ec8ff",
     available: true,
@@ -263,9 +247,7 @@ export const games: Game[] = [
     logoSources: [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/FortniteLogo.svg/1280px-FortniteLogo.svg.png",
     ],
-    artworkSources: [
-      "https://cdn2.unrealengine.com/fnbr-35-00-c6ms1-discover-playlist-tiles-keyart-480x270-480x270-d8d88e6f0b9d.jpg",
-    ],
+    artworkSources: ["/assets/games/fortnite/cover.webp"],
     artworkKey: "fortnite",
     logoAlt: "Fortnite logo",
     artworkAlt: "Fortnite game artwork",
