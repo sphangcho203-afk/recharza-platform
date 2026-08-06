@@ -1,5 +1,8 @@
 import "server-only";
 
+import {
+  isCuratedFazerCardsProductAvailableForMobileLegendsMarket,
+} from "@/lib/catalog/curated-fazercards";
 import { resolveProductMedia } from "@/lib/catalog/product-media";
 import {
   fallbackMobileLegendsPackages,
@@ -10,10 +13,7 @@ import {
   prioritizeMobileLegendsPackages,
   targetMobileLegendsPackageCount,
 } from "@/lib/mobile-legends-package-catalog";
-import {
-  isPackageAvailableForMarket,
-  type MobileLegendsMarketCode,
-} from "@/lib/mobile-legends-market";
+import type { MobileLegendsMarketCode } from "@/lib/mobile-legends-market";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
@@ -112,15 +112,20 @@ export async function getMobileLegendsPackages(
     });
 
     if (products.length > 0) {
-      const mapped = products.map((product) => mapSupplierProduct(product));
-      const marketPackages = marketCode
-        ? mapped.filter((item) =>
-            isPackageAvailableForMarket(item.region, marketCode),
+      const marketProducts = marketCode
+        ? products.filter((product) =>
+            isCuratedFazerCardsProductAvailableForMobileLegendsMarket(
+              {
+                categoryId: product.categoryId,
+                offerId: product.offerId,
+              },
+              marketCode,
+            ),
           )
-        : mapped;
+        : products;
 
       return prioritizeMobileLegendsPackages(
-        marketPackages,
+        marketProducts.map((product) => mapSupplierProduct(product)),
         targetMobileLegendsPackageCount,
       );
     }
