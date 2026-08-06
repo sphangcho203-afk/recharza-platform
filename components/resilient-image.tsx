@@ -2,7 +2,12 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import { useMemo, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type CSSProperties,
+} from "react";
 
 type ResilientImageProps = {
   sources: string[];
@@ -21,9 +26,20 @@ function createInitials(value: string) {
     .split(/\s+/)
     .filter(Boolean);
 
-  if (!parts.length) return "R";
+  if (!parts.length) return "RZ";
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+}
+
+function isSafeImageSource(value: string) {
+  if (value.startsWith("/")) return !value.startsWith("//");
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
 
 export function ResilientImage({
@@ -35,20 +51,34 @@ export function ResilientImage({
   fallbackClassName = "",
   fallbackLabel,
 }: ResilientImageProps) {
-  const usableSources = useMemo(() => sources.filter(Boolean), [sources]);
+  const usableSources = useMemo(
+    () => Array.from(new Set(sources.filter(isSafeImageSource))),
+    [sources],
+  );
+  const sourceKey = usableSources.join("\n");
   const [sourceIndex, setSourceIndex] = useState(0);
   const [failed, setFailed] = useState(usableSources.length === 0);
   const initials = createInitials(fallbackLabel ?? alt);
+
+  useEffect(() => {
+    setSourceIndex(0);
+    setFailed(usableSources.length === 0);
+  }, [sourceKey, usableSources.length]);
 
   if (failed) {
     return (
       <div
         aria-label={`${alt} unavailable`}
         role="img"
-        className={`grid place-items-center bg-[radial-gradient(circle_at_25%_20%,rgba(56,189,248,0.24),transparent_45%),linear-gradient(145deg,#171727,#090910)] text-center font-black text-white/85 ${fallbackClassName}`}
+        className={`grid place-items-center overflow-hidden bg-[radial-gradient(circle_at_25%_20%,rgba(34,211,238,0.12),transparent_42%),radial-gradient(circle_at_80%_75%,rgba(139,92,246,0.13),transparent_46%),linear-gradient(145deg,#111522,#070910)] text-center ${fallbackClassName}`}
       >
-        <span aria-hidden="true" className="text-2xl tracking-[-0.08em] sm:text-3xl">
-          {initials}
+        <span className="flex flex-col items-center gap-2.5 px-4" aria-hidden="true">
+          <span className="grid h-11 w-11 place-items-center rounded-xl border border-white/[0.1] bg-white/[0.045] text-xs font-black tracking-[-0.04em] text-cyan-100 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
+            {initials}
+          </span>
+          <span className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-600">
+            Artwork unavailable
+          </span>
         </span>
       </div>
     );
@@ -60,7 +90,7 @@ export function ResilientImage({
       alt={alt}
       loading={loading}
       decoding="async"
-      referrerPolicy="no-referrer"
+      referrerPolicy="strict-origin-when-cross-origin"
       className={className}
       style={style}
       onError={() => {
