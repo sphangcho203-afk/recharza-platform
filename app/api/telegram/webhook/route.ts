@@ -15,7 +15,6 @@ import {
 import {
   SUPPORT_CATEGORIES,
   supportCategoryLabel,
-  type SupportCategory,
   validateSupportTicketInput,
 } from "@/lib/support";
 
@@ -40,9 +39,7 @@ type TelegramMessage = {
   text?: string;
   chat: TelegramChat;
   from?: TelegramUser;
-  reply_to_message?: {
-    text?: string;
-  };
+  reply_to_message?: { text?: string };
 };
 
 type TelegramCallbackQuery = {
@@ -57,6 +54,15 @@ type TelegramUpdate = {
   message?: TelegramMessage;
   callback_query?: TelegramCallbackQuery;
 };
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
 function secretsMatch(received: string | null, expected: string | undefined) {
   const expectedValue = expected?.trim();
@@ -121,65 +127,65 @@ function parseCustomerReply(text: string) {
   const normalized = text.replace(/\r\n?/g, "\n").trim();
   const lines = normalized.split("\n");
   const firstLine = (lines.shift() ?? "").trim();
-  const orderId = /^(NO ORDER|NONE|N\/A)$/i.test(firstLine)
-    ? ""
-    : firstLine;
-  const description = lines.join("\n").trim();
-  return { orderId, description };
+  return {
+    orderId: /^(NO ORDER|NONE|N\/A)$/i.test(firstLine) ? "" : firstLine,
+    description: lines.join("\n").trim(),
+  };
 }
 
 async function handleStart(message: TelegramMessage, payload: string) {
   const chatId = String(message.chat.id);
   const user = message.from;
 
-  if (payload.startsWith("link_")) {
-    const parts = payload.match(/^(link)_(RZS-[A-Z0-9]{16})_([A-Za-z0-9]{32})$/);
-    if (!parts) {
-      await sendTelegramCustomerMessage(
-        chatId,
-        "That support link is invalid or incomplete. Open the support page and create a new request.",
-      );
-      return;
-    }
-
-    try {
-      const linked = await linkTelegramSupportTicket({
-        publicId: parts[2],
-        token: parts[3],
-        telegramUserId: String(user?.id ?? message.chat.id),
-        telegramChatId: chatId,
-        telegramUsername: user?.username ?? null,
-      });
-
-      if (!linked) {
-        await sendTelegramCustomerMessage(
-          chatId,
-          "This ticket link has expired, was already connected, or is invalid.",
-        );
-        return;
-      }
-
-      await sendTelegramCustomerMessage(
-        chatId,
-        [
-          "<b>Telegram connected</b>",
-          "",
-          `Ticket <code>${linked.publicId}</code> is now linked to this chat.`,
-          "Support replies for this ticket can arrive here.",
-        ].join("\n"),
-      );
-      return;
-    } catch (error) {
-      console.error("Telegram ticket linking failed", error);
-      await sendTelegramCustomerMessage(
-        chatId,
-        "Ticket linking is temporarily unavailable. Keep your ticket ID and try again later.",
-      );
-      return;
-    }
+  if (!payload.startsWith("link_")) {
+    await showSupportMenu(chatId);
+    return;
   }
 
-  await showSupportMenu(chatId);
+  const parts = payload.match(
+    /^(link)_(RZS-[A-Z0-9]{16})_([A-Za-z0-9]{32})$/,
+  );
+  if (!parts) {
+    await sendTelegramCustomerMessage(
+      chatId,
+      "That support link is invalid or incomplete. Open the support page and create a new request.",
+    );
+    return;
+  }
+
+  try {
+    const linked = await linkTelegramSupportTicket({
+      publicId: parts[2],
+      token: parts[3],
+      telegramUserId: String(user?.id ?? message.chat.id),
+      telegramChatId: chatId,
+      telegramUsername: user?.username ?? null,
+    });
+
+    if (!linked) {
+      await sendTelegramCustomerMessage(
+        chatId,
+        "This ticket link has expired, was already connected, or is invalid.",
+      );
+      return;
+    }
+
+    await sendTelegramCustomerMessage(
+      chatId,
+      [
+        "<b>Telegram connected</b>",
+        "",
+        `Ticket <code>${linked.publicId}</code> is now linked to this chat.`,
+        "Support replies for this ticket can arrive here.",
+      ].join("\n"),
+    );
+  } catch (error) {
+    console.error("Telegram ticket linking failed", error);
+    await sendTelegramCustomerMessage(
+      chatId,
+      "Ticket linking is temporarily unavailable. Keep your ticket ID and try again later.",
+    );
+  }
 }
 
 async function handleCategoryCallback(callback: TelegramCallbackQuery) {
@@ -234,7 +240,7 @@ async function handleCustomerFormReply(message: TelegramMessage) {
   if (!validation.ok) {
     await sendTelegramCustomerMessage(
       chatId,
-      `${validation.message}\n\nReply to the support form again with the order ID on the first line and a clear description below it.`,
+      `${escapeHtml(validation.message)}\n\nReply to the support form again with the order ID on the first line and a clear description below it.`,
     );
     return true;
   }
@@ -286,14 +292,18 @@ async function notifyTicketCustomer(
     [
       `<b>Recharza Support · ${ticket.publicId}</b>`,
       "",
-      text,
+      escapeHtml(text),
     ].join("\n"),
-  ).catch((error) => console.error("Customer Telegram notification failed", error));
+  ).catch((error) =>
+    console.error("Customer Telegram notification failed", error),
+  );
 }
 
 async function handleWorkerCallback(callback: TelegramCallbackQuery) {
   const data = callback.data ?? "";
-  const match = data.match(/^worker:(claim|pending|resolve):(RZS-[A-Z0-9]{16})$/);
+  const match = data.match(
+    /^worker:(claim|pending|resolve):(RZS-[A-Z0-9]{16})$/,
+  );
   const chatId = callback.message ? String(callback.message.chat.id) : null;
   if (!match || !chatId || !isWorkerChat(chatId)) return false;
 
@@ -335,7 +345,9 @@ async function handleWorkerCallback(callback: TelegramCallbackQuery) {
     }
   } catch (error) {
     console.error("Worker support action failed", error);
-    await answerTelegramCallback(callback.id, "Action failed").catch(() => undefined);
+    await answerTelegramCallback(callback.id, "Action failed").catch(
+      () => undefined,
+    );
   }
 
   return true;
@@ -345,14 +357,19 @@ async function handleWorkerCommand(message: TelegramMessage) {
   const chatId = String(message.chat.id);
   if (!isWorkerChat(chatId) || !message.text) return false;
 
-  const replyMatch = message.text.match(/^\/reply(?:@\w+)?\s+(RZS-[A-Z0-9]{16})\s+([\s\S]{1,2000})$/i);
+  const replyMatch = message.text.match(
+    /^\/reply(?:@\w+)?\s+(RZS-[A-Z0-9]{16})\s+([\s\S]{1,2000})$/i,
+  );
   if (replyMatch) {
     const publicId = replyMatch[1].toUpperCase();
     const reply = replyMatch[2].trim();
     try {
       const ticket = await getSupportTicketForWorker(publicId);
       if (!ticket) {
-        await sendTelegramCustomerMessage(chatId, `Ticket <code>${publicId}</code> was not found.`);
+        await sendTelegramCustomerMessage(
+          chatId,
+          `Ticket <code>${publicId}</code> was not found.`,
+        );
         return true;
       }
       if (!ticket.telegramChatId) {
@@ -365,28 +382,48 @@ async function handleWorkerCommand(message: TelegramMessage) {
 
       await notifyTicketCustomer(ticket, reply);
       await markSupportTicketReplied(publicId);
-      await sendTelegramCustomerMessage(chatId, `Reply sent for <code>${publicId}</code>.`);
+      await sendTelegramCustomerMessage(
+        chatId,
+        `Reply sent for <code>${publicId}</code>.`,
+      );
     } catch (error) {
       console.error("Worker ticket reply failed", error);
-      await sendTelegramCustomerMessage(chatId, `Reply failed for <code>${publicId}</code>.`);
+      await sendTelegramCustomerMessage(
+        chatId,
+        `Reply failed for <code>${publicId}</code>.`,
+      );
     }
     return true;
   }
 
-  const resolveMatch = message.text.match(/^\/resolve(?:@\w+)?\s+(RZS-[A-Z0-9]{16})$/i);
+  const resolveMatch = message.text.match(
+    /^\/resolve(?:@\w+)?\s+(RZS-[A-Z0-9]{16})$/i,
+  );
   if (resolveMatch) {
     const publicId = resolveMatch[1].toUpperCase();
     try {
       const ticket = await updateSupportTicketStatus(publicId, "RESOLVED");
       if (!ticket) {
-        await sendTelegramCustomerMessage(chatId, `Ticket <code>${publicId}</code> was not found.`);
+        await sendTelegramCustomerMessage(
+          chatId,
+          `Ticket <code>${publicId}</code> was not found.`,
+        );
         return true;
       }
-      await notifyTicketCustomer(ticket, "Your support request has been marked resolved.");
-      await sendTelegramCustomerMessage(chatId, `Resolved <code>${publicId}</code>.`);
+      await notifyTicketCustomer(
+        ticket,
+        "Your support request has been marked resolved.",
+      );
+      await sendTelegramCustomerMessage(
+        chatId,
+        `Resolved <code>${publicId}</code>.`,
+      );
     } catch (error) {
       console.error("Worker resolve command failed", error);
-      await sendTelegramCustomerMessage(chatId, `Could not resolve <code>${publicId}</code>.`);
+      await sendTelegramCustomerMessage(
+        chatId,
+        `Could not resolve <code>${publicId}</code>.`,
+      );
     }
     return true;
   }
@@ -398,13 +435,14 @@ async function processUpdate(update: TelegramUpdate) {
   if (update.callback_query) {
     if (await handleWorkerCallback(update.callback_query)) return;
     if (await handleCategoryCallback(update.callback_query)) return;
-    await answerTelegramCallback(update.callback_query.id).catch(() => undefined);
+    await answerTelegramCallback(update.callback_query.id).catch(
+      () => undefined,
+    );
     return;
   }
 
   const message = update.message;
   if (!message?.text) return;
-
   if (await handleWorkerCommand(message)) return;
 
   const startMatch = message.text.match(/^\/start(?:@\w+)?(?:\s+(.+))?$/i);
