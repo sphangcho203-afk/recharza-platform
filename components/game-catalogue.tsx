@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { GameCard } from "@/components/game-card";
@@ -14,8 +15,8 @@ type CatalogueFilter =
   | "rpg";
 
 const filters: Array<{ id: CatalogueFilter; label: string }> = [
-  { id: "all", label: "All games" },
-  { id: "checkout", label: "Ready to top up" },
+  { id: "all", label: "All" },
+  { id: "checkout", label: "Available" },
   { id: "battle-royale", label: "Battle royale" },
   { id: "shooter", label: "Shooter" },
   { id: "rpg", label: "RPG" },
@@ -30,21 +31,34 @@ const supportedMobileLegendsMarketCodes = new Set([
   "singapore",
 ]);
 
-const defaultCatalogueOrder = [
-  "mobile-legends-india",
-  "mobile-legends-global",
+const mainGameOrder = [
+  "mobile-legends",
   "free-fire",
   "pubg-mobile",
   "genshin-impact",
-  "mobile-legends-indonesia",
   "valorant",
-  "mobile-legends-philippines",
-  "mobile-legends-malaysia",
-  "mobile-legends-singapore",
   "bgmi",
   "call-of-duty-mobile",
   "fortnite",
-] as const;
+];
+
+const marketOrder = [
+  "mobile-legends-india",
+  "mobile-legends-global",
+  "mobile-legends-indonesia",
+  "mobile-legends-philippines",
+  "mobile-legends-malaysia",
+  "mobile-legends-singapore",
+];
+
+function sortByOrder(items: Game[], order: string[]) {
+  const orderIndex = new Map(order.map((slug, index) => [slug, index]));
+  return [...items].sort(
+    (left, right) =>
+      (orderIndex.get(left.slug) ?? Number.MAX_SAFE_INTEGER) -
+      (orderIndex.get(right.slug) ?? Number.MAX_SAFE_INTEGER),
+  );
+}
 
 function matchesFilter(game: Game, filter: CatalogueFilter) {
   if (filter === "checkout") return game.available === true;
@@ -71,6 +85,38 @@ function matchesSearch(game: Game, query: string) {
     .includes(query);
 }
 
+function CatalogueRail({
+  games,
+  showDevelopmentBadges,
+  showPricingSnapshots,
+  ariaLabel,
+}: {
+  games: Game[];
+  showDevelopmentBadges: boolean;
+  showPricingSnapshots: boolean;
+  ariaLabel: string;
+}) {
+  return (
+    <div
+      aria-label={ariaLabel}
+      className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0 xl:grid-cols-4"
+    >
+      {games.map((game) => (
+        <div
+          key={game.slug}
+          className="w-[84vw] max-w-[23rem] shrink-0 snap-start sm:w-[22rem] lg:w-auto lg:max-w-none"
+        >
+          <GameCard
+            game={game}
+            showDevelopmentBadges={showDevelopmentBadges}
+            showPricingSnapshots={showPricingSnapshots}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function GameCatalogue({
   games,
   showRegionalMarkets = true,
@@ -86,80 +132,46 @@ export function GameCatalogue({
   const [filter, setFilter] = useState<CatalogueFilter>("all");
 
   const mainGames = useMemo(
-    () => games.filter((game) => game.kind === "game"),
+    () => sortByOrder(games.filter((game) => game.kind === "game"), mainGameOrder),
     [games],
   );
   const regionGames = useMemo(
     () =>
       showRegionalMarkets
-        ? games.filter(
-            (game) =>
-              game.kind === "mobile-legends-region" &&
-              Boolean(
-                game.region &&
-                  supportedMobileLegendsMarketCodes.has(game.region.code),
-              ),
+        ? sortByOrder(
+            games.filter(
+              (game) =>
+                game.kind === "mobile-legends-region" &&
+                Boolean(
+                  game.region &&
+                    supportedMobileLegendsMarketCodes.has(game.region.code),
+                ),
+            ),
+            marketOrder,
           )
         : [],
     [games, showRegionalMarkets],
   );
-  const mobileLegendsHub = mainGames.find(
-    (game) => game.slug === "mobile-legends",
+  const searchableGames = useMemo(
+    () => [...mainGames, ...regionGames],
+    [mainGames, regionGames],
   );
-  const ordinaryGames = useMemo(
-    () => mainGames.filter((game) => game.slug !== "mobile-legends"),
-    [mainGames],
-  );
-
-  const searchableGames = useMemo(() => {
-    if (showRegionalMarkets) return [...ordinaryGames, ...regionGames];
-    return mobileLegendsHub
-      ? [mobileLegendsHub, ...ordinaryGames]
-      : ordinaryGames;
-  }, [mobileLegendsHub, ordinaryGames, regionGames, showRegionalMarkets]);
-
-  const defaultGames = useMemo(() => {
-    const bySlug = new Map(searchableGames.map((game) => [game.slug, game]));
-    return defaultCatalogueOrder.flatMap((slug) => {
-      const game = bySlug.get(slug);
-      return game ? [game] : [];
-    });
-  }, [searchableGames]);
 
   const normalizedQuery = query.trim().toLowerCase();
-  const showingAllMobileLegendsMarkets = Boolean(
-    normalizedQuery &&
-      (normalizedQuery.includes("mobile legends") ||
-        normalizedQuery.includes("mlbb") ||
-        "mobile legends".includes(normalizedQuery) ||
-        "mlbb".includes(normalizedQuery)),
+  const hasActiveDiscovery = Boolean(normalizedQuery || filter !== "all");
+  const filteredGames = useMemo(
+    () =>
+      searchableGames.filter(
+        (game) =>
+          matchesFilter(game, filter) &&
+          (!normalizedQuery || matchesSearch(game, normalizedQuery)),
+      ),
+    [filter, normalizedQuery, searchableGames],
   );
-
-  const visibleGames = useMemo(() => {
-    const source = normalizedQuery
-      ? searchableGames
-      : filter === "all"
-        ? defaultGames
-        : searchableGames.filter(
-            (game) =>
-              game.kind !== "mobile-legends-region" ||
-              defaultCatalogueOrder.includes(
-                game.slug as (typeof defaultCatalogueOrder)[number],
-              ),
-          );
-
-    return source.filter((game) => {
-      if (!matchesFilter(game, filter)) return false;
-      if (!normalizedQuery) return true;
-      return matchesSearch(game, normalizedQuery);
-    });
-  }, [defaultGames, filter, normalizedQuery, searchableGames]);
-
-  const featureFirstCard = !normalizedQuery && filter === "all";
 
   return (
     <div className="mt-7 min-w-0">
-      <div className="grid min-w-0 gap-3 border-y border-white/[0.08] py-4 lg:grid-cols-[minmax(17rem,0.85fr)_minmax(0,1.4fr)] lg:items-center">
+      <div className="grid min-w-0 gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.018] p-3 lg:grid-cols-[minmax(17rem,0.85fr)_minmax(0,1.4fr)] lg:items-center lg:p-4">
         <label className="relative block min-w-0">
           <span className="sr-only">Search games or markets</span>
           <StorefrontIcon
@@ -170,8 +182,8 @@ export function GameCatalogue({
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search games, packages, or MLBB markets"
-            className="h-13 w-full min-w-0 rounded-2xl border border-white/[0.09] bg-white/[0.035] pl-11 pr-4 text-sm font-semibold text-white outline-none transition placeholder:font-normal placeholder:text-slate-600 hover:border-white/[0.14] focus:border-violet-400/45 focus:bg-violet-300/[0.045] focus:ring-4 focus:ring-violet-400/10"
+            placeholder="Search games, packs, or MLBB markets"
+            className="h-12 w-full min-w-0 rounded-xl border border-white/[0.09] bg-black/20 pl-11 pr-4 text-sm font-semibold text-white outline-none transition placeholder:font-normal placeholder:text-slate-600 hover:border-white/[0.14] focus:border-cyan-300/40 focus:bg-cyan-300/[0.035] focus:ring-4 focus:ring-cyan-300/10"
           />
         </label>
 
@@ -188,10 +200,10 @@ export function GameCatalogue({
                 type="button"
                 aria-pressed={active}
                 onClick={() => setFilter(item.id)}
-                className={`min-h-11 shrink-0 rounded-xl px-3.5 py-2.5 text-xs font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 ${
+                className={`min-h-10 shrink-0 rounded-xl px-3.5 py-2 text-xs font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${
                   active
-                    ? "bg-white text-slate-950 shadow-[0_8px_24px_rgba(255,255,255,0.1)]"
-                    : "border border-white/[0.08] bg-white/[0.025] text-slate-400 hover:border-violet-300/20 hover:bg-violet-300/[0.06] hover:text-white"
+                    ? "bg-white text-slate-950 shadow-[0_8px_24px_rgba(255,255,255,0.08)]"
+                    : "border border-white/[0.08] bg-white/[0.025] text-slate-400 hover:border-cyan-300/20 hover:bg-cyan-300/[0.05] hover:text-white"
                 }`}
               >
                 {item.label}
@@ -201,54 +213,93 @@ export function GameCatalogue({
         </div>
       </div>
 
-      <div className="mt-4 flex min-w-0 items-center justify-between gap-4 text-xs text-slate-500">
-        <p aria-live="polite" className="font-semibold">
-          {showingAllMobileLegendsMarkets
-            ? `Showing all ${regionGames.length} supported Mobile Legends markets`
-            : `${visibleGames.length} ${visibleGames.length === 1 ? "result" : "results"}`}
-        </p>
-        {(query || filter !== "all") && (
-          <button
-            type="button"
-            onClick={() => {
-              setQuery("");
-              setFilter("all");
-            }}
-            className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-2.5 font-black text-violet-300 transition hover:bg-violet-300/[0.06] hover:text-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
-          >
-            Reset filters
-          </button>
-        )}
-      </div>
+      {hasActiveDiscovery ? (
+        <section className="mt-6">
+          <div className="flex items-center justify-between gap-4">
+            <p aria-live="polite" className="text-xs font-bold text-slate-500">
+              {filteredGames.length} {filteredGames.length === 1 ? "result" : "results"}
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setQuery("");
+                setFilter("all");
+              }}
+              className="inline-flex min-h-10 items-center rounded-xl px-3 text-xs font-black text-cyan-300 transition hover:bg-cyan-300/[0.06] hover:text-cyan-200"
+            >
+              Clear search
+            </button>
+          </div>
 
-      {visibleGames.length > 0 ? (
-        <div className="mt-4 grid min-w-0 grid-cols-1 gap-4 min-[620px]:grid-cols-2 xl:grid-cols-3">
-          {visibleGames.map((game, index) => {
-            const featured = featureFirstCard && index === 0;
-            return (
-              <div
-                key={game.slug}
-                className={featured ? "min-w-0 xl:col-span-2" : "min-w-0"}
-              >
+          {filteredGames.length > 0 ? (
+            <div className="mt-4 grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {filteredGames.map((game) => (
                 <GameCard
+                  key={game.slug}
                   game={game}
-                  featured={featured}
                   showDevelopmentBadges={showDevelopmentBadges}
                   showPricingSnapshots={showPricingSnapshots}
                 />
-              </div>
-            );
-          })}
-        </div>
+              ))}
+            </div>
+          ) : (
+            <div className="mt-4 rounded-3xl border border-dashed border-white/[0.12] bg-white/[0.02] px-6 py-12 text-center">
+              <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.035] text-slate-500">
+                <StorefrontIcon name="search" className="h-5 w-5" />
+              </span>
+              <p className="mt-4 font-black text-white">No matching game or market</p>
+              <p className="mt-2 text-sm text-slate-500">Try a game title, currency, pack, or region.</p>
+            </div>
+          )}
+        </section>
       ) : (
-        <div className="mt-5 rounded-3xl border border-dashed border-white/[0.12] bg-white/[0.02] px-6 py-16 text-center">
-          <span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl border border-white/[0.08] bg-white/[0.035] text-slate-500">
-            <StorefrontIcon name="search" className="h-5 w-5" />
-          </span>
-          <p className="mt-4 font-black text-white">No game matched that search</p>
-          <p className="mt-2 text-sm text-slate-500">
-            Try another title, market, or package name.
-          </p>
+        <div className="mt-8 grid gap-10">
+          <section>
+            <div className="mb-4 flex items-end justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-300">Popular games</p>
+                <h3 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Choose the title first.</h3>
+              </div>
+              <span className="hidden text-xs font-bold text-slate-600 sm:block">Swipe or scroll</span>
+            </div>
+            <CatalogueRail
+              games={mainGames}
+              showDevelopmentBadges={showDevelopmentBadges}
+              showPricingSnapshots={showPricingSnapshots}
+              ariaLabel="Recharza game catalogue"
+            />
+          </section>
+
+          {regionGames.length > 0 ? (
+            <section>
+              <div className="mb-4 flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-300">Mobile Legends markets</p>
+                  <h3 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Then choose the account region.</h3>
+                </div>
+                <Link
+                  href="/games/mobile-legends"
+                  className="hidden min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-black text-violet-300 transition hover:bg-violet-300/[0.06] sm:inline-flex"
+                >
+                  All markets
+                  <StorefrontIcon name="arrow" className="h-4 w-4" />
+                </Link>
+              </div>
+              <CatalogueRail
+                games={regionGames}
+                showDevelopmentBadges={showDevelopmentBadges}
+                showPricingSnapshots={showPricingSnapshots}
+                ariaLabel="Mobile Legends regional markets"
+              />
+              <Link
+                href="/games/mobile-legends"
+                className="mt-2 inline-flex min-h-11 items-center gap-2 rounded-xl text-sm font-black text-violet-300 sm:hidden"
+              >
+                View every MLBB market
+                <StorefrontIcon name="arrow" className="h-4 w-4" />
+              </Link>
+            </section>
+          ) : null}
         </div>
       )}
     </div>
