@@ -62,9 +62,9 @@ export const fallbackMobileLegendsPackages: MobileLegendsPackage[] = indicativeP
     id,
     name,
     description:
-      "Indicative public-supplier benchmark for development preview. The exact regional Gold-plan rate replaces this after an approved live sync.",
+      "Preview catalogue price. Recharza confirms the final supplier availability and rate before payment.",
     amountInPaise,
-    deliveryLabel: "Indicative supplier benchmark",
+    deliveryLabel: "Preview catalogue",
     featured,
     source: "fazercards-indicative",
     supplierOfferId,
