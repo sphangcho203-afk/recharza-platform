@@ -5,7 +5,12 @@ import { useMemo, useState } from "react";
 import { GameCard } from "@/components/game-card";
 import type { Game } from "@/lib/games";
 
-type CatalogueFilter = "all" | "checkout" | "battle-royale" | "shooter" | "rpg";
+type CatalogueFilter =
+  | "all"
+  | "checkout"
+  | "battle-royale"
+  | "shooter"
+  | "rpg";
 
 const filters: Array<{ id: CatalogueFilter; label: string }> = [
   { id: "all", label: "All games" },
@@ -15,17 +20,27 @@ const filters: Array<{ id: CatalogueFilter; label: string }> = [
   { id: "rpg", label: "RPG" },
 ];
 
+const supportedMobileLegendsMarketCodes = new Set([
+  "global",
+  "indonesia",
+  "philippines",
+  "malaysia",
+  "singapore",
+]);
+
 const defaultCatalogueOrder = [
-  "mobile-legends-india",
+  "mobile-legends-global",
   "free-fire",
   "pubg-mobile",
   "mobile-legends-indonesia",
-  "bgmi",
-  "call-of-duty-mobile",
   "genshin-impact",
-  "fortnite",
   "mobile-legends-philippines",
   "valorant",
+  "mobile-legends-malaysia",
+  "mobile-legends-singapore",
+  "bgmi",
+  "call-of-duty-mobile",
+  "fortnite",
 ] as const;
 
 function matchesFilter(game: Game, filter: CatalogueFilter) {
@@ -44,7 +59,9 @@ function matchesSearch(game: Game, query: string) {
     game.category,
     game.region?.label ?? "",
     ...game.packages,
-    game.slug.startsWith("mobile-legends") ? "mlbb mobile legends bang bang" : "",
+    game.slug.startsWith("mobile-legends")
+      ? "mlbb mobile legends bang bang"
+      : "",
   ]
     .join(" ")
     .toLowerCase()
@@ -72,7 +89,14 @@ export function GameCatalogue({
   const regionGames = useMemo(
     () =>
       showRegionalMarkets
-        ? games.filter((game) => game.kind === "mobile-legends-region")
+        ? games.filter(
+            (game) =>
+              game.kind === "mobile-legends-region" &&
+              Boolean(
+                game.region &&
+                  supportedMobileLegendsMarketCodes.has(game.region.code),
+              ),
+          )
         : [],
     [games, showRegionalMarkets],
   );
@@ -182,7 +206,7 @@ export function GameCatalogue({
       <div className="mt-4 flex min-w-0 items-center justify-between gap-4 text-xs text-slate-500">
         <p aria-live="polite">
           {showingAllMobileLegendsMarkets
-            ? `Showing all ${regionGames.length} Mobile Legends markets`
+            ? `Showing all ${regionGames.length} supported Mobile Legends markets`
             : `${visibleGames.length} ${visibleGames.length === 1 ? "game" : "games"}`}
         </p>
         {(query || filter !== "all") && (
