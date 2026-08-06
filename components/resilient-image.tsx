@@ -2,12 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type CSSProperties,
-} from "react";
+import { useMemo, useState, type CSSProperties } from "react";
 
 type ResilientImageProps = {
   sources: string[];
@@ -42,28 +37,34 @@ function isSafeImageSource(value: string) {
   }
 }
 
-export function ResilientImage({
-  sources,
+export function ResilientImage(props: ResilientImageProps) {
+  const usableSources = useMemo(
+    () => Array.from(new Set(props.sources.filter(isSafeImageSource))),
+    [props.sources],
+  );
+  const sourceKey = usableSources.join("\n") || "no-source";
+
+  return (
+    <ResolvedImage
+      key={sourceKey}
+      {...props}
+      usableSources={usableSources}
+    />
+  );
+}
+
+function ResolvedImage({
+  usableSources,
   alt,
   className = "",
   style,
   loading = "lazy",
   fallbackClassName = "",
   fallbackLabel,
-}: ResilientImageProps) {
-  const usableSources = useMemo(
-    () => Array.from(new Set(sources.filter(isSafeImageSource))),
-    [sources],
-  );
-  const sourceKey = usableSources.join("\n");
+}: Omit<ResilientImageProps, "sources"> & { usableSources: string[] }) {
   const [sourceIndex, setSourceIndex] = useState(0);
   const [failed, setFailed] = useState(usableSources.length === 0);
   const initials = createInitials(fallbackLabel ?? alt);
-
-  useEffect(() => {
-    setSourceIndex(0);
-    setFailed(usableSources.length === 0);
-  }, [sourceKey, usableSources.length]);
 
   if (failed) {
     return (
