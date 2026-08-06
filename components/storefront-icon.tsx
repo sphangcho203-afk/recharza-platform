@@ -3,6 +3,7 @@ import type { SVGProps } from "react";
 export type StorefrontIconName =
   | "account"
   | "arrow"
+  | "cart"
   | "games"
   | "globe"
   | "menu"
@@ -41,6 +42,14 @@ export function StorefrontIcon({
         <>
           <path d="M8.5 8.5h7a4.5 4.5 0 0 1 4.22 6.06l-.8 2.17a2.2 2.2 0 0 1-3.6.82l-1.28-1.22a3 3 0 0 0-4.08 0l-1.28 1.22a2.2 2.2 0 0 1-3.6-.82l-.8-2.17A4.5 4.5 0 0 1 8.5 8.5Z" />
           <path d="M8 12v3M6.5 13.5h3M15.75 12.75h.01M17.5 14.5h.01" />
+        </>
+      ) : null}
+
+      {name === "cart" ? (
+        <>
+          <path d="M3.5 5h2l1.6 9.2a2 2 0 0 0 2 1.65h7.55a2 2 0 0 0 1.95-1.56L20 8H6" />
+          <circle cx="9.3" cy="19" r="1.2" />
+          <circle cx="17" cy="19" r="1.2" />
         </>
       ) : null}
 
