@@ -3,6 +3,10 @@ import Link from "next/link";
 import { ModuleStateBadge } from "@/components/module-state-badge";
 import { RecharzaMark } from "@/components/recharza-mark";
 import {
+  StorefrontIcon,
+  type StorefrontIconName,
+} from "@/components/storefront-icon";
+import {
   customerNavigation,
   getVisibleModules,
   isInteractiveModule,
@@ -16,99 +20,137 @@ type SiteHeaderProps = {
   content?: Pick<StorefrontContent, "navigation">;
 };
 
+const navigationIcons: Record<string, StorefrontIconName> = {
+  games: "games",
+  track: "track",
+  account: "account",
+  support: "support",
+};
+
+function iconForNavigation(id: string): StorefrontIconName {
+  return navigationIcons[id] ?? "arrow";
+}
+
 export async function SiteHeader({ content }: SiteHeaderProps = {}) {
   const storefront = content ?? (await getPublishedStorefrontContent());
   const visibleIds = new Set(storefront.navigation.visibleIds);
   const navigation = getVisibleModules(customerNavigation).filter(
     (item) => isInteractiveModule(item.state) && visibleIds.has(item.id),
   );
+  const accountItem = navigation.find((item) => item.id === "account");
+  const primaryNavigation = navigation.filter((item) => item.id !== "account");
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-[var(--surface-0)]/94 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
-        <Link
-          href="/#top"
-          className="shrink-0 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
-          aria-label="Recharza home"
-        >
-          <RecharzaMark compact />
-        </Link>
-
-        <nav
-          className="hidden items-center gap-6 text-sm text-slate-400 md:flex"
-          aria-label="Customer navigation"
-        >
-          {navigation.map((item) => (
-            <Link
-              key={item.id}
-              href={item.href}
-              className="inline-flex items-center gap-2 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
-            >
-              {item.label}
-              {item.state === "beta" ? (
-                <ModuleStateBadge state="beta" />
-              ) : null}
-            </Link>
-          ))}
-        </nav>
-
-        {storefront.navigation.ctaEnabled ? (
-          <div className="hidden items-center md:flex">
-            <Link
-              href={storefront.navigation.ctaHref}
-              className="min-h-11 rounded-xl bg-white px-4 py-3 text-xs font-black text-slate-950 transition hover:bg-violet-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
-            >
-              {storefront.navigation.ctaLabel}
-            </Link>
-          </div>
-        ) : null}
-
-        <details className="group relative md:hidden">
-          <summary className="grid h-11 w-11 cursor-pointer list-none place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-white marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 [&::-webkit-details-marker]:hidden">
-            <span className="sr-only">Open customer navigation</span>
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="h-5 w-5"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-            >
-              <path d="M4 7h16M4 12h16M4 17h16" />
-            </svg>
-          </summary>
-          <nav
-            aria-label="Mobile customer navigation"
-            className="absolute right-0 top-13 z-50 w-[min(18rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-white/10 bg-[var(--surface-2)] p-2 shadow-2xl shadow-black/50"
+    <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5">
+      <div className="mx-auto max-w-7xl rounded-2xl border border-white/[0.09] bg-[#090910]/88 shadow-[0_18px_60px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
+        <div className="flex min-h-[4.25rem] items-center justify-between gap-3 px-3 sm:px-4 lg:px-5">
+          <Link
+            href="/#top"
+            className="shrink-0 rounded-xl outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400"
+            aria-label="Recharza home"
           >
-            {navigation.map((item) => (
+            <RecharzaMark compact />
+          </Link>
+
+          <nav
+            className="hidden items-center gap-1 rounded-xl border border-white/[0.06] bg-white/[0.025] p-1 lg:flex"
+            aria-label="Customer navigation"
+          >
+            {primaryNavigation.map((item) => (
               <Link
                 key={item.id}
                 href={item.href}
-                className="grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-3 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                className="group inline-flex min-h-10 items-center gap-2 rounded-lg px-3.5 text-[13px] font-bold text-slate-400 transition hover:bg-white/[0.055] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
-                <span>
-                  <span className="block">{item.label}</span>
-                  <span className="mt-0.5 block text-[11px] font-normal leading-4 text-slate-500">
-                    {item.description}
-                  </span>
-                </span>
+                <StorefrontIcon
+                  name={iconForNavigation(item.id)}
+                  className="h-4 w-4 text-slate-500 transition group-hover:text-violet-300"
+                />
+                {item.label}
                 {item.state === "beta" ? (
                   <ModuleStateBadge state="beta" />
                 ) : null}
               </Link>
             ))}
+          </nav>
+
+          <div className="flex items-center gap-2">
+            {accountItem ? (
+              <Link
+                href={accountItem.href}
+                aria-label="Open Recharza account"
+                className="hidden min-h-11 items-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.035] px-3.5 text-xs font-black text-slate-200 transition hover:border-violet-300/25 hover:bg-violet-300/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 sm:inline-flex"
+              >
+                <StorefrontIcon name="account" className="h-[18px] w-[18px] text-violet-300" />
+                <span className="hidden lg:inline">Account</span>
+              </Link>
+            ) : null}
+
             {storefront.navigation.ctaEnabled ? (
               <Link
                 href={storefront.navigation.ctaHref}
-                className="mt-1 block min-h-12 rounded-xl bg-white px-3 py-3.5 text-center text-sm font-black text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                className="hidden min-h-11 items-center gap-2 rounded-xl bg-white px-4 text-xs font-black text-slate-950 shadow-[0_10px_30px_rgba(255,255,255,0.12)] transition hover:-translate-y-0.5 hover:bg-violet-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 lg:inline-flex"
               >
                 {storefront.navigation.ctaLabel}
+                <StorefrontIcon name="arrow" className="h-4 w-4" />
               </Link>
             ) : null}
-          </nav>
-        </details>
+
+            <details className="group relative lg:hidden">
+              <summary className="grid h-11 w-11 cursor-pointer list-none place-items-center rounded-xl border border-white/[0.09] bg-white/[0.04] text-white transition hover:bg-white/[0.075] marker:content-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 [&::-webkit-details-marker]:hidden">
+                <span className="sr-only">Open customer navigation</span>
+                <StorefrontIcon name="menu" className="h-5 w-5" />
+              </summary>
+
+              <nav
+                aria-label="Mobile customer navigation"
+                className="absolute right-0 top-[calc(100%+0.65rem)] z-50 w-[min(21rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c14]/98 p-2.5 shadow-[0_28px_80px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
+              >
+                <div className="mb-2 border-b border-white/[0.07] px-2 pb-3 pt-1">
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-300">
+                    Navigate Recharza
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">
+                    Games, account access, private tracking, and support.
+                  </p>
+                </div>
+
+                {navigation.map((item) => (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    className="group grid min-h-14 grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2.5 py-2.5 text-sm font-bold text-slate-200 transition hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                  >
+                    <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.035] text-violet-300 transition group-hover:border-violet-300/20 group-hover:bg-violet-300/[0.08]">
+                      <StorefrontIcon name={iconForNavigation(item.id)} className="h-[18px] w-[18px]" />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block">{item.label}</span>
+                      <span className="mt-0.5 block text-[11px] font-normal leading-4 text-slate-500">
+                        {item.description}
+                      </span>
+                    </span>
+                    {item.state === "beta" ? (
+                      <ModuleStateBadge state="beta" />
+                    ) : (
+                      <StorefrontIcon name="arrow" className="h-4 w-4 text-slate-600 transition group-hover:translate-x-0.5 group-hover:text-white" />
+                    )}
+                  </Link>
+                ))}
+
+                {storefront.navigation.ctaEnabled ? (
+                  <Link
+                    href={storefront.navigation.ctaHref}
+                    className="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-4 text-center text-sm font-black text-slate-950 transition hover:bg-violet-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                  >
+                    {storefront.navigation.ctaLabel}
+                    <StorefrontIcon name="arrow" className="h-4 w-4" />
+                  </Link>
+                ) : null}
+              </nav>
+            </details>
+          </div>
+        </div>
       </div>
     </header>
   );
