@@ -1,0 +1,1 @@
+This branch contains the post-merge mobile screenshot correction pass for Recharza. See `FRONTEND_CORRECTION_PASS.md`, `FRONTEND_SECURITY_REVIEW.md`, and `FRONTEND_REVIEW_CHECKLIST.md` for scope, limits, and founder review criteria.
