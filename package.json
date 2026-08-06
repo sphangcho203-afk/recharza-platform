@@ -18,6 +18,7 @@
     "env:use-neon": "node scripts/configure-neon-env.mjs",
     "deploy:check": "node scripts/validate-deployment-env.mjs",
     "deploy:prepare": "npm run deploy:check && npm run db:deploy",
+    "support:telegram:webhook": "node scripts/configure-telegram-support-webhook.mjs",
     "ops:rollout:termux": "bash scripts/termux-phase1-rollout.sh",
     "smoke": "node scripts/smoke-test.mjs",
     "smoke:phase1": "node scripts/phase1-smoke-test.mjs"
