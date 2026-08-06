@@ -13,42 +13,40 @@
 
 .storefront-feed-section {
   content-visibility: auto;
-  contain-intrinsic-size: 700px;
+  contain-intrinsic-size: 520px;
 }
 
-.recharza-popular-rail,
-.recharza-pack-rail {
+.recharza-popular-rail {
   display: flex;
   max-width: 100%;
-  gap: 0.9rem;
+  gap: 0.75rem;
   overflow-x: auto;
   overscroll-behavior-inline: contain;
   scroll-snap-type: inline mandatory;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
   scrollbar-width: none;
 }
 
-.recharza-popular-rail::-webkit-scrollbar,
-.recharza-pack-rail::-webkit-scrollbar {
+.recharza-popular-rail::-webkit-scrollbar {
   display: none;
 }
 
 .recharza-popular-card {
-  width: min(78vw, 22rem);
-  min-width: min(78vw, 22rem);
-  scroll-snap-align: start;
-}
-
-.recharza-pack-card {
-  width: min(72vw, 18rem);
-  min-width: min(72vw, 18rem);
+  width: min(64vw, 16rem);
+  min-width: min(64vw, 16rem);
   scroll-snap-align: start;
 }
 
 .recharza-game-feed {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.recharza-market-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
 }
 
 .recharza-process-grid {
@@ -56,59 +54,38 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
-@media (min-width: 920px) {
-  .recharza-popular-card {
-    width: min(42vw, 22rem);
-    min-width: min(42vw, 22rem);
-  }
-
-  .recharza-pack-card {
-    width: 15rem;
-    min-width: 15rem;
-  }
-
+@media (min-width: 640px) {
   .recharza-game-feed {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.1rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  .recharza-market-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .recharza-process-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 2.5rem;
+    gap: 0.75rem;
   }
 }
 
 @media (min-width: 1100px) {
-  .recharza-popular-rail,
-  .recharza-pack-rail {
+  .recharza-popular-rail {
     display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     overflow: visible;
     padding-bottom: 0;
   }
 
-  .recharza-popular-rail {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-  }
-
-  .recharza-pack-rail {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .recharza-popular-card,
-  .recharza-pack-card {
+  .recharza-popular-card {
     width: auto;
     min-width: 0;
   }
 
   .recharza-game-feed {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.25rem;
-  }
-}
-
-@media (min-width: 1380px) {
-  .recharza-game-feed {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
   }
 }
 
@@ -117,7 +94,8 @@
   .storefront-page h2,
   .storefront-page h3,
   .storefront-page p {
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    word-break: normal;
   }
 
   form nav[aria-label="Checkout steps"] {
@@ -136,7 +114,7 @@
   }
 
   form nav[aria-label="Checkout steps"] > button {
-    min-width: 8.5rem;
+    min-width: 7.5rem;
     scroll-snap-align: start;
   }
 
@@ -169,5 +147,7 @@
   .storefront-page *::before,
   .storefront-page *::after {
     scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
