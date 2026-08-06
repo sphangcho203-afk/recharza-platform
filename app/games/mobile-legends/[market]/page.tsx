@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { MobileLegendsCheckoutShell } from "@/components/mobile-legends-checkout-shell";
@@ -52,6 +53,35 @@ export default async function MobileLegendsMarketPage({
   const livePricing = packages.some(
     (item) => item.source === "fazercards-live",
   );
+
+  if (packages.length === 0) {
+    return (
+      <main className="min-h-screen overflow-x-clip bg-[#06060f] text-white">
+        <SiteHeader />
+        <section className="mx-auto max-w-3xl px-4 py-14 sm:px-6 lg:px-8">
+          <Link
+            href="/#games"
+            className="text-sm font-semibold text-violet-300 hover:text-violet-200"
+          >
+            ← Back to supported games
+          </Link>
+          <div className="mt-8 rounded-3xl border border-amber-300/20 bg-amber-300/10 p-6 sm:p-8">
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-200">
+              Market unavailable
+            </p>
+            <h1 className="mt-3 text-3xl font-black">
+              Mobile Legends · {selectedMarket.label}
+            </h1>
+            <p className="mt-4 leading-7 text-amber-100/80">
+              No curated supplier packs are approved for this market. Recharza
+              will not substitute another region or show preview pricing that
+              cannot be fulfilled.
+            </p>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen overflow-x-clip bg-[#06060f] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
