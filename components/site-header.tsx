@@ -42,8 +42,8 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
 
   return (
     <header className="sticky top-0 z-50 px-3 pt-3 sm:px-5">
-      <div className="mx-auto max-w-7xl rounded-2xl border border-white/[0.09] bg-[#090910]/88 shadow-[0_18px_60px_rgba(0,0,0,0.34)] backdrop-blur-2xl">
-        <div className="flex min-h-[4.25rem] items-center justify-between gap-3 px-3 sm:px-4 lg:px-5">
+      <div className="mx-auto max-w-[86rem] rounded-[1.35rem] border border-white/[0.09] bg-[#08080f]/90 shadow-[0_18px_70px_rgba(0,0,0,0.42)] backdrop-blur-2xl">
+        <div className="flex min-h-[4.5rem] items-center justify-between gap-3 px-3 sm:px-4 lg:px-5">
           <Link
             href="/#top"
             className="shrink-0 rounded-xl outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400"
@@ -60,21 +60,27 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
               <Link
                 key={item.id}
                 href={item.href}
-                className="group inline-flex min-h-10 items-center gap-2 rounded-lg px-3.5 text-[13px] font-bold text-slate-400 transition hover:bg-white/[0.055] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+                className="group inline-flex min-h-10 items-center gap-2 rounded-lg px-3.5 text-[13px] font-bold text-slate-400 transition hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
               >
                 <StorefrontIcon
                   name={iconForNavigation(item.id)}
                   className="h-4 w-4 text-slate-500 transition group-hover:text-violet-300"
                 />
                 {item.label}
-                {item.state === "beta" ? (
-                  <ModuleStateBadge state="beta" />
-                ) : null}
+                {item.state === "beta" ? <ModuleStateBadge state="beta" /> : null}
               </Link>
             ))}
           </nav>
 
           <div className="flex items-center gap-2">
+            <Link
+              href="/cart"
+              aria-label="Open cart"
+              className="grid h-11 w-11 place-items-center rounded-xl border border-white/[0.09] bg-white/[0.035] text-slate-300 transition hover:border-cyan-300/25 hover:bg-cyan-300/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+            >
+              <StorefrontIcon name="receipt" className="h-[18px] w-[18px]" />
+            </Link>
+
             {accountItem ? (
               <Link
                 href={accountItem.href}
@@ -82,7 +88,7 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
                 className="hidden min-h-11 items-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.035] px-3.5 text-xs font-black text-slate-200 transition hover:border-violet-300/25 hover:bg-violet-300/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 sm:inline-flex"
               >
                 <StorefrontIcon name="account" className="h-[18px] w-[18px] text-violet-300" />
-                <span className="hidden lg:inline">Account</span>
+                <span className="hidden xl:inline">My account</span>
               </Link>
             ) : null}
 
@@ -104,15 +110,18 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
 
               <nav
                 aria-label="Mobile customer navigation"
-                className="absolute right-0 top-[calc(100%+0.65rem)] z-50 w-[min(21rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-white/10 bg-[#0c0c14]/98 p-2.5 shadow-[0_28px_80px_rgba(0,0,0,0.6)] backdrop-blur-2xl"
+                className="absolute right-0 top-[calc(100%+0.65rem)] z-50 w-[min(23rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a12]/98 p-2.5 shadow-[0_28px_80px_rgba(0,0,0,0.65)] backdrop-blur-2xl"
               >
-                <div className="mb-2 border-b border-white/[0.07] px-2 pb-3 pt-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-300">
-                    Navigate Recharza
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-slate-500">
-                    Games, account access, private tracking, and support.
-                  </p>
+                <div className="mb-2 flex items-center justify-between border-b border-white/[0.07] px-2 pb-3 pt-1">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-300">
+                      Recharza menu
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                      Top up, track, manage, and get support.
+                    </p>
+                  </div>
+                  <RecharzaMark compact wordmark={false} />
                 </div>
 
                 {navigation.map((item) => (
@@ -137,6 +146,22 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
                     )}
                   </Link>
                 ))}
+
+                <Link
+                  href="/cart"
+                  className="mt-1 grid min-h-14 grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2.5 py-2.5 text-sm font-bold text-slate-200 transition hover:bg-white/[0.06]"
+                >
+                  <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.035] text-cyan-300">
+                    <StorefrontIcon name="receipt" className="h-[18px] w-[18px]" />
+                  </span>
+                  <span>
+                    <span className="block">Cart</span>
+                    <span className="mt-0.5 block text-[11px] font-normal text-slate-500">
+                      Review saved packs before checkout.
+                    </span>
+                  </span>
+                  <StorefrontIcon name="arrow" className="h-4 w-4 text-slate-600" />
+                </Link>
 
                 {storefront.navigation.ctaEnabled ? (
                   <Link
