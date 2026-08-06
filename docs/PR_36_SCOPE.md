@@ -1,1 +1,0 @@
-Correction PR scope is limited to Recharza frontend branding, responsive layout, game artwork resilience, public policies, unavailable-market UX, browser security headers, and mobile rendering safeguards. No NovaTopUP, database schema, supplier, fulfilment, authentication endpoint, payment verification, or secret changes are included.
