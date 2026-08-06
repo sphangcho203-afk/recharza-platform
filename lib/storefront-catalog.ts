@@ -13,7 +13,10 @@ import {
   prioritizeMobileLegendsPackages,
   targetMobileLegendsPackageCount,
 } from "@/lib/mobile-legends-package-catalog";
-import type { MobileLegendsMarketCode } from "@/lib/mobile-legends-market";
+import {
+  mobileLegendsMarketCodes,
+  type MobileLegendsMarketCode,
+} from "@/lib/mobile-legends-market";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
@@ -53,28 +56,43 @@ function getStorefrontName(name: string, raw: unknown) {
     : name;
 }
 
-function getSupplierMarket(product: SupplierProductView) {
-  const categoryName = readString(asObject(product.raw)?.categoryName);
-  return product.region || categoryName || null;
+function getSupplierLabel(product: SupplierProductView) {
+  return (
+    readString(asObject(product.raw)?.categoryName) ||
+    product.categoryId.replaceAll("_", " ")
+  );
+}
+
+function getRoutingRegion(product: SupplierProductView) {
+  return mobileLegendsMarketCodes
+    .filter((marketCode) =>
+      isCuratedFazerCardsProductAvailableForMobileLegendsMarket(
+        {
+          categoryId: product.categoryId,
+          offerId: product.offerId,
+        },
+        marketCode,
+      ),
+    )
+    .join(" ");
 }
 
 function mapSupplierProduct(product: SupplierProductView): MobileLegendsPackage {
   const displayName = getStorefrontName(product.name, product.raw);
-  const market = getSupplierMarket(product);
+  const supplierLabel = getSupplierLabel(product);
+  const routingRegion = getRoutingRegion(product);
 
   return {
     id: product.id,
     name: displayName,
-    description: market
-      ? `FazerCards live offer for ${market}. Confirm the player's account region before checkout.`
-      : "FazerCards live supplier offer. Confirm all player details before checkout.",
+    description: `FazerCards live offer for ${supplierLabel}. Confirm the player's account region before checkout.`,
     amountInPaise: product.retailPriceInPaise,
     deliveryLabel: "Live supplier catalogue",
     source: "fazercards-live",
     supplierProductId: product.id,
     supplierCategoryId: product.categoryId,
     supplierOfferId: product.offerId,
-    region: market,
+    region: routingRegion || null,
     expectedMarginInPaise: product.expectedMarginInPaise,
     media: resolveProductMedia({
       gameSlug: "mobile-legends",
