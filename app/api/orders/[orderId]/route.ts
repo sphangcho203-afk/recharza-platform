@@ -19,6 +19,22 @@ function maskEmail(email: string) {
   return `${visible}${"*".repeat(Math.max(2, localPart.length - 2))}@${domain}`;
 }
 
+function asObject(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+function readString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function formatCategoryLabel(categoryId: string) {
+  return categoryId
+    .replaceAll("_", " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
 export async function GET(
   request: Request,
   context: { params: Promise<{ orderId: string }> },
@@ -58,6 +74,12 @@ export async function GET(
       where: { publicId: orderId },
       include: {
         customer: true,
+        supplierProduct: {
+          select: {
+            categoryId: true,
+            raw: true,
+          },
+        },
         events: { orderBy: { createdAt: "asc" } },
         fulfilmentAttempts: {
           orderBy: { createdAt: "asc" },
@@ -91,7 +113,29 @@ export async function GET(
       );
     }
 
-    const market = parseMobileLegendsMarket(order.marketCode);
+    const mobileLegendsMarket =
+      order.gameSlug === "mobile-legends"
+        ? parseMobileLegendsMarket(order.marketCode)
+        : null;
+    const supplierCategoryId =
+      order.supplierProduct?.categoryId ?? order.marketCode ?? null;
+    const supplierCategoryName = readString(
+      asObject(order.supplierProduct?.raw)?.categoryName,
+    );
+    const market = mobileLegendsMarket
+      ? {
+          code: mobileLegendsMarket.code,
+          label: mobileLegendsMarket.label,
+          flag: mobileLegendsMarket.flag,
+        }
+      : supplierCategoryId
+        ? {
+            code: supplierCategoryId,
+            label:
+              supplierCategoryName || formatCategoryLabel(supplierCategoryId),
+            flag: null,
+          }
+        : null;
 
     return Response.json(
       {
@@ -100,7 +144,7 @@ export async function GET(
           id: order.publicId,
           status: order.status.toLowerCase(),
           gameSlug: order.gameSlug,
-          market: market ? { code: market.code, label: market.label, flag: market.flag } : null,
+          market,
           package: {
             id: order.packageId,
             name: order.packageName,
@@ -113,7 +157,9 @@ export async function GET(
             nickname: order.verifiedNickname,
             verificationMode: order.verificationMode,
           },
-          customerEmail: maskEmail(order.customer.email),
+          customerEmail: maskEmail(
+            order.billingEmail ?? order.customer.email,
+          ),
           paymentProvider: order.paymentProvider,
           supplier: {
             categoryAttached: Boolean(order.supplierCategoryId),

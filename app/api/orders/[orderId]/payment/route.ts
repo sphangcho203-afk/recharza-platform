@@ -21,6 +21,44 @@ const PAYABLE_STATUSES = new Set([
   "FAILED",
 ]);
 
+const gameLabels: Record<string, string> = {
+  "mobile-legends": "Mobile Legends",
+  "free-fire": "Free Fire MAX",
+  "pubg-mobile": "PUBG Mobile",
+  valorant: "VALORANT",
+  "genshin-impact": "Genshin Impact",
+};
+
+function getGameLabel(gameSlug: string) {
+  return (
+    gameLabels[gameSlug] ??
+    gameSlug
+      .replaceAll("-", " ")
+      .replace(/\b\w/g, (character) => character.toUpperCase())
+  );
+}
+
+function getPlayerLabel(order: {
+  gameSlug: string;
+  playerId: string;
+  zoneId: string;
+  verifiedNickname: string | null;
+}) {
+  if (order.verifiedNickname) {
+    return order.zoneId
+      ? `${order.verifiedNickname} · ${order.playerId} (${order.zoneId})`
+      : `${order.verifiedNickname} · ${order.playerId}`;
+  }
+
+  if (order.gameSlug === "genshin-impact" && order.zoneId) {
+    return `${order.playerId} · ${order.zoneId}`;
+  }
+
+  return order.zoneId
+    ? `${order.playerId} (${order.zoneId})`
+    : order.playerId;
+}
+
 function readBearerToken(request: Request) {
   const authorization = request.headers.get("authorization")?.trim();
   return authorization?.startsWith("Bearer ")
@@ -41,7 +79,9 @@ function resolveInternalOutcome(requestedOutcome: unknown) {
     .toLowerCase();
   if (configured === "failed") return "failed" as const;
   if (configured === "completed") return "completed" as const;
-  return requestedOutcome === "failed" ? ("failed" as const) : ("completed" as const);
+  return requestedOutcome === "failed"
+    ? ("failed" as const)
+    : ("completed" as const);
 }
 
 export async function POST(
@@ -61,7 +101,10 @@ export async function POST(
 
     if (!rateLimit.allowed) {
       return Response.json(
-        { ok: false, message: "Too many payment attempts. Wait before retrying." },
+        {
+          ok: false,
+          message: "Too many payment attempts. Wait before retrying.",
+        },
         { status: 429, headers: rateHeaders },
       );
     }
@@ -180,10 +223,9 @@ export async function POST(
       databaseOrderId: updated.id,
       customerId: updated.customerId,
       email,
-      gameLabel: "Mobile Legends",
+      gameLabel: getGameLabel(updated.gameSlug),
       packageName: updated.packageName,
-      playerLabel:
-        updated.verifiedNickname || `${updated.playerId} (${updated.zoneId})`,
+      playerLabel: getPlayerLabel(updated),
       amountInPaise: updated.amountInPaise,
       occurredAt,
     };
@@ -219,7 +261,8 @@ export async function POST(
     return Response.json(
       {
         ok: false,
-        message: "Payment could not be completed safely. The order remains saved.",
+        message:
+          "Payment could not be completed safely. The order remains saved.",
       },
       { status: 503, headers: rateHeaders },
     );

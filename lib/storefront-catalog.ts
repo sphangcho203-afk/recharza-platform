@@ -42,6 +42,10 @@ function asObject(value: unknown) {
     : null;
 }
 
+function readString(value: unknown) {
+  return typeof value === "string" ? value.trim() : "";
+}
+
 function getStorefrontName(name: string, raw: unknown) {
   const override = asObject(raw)?.adminStorefrontName;
   return typeof override === "string" && override.trim()
@@ -49,14 +53,20 @@ function getStorefrontName(name: string, raw: unknown) {
     : name;
 }
 
+function getSupplierMarket(product: SupplierProductView) {
+  const categoryName = readString(asObject(product.raw)?.categoryName);
+  return product.region || categoryName || null;
+}
+
 function mapSupplierProduct(product: SupplierProductView): MobileLegendsPackage {
   const displayName = getStorefrontName(product.name, product.raw);
+  const market = getSupplierMarket(product);
 
   return {
     id: product.id,
     name: displayName,
-    description: product.region
-      ? `FazerCards live offer for ${product.region}. Confirm the player's account region before checkout.`
+    description: market
+      ? `FazerCards live offer for ${market}. Confirm the player's account region before checkout.`
       : "FazerCards live supplier offer. Confirm all player details before checkout.",
     amountInPaise: product.retailPriceInPaise,
     deliveryLabel: "Live supplier catalogue",
@@ -64,7 +74,7 @@ function mapSupplierProduct(product: SupplierProductView): MobileLegendsPackage 
     supplierProductId: product.id,
     supplierCategoryId: product.categoryId,
     supplierOfferId: product.offerId,
-    region: product.region,
+    region: market,
     expectedMarginInPaise: product.expectedMarginInPaise,
     media: resolveProductMedia({
       gameSlug: "mobile-legends",
@@ -101,12 +111,14 @@ export async function getMobileLegendsPackages(
       select: supplierProductSelect,
     });
 
-    const mapped = products.map((product) => mapSupplierProduct(product));
-    const marketPackages = marketCode
-      ? mapped.filter((item) => isPackageAvailableForMarket(item.region, marketCode))
-      : mapped;
+    if (products.length > 0) {
+      const mapped = products.map((product) => mapSupplierProduct(product));
+      const marketPackages = marketCode
+        ? mapped.filter((item) =>
+            isPackageAvailableForMarket(item.region, marketCode),
+          )
+        : mapped;
 
-    if (marketPackages.length > 0) {
       return prioritizeMobileLegendsPackages(
         marketPackages,
         targetMobileLegendsPackageCount,
@@ -128,31 +140,35 @@ export async function getMobileLegendsPackageForCheckout(packageId: string) {
   const normalizedPackageId = packageId.trim();
   if (!normalizedPackageId) return null;
 
-  const fallback = getFallbackMobileLegendsPackage(normalizedPackageId);
-
-  if (fallback) {
-    return fallback;
-  }
-
   try {
-    const product = await getPrisma().supplierProduct.findFirst({
+    const prisma = getPrisma();
+    const product = await prisma.supplierProduct.findFirst({
+      where: {
+        id: normalizedPackageId,
+        provider: "fazercards",
+        gameSlug: "mobile-legends",
+        available: true,
+        published: true,
+      },
+      select: supplierProductSelect,
+    });
+
+    if (product) return mapSupplierProduct(product);
+
+    const publishedCount = await prisma.supplierProduct.count({
       where: {
         provider: "fazercards",
         gameSlug: "mobile-legends",
         available: true,
         published: true,
-        OR: [
-          { id: normalizedPackageId },
-          { offerId: normalizedPackageId },
-        ],
       },
-      select: supplierProductSelect,
     });
 
-    return product ? mapSupplierProduct(product) : null;
+    if (publishedCount > 0) return null;
+    return getFallbackMobileLegendsPackage(normalizedPackageId);
   } catch (error) {
     if (error instanceof RuntimeConfigurationError) {
-      return null;
+      return getFallbackMobileLegendsPackage(normalizedPackageId);
     }
 
     console.error("Mobile Legends checkout catalogue unavailable", error);
@@ -184,7 +200,10 @@ export async function getStorefrontPricingSnapshot(): Promise<StorefrontPricingS
       latestSyncAt: latestSync?.completedAt?.toISOString() ?? null,
       offersSynced: latestSync?.offersSynced ?? 0,
       minimumPrices: Object.fromEntries(
-        gameMinimums.map((item) => [item.gameSlug, item._min.retailPriceInPaise ?? null]),
+        gameMinimums.map((item) => [
+          item.gameSlug,
+          item._min.retailPriceInPaise ?? null,
+        ]),
       ),
     };
   } catch {

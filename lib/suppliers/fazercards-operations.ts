@@ -160,7 +160,7 @@ function buildSupplierFields(
 
     const normalized = `${key} ${asString(field?.label)}`.toLowerCase();
     if (/zone|server/.test(normalized)) fields[key] = zoneId;
-    else if (/player|user|account|game.?id|uid/.test(normalized)) {
+    else if (/player|user|account|game.?id|uid|riot/.test(normalized)) {
       fields[key] = playerId;
     }
   }

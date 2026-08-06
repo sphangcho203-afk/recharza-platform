@@ -1,4 +1,8 @@
 import type { Prisma } from "@/generated/prisma/client";
+import {
+  curatedFazerCardsProducts,
+  isCuratedFazerCardsProduct,
+} from "@/lib/catalog/curated-fazercards";
 import { verifyOperatorAccess } from "@/lib/operator-auth";
 import {
   calculateRetailPrice,
@@ -9,7 +13,6 @@ import {
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 import {
-  getApprovedFazerCardsCategoryIds,
   getFazerCardsTopupOffers,
   listFazerCardsTopupCategories,
 } from "@/lib/suppliers/fazercards";
@@ -57,7 +60,6 @@ export async function POST(request: Request) {
       create: defaultPricingPolicy,
     });
     const policy = toPricingPolicy(storedPolicy);
-    const approvedCategoryIds = getApprovedFazerCardsCategoryIds();
     const categories = (await listFazerCardsTopupCategories()).filter(
       (category) => category.gameSlug !== null,
     );
@@ -83,7 +85,11 @@ export async function POST(request: Request) {
         }
 
         const price = calculateRetailPrice(supplierPriceUsdMicros, policy);
-        const published = approvedCategoryIds.has(category.categoryId);
+        const published = isCuratedFazerCardsProduct({
+          gameSlug: category.gameSlug,
+          categoryId: category.categoryId,
+          offerId: offer.offerId,
+        });
         const fields = group.fields as Prisma.InputJsonValue;
         const raw = {
           categoryName: category.name,
@@ -163,7 +169,7 @@ export async function POST(request: Request) {
           offersSynced,
           invalidOffers,
           publishedOffers,
-          approvedCategoryCount: approvedCategoryIds.size,
+          curatedProductCount: curatedFazerCardsProducts.length,
           actorRole: operator.role,
           accessMode: operator.mode,
         },
@@ -178,10 +184,7 @@ export async function POST(request: Request) {
       offersSynced,
       invalidOffers,
       publishedOffers,
-      publicationMode:
-        approvedCategoryIds.size > 0
-          ? "approved-category allowlist"
-          : "sync-only; no live offers published",
+      publicationMode: "curated product allowlist",
     });
   } catch (error) {
     const message = safeErrorMessage(error);

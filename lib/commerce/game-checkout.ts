@@ -71,29 +71,30 @@ const checkoutDefinitions: GameCheckoutDefinition[] = [
   {
     gameSlug: "free-fire",
     title: "Free Fire MAX",
-    lifecycle: "beta",
-    checkoutMode: "single-route",
+    lifecycle: "live",
+    checkoutMode: "market-routed",
     route: "/games/free-fire",
     supplierGameSlug: "free-fire",
-    marketRequired: false,
-    orderApiEnabled: false,
+    marketRequired: true,
+    orderApiEnabled: true,
     fields: [numericPlayerId],
-    packageFamilies: ["Diamonds", "Membership", "Level Up Pass"],
+    packageFamilies: ["Diamonds", "Weekly Membership", "Monthly Membership"],
     readinessNote:
-      "The reusable identity and package contract is ready. Supplier category mapping and order submission remain deliberately locked.",
+      "Curated regional supplier packs, player ID validation, billing, order creation, Razorpay payment and tracking are connected.",
   },
   {
     gameSlug: "pubg-mobile",
     title: "PUBG Mobile",
-    lifecycle: "planned",
+    lifecycle: "live",
     checkoutMode: "single-route",
     route: "/games/pubg-mobile",
     supplierGameSlug: "pubg-mobile",
     marketRequired: false,
-    orderApiEnabled: false,
+    orderApiEnabled: true,
     fields: [numericPlayerId],
-    packageFamilies: ["Unknown Cash", "Royale Pass", "Prime Plus"],
-    readinessNote: "Checkout contract is registered; supplier fields and fulfilment mapping are not approved yet.",
+    packageFamilies: ["Unknown Cash", "Elite Pass", "Prime Plus"],
+    readinessNote:
+      "The curated automatic supplier line, player ID validation, billing, order creation, Razorpay payment and tracking are connected.",
   },
   {
     gameSlug: "bgmi",
@@ -106,7 +107,8 @@ const checkoutDefinitions: GameCheckoutDefinition[] = [
     orderApiEnabled: false,
     fields: [numericPlayerId],
     packageFamilies: ["Unknown Cash", "Royale Pass", "Prime Plus"],
-    readinessNote: "Checkout contract is registered; India-specific supplier mapping remains pending.",
+    readinessNote:
+      "Checkout is registered, but an India-specific supplier catalogue is not available in the current integration.",
   },
   {
     gameSlug: "call-of-duty-mobile",
@@ -119,63 +121,70 @@ const checkoutDefinitions: GameCheckoutDefinition[] = [
     orderApiEnabled: false,
     fields: [numericPlayerId],
     packageFamilies: ["COD Points", "Battle Pass", "Vault Packs"],
-    readinessNote: "Checkout contract is registered; account-region and supplier-field review remain pending.",
+    readinessNote:
+      "Checkout is registered, but the supplier catalogue and account-region mapping are not approved.",
   },
   {
     gameSlug: "valorant",
     title: "VALORANT",
-    lifecycle: "planned",
-    checkoutMode: "voucher",
+    lifecycle: "live",
+    checkoutMode: "market-routed",
     route: "/games/valorant",
     supplierGameSlug: "valorant",
     marketRequired: true,
-    orderApiEnabled: false,
+    orderApiEnabled: true,
     fields: [
       {
         key: "riotId",
         label: "Riot ID",
-        placeholder: "PlayerName",
-        help: "Voucher fulfilment may not require an account ID; this field stays disabled until the supplier contract is reviewed.",
-        required: false,
+        placeholder: "PlayerName#TAG",
+        help: "Enter the complete Riot ID, including the # and tagline, for the selected supplier region.",
+        required: true,
         inputMode: "text",
-        maxLength: 32,
-      },
-      {
-        key: "tagline",
-        label: "Tagline",
-        placeholder: "TAG",
-        help: "The short value after # in a Riot ID.",
-        required: false,
-        inputMode: "text",
-        maxLength: 8,
+        pattern: "^[^#\\n]{2,24}#[A-Za-z0-9]{2,8}$",
+        minLength: 5,
+        maxLength: 33,
       },
     ],
-    packageFamilies: ["VALORANT Points", "Regional Gift Cards"],
-    readinessNote: "Voucher-region rules must be approved before this checkout can accept orders.",
+    packageFamilies: ["VALORANT Points"],
+    readinessNote:
+      "Curated regional VP packs, Riot ID validation, billing, order creation, Razorpay payment and tracking are connected.",
   },
   {
     gameSlug: "genshin-impact",
     title: "Genshin Impact",
-    lifecycle: "planned",
+    lifecycle: "live",
     checkoutMode: "single-route",
     route: "/games/genshin-impact",
     supplierGameSlug: "genshin-impact",
-    marketRequired: true,
-    orderApiEnabled: false,
+    marketRequired: false,
+    orderApiEnabled: true,
     fields: [
-      { ...numericPlayerId, label: "UID", placeholder: "Enter the 9 or 10 digit UID", minLength: 9, maxLength: 10, pattern: "^\\d{9,10}$" },
+      {
+        ...numericPlayerId,
+        label: "UID",
+        placeholder: "Enter the 9 or 10 digit UID",
+        minLength: 9,
+        maxLength: 10,
+        pattern: "^\\d{9,10}$",
+      },
       {
         key: "serverId",
         label: "Server",
         placeholder: "Choose the account server",
-        help: "The server must match the UID region before fulfilment.",
+        help: "The selected server must match the UID region before fulfilment.",
         required: true,
         inputMode: "text",
         maxLength: 24,
       },
     ],
-    packageFamilies: ["Genesis Crystals", "Blessing of the Welkin Moon"],
-    readinessNote: "UID and server fields are defined; supplier validation and package mapping remain pending.",
+    packageFamilies: [
+      "Genesis Crystals",
+      "Chronal Nexus",
+      "Blessing of the Welkin Moon",
+    ],
+    readinessNote:
+      "All password-free UID/server supplier offers, billing, order creation, Razorpay payment and tracking are connected.",
   },
   {
     gameSlug: "fortnite",
@@ -188,7 +197,8 @@ const checkoutDefinitions: GameCheckoutDefinition[] = [
     orderApiEnabled: false,
     fields: [],
     packageFamilies: ["V-Bucks", "Starter Packs", "Gift Cards"],
-    readinessNote: "Voucher delivery and regional restrictions require supplier and policy review.",
+    readinessNote:
+      "Voucher delivery and regional restrictions require a verified supplier catalogue.",
   },
 ];
 
@@ -201,7 +211,11 @@ export const gameCheckoutDefinitions = checkoutDefinitions.map((definition) => (
 export function getGameCheckoutDefinition(value: unknown) {
   if (typeof value !== "string") return null;
   const slug = value.trim().toLowerCase();
-  return gameCheckoutDefinitions.find((definition) => definition.gameSlug === slug) ?? null;
+  return (
+    gameCheckoutDefinitions.find(
+      (definition) => definition.gameSlug === slug,
+    ) ?? null
+  );
 }
 
 export function getPublicGameCheckoutDefinition(value: unknown) {
@@ -226,10 +240,16 @@ export function validateCheckoutIdentity(
   gameSlug: unknown,
   values: Record<string, unknown>,
 ):
-  | { valid: true; values: Record<string, string>; verificationMode: "format-only" }
+  | {
+      valid: true;
+      values: Record<string, string>;
+      verificationMode: "format-only";
+    }
   | { valid: false; message: string; field?: string } {
   const definition = getGameCheckoutDefinition(gameSlug);
-  if (!definition) return { valid: false, message: "That game is not registered for checkout." };
+  if (!definition) {
+    return { valid: false, message: "That game is not registered for checkout." };
+  }
 
   const normalized: Record<string, string> = {};
 
@@ -239,21 +259,41 @@ export function validateCheckoutIdentity(
     if (field.inputMode === "numeric") value = value.replace(/\s+/g, "");
 
     if (!value && field.required) {
-      return { valid: false, field: field.key, message: `${field.label} is required.` };
+      return {
+        valid: false,
+        field: field.key,
+        message: `${field.label} is required.`,
+      };
     }
     if (!value) continue;
     if (field.minLength && value.length < field.minLength) {
-      return { valid: false, field: field.key, message: `${field.label} is too short.` };
+      return {
+        valid: false,
+        field: field.key,
+        message: `${field.label} is too short.`,
+      };
     }
     if (field.maxLength && value.length > field.maxLength) {
-      return { valid: false, field: field.key, message: `${field.label} is too long.` };
+      return {
+        valid: false,
+        field: field.key,
+        message: `${field.label} is too long.`,
+      };
     }
     if (field.pattern && !new RegExp(field.pattern).test(value)) {
-      return { valid: false, field: field.key, message: `${field.label} has an invalid format.` };
+      return {
+        valid: false,
+        field: field.key,
+        message: `${field.label} has an invalid format.`,
+      };
     }
 
     normalized[field.key] = value;
   }
 
-  return { valid: true, values: normalized, verificationMode: "format-only" };
+  return {
+    valid: true,
+    values: normalized,
+    verificationMode: "format-only",
+  };
 }
