@@ -1,7 +1,6 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element */
-
+import Image from "next/image";
 import { useMemo, useState, type CSSProperties } from "react";
 
 type ResilientImageProps = {
@@ -10,6 +9,11 @@ type ResilientImageProps = {
   className?: string;
   style?: CSSProperties;
   loading?: "eager" | "lazy";
+  priority?: boolean;
+  fill?: boolean;
+  width?: number;
+  height?: number;
+  sizes?: string;
   fallbackClassName?: string;
   fallbackLabel?: string;
 };
@@ -59,6 +63,11 @@ function ResolvedImage({
   className = "",
   style,
   loading = "lazy",
+  priority = false,
+  fill = false,
+  width = 960,
+  height = 540,
+  sizes = "100vw",
   fallbackClassName = "",
   fallbackLabel,
 }: Omit<ResilientImageProps, "sources"> & { usableSources: string[] }) {
@@ -85,23 +94,27 @@ function ResolvedImage({
     );
   }
 
-  return (
-    <img
-      src={usableSources[sourceIndex]}
-      alt={alt}
-      loading={loading}
-      decoding="async"
-      referrerPolicy="strict-origin-when-cross-origin"
-      className={className}
-      style={style}
-      onError={() => {
-        if (sourceIndex + 1 < usableSources.length) {
-          setSourceIndex((current) => current + 1);
-          return;
-        }
+  const sharedProps = {
+    src: usableSources[sourceIndex],
+    alt,
+    sizes,
+    loading: priority || loading === "eager" ? ("eager" as const) : ("lazy" as const),
+    priority: priority || loading === "eager",
+    unoptimized: true,
+    className,
+    style,
+    onError: () => {
+      if (sourceIndex + 1 < usableSources.length) {
+        setSourceIndex((current) => current + 1);
+        return;
+      }
+      setFailed(true);
+    },
+  };
 
-        setFailed(true);
-      }}
-    />
+  return fill ? (
+    <Image {...sharedProps} fill />
+  ) : (
+    <Image {...sharedProps} width={width} height={height} />
   );
 }

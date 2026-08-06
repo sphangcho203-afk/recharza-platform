@@ -17,10 +17,9 @@ import {
 export const dynamic = "force-dynamic";
 
 const checkoutStages = [
-  ["01", "Pack"],
-  ["02", "Player"],
-  ["03", "Billing"],
-  ["04", "Payment"],
+  ["01", "Player ID"],
+  ["02", "Package"],
+  ["03", "Payment"],
 ] as const;
 
 export async function generateMetadata({
@@ -56,81 +55,83 @@ export default async function GameCheckoutPage({
     const marketCount = new Set(packages.map((item) => item.marketCode)).size;
 
     return (
-      <main className="min-h-screen overflow-x-clip bg-[#06060f] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
+      <main className="storefront-page min-h-screen overflow-x-clip pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
         <SiteHeader />
 
         <section className="relative overflow-hidden border-b border-white/[0.08]">
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-[-9rem] top-[-12rem] h-[28rem] w-[28rem] rounded-full bg-violet-600/16 blur-[120px]" />
-            <div className="absolute right-[-7rem] top-0 h-[25rem] w-[25rem] rounded-full bg-cyan-500/10 blur-[120px]" />
-            <div className="hero-grid absolute inset-0 opacity-20" />
+            <div className="absolute left-[-9rem] top-[-12rem] h-[28rem] w-[28rem] rounded-full bg-violet-600/14 blur-[120px]" />
+            <div className="absolute right-[-7rem] top-0 h-[25rem] w-[25rem] rounded-full bg-cyan-500/9 blur-[120px]" />
+            <div className="storefront-ambient-grid absolute inset-0 opacity-20" />
           </div>
 
-          <div className="relative mx-auto grid max-w-[78rem] gap-8 px-4 py-9 sm:px-6 sm:py-12 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-center lg:px-8 lg:py-14">
+          <div className="relative mx-auto grid max-w-7xl gap-6 px-4 py-7 sm:px-6 sm:py-9 lg:grid-cols-[minmax(0,1fr)_14rem] lg:items-center lg:px-8">
             <div>
               <Link
                 href="/#games"
-                className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-4 text-sm font-bold text-slate-300 transition hover:bg-white/[0.06] hover:text-white"
+                className="inline-flex min-h-10 items-center gap-2 rounded-xl text-sm font-black text-violet-300 transition hover:text-violet-200"
               >
                 <span aria-hidden="true">←</span>
                 Back to games
               </Link>
 
-              <div className="mt-7 inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.16em] text-emerald-100">
-                Live curated checkout
+              <div className="mt-4 inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-emerald-100">
+                Curated checkout
               </div>
-              <h1 className="mt-4 max-w-3xl text-4xl font-black tracking-[-0.06em] sm:text-5xl lg:text-6xl">
-                {definition.title} top-up.
+              <h1 className="mt-3 max-w-3xl text-3xl font-black tracking-[-0.055em] sm:text-4xl lg:text-5xl">
+                {definition.title} top-up
               </h1>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-slate-400">
-                Choose a verified pack, confirm the exact player destination, complete billing, and pay through one recoverable order flow.
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
+                Confirm the player destination, choose a published package, then review billing and payment in one recoverable order flow.
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-2 text-xs font-bold">
+              <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-bold text-slate-300">
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
                   {packages.length} curated offers
                 </span>
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                  {marketCount} supplier {marketCount === 1 ? "market" : "markets"}
+                  {marketCount} {marketCount === 1 ? "market" : "markets"}
                 </span>
                 <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                  Recoverable private order
+                  Private tracking
                 </span>
               </div>
             </div>
 
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#10101a] shadow-[0_28px_80px_rgba(0,0,0,0.4)] lg:aspect-square">
+            <div className="relative hidden aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 bg-[#10101a] shadow-[0_24px_70px_rgba(0,0,0,0.42)] lg:block">
               <ResilientImage
                 sources={game.artworkSources}
                 alt={game.artworkAlt}
                 fallbackLabel={game.title.slice(0, 2).toUpperCase()}
-                loading="eager"
-                className="h-full w-full object-cover"
-                fallbackClassName="h-full w-full"
+                fill
+                priority
+                sizes="224px"
+                className="object-cover"
+                fallbackClassName="absolute inset-0 h-full w-full"
               />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent p-5 pt-20">
-                <p className="text-[10px] font-black uppercase tracking-[0.18em] text-cyan-200">
+              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent p-4 pt-16">
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-200">
                   {game.publisher}
                 </p>
-                <p className="mt-1 text-lg font-black text-white">{game.title}</p>
+                <p className="mt-1 text-sm font-black text-white">{game.title}</p>
               </div>
             </div>
           </div>
         </section>
 
         <section className="border-b border-white/[0.08] bg-white/[0.018]">
-          <div className="mx-auto grid max-w-[78rem] grid-cols-4 px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto grid max-w-7xl grid-cols-3 px-4 sm:px-6 lg:px-8">
             {checkoutStages.map(([number, label], index) => (
               <div
                 key={number}
-                className={`flex min-h-16 items-center justify-center gap-2 border-white/[0.08] px-2 text-center sm:justify-start sm:px-4 ${
-                  index > 0 ? "border-l" : ""
+                className={`flex min-h-14 items-center justify-center gap-2 px-2 text-center sm:min-h-16 sm:justify-start sm:px-4 ${
+                  index > 0 ? "border-l border-white/[0.08]" : ""
                 }`}
               >
                 <span className="hidden text-[10px] font-black text-violet-300 sm:inline">
                   {number}
                 </span>
-                <span className="text-[11px] font-black uppercase tracking-[0.12em] text-slate-400 sm:text-xs">
+                <span className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400 sm:text-xs">
                   {label}
                 </span>
               </div>
@@ -138,7 +139,7 @@ export default async function GameCheckoutPage({
           </div>
         </section>
 
-        <section className="mx-auto max-w-[78rem] px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
+        <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-violet-300/10 text-violet-200">
@@ -147,7 +148,7 @@ export default async function GameCheckoutPage({
               <div>
                 <p className="text-sm font-black text-white">Review before payment</p>
                 <p className="mt-0.5 text-xs leading-5 text-slate-500">
-                  Player destination, market, package, and final amount must all match.
+                  Player destination, market, package and final amount must all match.
                 </p>
               </div>
             </div>
@@ -168,18 +169,21 @@ export default async function GameCheckoutPage({
   }
 
   return (
-    <main className="min-h-screen bg-[#06060f] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
+    <main className="storefront-page min-h-screen pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
       <SiteHeader />
-      <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <Link href="/#games" className="text-sm font-semibold text-violet-300 hover:text-violet-200">
           ← Back to games
         </Link>
-        <div className="mt-8 rounded-3xl border border-amber-400/20 bg-amber-400/10 p-6 sm:p-8">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-200">
-            Checkout locked
+        <div className="mt-6 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-5 sm:p-7">
+          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-amber-200">
+            Checkout unavailable
           </p>
-          <h1 className="mt-3 text-3xl font-black">{definition.title}</h1>
+          <h1 className="mt-3 text-2xl font-black sm:text-3xl">{definition.title}</h1>
           <p className="mt-3 leading-7 text-amber-100/80">{definition.readinessNote}</p>
+          <p className="mt-4 text-sm leading-6 text-amber-100/65">
+            No substitute market or unverified price will be used. Return to the catalogue or contact support for availability.
+          </p>
         </div>
       </section>
     </main>

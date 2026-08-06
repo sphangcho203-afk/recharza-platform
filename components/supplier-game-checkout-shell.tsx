@@ -152,17 +152,12 @@ export function SupplierGameCheckoutShell({
 
   const selectedPackage =
     marketPackages.find((item) => item.id === packageId) ?? marketPackages[0];
-  const serverOptions = getSupplierSelectOptions(
-    selectedPackage?.fields,
-    /server/,
-  );
+  const serverOptions = getSupplierSelectOptions(selectedPackage?.fields, /server/);
   const identityResult = selectedPackage
     ? validateSupplierCheckoutIdentity(gameSlug, identity, selectedPackage.fields)
     : null;
-  const selectedRate =
-    fxSnapshot.ratesFromInrMicros[billing.presentmentCurrency] ?? 0;
-  const canConvert =
-    billing.presentmentCurrency === "INR" || selectedRate > 0;
+  const selectedRate = fxSnapshot.ratesFromInrMicros[billing.presentmentCurrency] ?? 0;
+  const canConvert = billing.presentmentCurrency === "INR" || selectedRate > 0;
   const canSubmit = Boolean(
     selectedPackage &&
       identityResult?.valid &&
@@ -179,9 +174,7 @@ export function SupplierGameCheckoutShell({
   }
 
   function chooseMarket(nextMarketCode: string) {
-    const nextPackage = packages.find(
-      (item) => item.marketCode === nextMarketCode,
-    );
+    const nextPackage = packages.find((item) => item.marketCode === nextMarketCode);
     setMarketCode(nextMarketCode);
     setPackageId(nextPackage?.id ?? "");
     setIdentity(initialIdentity);
@@ -208,7 +201,7 @@ export function SupplierGameCheckoutShell({
       setError(
         identityResult && !identityResult.valid
           ? identityResult.message
-          : "Complete the package, account and billing details before payment.",
+          : "Complete the player, package, billing and payment details before continuing.",
       );
       return;
     }
@@ -237,9 +230,7 @@ export function SupplierGameCheckoutShell({
           billing: {
             ...billing,
             presentmentCurrency:
-              fxSnapshot.mode === "live"
-                ? billing.presentmentCurrency
-                : "INR",
+              fxSnapshot.mode === "live" ? billing.presentmentCurrency : "INR",
           },
         }),
       });
@@ -258,7 +249,7 @@ export function SupplierGameCheckoutShell({
       setOrder(result.order);
       setMessage(
         result.paymentSession?.message ??
-          "Order saved. Continue to secure payment below.",
+          "Order saved. Select a method in secure checkout and complete payment.",
       );
     } catch {
       setError(
@@ -272,8 +263,14 @@ export function SupplierGameCheckoutShell({
 
   if (!selectedPackage) {
     return (
-      <div className="rounded-3xl border border-amber-300/20 bg-amber-300/10 p-6 text-amber-100">
-        No curated supplier packs are available for this game yet.
+      <div className="flex items-start gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm text-amber-100">
+        <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-300" />
+        <div>
+          <p className="font-black">This market is not available yet.</p>
+          <p className="mt-1 text-amber-100/70">
+            No curated supplier packs are published for this game and region.
+          </p>
+        </div>
       </div>
     );
   }
@@ -281,78 +278,39 @@ export function SupplierGameCheckoutShell({
   return (
     <form onSubmit={submitCheckout} className="mx-auto grid max-w-6xl gap-5">
       {markets.length > 1 ? (
-        <section className="rounded-3xl border border-white/10 bg-white/[0.035] p-4 sm:p-5">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
-            Account market
-          </p>
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-            {markets.map((market) => (
-              <button
-                key={market.code}
-                type="button"
-                onClick={() => chooseMarket(market.code)}
-                className={`min-h-11 shrink-0 rounded-xl border px-4 py-2 text-sm font-black transition ${
-                  market.code === marketCode
-                    ? "border-violet-400/50 bg-violet-400/15 text-white"
-                    : "border-white/10 bg-black/20 text-slate-400 hover:text-white"
-                }`}
-              >
-                {market.label}
-              </button>
-            ))}
+        <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
+                Account market
+              </p>
+              <p className="mt-1 text-sm text-slate-500">
+                Choose the exact region used by the game account.
+              </p>
+            </div>
+            <div className="flex max-w-full gap-2 overflow-x-auto pb-1">
+              {markets.map((market) => (
+                <button
+                  key={market.code}
+                  type="button"
+                  onClick={() => chooseMarket(market.code)}
+                  className={`min-h-10 shrink-0 rounded-xl border px-4 py-2 text-sm font-black transition ${
+                    market.code === marketCode
+                      ? "border-violet-400/50 bg-violet-400/15 text-white"
+                      : "border-white/10 bg-black/20 text-slate-400 hover:text-white"
+                  }`}
+                >
+                  {market.label}
+                </button>
+              ))}
+            </div>
           </div>
-          <p className="mt-3 text-sm leading-6 text-slate-500">
-            Choose the exact region used by the game account. A package cannot be moved between supplier markets.
-          </p>
         </section>
       ) : null}
 
-      <section className="rounded-3xl border border-white/10 bg-[#0d0d17] p-4 shadow-2xl shadow-black/30 sm:p-6">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
-              01 · Package
-            </p>
-            <h2 className="mt-2 text-2xl font-black">Choose a curated pack</h2>
-          </div>
-          <span className="text-sm font-bold text-emerald-200">
-            {marketPackages.length} live offers
-          </span>
-        </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          {marketPackages.map((item) => {
-            const selected = item.id === selectedPackage.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => {
-                  setPackageId(item.id);
-                  setIdentity(initialIdentity);
-                  resetOrder();
-                }}
-                className={`min-h-24 rounded-2xl border p-4 text-left transition ${
-                  selected
-                    ? "border-violet-400/50 bg-violet-400/15"
-                    : "border-white/10 bg-white/[0.025] hover:bg-white/[0.055]"
-                }`}
-              >
-                <strong className="block text-sm text-white">{item.name}</strong>
-                <span className="mt-2 block text-lg font-black text-cyan-200">
-                  {formatPresentment(item.amountInPaise)}
-                </span>
-                <span className="mt-1 block text-[11px] text-slate-500">
-                  {item.marketLabel}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="rounded-3xl border border-white/10 bg-white/[0.035] p-4 sm:p-6">
+      <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 sm:p-6">
         <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
-          02 · Account destination
+          01 · Player ID
         </p>
         <h2 className="mt-2 text-2xl font-black">Confirm where the pack goes</h2>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -361,13 +319,17 @@ export function SupplierGameCheckoutShell({
               Riot ID
               <input
                 required
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                maxLength={32}
                 value={identity.riotId}
                 onChange={(event) => {
-                  setIdentity({ ...identity, riotId: event.target.value });
+                  setIdentity({ ...identity, riotId: event.target.value.slice(0, 32) });
                   resetOrder();
                 }}
                 placeholder="PlayerName#TAG"
-                className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
+                className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
               />
             </label>
           ) : (
@@ -376,17 +338,16 @@ export function SupplierGameCheckoutShell({
               <input
                 required
                 inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={20}
                 value={identity.playerId}
                 onChange={(event) => {
-                  setIdentity({ ...identity, playerId: event.target.value });
+                  const playerId = event.target.value.replace(/\D/g, "").slice(0, 20);
+                  setIdentity({ ...identity, playerId });
                   resetOrder();
                 }}
-                placeholder={
-                  gameSlug === "genshin-impact"
-                    ? "9 or 10 digit UID"
-                    : "Numeric player ID"
-                }
-                className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
+                placeholder={gameSlug === "genshin-impact" ? "9 or 10 digit UID" : "Numeric player ID"}
+                className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
               />
             </label>
           )}
@@ -401,7 +362,7 @@ export function SupplierGameCheckoutShell({
                   setIdentity({ ...identity, serverId: event.target.value });
                   resetOrder();
                 }}
-                className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none focus:border-violet-400"
+                className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
               >
                 <option value="">Choose server</option>
                 {serverOptions.map((option) => (
@@ -421,9 +382,51 @@ export function SupplierGameCheckoutShell({
           }`}
         >
           {identityResult?.valid
-            ? `Format confirmed for ${selectedPackage.marketLabel}. The server will validate it again when creating the order.`
+            ? `Format confirmed for ${selectedPackage.marketLabel}. The server validates it again when creating the order.`
             : identityResult?.message ?? "Enter the destination details exactly as shown inside the game."}
         </p>
+      </section>
+
+      <section className="rounded-2xl border border-white/10 bg-[#0d0d17] p-4 shadow-2xl shadow-black/30 sm:p-6">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+              02 · Package
+            </p>
+            <h2 className="mt-2 text-2xl font-black">Choose a curated pack</h2>
+          </div>
+          <span className="text-sm font-bold text-emerald-200">
+            {marketPackages.length} live offers
+          </span>
+        </div>
+        <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-3">
+          {marketPackages.map((item) => {
+            const selected = item.id === selectedPackage.id;
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setPackageId(item.id);
+                  resetOrder();
+                }}
+                className={`min-h-24 rounded-2xl border p-3 text-left transition sm:p-4 ${
+                  selected
+                    ? "border-violet-400/50 bg-violet-400/15"
+                    : "border-white/10 bg-white/[0.025] hover:bg-white/[0.055]"
+                }`}
+              >
+                <strong className="line-clamp-2 block text-sm text-white">{item.name}</strong>
+                <span className="mt-2 block text-base font-black text-cyan-200 sm:text-lg">
+                  {formatPresentment(item.amountInPaise)}
+                </span>
+                <span className="mt-1 block truncate text-[10px] text-slate-500 sm:text-[11px]">
+                  {item.marketLabel}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </section>
 
       <BillingAddressFields
@@ -433,13 +436,15 @@ export function SupplierGameCheckoutShell({
           resetOrder();
         }}
         fxMode={fxSnapshot.mode}
+        stepNumber="03"
+        stepLabel="Payment details"
       />
 
-      <section className="rounded-3xl border border-white/10 bg-[#0d0d17] p-4 sm:p-6">
+      <section className="rounded-2xl border border-white/10 bg-[#0d0d17] p-4 sm:p-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
-              04 · Order and payment
+              Select payment method and pay
             </p>
             <h2 className="mt-2 text-2xl font-black">
               {selectedPackage.name} · {formatPresentment(selectedPackage.amountInPaise)}
@@ -453,11 +458,7 @@ export function SupplierGameCheckoutShell({
             disabled={!canSubmit || isSubmitting || Boolean(order)}
             className="min-h-12 rounded-xl bg-white px-6 py-3 text-sm font-black text-slate-950 transition hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isSubmitting
-              ? "Creating order..."
-              : order
-                ? "Order created"
-                : "Create order"}
+            {isSubmitting ? "Creating order..." : order ? "Order created" : "Continue to payment"}
           </button>
         </div>
         {error ? (

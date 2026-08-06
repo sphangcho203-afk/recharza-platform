@@ -1,0 +1,43 @@
+:root {
+  --storefront-container: 80rem;
+  --storefront-page-pad: clamp(1rem, 3vw, 2rem);
+  --surface-elevated: rgba(13, 15, 25, 0.86);
+  --surface-muted: rgba(255, 255, 255, 0.028);
+  --border-interactive: rgba(255, 255, 255, 0.12);
+  --shadow-elevated: 0 24px 80px rgba(0, 0, 0, 0.42);
+  --shadow-accent: 0 18px 55px rgba(91, 124, 255, 0.12);
+  --radius-card: 1rem;
+  --radius-banner: 1.25rem;
+}
+
+.storefront-page {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.customer-mobile-nav {
+  max-width: 34rem;
+  margin-inline: auto;
+}
+
+@media (hover: hover) {
+  .storefront-card:hover {
+    box-shadow:
+      var(--shadow-elevated),
+      0 0 0 1px color-mix(in srgb, var(--game-accent) 48%, transparent),
+      0 18px 55px color-mix(in srgb, var(--game-accent) 14%, transparent);
+  }
+}
+
+@media (max-width: 639px) {
+  :root {
+    --radius-card: 0.9rem;
+    --radius-banner: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storefront-card,
+  .storefront-card * {
+    transform: none !important;
+  }
+}

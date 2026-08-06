@@ -1,13 +1,11 @@
+import { Suspense } from "react";
 import Link from "next/link";
 
 import { GameCatalogue } from "@/components/game-catalogue";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontHero } from "@/components/storefront-hero";
-import {
-  StorefrontIcon,
-  type StorefrontIconName,
-} from "@/components/storefront-icon";
+import { StorefrontIcon } from "@/components/storefront-icon";
 import type { Game } from "@/lib/games";
 import { games } from "@/lib/games";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
@@ -19,7 +17,26 @@ import {
 
 export const dynamic = "force-dynamic";
 
-const processIcons: StorefrontIconName[] = ["globe", "account", "receipt", "track"];
+const checkoutSteps = [
+  {
+    icon: "account" as const,
+    number: "01",
+    title: "Enter Player ID",
+    description: "Confirm the exact account destination and required region or server.",
+  },
+  {
+    icon: "games" as const,
+    number: "02",
+    title: "Select Package",
+    description: "Choose a published diamond, UC, point, pass, or membership offer.",
+  },
+  {
+    icon: "shield" as const,
+    number: "03",
+    title: "Review and Pay",
+    description: "Check billing and final pricing, then continue through protected payment.",
+  },
+];
 
 function announcementClasses(tone: StorefrontContent["announcement"]["tone"]) {
   if (tone === "success") {
@@ -40,28 +57,21 @@ export default async function Home() {
 
   const enrichedGames: Game[] = games.map((game) => {
     const liveMinimum = pricing.minimumPrices[game.pricingKey ?? game.slug];
-    const mediaSlug = game.slug.startsWith("mobile-legends")
-      ? "mobile-legends"
-      : game.slug;
+    const mediaSlug = game.slug.startsWith("mobile-legends") ? "mobile-legends" : game.slug;
     const logoPlacement = mediaPlacements.get(`game.${mediaSlug}.logo`);
     const artworkPlacement = mediaPlacements.get(`game.${mediaSlug}.artwork`);
 
     return {
       ...game,
-      logoSources: logoPlacement
-        ? [logoPlacement.url, ...game.logoSources]
-        : game.logoSources,
+      logoSources: logoPlacement ? [logoPlacement.url, ...game.logoSources] : game.logoSources,
       artworkSources: artworkPlacement
         ? [artworkPlacement.url, ...game.artworkSources]
         : game.artworkSources,
       logoAlt: logoPlacement?.altText ?? game.logoAlt,
       artworkAlt: artworkPlacement?.altText ?? game.artworkAlt,
       startingPriceInPaise:
-        typeof liveMinimum === "number"
-          ? liveMinimum
-          : game.startingPriceInPaise,
-      pricingMode:
-        typeof liveMinimum === "number" ? "live" : game.pricingMode,
+        typeof liveMinimum === "number" ? liveMinimum : game.startingPriceInPaise,
+      pricingMode: typeof liveMinimum === "number" ? "live" : game.pricingMode,
     };
   });
 
@@ -73,10 +83,7 @@ export default async function Home() {
   );
 
   return (
-    <main
-      id="top"
-      className="storefront-page min-h-screen overflow-x-clip pb-[max(1rem,env(safe-area-inset-bottom))] text-white"
-    >
+    <main id="top" className="storefront-page min-h-screen overflow-x-clip text-white">
       <SiteHeader content={storefront} />
 
       {storefront.announcement.enabled ? (
@@ -106,75 +113,74 @@ export default async function Home() {
       {storefront.catalogue.enabled ? (
         <section
           id="games"
-          className="mx-auto max-w-7xl scroll-mt-24 px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20"
+          className="mx-auto max-w-7xl scroll-mt-36 px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16"
         >
-          <div className="grid gap-5 lg:grid-cols-[minmax(0,0.72fr)_minmax(24rem,1.28fr)] lg:items-end lg:gap-14">
+          <div className="flex flex-col gap-4 border-b border-white/[0.08] pb-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.19em] text-cyan-300">
                 <span className="h-px w-7 bg-cyan-300" />
                 {storefront.catalogue.eyebrow}
               </div>
-              <h2 className="mt-3 text-3xl font-black tracking-[-0.055em] text-white sm:text-5xl">
+              <h2 className="mt-3 text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">
                 {storefront.catalogue.title}
               </h2>
             </div>
-            <div className="lg:pb-1">
-              <p className="max-w-2xl text-sm leading-7 text-slate-400 sm:text-base">
-                Choose a game first. Regional markets and purchasable packs appear
-                only where Recharza has an approved fulfilment path.
-              </p>
-              <Link
-                href="/games/mobile-legends"
-                className="group mt-3 inline-flex min-h-10 items-center gap-2 rounded-xl text-sm font-black text-violet-300 transition hover:text-violet-200"
-              >
-                Open the complete MLBB market directory
-                <StorefrontIcon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />
-              </Link>
-            </div>
+            <p className="max-w-2xl text-sm leading-6 text-slate-400 sm:text-right">
+              {storefront.catalogue.description}
+            </p>
           </div>
 
-          <GameCatalogue
-            games={visibleGames}
-            showRegionalMarkets={storefront.catalogue.showRegionalMarkets}
-            showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges}
-            showPricingSnapshots={storefront.privateFlags.showPricingSnapshots}
-          />
+          <Suspense
+            fallback={
+              <div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
+                {Array.from({ length: 10 }, (_, index) => (
+                  <div
+                    key={index}
+                    className="aspect-[3/4] animate-pulse rounded-2xl border border-white/[0.07] bg-white/[0.025]"
+                  />
+                ))}
+              </div>
+            }
+          >
+            <GameCatalogue
+              games={visibleGames}
+              showRegionalMarkets={storefront.catalogue.showRegionalMarkets}
+              showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges}
+              showPricingSnapshots={storefront.privateFlags.showPricingSnapshots}
+            />
+          </Suspense>
         </section>
       ) : null}
 
       {storefront.process.enabled ? (
-        <section className="border-y border-white/[0.08] bg-white/[0.018] px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+        <section className="border-y border-white/[0.08] bg-white/[0.018] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <div className="grid gap-5 lg:grid-cols-[0.72fr_1.28fr] lg:items-end lg:gap-14">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.19em] text-violet-300">
                   {storefront.process.eyebrow}
                 </p>
-                <h2 className="mt-3 max-w-lg text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">
-                  Clear steps. Recoverable orders. Human support.
+                <h2 className="mt-3 text-3xl font-black tracking-[-0.045em] text-white sm:text-4xl">
+                  Three clear steps to top up.
                 </h2>
               </div>
-              <p className="max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
-                Recharza keeps game selection, account destination, package review,
-                payment and tracking in the order customers naturally need them.
+              <p className="max-w-xl text-sm leading-6 text-slate-500 sm:text-right">
+                Every order stays recoverable and payment begins only after player, package, and billing details pass validation.
               </p>
             </div>
 
-            <div className="mt-8 grid gap-3 md:grid-cols-3">
-              {storefront.process.steps.slice(0, 3).map((step, index) => (
+            <div className="mt-7 grid gap-3 md:grid-cols-3">
+              {checkoutSteps.map((step) => (
                 <article
-                  key={`${step.number}-${step.title}`}
+                  key={step.number}
                   className="rounded-2xl border border-white/[0.08] bg-[#090b12] p-5"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.035] text-cyan-200">
-                      <StorefrontIcon
-                        name={processIcons[index] ?? "shield"}
-                        className="h-[18px] w-[18px]"
-                      />
+                      <StorefrontIcon name={step.icon} className="h-[18px] w-[18px]" />
                     </span>
-                    <span className="font-mono text-[10px] font-black text-white/20">
-                      {String(index + 1).padStart(2, "0")}
+                    <span className="font-mono text-[10px] font-black text-white/25">
+                      {step.number}
                     </span>
                   </div>
                   <h3 className="mt-5 text-lg font-black tracking-[-0.025em] text-white">
@@ -184,22 +190,6 @@ export default async function Home() {
                     {step.description}
                   </p>
                 </article>
-              ))}
-            </div>
-
-            <div className="mt-6 grid gap-3 rounded-2xl border border-white/[0.08] bg-black/20 p-4 sm:grid-cols-3 sm:p-5">
-              {[
-                { icon: "shield" as const, title: "Never share a PIN", text: "Support will not request passwords, OTPs, UPI PINs or card PINs." },
-                { icon: "track" as const, title: "Keep the order private", text: "Use the protected tracking link or account history to review status." },
-                { icon: "support" as const, title: "Escalate with context", text: "Send the order ID and a redacted screenshot when human help is needed." },
-              ].map((item) => (
-                <div key={item.title} className="flex gap-3">
-                  <StorefrontIcon name={item.icon} className="mt-0.5 h-[18px] w-[18px] shrink-0 text-violet-300" />
-                  <div>
-                    <p className="text-sm font-black text-white">{item.title}</p>
-                    <p className="mt-1 text-xs leading-5 text-slate-500">{item.text}</p>
-                  </div>
-                </div>
               ))}
             </div>
           </div>
