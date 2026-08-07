@@ -3,21 +3,15 @@
 import Link from "next/link";
 import { type FormEvent, useMemo, useRef, useState } from "react";
 
-import {
-  BillingAddressFields,
-  initialBillingForm,
-  type BillingFormState,
-} from "@/components/billing-address-fields";
+import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
+import { StorefrontIcon } from "@/components/storefront-icon";
 import {
   convertInrPaiseToCurrencyMinor,
   formatCurrencyMinor,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
-import {
-  getSupplierSelectOptions,
-  validateSupplierCheckoutIdentity,
-} from "@/lib/commerce/game-identity";
+import { getSupplierSelectOptions, validateSupplierCheckoutIdentity } from "@/lib/commerce/game-identity";
 import { formatInr } from "@/lib/mobile-legends";
 import type { SupplierCheckoutGameSlug } from "@/lib/storefront-game-catalog";
 
@@ -44,33 +38,11 @@ type FxSnapshot = {
 type CreatedOrder = {
   id: string;
   status: string;
-  package: {
-    id: string;
-    name: string;
-    amountInPaise: number;
-    currency: string;
-  };
-  presentment: {
-    amountMinor: number;
-    currency: SupportedCurrencyCode;
-    fxQuotedAt: string | null;
-  } | null;
-  billing: {
-    fullName: string;
-    email: string;
-    countryCode: string;
-    city: string;
-  } | null;
-  player: {
-    playerId: string;
-    zoneId: string;
-    nickname: string | null;
-    verificationMode: string;
-  };
-  tracking: {
-    path: string;
-    accessToken: string;
-  };
+  package: { id: string; name: string; amountInPaise: number; currency: string };
+  presentment: { amountMinor: number; currency: SupportedCurrencyCode; fxQuotedAt: string | null } | null;
+  billing: { fullName: string; email: string; countryCode: string; city: string } | null;
+  player: { playerId: string; zoneId: string; nickname: string | null; verificationMode: string };
+  tracking: { path: string; accessToken: string };
 };
 
 type CheckoutResponse = {
@@ -78,9 +50,7 @@ type CheckoutResponse = {
   duplicate?: boolean;
   message?: string;
   order?: CreatedOrder;
-  paymentSession?: {
-    message?: string;
-  };
+  paymentSession?: { message?: string };
 };
 
 type IdentityState = {
@@ -89,16 +59,11 @@ type IdentityState = {
   serverId: string;
 };
 
-const initialIdentity: IdentityState = {
-  playerId: "",
-  riotId: "",
-  serverId: "",
-};
+const initialIdentity: IdentityState = { playerId: "", riotId: "", serverId: "" };
+const fieldClassName = "mt-2 min-h-12 w-full rounded-lg border border-white/[0.09] bg-[#080a10] px-3.5 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/10";
 
 function createIdempotencyKey() {
-  if (globalThis.crypto?.randomUUID) {
-    return `rz_${globalThis.crypto.randomUUID()}`;
-  }
+  if (globalThis.crypto?.randomUUID) return `rz_${globalThis.crypto.randomUUID()}`;
   return `rz_${Date.now()}_${Math.random().toString(36).slice(2, 18)}`;
 }
 
@@ -121,26 +86,24 @@ export function SupplierGameCheckoutShell({
   gameTitle,
   packages,
   fxSnapshot,
+  itemIcons = {},
 }: {
   gameSlug: SupplierCheckoutGameSlug;
   gameTitle: string;
   packages: CheckoutPackage[];
   fxSnapshot: FxSnapshot;
+  itemIcons?: Record<string, string>;
 }) {
   const markets = useMemo(() => {
     const map = new Map<string, string>();
     for (const item of packages) map.set(item.marketCode, item.marketLabel);
     return Array.from(map, ([code, label]) => ({ code, label }));
   }, [packages]);
+
   const firstMarketCode = markets[0]?.code ?? "";
   const [marketCode, setMarketCode] = useState(firstMarketCode);
-  const marketPackages = useMemo(
-    () => packages.filter((item) => item.marketCode === marketCode),
-    [marketCode, packages],
-  );
-  const [packageId, setPackageId] = useState(
-    packages.find((item) => item.marketCode === firstMarketCode)?.id ?? "",
-  );
+  const marketPackages = useMemo(() => packages.filter((item) => item.marketCode === marketCode), [marketCode, packages]);
+  const [packageId, setPackageId] = useState(packages.find((item) => item.marketCode === firstMarketCode)?.id ?? "");
   const [identity, setIdentity] = useState<IdentityState>(initialIdentity);
   const [billing, setBilling] = useState<BillingFormState>(initialBillingForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -150,20 +113,12 @@ export function SupplierGameCheckoutShell({
   const [paymentVerified, setPaymentVerified] = useState(false);
   const idempotencyKey = useRef<string | null>(null);
 
-  const selectedPackage =
-    marketPackages.find((item) => item.id === packageId) ?? marketPackages[0];
+  const selectedPackage = marketPackages.find((item) => item.id === packageId) ?? marketPackages[0];
   const serverOptions = getSupplierSelectOptions(selectedPackage?.fields, /server/);
-  const identityResult = selectedPackage
-    ? validateSupplierCheckoutIdentity(gameSlug, identity, selectedPackage.fields)
-    : null;
+  const identityResult = selectedPackage ? validateSupplierCheckoutIdentity(gameSlug, identity, selectedPackage.fields) : null;
   const selectedRate = fxSnapshot.ratesFromInrMicros[billing.presentmentCurrency] ?? 0;
   const canConvert = billing.presentmentCurrency === "INR" || selectedRate > 0;
-  const canSubmit = Boolean(
-    selectedPackage &&
-      identityResult?.valid &&
-      billingIsComplete(billing) &&
-      canConvert,
-  );
+  const canSubmit = Boolean(selectedPackage && identityResult?.valid && billingIsComplete(billing) && canConvert);
 
   function resetOrder() {
     idempotencyKey.current = null;
@@ -182,15 +137,9 @@ export function SupplierGameCheckoutShell({
   }
 
   function formatPresentment(amountInPaise: number) {
-    if (billing.presentmentCurrency === "INR" || !selectedRate) {
-      return formatInr(amountInPaise);
-    }
+    if (billing.presentmentCurrency === "INR" || !selectedRate) return formatInr(amountInPaise);
     return formatCurrencyMinor(
-      convertInrPaiseToCurrencyMinor(
-        amountInPaise,
-        billing.presentmentCurrency,
-        selectedRate,
-      ),
+      convertInrPaiseToCurrencyMinor(amountInPaise, billing.presentmentCurrency, selectedRate),
       billing.presentmentCurrency,
     );
   }
@@ -201,7 +150,7 @@ export function SupplierGameCheckoutShell({
       setError(
         identityResult && !identityResult.valid
           ? identityResult.message
-          : "Complete the player, package, billing and payment details before continuing.",
+          : "Complete the player, package and billing details before continuing.",
       );
       return;
     }
@@ -218,10 +167,7 @@ export function SupplierGameCheckoutShell({
     try {
       const response = await fetch("/api/checkout/game", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Idempotency-Key": requestKey,
-        },
+        headers: { "Content-Type": "application/json", "Idempotency-Key": requestKey },
         body: JSON.stringify({
           gameSlug,
           marketCode: selectedPackage.marketCode,
@@ -229,32 +175,22 @@ export function SupplierGameCheckoutShell({
           identity,
           billing: {
             ...billing,
-            presentmentCurrency:
-              fxSnapshot.mode === "live" ? billing.presentmentCurrency : "INR",
+            presentmentCurrency: fxSnapshot.mode === "live" ? billing.presentmentCurrency : "INR",
           },
         }),
       });
       const result = (await response.json()) as CheckoutResponse;
-
       if (!response.ok || !result.ok || !result.order) {
         setError(result.message ?? "The checkout could not create an order.");
         setMessage("");
         return;
       }
 
-      sessionStorage.setItem(
-        `recharza-order:${result.order.id}`,
-        result.order.tracking.accessToken,
-      );
+      sessionStorage.setItem(`recharza-order:${result.order.id}`, result.order.tracking.accessToken);
       setOrder(result.order);
-      setMessage(
-        result.paymentSession?.message ??
-          "Order saved. Select a method in secure checkout and complete payment.",
-      );
+      setMessage(result.paymentSession?.message ?? "Order saved. Complete payment in the secure checkout below.");
     } catch {
-      setError(
-        "The checkout service could not be reached. Retrying uses the same protected order key.",
-      );
+      setError("The checkout service could not be reached. Retrying uses the same protected order key.");
       setMessage("");
     } finally {
       setIsSubmitting(false);
@@ -263,225 +199,183 @@ export function SupplierGameCheckoutShell({
 
   if (!selectedPackage) {
     return (
-      <div className="flex items-start gap-3 rounded-2xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm text-amber-100">
-        <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-300" />
-        <div>
-          <p className="font-black">This market is not available yet.</p>
-          <p className="mt-1 text-amber-100/70">
-            No curated supplier packs are published for this game and region.
-          </p>
-        </div>
+      <div className="rounded-xl border border-amber-300/20 bg-amber-300/[0.07] p-4 text-sm text-amber-100">
+        <p className="font-black">This market is not available yet.</p>
+        <p className="mt-1 text-amber-100/65">No curated supplier packs are published for this game and region.</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={submitCheckout} className="mx-auto grid max-w-6xl gap-5">
-      {markets.length > 1 ? (
-        <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 sm:p-5">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
-                Account market
-              </p>
-              <p className="mt-1 text-sm text-slate-500">
-                Choose the exact region used by the game account.
-              </p>
-            </div>
-            <div className="flex max-w-full gap-2 overflow-x-auto pb-1">
+    <form onSubmit={submitCheckout} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="min-w-0 space-y-5">
+        {markets.length > 1 ? (
+          <section className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div className="flex min-w-max gap-2">
               {markets.map((market) => (
                 <button
                   key={market.code}
                   type="button"
                   onClick={() => chooseMarket(market.code)}
-                  className={`min-h-10 shrink-0 rounded-xl border px-4 py-2 text-sm font-black transition ${
+                  className={`min-h-10 rounded-lg border px-4 text-xs font-black transition ${
                     market.code === marketCode
-                      ? "border-violet-400/50 bg-violet-400/15 text-white"
-                      : "border-white/10 bg-black/20 text-slate-400 hover:text-white"
+                      ? "border-violet-400/45 bg-violet-500/12 text-white"
+                      : "border-white/[0.08] bg-[#0d0f16] text-slate-500 hover:border-white/[0.16] hover:text-white"
                   }`}
                 >
                   {market.label}
                 </button>
               ))}
             </div>
+          </section>
+        ) : null}
+
+        <section className="rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-base font-black text-white">Order information</h2>
+              <p className="mt-1 text-xs text-slate-500">Enter the destination exactly as shown in-game.</p>
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.12em] text-violet-300">Step 1</span>
+          </div>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {gameSlug === "valorant" ? (
+              <label className="text-xs font-black text-slate-400 sm:col-span-2">
+                Riot ID
+                <input
+                  required
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  maxLength={32}
+                  value={identity.riotId}
+                  onChange={(event) => {
+                    setIdentity({ ...identity, riotId: event.target.value.slice(0, 32) });
+                    resetOrder();
+                  }}
+                  placeholder="PlayerName#TAG"
+                  className={fieldClassName}
+                />
+              </label>
+            ) : (
+              <label className="text-xs font-black text-slate-400">
+                {gameSlug === "genshin-impact" ? "UID" : "Player ID"}
+                <input
+                  required
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={20}
+                  value={identity.playerId}
+                  onChange={(event) => {
+                    const playerId = event.target.value.replace(/\D/g, "").slice(0, 20);
+                    setIdentity({ ...identity, playerId });
+                    resetOrder();
+                  }}
+                  placeholder={gameSlug === "genshin-impact" ? "9 or 10 digit UID" : "Numeric player ID"}
+                  className={fieldClassName}
+                />
+              </label>
+            )}
+
+            {gameSlug === "genshin-impact" ? (
+              <label className="text-xs font-black text-slate-400">
+                Server
+                <select
+                  required
+                  value={identity.serverId}
+                  onChange={(event) => {
+                    setIdentity({ ...identity, serverId: event.target.value });
+                    resetOrder();
+                  }}
+                  className={fieldClassName}
+                >
+                  <option value="">Choose server</option>
+                  {serverOptions.map((option) => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
+          </div>
+
+          <p className={`mt-3 text-xs ${identityResult?.valid ? "text-emerald-300" : "text-slate-600"}`}>
+            {identityResult?.valid ? `Destination format confirmed for ${selectedPackage.marketLabel}.` : identityResult?.message ?? "Enter the destination details to continue."}
+          </p>
+        </section>
+
+        <section>
+          <div className="flex items-end justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-black tracking-[-0.025em] text-white">Choose a package</h2>
+              <p className="mt-1 text-xs text-slate-500">{marketPackages.length} published offers for {selectedPackage.marketLabel}.</p>
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-[0.12em] text-violet-300">Step 2</span>
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4">
+            {marketPackages.map((item) => {
+              const selected = item.id === selectedPackage.id;
+              const icon = itemIcons[item.id];
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    setPackageId(item.id);
+                    resetOrder();
+                  }}
+                  className={`group overflow-hidden rounded-xl border text-left transition ${
+                    selected
+                      ? "border-violet-400/55 bg-violet-500/[0.08] shadow-[0_0_0_1px_rgba(139,92,246,0.15)]"
+                      : "border-white/[0.08] bg-[#0d0f16] hover:border-white/[0.17]"
+                  }`}
+                >
+                  <span className="grid aspect-[4/3] place-items-center bg-[#141821] p-4">
+                    {icon ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={icon} alt="" className="h-full w-full object-contain" />
+                    ) : (
+                      <span className="grid h-14 w-14 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-slate-600">
+                        <StorefrontIcon name="cart" className="h-6 w-6" />
+                      </span>
+                    )}
+                  </span>
+                  <span className="block p-3">
+                    <strong className="line-clamp-2 min-h-10 text-xs leading-5 text-white sm:text-[13px]">{item.name}</strong>
+                    <span className="mt-1.5 block text-base font-black text-violet-300">{formatPresentment(item.amountInPaise)}</span>
+                    {selected ? <span className="mt-1 block text-[10px] font-black text-emerald-300">Selected</span> : null}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </section>
-      ) : null}
 
-      <section className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 sm:p-6">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
-          01 · Player ID
-        </p>
-        <h2 className="mt-2 text-2xl font-black">Confirm where the pack goes</h2>
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          {gameSlug === "valorant" ? (
-            <label className="text-sm font-semibold text-slate-200 sm:col-span-2">
-              Riot ID
-              <input
-                required
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck={false}
-                maxLength={32}
-                value={identity.riotId}
-                onChange={(event) => {
-                  setIdentity({ ...identity, riotId: event.target.value.slice(0, 32) });
-                  resetOrder();
-                }}
-                placeholder="PlayerName#TAG"
-                className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
-              />
-            </label>
-          ) : (
-            <label className="text-sm font-semibold text-slate-200">
-              {gameSlug === "genshin-impact" ? "UID" : "Player ID"}
-              <input
-                required
-                inputMode="numeric"
-                pattern="[0-9]*"
-                maxLength={20}
-                value={identity.playerId}
-                onChange={(event) => {
-                  const playerId = event.target.value.replace(/\D/g, "").slice(0, 20);
-                  setIdentity({ ...identity, playerId });
-                  resetOrder();
-                }}
-                placeholder={gameSlug === "genshin-impact" ? "9 or 10 digit UID" : "Numeric player ID"}
-                className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
-              />
-            </label>
-          )}
-
-          {gameSlug === "genshin-impact" ? (
-            <label className="text-sm font-semibold text-slate-200">
-              Server
-              <select
-                required
-                value={identity.serverId}
-                onChange={(event) => {
-                  setIdentity({ ...identity, serverId: event.target.value });
-                  resetOrder();
-                }}
-                className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
-              >
-                <option value="">Choose server</option>
-                {serverOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
+        <div id="billing">
+          <BillingAddressFields
+            value={billing}
+            onChange={(nextBilling) => {
+              setBilling(nextBilling);
+              resetOrder();
+            }}
+            fxMode={fxSnapshot.mode}
+            stepNumber="03"
+            stepLabel="Billing and currency"
+          />
         </div>
-        <p
-          className={`mt-4 rounded-xl border px-4 py-3 text-sm ${
-            identityResult?.valid
-              ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-100"
-              : "border-white/10 bg-black/20 text-slate-500"
-          }`}
-        >
-          {identityResult?.valid
-            ? `Format confirmed for ${selectedPackage.marketLabel}. The server validates it again when creating the order.`
-            : identityResult?.message ?? "Enter the destination details exactly as shown inside the game."}
-        </p>
-      </section>
 
-      <section className="rounded-2xl border border-white/10 bg-[#0d0d17] p-4 shadow-2xl shadow-black/30 sm:p-6">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
-              02 · Package
-            </p>
-            <h2 className="mt-2 text-2xl font-black">Choose a curated pack</h2>
-          </div>
-          <span className="text-sm font-bold text-emerald-200">
-            {marketPackages.length} live offers
-          </span>
-        </div>
-        <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-3">
-          {marketPackages.map((item) => {
-            const selected = item.id === selectedPackage.id;
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => {
-                  setPackageId(item.id);
-                  resetOrder();
-                }}
-                className={`min-h-24 rounded-2xl border p-3 text-left transition sm:p-4 ${
-                  selected
-                    ? "border-violet-400/50 bg-violet-400/15"
-                    : "border-white/10 bg-white/[0.025] hover:bg-white/[0.055]"
-                }`}
-              >
-                <strong className="line-clamp-2 block text-sm text-white">{item.name}</strong>
-                <span className="mt-2 block text-base font-black text-cyan-200 sm:text-lg">
-                  {formatPresentment(item.amountInPaise)}
-                </span>
-                <span className="mt-1 block truncate text-[10px] text-slate-500 sm:text-[11px]">
-                  {item.marketLabel}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <BillingAddressFields
-        value={billing}
-        onChange={(nextBilling) => {
-          setBilling(nextBilling);
-          resetOrder();
-        }}
-        fxMode={fxSnapshot.mode}
-        stepNumber="03"
-        stepLabel="Payment details"
-      />
-
-      <section className="rounded-2xl border border-white/10 bg-[#0d0d17] p-4 sm:p-6">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
-              Select payment method and pay
-            </p>
-            <h2 className="mt-2 text-2xl font-black">
-              {selectedPackage.name} · {formatPresentment(selectedPackage.amountInPaise)}
-            </h2>
-            <p className="mt-2 text-sm text-slate-500">
-              {gameTitle} · {selectedPackage.marketLabel}
-            </p>
-          </div>
-          <button
-            type="submit"
-            disabled={!canSubmit || isSubmitting || Boolean(order)}
-            className="min-h-12 rounded-xl bg-white px-6 py-3 text-sm font-black text-slate-950 transition hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isSubmitting ? "Creating order..." : order ? "Order created" : "Continue to payment"}
-          </button>
-        </div>
-        {error ? (
-          <p className="mt-4 rounded-xl border border-rose-300/20 bg-rose-300/10 px-4 py-3 text-sm text-rose-100">
-            {error}
-          </p>
-        ) : null}
-        {message ? (
-          <p className="mt-4 rounded-xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm text-cyan-100">
-            {message}
-          </p>
-        ) : null}
+        {error ? <p className="rounded-lg border border-rose-300/20 bg-rose-300/[0.07] px-4 py-3 text-sm text-rose-100">{error}</p> : null}
+        {message ? <p className="rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-4 py-3 text-sm text-cyan-100">{message}</p> : null}
 
         {order ? (
-          <div className="mt-5">
-            <div className="rounded-2xl border border-emerald-300/20 bg-emerald-300/10 p-4 text-sm text-emerald-100">
-              <strong>Order {order.id}</strong> is saved and recoverable.
-              <Link
-                href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`}
-                className="ml-2 font-black underline"
-              >
-                Open tracking
-              </Link>
+          <section className="rounded-xl border border-emerald-300/20 bg-[#0c1110] p-4 sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-sm font-black text-emerald-100">Order {order.id} created</h2>
+                <p className="mt-1 text-xs text-emerald-100/60">The order is saved and recoverable before payment.</p>
+              </div>
+              <Link href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`} className="text-xs font-black text-emerald-300 underline">Open tracking</Link>
             </div>
             <RazorpayTestCheckout
               orderId={order.id}
@@ -494,14 +388,62 @@ export function SupplierGameCheckoutShell({
                 setMessage("Payment verified. Order processing has started.");
               }}
             />
-            {paymentVerified ? (
-              <p className="mt-4 text-sm font-bold text-emerald-200">
-                Payment verification completed for this order.
-              </p>
-            ) : null}
-          </div>
+            {paymentVerified ? <p className="mt-4 text-sm font-bold text-emerald-200">Payment verification completed for this order.</p> : null}
+          </section>
         ) : null}
-      </section>
+      </div>
+
+      <aside className="lg:sticky lg:top-28">
+        <div className="rounded-xl border border-white/[0.09] bg-[#0d0f16] p-4 shadow-[0_18px_50px_rgba(0,0,0,0.22)] sm:p-5">
+          <h2 className="text-base font-black text-white">Order summary</h2>
+          <dl className="mt-4 grid gap-3 text-xs">
+            <div className="flex items-start justify-between gap-4">
+              <dt className="text-slate-500">Product</dt>
+              <dd className="max-w-[11rem] text-right font-bold text-slate-200">{selectedPackage.name}</dd>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-slate-500">Market</dt>
+              <dd className="font-bold text-slate-200">{selectedPackage.marketLabel}</dd>
+            </div>
+            <div className="flex items-center justify-between gap-4 border-t border-white/[0.08] pt-3">
+              <dt className="font-black text-slate-300">Total</dt>
+              <dd className="text-xl font-black text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd>
+            </div>
+          </dl>
+
+          <button
+            type="submit"
+            disabled={!canSubmit || isSubmitting || Boolean(order)}
+            className="mt-5 min-h-12 w-full rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            {isSubmitting ? "Creating order…" : order ? "Order created" : canSubmit ? "Continue to payment" : "Complete details"}
+          </button>
+
+          {!billingIsComplete(billing) ? (
+            <a href="#billing" className="mt-3 block text-center text-[11px] font-black text-slate-500 hover:text-white">Complete billing details</a>
+          ) : null}
+
+          <div className="mt-5 grid gap-3 border-t border-white/[0.08] pt-4">
+            <SummaryPoint icon="shield" title="Secure checkout" text="Server-side order and payment verification." />
+            <SummaryPoint icon="track" title="Private tracking" text="Recoverable order status after creation." />
+            <SummaryPoint icon="support" title="Support ready" text="Ticket system linked to order IDs." />
+          </div>
+        </div>
+      </aside>
     </form>
+  );
+}
+
+function SummaryPoint({ icon, title, text }: { icon: Parameters<typeof StorefrontIcon>[0]["name"]; title: string; text: string }) {
+  return (
+    <div className="flex gap-2.5">
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/[0.035] text-slate-400">
+        <StorefrontIcon name={icon} className="h-4 w-4" />
+      </span>
+      <div>
+        <p className="text-[11px] font-black text-slate-300">{title}</p>
+        <p className="mt-0.5 text-[10px] leading-4 text-slate-600">{text}</p>
+      </div>
+    </div>
   );
 }
