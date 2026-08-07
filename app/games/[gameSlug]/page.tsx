@@ -3,189 +3,130 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ResilientImage } from "@/components/resilient-image";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { SupplierGameCheckoutShell } from "@/components/supplier-game-checkout-shell";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { getGameCheckoutDefinition } from "@/lib/commerce/game-checkout";
 import { mainGames } from "@/lib/games";
-import {
-  getPublishedGamePackages,
-  isSupplierCheckoutGameSlug,
-} from "@/lib/storefront-game-catalog";
+import { getPublicMediaPlacements } from "@/lib/media-assets";
+import { getPublishedGamePackages, isSupplierCheckoutGameSlug } from "@/lib/storefront-game-catalog";
 
 export const dynamic = "force-dynamic";
 
-const checkoutStages = [
-  ["01", "Player ID"],
-  ["02", "Package"],
-  ["03", "Payment"],
-] as const;
-
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ gameSlug: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ gameSlug: string }> }): Promise<Metadata> {
   const { gameSlug } = await params;
   const definition = getGameCheckoutDefinition(gameSlug);
   return definition
-    ? {
-        title: `${definition.title} Top-Up`,
-        description: definition.readinessNote,
-      }
+    ? { title: `${definition.title} Top-Up`, description: definition.readinessNote }
     : { title: "Game checkout" };
 }
 
-export default async function GameCheckoutPage({
-  params,
-}: {
-  params: Promise<{ gameSlug: string }>;
-}) {
+export default async function GameCheckoutPage({ params }: { params: Promise<{ gameSlug: string }> }) {
   const { gameSlug } = await params;
   const definition = getGameCheckoutDefinition(gameSlug);
   const game = mainGames.find((item) => item.slug === gameSlug);
   if (!definition || !game || gameSlug === "mobile-legends") notFound();
 
   if (isSupplierCheckoutGameSlug(gameSlug)) {
-    const [packages, fxSnapshot] = await Promise.all([
+    const [packages, fxSnapshot, media] = await Promise.all([
       getPublishedGamePackages(gameSlug),
       getCurrencyRateSnapshot(),
+      getPublicMediaPlacements(),
     ]);
     const marketCount = new Set(packages.map((item) => item.marketCode)).size;
+    const gameLogo = media.get(`game.${gameSlug}.logo`);
+    const gameArtwork = media.get(`game.${gameSlug}.artwork`);
+    const itemIcons = Object.fromEntries(
+      packages.flatMap((item) => {
+        const placement = media.get(`product.${item.id}.icon`);
+        return placement ? [[item.id, placement.url] as const] : [];
+      }),
+    );
 
     return (
-      <main className="storefront-page min-h-screen overflow-x-clip pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
+      <main className="storefront-page min-h-screen overflow-x-clip text-white">
         <SiteHeader />
 
-        <section className="relative overflow-hidden border-b border-white/[0.08]">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-[-9rem] top-[-12rem] h-[28rem] w-[28rem] rounded-full bg-violet-600/14 blur-[120px]" />
-            <div className="absolute right-[-7rem] top-0 h-[25rem] w-[25rem] rounded-full bg-cyan-500/9 blur-[120px]" />
-            <div className="storefront-ambient-grid absolute inset-0 opacity-20" />
-          </div>
-
-          <div className="relative mx-auto grid max-w-7xl gap-6 px-4 py-7 sm:px-6 sm:py-9 lg:grid-cols-[minmax(0,1fr)_14rem] lg:items-center lg:px-8">
-            <div>
-              <Link
-                href="/#games"
-                className="inline-flex min-h-10 items-center gap-2 rounded-xl text-sm font-black text-violet-300 transition hover:text-violet-200"
-              >
-                <span aria-hidden="true">←</span>
-                Back to games
-              </Link>
-
-              <div className="mt-4 inline-flex rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-emerald-100">
-                Curated checkout
-              </div>
-              <h1 className="mt-3 max-w-3xl text-3xl font-black tracking-[-0.055em] sm:text-4xl lg:text-5xl">
-                {definition.title} top-up
-              </h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
-                Confirm the player destination, choose a published package, then review billing and payment in one recoverable order flow.
-              </p>
-
-              <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-bold text-slate-300">
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                  {packages.length} curated offers
-                </span>
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                  {marketCount} {marketCount === 1 ? "market" : "markets"}
-                </span>
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                  Private tracking
-                </span>
-              </div>
+        <section className="border-b border-white/[0.08] bg-[#0a0c12] px-4 py-5 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[1240px]">
+            <div className="mb-4 flex items-center gap-2 text-[11px] text-slate-600">
+              <Link href="/" className="hover:text-white">Home</Link>
+              <span>/</span>
+              <Link href="/#games" className="hover:text-white">Top Up</Link>
+              <span>/</span>
+              <span className="text-slate-400">{definition.title}</span>
             </div>
 
-            <div className="relative hidden aspect-[3/4] overflow-hidden rounded-2xl border border-white/10 bg-[#10101a] shadow-[0_24px_70px_rgba(0,0,0,0.42)] lg:block">
-              <ResilientImage
-                sources={game.artworkSources}
-                alt={game.artworkAlt}
-                fallbackLabel={game.title.slice(0, 2).toUpperCase()}
-                fill
-                priority
-                sizes="224px"
-                className="object-cover"
-                fallbackClassName="absolute inset-0 h-full w-full"
-              />
-              <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent p-4 pt-16">
-                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-200">
-                  {game.publisher}
-                </p>
-                <p className="mt-1 text-sm font-black text-white">{game.title}</p>
+            <div className="flex flex-col gap-4 rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+              <div className="flex min-w-0 items-center gap-4">
+                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-white/[0.08] bg-[#151923] sm:h-20 sm:w-20">
+                  <ResilientImage
+                    sources={gameLogo ? [gameLogo.url, ...game.logoSources] : game.logoSources}
+                    alt={gameLogo?.altText ?? game.logoAlt}
+                    fallbackLabel={game.title.slice(0, 2).toUpperCase()}
+                    fill
+                    priority
+                    sizes="80px"
+                    className="object-contain p-2"
+                    fallbackClassName="absolute inset-0 h-full w-full"
+                  />
+                </div>
+                <div className="min-w-0">
+                  <h1 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">{definition.title} Top Up</h1>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-slate-500">
+                    <span className="text-amber-300">★ 4.9</span>
+                    <span>{packages.length} offers</span>
+                    <span>{marketCount} {marketCount === 1 ? "market" : "markets"}</span>
+                    <span className="inline-flex items-center gap-1 text-emerald-300"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Secure</span>
+                    <span className="inline-flex items-center gap-1 text-cyan-300"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative hidden h-20 w-44 overflow-hidden rounded-lg border border-white/[0.08] bg-[#12151d] md:block">
+                <ResilientImage
+                  sources={gameArtwork ? [gameArtwork.url, ...game.artworkSources] : game.artworkSources}
+                  alt={gameArtwork?.altText ?? game.artworkAlt}
+                  fallbackLabel={game.title}
+                  fill
+                  sizes="176px"
+                  className="object-cover"
+                  fallbackClassName="absolute inset-0 h-full w-full"
+                />
               </div>
             </div>
           </div>
         </section>
 
-        <section className="border-b border-white/[0.08] bg-white/[0.018]">
-          <div className="mx-auto grid max-w-7xl grid-cols-3 px-4 sm:px-6 lg:px-8">
-            {checkoutStages.map(([number, label], index) => (
-              <div
-                key={number}
-                className={`flex min-h-14 items-center justify-center gap-2 px-2 text-center sm:min-h-16 sm:justify-start sm:px-4 ${
-                  index > 0 ? "border-l border-white/[0.08]" : ""
-                }`}
-              >
-                <span className="hidden text-[10px] font-black text-violet-300 sm:inline">
-                  {number}
-                </span>
-                <span className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-400 sm:text-xs">
-                  {label}
-                </span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.025] px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <span className="grid h-10 w-10 place-items-center rounded-xl bg-violet-300/10 text-violet-200">
-                <StorefrontIcon name="shield" className="h-[18px] w-[18px]" />
-              </span>
-              <div>
-                <p className="text-sm font-black text-white">Review before payment</p>
-                <p className="mt-0.5 text-xs leading-5 text-slate-500">
-                  Player destination, market, package and final amount must all match.
-                </p>
-              </div>
-            </div>
-            <Link href="/support" className="text-xs font-black text-cyan-300 hover:text-cyan-200">
-              Need checkout help?
-            </Link>
-          </div>
-
+        <section className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
           <SupplierGameCheckoutShell
             gameSlug={gameSlug}
             gameTitle={definition.title}
             packages={packages}
             fxSnapshot={fxSnapshot}
+            itemIcons={itemIcons}
           />
         </section>
+
+        <SiteFooter />
       </main>
     );
   }
 
   return (
-    <main className="storefront-page min-h-screen pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
+    <main className="storefront-page min-h-screen text-white">
       <SiteHeader />
       <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <Link href="/#games" className="text-sm font-semibold text-violet-300 hover:text-violet-200">
-          ← Back to games
-        </Link>
-        <div className="mt-6 rounded-2xl border border-amber-400/20 bg-amber-400/10 p-5 sm:p-7">
-          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-amber-200">
-            Checkout unavailable
-          </p>
-          <h1 className="mt-3 text-2xl font-black sm:text-3xl">{definition.title}</h1>
-          <p className="mt-3 leading-7 text-amber-100/80">{definition.readinessNote}</p>
-          <p className="mt-4 text-sm leading-6 text-amber-100/65">
-            No substitute market or unverified price will be used. Return to the catalogue or contact support for availability.
-          </p>
+        <Link href="/#games" className="text-sm font-semibold text-violet-300 hover:text-violet-200">← Back to games</Link>
+        <div className="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] p-5 sm:p-7">
+          <h1 className="text-2xl font-black sm:text-3xl">{definition.title}</h1>
+          <p className="mt-3 leading-7 text-amber-100/75">{definition.readinessNote}</p>
+          <p className="mt-4 text-sm leading-6 text-amber-100/60">No substitute market or unverified price will be used. Return to the catalogue or contact support for availability.</p>
         </div>
       </section>
+      <SiteFooter />
     </main>
   );
 }
