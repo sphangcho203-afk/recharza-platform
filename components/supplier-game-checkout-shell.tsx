@@ -5,6 +5,7 @@ import { type FormEvent, useMemo, useRef, useState } from "react";
 
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
+import { ResilientImage } from "@/components/resilient-image";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import {
   convertInrPaiseToCurrencyMinor,
@@ -25,6 +26,11 @@ type CheckoutPackage = {
   marketLabel: string;
   region: string | null;
   fields: unknown;
+  media: {
+    sources: string[];
+    alt: string;
+    source: string;
+  };
 };
 
 type FxSnapshot = {
@@ -86,13 +92,11 @@ export function SupplierGameCheckoutShell({
   gameTitle,
   packages,
   fxSnapshot,
-  itemIcons = {},
 }: {
   gameSlug: SupplierCheckoutGameSlug;
   gameTitle: string;
   packages: CheckoutPackage[];
   fxSnapshot: FxSnapshot;
-  itemIcons?: Record<string, string>;
 }) {
   const markets = useMemo(() => {
     const map = new Map<string, string>();
@@ -316,7 +320,6 @@ export function SupplierGameCheckoutShell({
           <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4">
             {marketPackages.map((item) => {
               const selected = item.id === selectedPackage.id;
-              const icon = itemIcons[item.id];
               return (
                 <button
                   key={item.id}
@@ -331,15 +334,16 @@ export function SupplierGameCheckoutShell({
                       : "border-white/[0.08] bg-[#0d0f16] hover:border-white/[0.17]"
                   }`}
                 >
-                  <span className="grid aspect-[4/3] place-items-center bg-[#141821] p-4">
-                    {icon ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={icon} alt="" className="h-full w-full object-contain" />
-                    ) : (
-                      <span className="grid h-14 w-14 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-slate-600">
-                        <StorefrontIcon name="cart" className="h-6 w-6" />
-                      </span>
-                    )}
+                  <span className="relative block aspect-[4/3] overflow-hidden bg-[#141821]">
+                    <ResilientImage
+                      sources={item.media.sources}
+                      alt={item.media.alt}
+                      fallbackLabel={item.name.slice(0, 2).toUpperCase()}
+                      fill
+                      sizes="(max-width: 640px) 45vw, 190px"
+                      className="object-contain p-4 transition duration-300 group-hover:scale-[1.035]"
+                      fallbackClassName="absolute inset-0 h-full w-full"
+                    />
                   </span>
                   <span className="block p-3">
                     <strong className="line-clamp-2 min-h-10 text-xs leading-5 text-white sm:text-[13px]">{item.name}</strong>
