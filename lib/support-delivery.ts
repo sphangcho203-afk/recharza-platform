@@ -1,5 +1,6 @@
 import "server-only";
 
+import { sendSystemEmail } from "@/lib/mail-delivery";
 import { getSupportNotificationEmail } from "@/lib/support-config";
 import { supportCategoryLabel, type SupportCategory } from "@/lib/support";
 
@@ -143,12 +144,9 @@ export async function sendTelegramSupportNotification(
 export async function sendSupportEmailNotification(
   ticket: SupportDeliveryTicket,
 ): Promise<DeliveryResult> {
-  const apiKey = process.env.RESEND_API_KEY?.trim();
-  const from = process.env.RESEND_FROM_EMAIL?.trim();
   const to = getSupportNotificationEmail();
-
-  if (!apiKey || !from || !to) {
-    return { status: "SKIPPED", reason: "Support email delivery is not configured." };
+  if (!to) {
+    return { status: "SKIPPED", reason: "Support notification recipient is not configured." };
   }
 
   const details = [
@@ -168,39 +166,16 @@ export async function sendSupportEmailNotification(
     .join("");
 
   try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": `support-${ticket.publicId}`,
-      },
-      body: JSON.stringify({
-        from,
-        to: [to],
-        reply_to: ticket.requesterEmail || undefined,
-        subject: `[${ticket.publicId}] ${ticket.subject}`,
-        html: `<div style="background:#07070b;padding:28px;font-family:Arial,sans-serif;color:#fff"><div style="max-width:680px;margin:auto;border:1px solid #29293a;border-radius:20px;overflow:hidden;background:#101018"><div style="padding:22px 24px;background:linear-gradient(135deg,#172554,#312e81);"><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#a5f3fc;font-weight:800">Recharza support</div><h1 style="margin:10px 0 0;font-size:28px">${escapeHtml(ticket.subject)}</h1></div><div style="padding:22px 24px"><table style="width:100%;border-collapse:collapse;border:1px solid #242432">${details}</table><p style="margin:22px 0 0;white-space:pre-wrap;line-height:1.7;color:#cbd5e1">${escapeHtml(ticket.description)}</p><p style="margin:20px 0 0;color:#64748b;font-size:12px">Never request passwords, OTPs, UPI PINs, card PINs, or remote-device access.</p></div></div></div>`,
-        text: `Ticket: ${ticket.publicId}\nCategory: ${supportCategoryLabel(ticket.category)}\nOrder: ${ticket.orderPublicId || "Not provided"}\nGame: ${ticket.gameSlug || "Not provided"}\n\n${ticket.subject}\n${ticket.description}`,
-      }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(15_000),
+    const result = await sendSystemEmail({
+      to,
+      replyTo: ticket.requesterEmail || undefined,
+      subject: `[${ticket.publicId}] ${ticket.subject}`,
+      html: `<div style="background:#07070b;padding:28px;font-family:Arial,sans-serif;color:#fff"><div style="max-width:680px;margin:auto;border:1px solid #29293a;border-radius:20px;overflow:hidden;background:#101018"><div style="padding:22px 24px;background:linear-gradient(135deg,#172554,#312e81);"><div style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#a5f3fc;font-weight:800">Recharza support</div><h1 style="margin:10px 0 0;font-size:28px">${escapeHtml(ticket.subject)}</h1></div><div style="padding:22px 24px"><table style="width:100%;border-collapse:collapse;border:1px solid #242432">${details}</table><p style="margin:22px 0 0;white-space:pre-wrap;line-height:1.7;color:#cbd5e1">${escapeHtml(ticket.description)}</p><p style="margin:20px 0 0;color:#64748b;font-size:12px">Never request passwords, OTPs, UPI PINs, card PINs, or remote-device access.</p></div></div></div>`,
+      text: `Ticket: ${ticket.publicId}\nCategory: ${supportCategoryLabel(ticket.category)}\nOrder: ${ticket.orderPublicId || "Not provided"}\nGame: ${ticket.gameSlug || "Not provided"}\n\n${ticket.subject}\n${ticket.description}`,
+      idempotencyKey: `support-${ticket.publicId}`,
     });
 
-    const payload = (await response.json().catch(() => null)) as
-      | { id?: unknown; message?: unknown }
-      | null;
-    if (!response.ok || typeof payload?.id !== "string") {
-      return {
-        status: "FAILED",
-        reason:
-          typeof payload?.message === "string"
-            ? payload.message
-            : `Email delivery returned HTTP ${response.status}.`,
-      };
-    }
-
-    return { status: "SENT", messageId: payload.id };
+    return { status: "SENT", messageId: result.messageId };
   } catch (error) {
     return {
       status: "FAILED",
