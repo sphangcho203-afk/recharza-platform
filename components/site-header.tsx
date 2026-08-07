@@ -25,7 +25,7 @@ const navLinks = [
 export async function SiteHeader({ content }: SiteHeaderProps = {}) {
   const [storefront, media] = await Promise.all([
     content ? Promise.resolve(content) : getPublishedStorefrontContent(),
-    getPublicMediaPlacements(),
+    getPublicMediaPlacements().catch(() => new Map()),
   ]);
   const brandLogo = media.get("brand.primary.logo");
 
