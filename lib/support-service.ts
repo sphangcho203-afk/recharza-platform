@@ -72,6 +72,13 @@ function deliveryMessageId(result: DeliveryResult) {
   return result.status === "SENT" ? result.messageId : null;
 }
 
+function deliveryError(result: DeliveryResult) {
+  if (result.status === "FAILED" || result.status === "SKIPPED") {
+    return result.reason.slice(0, 1_000);
+  }
+  return null;
+}
+
 export async function createAndDeliverSupportTicket(
   input: CreateSupportTicketRequest,
 ): Promise<CreatedSupportTicket> {
@@ -172,8 +179,10 @@ export async function createAndDeliverSupportTicket(
         SET
           "telegramDeliveryStatus" = ${deliveryStatus(telegramDelivery)},
           "telegramSupportMessageId" = ${deliveryMessageId(telegramDelivery)},
+          "telegramDeliveryError" = ${deliveryError(telegramDelivery)},
           "emailDeliveryStatus" = ${deliveryStatus(emailDelivery)},
           "emailProviderMessageId" = ${deliveryMessageId(emailDelivery)},
+          "emailDeliveryError" = ${deliveryError(emailDelivery)},
           "updatedAt" = ${new Date()}
         WHERE "publicId" = ${publicId}
       `;
