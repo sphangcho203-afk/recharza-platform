@@ -44,7 +44,11 @@ export async function POST(request: Request) {
 
   const incomingUrl = new URL(request.url);
   const webhookUrl = new URL("/api/telegram/webhook", incomingUrl.origin);
-  const protectionBypass = incomingUrl.searchParams.get("x-vercel-protection-bypass");
+  const protectionBypass =
+    incomingUrl.searchParams.get("x-vercel-protection-bypass")?.trim() ||
+    request.headers.get("x-vercel-protection-bypass")?.trim() ||
+    "";
+
   if (protectionBypass) {
     webhookUrl.searchParams.set("x-vercel-protection-bypass", protectionBypass);
   }
