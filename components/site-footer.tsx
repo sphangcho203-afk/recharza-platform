@@ -28,7 +28,7 @@ const channelIcons: Record<string, SupportChannelIconName> = {
 
 export async function SiteFooter() {
   const [media, channels] = await Promise.all([
-    getPublicMediaPlacements(),
+    getPublicMediaPlacements().catch(() => new Map()),
     Promise.resolve(getPublicSupportChannels()),
   ]);
   const brandLogo = media.get("brand.primary.logo");
