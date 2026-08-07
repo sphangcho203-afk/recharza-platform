@@ -63,7 +63,7 @@ export function StorefrontHero({
               className="relative min-h-[18rem] overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-violet-400 lg:min-h-0"
             >
               <StorefrontArtwork
-                artworkKey="storefront-hero"
+                artworkKey="mobile-legends-india"
                 sources={sources}
                 alt={imageAlt ?? "Recharza game top-up storefront"}
                 fallbackLabel="Recharza"
