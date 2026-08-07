@@ -11,10 +11,6 @@ function value(name) {
   return (process.env[name] || "").trim();
 }
 
-function requireValue(name, message = `${name} is required.`) {
-  if (!value(name)) errors.push(message);
-}
-
 function requireSecret(name, minimum = 32) {
   const current = value(name);
   if (!current) errors.push(`${name} is required.`);
@@ -56,6 +52,34 @@ requireSecret("ORDER_ACCESS_SECRET");
 requireSecret("RATE_LIMIT_SALT");
 requireSecret("CRON_SECRET");
 
+const gmailMailValues = [
+  value("GOOGLE_MAIL_CLIENT_ID"),
+  value("GOOGLE_MAIL_CLIENT_SECRET"),
+  value("GOOGLE_MAIL_REFRESH_TOKEN"),
+];
+const gmailMailConfiguredCount = gmailMailValues.filter(Boolean).length;
+const gmailMailReady = gmailMailConfiguredCount === gmailMailValues.length;
+const resendMailValues = [value("RESEND_API_KEY"), value("RESEND_FROM_EMAIL")];
+const resendMailConfiguredCount = resendMailValues.filter(Boolean).length;
+const resendMailReady = resendMailConfiguredCount === resendMailValues.length;
+
+if (gmailMailConfiguredCount > 0 && !gmailMailReady) {
+  errors.push(
+    "GOOGLE_MAIL_CLIENT_ID, GOOGLE_MAIL_CLIENT_SECRET, and GOOGLE_MAIL_REFRESH_TOKEN must be configured together.",
+  );
+}
+if (
+  gmailMailReady &&
+  !value("GOOGLE_MAIL_CLIENT_ID").endsWith(".apps.googleusercontent.com")
+) {
+  errors.push(
+    "GOOGLE_MAIL_CLIENT_ID must be a Google OAuth client ID ending in .apps.googleusercontent.com.",
+  );
+}
+if (resendMailConfiguredCount > 0 && !resendMailReady) {
+  errors.push("RESEND_API_KEY and RESEND_FROM_EMAIL must be configured together.");
+}
+
 if (hosted) {
   if (!validEmailList(value("AUTH_ADMIN_EMAILS"))) {
     errors.push(
@@ -69,20 +93,16 @@ if (hosted) {
       "GOOGLE_CLIENT_ID must be a Google web client ID ending in .apps.googleusercontent.com.",
     );
   }
-  requireValue(
-    "GOOGLE_CLIENT_SECRET",
-    "GOOGLE_CLIENT_SECRET is required for hosted Google OAuth.",
-  );
+  if (!value("GOOGLE_CLIENT_SECRET")) {
+    errors.push("GOOGLE_CLIENT_SECRET is required for hosted Google OAuth.");
+  }
   requireSecret("GOOGLE_OAUTH_STATE_SECRET");
 
-  requireValue(
-    "RESEND_API_KEY",
-    "RESEND_API_KEY is required for hosted account and order email delivery.",
-  );
-  requireValue(
-    "RESEND_FROM_EMAIL",
-    "RESEND_FROM_EMAIL is required for hosted account and order email delivery.",
-  );
+  if (!gmailMailReady && !resendMailReady) {
+    errors.push(
+      "Hosted account and order email delivery requires complete Gmail OAuth mail credentials or complete Resend credentials.",
+    );
+  }
 }
 
 const paymentProvider = (value("PAYMENT_PROVIDER") || "internal").toLowerCase();
