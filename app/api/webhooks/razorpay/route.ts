@@ -1,5 +1,6 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { ensureOrderFulfilment } from "@/lib/fulfilment";
+import { sendPaymentConfirmedLifecycleEmail } from "@/lib/lifecycle-email";
 import { getPrisma } from "@/lib/prisma";
 import {
   hashWebhookPayload,
@@ -85,7 +86,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const eventId = request.headers.get("x-razorpay-event-id")?.trim() || null;
+    const eventId = request.headers.get("x-razpay-event-id")?.trim() || request.headers.get("x-razorpay-event-id")?.trim() || null;
     const payloadHash = hashWebhookPayload(rawBody);
     const prisma = getPrisma();
     const duplicateFilters: Prisma.PaymentWebhookWhereInput[] = [{ payloadHash }];
@@ -145,6 +146,7 @@ export async function POST(request: Request) {
 
     const order = await prisma.order.findUnique({
       where: { paymentSessionId: event.providerOrderId },
+      include: { customer: true },
     });
 
     if (!order) {
@@ -209,6 +211,26 @@ export async function POST(request: Request) {
         },
       }),
     ]);
+
+    if (targetStatus === "PAID" && order.status !== "PAID") {
+      try {
+        await sendPaymentConfirmedLifecycleEmail({
+          databaseOrderId: order.id,
+          publicOrderId: order.publicId,
+          customerId: order.customerId,
+          email: order.billingEmail ?? order.customer.email,
+          gameSlug: order.gameSlug,
+          packageName: order.packageName,
+          amountInPaise: order.amountInPaise,
+          playerId: order.playerId,
+          zoneId: order.zoneId,
+          nickname: order.verifiedNickname,
+          occurredAt: new Date(),
+        });
+      } catch (error) {
+        console.error("Payment-confirmed email failed", error);
+      }
+    }
 
     let fulfilment = null;
     if (targetStatus === "PAID") {
