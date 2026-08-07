@@ -14,7 +14,7 @@ const companyLinks = [
 
 const supportLinks = [
   { label: "Help Center", href: "/support" },
-  { label: "Refund policy", href: "/policies/refund" },
+  { label: "Refund policy", href: "/policies/refunds" },
   { label: "Privacy policy", href: "/policies/privacy" },
   { label: "Terms of service", href: "/policies/terms" },
 ];
@@ -48,14 +48,7 @@ export async function SiteFooter() {
                 if (!icon) return null;
                 const className = "grid h-9 w-9 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025] text-slate-400 transition hover:border-white/[0.16] hover:bg-white/[0.05] hover:text-white";
                 return channel.href && channel.available ? (
-                  <a
-                    key={channel.id}
-                    href={channel.href}
-                    target={channel.id === "email" ? undefined : "_blank"}
-                    rel={channel.id === "email" ? undefined : "noreferrer"}
-                    aria-label={channel.label}
-                    className={className}
-                  >
+                  <a key={channel.id} href={channel.href} target={channel.id === "email" ? undefined : "_blank"} rel={channel.id === "email" ? undefined : "noreferrer"} aria-label={channel.label} className={className}>
                     <SupportChannelIcon name={icon} className="h-4.5 w-4.5" />
                   </a>
                 ) : (
