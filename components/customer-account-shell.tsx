@@ -4,7 +4,6 @@ import Link from "next/link";
 import { type FormEvent, useEffect, useState } from "react";
 
 import { CustomerDashboard } from "@/components/customer-dashboard";
-import { RecharzaMark } from "@/components/recharza-mark";
 import { StorefrontIcon } from "@/components/storefront-icon";
 
 type AuthMode = "login" | "signup";
@@ -18,13 +17,7 @@ type SignupSuccess = {
 };
 
 const inputClassName =
-  "mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-[#08080f] px-4 py-3 text-base text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15";
-
-const accountBenefits = [
-  ["track", "One place for every order"],
-  ["games", "Save repeat game destinations"],
-  ["shield", "Protected account and recovery"],
-] as const;
+  "mt-2 min-h-12 w-full rounded-lg border border-white/[0.09] bg-[#080a10] px-3.5 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/10";
 
 export function CustomerAccountShell() {
   const [loading, setLoading] = useState(true);
@@ -37,7 +30,6 @@ export function CustomerAccountShell() {
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
@@ -46,7 +38,6 @@ export function CustomerAccountShell() {
 
   useEffect(() => {
     let active = true;
-
     fetch("/api/auth/session", { cache: "no-store" })
       .then((response) => response.json())
       .then((result: { authenticated?: boolean }) => {
@@ -58,7 +49,6 @@ export function CustomerAccountShell() {
       .finally(() => {
         if (active) setLoading(false);
       });
-
     return () => {
       active = false;
     };
@@ -68,26 +58,19 @@ export function CustomerAccountShell() {
     event.preventDefault();
     setSubmitting(true);
     setError(false);
-    setMessage("Signing in securely...");
-
+    setMessage("");
     try {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: loginEmail, password: loginPassword }),
       });
-      const result = (await response.json()) as {
-        ok?: boolean;
-        message?: string;
-      };
-
+      const result = (await response.json()) as { ok?: boolean; message?: string };
       if (!response.ok || !result.ok) {
         setError(true);
         setMessage(result.message ?? "Sign-in failed.");
         return;
       }
-
-      setMessage(result.message ?? "Signed in successfully.");
       setAuthenticated(true);
     } catch {
       setError(true);
@@ -101,8 +84,7 @@ export function CustomerAccountShell() {
     event.preventDefault();
     setSubmitting(true);
     setError(false);
-    setMessage("Creating your Recharza account...");
-
+    setMessage("");
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
@@ -126,13 +108,11 @@ export function CustomerAccountShell() {
           createdAt: string;
         };
       };
-
       if (!response.ok || !result.ok || !result.customer) {
         setError(true);
         setMessage(result.message ?? "The account could not be created.");
         return;
       }
-
       setSignupSuccess({
         name: result.customer.name ?? name,
         username: result.customer.username ?? username,
@@ -140,7 +120,6 @@ export function CustomerAccountShell() {
         createdAt: result.customer.createdAt,
         emailQueued: Boolean(result.emailQueued),
       });
-      setMessage(result.message ?? "Account created successfully.");
     } catch {
       setError(true);
       setMessage("The account service could not be reached.");
@@ -150,250 +129,166 @@ export function CustomerAccountShell() {
   }
 
   if (loading) {
-    return (
-      <div className="mx-auto grid max-w-6xl gap-4 lg:grid-cols-[0.8fr_1.2fr]" aria-label="Loading account">
-        <div className="hidden min-h-[34rem] animate-pulse rounded-[2rem] border border-white/10 bg-white/[0.025] lg:block" />
-        <div className="min-h-[34rem] animate-pulse rounded-[2rem] border border-white/10 bg-white/[0.035]" />
-      </div>
-    );
+    return <div className="min-h-[30rem] animate-pulse rounded-xl border border-white/[0.08] bg-[#0b0d13]" aria-label="Loading account" />;
   }
 
-  if (authenticated && !signupSuccess) {
-    return <CustomerDashboard />;
-  }
+  if (authenticated && !signupSuccess) return <CustomerDashboard />;
 
   if (signupSuccess) {
     return (
-      <section className="mx-auto max-w-3xl overflow-hidden rounded-[2rem] border border-emerald-400/20 bg-[#0b1112] shadow-[0_34px_100px_rgba(0,0,0,0.4)]">
-        <div className="grid gap-8 border-b border-emerald-400/15 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.22),transparent_48%)] p-6 sm:p-8 lg:grid-cols-[auto_1fr] lg:items-center">
-          <span className="grid h-20 w-20 place-items-center rounded-3xl border border-emerald-300/25 bg-emerald-300/10 text-emerald-200">
-            <StorefrontIcon name="shield" className="h-9 w-9" />
+      <section className="rounded-xl border border-emerald-400/20 bg-[#0b1110] p-6 sm:p-8">
+        <div className="flex items-start gap-4">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-emerald-400/10 text-emerald-300">
+            <StorefrontIcon name="shield" className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
-              Account ready
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">
-              Welcome, {signupSuccess.name}.
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-slate-400">
-              Your Recharza workspace is ready for orders, saved destinations, receipts, and support.
-            </p>
+            <h2 className="text-2xl font-black text-white">Account created</h2>
+            <p className="mt-1 text-sm text-slate-500">Welcome, {signupSuccess.name}. Your account is ready.</p>
           </div>
         </div>
-
-        <div className="p-6 sm:p-8">
-          <dl className="grid overflow-hidden rounded-2xl border border-white/10 bg-black/20 text-sm sm:grid-cols-2">
-            {[
-              ["Username", `@${signupSuccess.username}`],
-              ["Email", signupSuccess.email],
-              [
-                "Created",
-                new Date(signupSuccess.createdAt).toLocaleString("en-IN", {
-                  dateStyle: "medium",
-                  timeStyle: "short",
-                }),
-              ],
-              [
-                "Welcome email",
-                signupSuccess.emailQueued ? "Queued successfully" : "Retry scheduled",
-              ],
-            ].map(([label, value]) => (
-              <div key={label} className="border-b border-white/10 p-4 odd:sm:border-r last:border-b-0">
-                <dt className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">
-                  {label}
-                </dt>
-                <dd className="mt-2 break-all font-bold text-white">{value}</dd>
-              </div>
-            ))}
-          </dl>
-
-          <button
-            type="button"
-            onClick={() => {
-              setSignupSuccess(null);
-              setAuthenticated(true);
-            }}
-            className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-300 px-5 py-3.5 text-sm font-black text-slate-950 transition hover:bg-emerald-200"
-          >
-            Open my account
-            <StorefrontIcon name="arrow" className="h-4 w-4" />
-          </button>
-        </div>
+        <dl className="mt-5 grid gap-px overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2">
+          <Info label="Username" value={`@${signupSuccess.username}`} />
+          <Info label="Email" value={signupSuccess.email} />
+          <Info label="Created" value={new Date(signupSuccess.createdAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })} />
+          <Info label="Welcome email" value={signupSuccess.emailQueued ? "Queued" : "Delivery pending"} />
+        </dl>
+        <button
+          type="button"
+          onClick={() => {
+            setSignupSuccess(null);
+            setAuthenticated(true);
+          }}
+          className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400"
+        >
+          Open my account
+          <StorefrontIcon name="arrow" className="h-4 w-4" />
+        </button>
       </section>
     );
   }
 
   return (
-    <section className="mx-auto grid max-w-6xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b0b12] shadow-[0_34px_110px_rgba(0,0,0,0.42)] lg:grid-cols-[0.82fr_1.18fr]">
-      <aside className="relative hidden overflow-hidden border-r border-white/[0.08] bg-[#08080e] p-8 lg:flex lg:min-h-[40rem] lg:flex-col lg:justify-between">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_5%,rgba(124,58,237,0.28),transparent_42%),radial-gradient(circle_at_90%_85%,rgba(34,211,238,0.12),transparent_38%)]" />
-        <div className="relative">
-          <RecharzaMark />
-          <p className="mt-10 text-xs font-black uppercase tracking-[0.2em] text-violet-300">
-            Customer workspace
-          </p>
-          <h2 className="mt-4 max-w-sm text-4xl font-black tracking-[-0.06em] text-white">
-            Your game purchases, organized properly.
-          </h2>
-          <p className="mt-5 max-w-sm text-sm leading-7 text-slate-400">
-            Sign in once to recover carts, review receipts, track fulfilment, and keep support tied to the correct order.
-          </p>
-
-          <div className="mt-8 space-y-3">
-            {accountBenefits.map(([icon, label]) => (
-              <div key={label} className="flex items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.035] px-4 py-3.5">
-                <span className="grid h-10 w-10 place-items-center rounded-xl bg-violet-300/10 text-violet-200">
-                  <StorefrontIcon name={icon} className="h-[18px] w-[18px]" />
-                </span>
-                <span className="text-sm font-bold text-slate-200">{label}</span>
-              </div>
-            ))}
+    <section className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#0b0d13] shadow-[0_24px_70px_rgba(0,0,0,0.24)]">
+      <div className="grid lg:grid-cols-[0.72fr_1.28fr]">
+        <aside className="hidden border-r border-white/[0.08] bg-[#090b10] p-7 lg:block">
+          <h2 className="text-2xl font-black tracking-[-0.04em] text-white">Everything tied to one account.</h2>
+          <div className="mt-6 grid gap-4 text-sm text-slate-400">
+            <Benefit icon="track" title="Order history" text="Recover and review account-owned orders." />
+            <Benefit icon="shield" title="Protected access" text="Secure sessions, recovery and account controls." />
+            <Benefit icon="support" title="Connected support" text="Keep support linked to the correct purchase." />
           </div>
-        </div>
+          <p className="mt-8 text-xs leading-5 text-slate-600">Never share your password, OTP, UPI PIN or card PIN with support.</p>
+        </aside>
 
-        <p className="relative text-xs leading-5 text-slate-600">
-          Recharza will never request your password, OTP, UPI PIN, or card PIN through support.
-        </p>
-      </aside>
-
-      <div className="p-5 sm:p-7 lg:p-9">
-        <div className="lg:hidden">
-          <RecharzaMark />
-        </div>
-
-        <header className="mt-7 lg:mt-0">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
-            Account access
-          </p>
-          <h1 className="mt-3 text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">
-            {mode === "login" ? "Welcome back." : "Create your account."}
-          </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-400">
-            {mode === "login"
-              ? "Open your orders, cart, saved game destinations, billing records, and security settings."
-              : "Create one secure workspace for checkout, tracking, receipts, and support."}
-          </p>
-
-          <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl border border-white/10 bg-black/20 p-1">
-            {(["login", "signup"] as AuthMode[]).map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => {
-                  setMode(item);
-                  setMessage("");
-                  setError(false);
-                }}
-                className={`min-h-11 rounded-lg px-4 py-2.5 text-sm font-black transition ${
-                  mode === item
-                    ? "bg-white text-slate-950 shadow-lg shadow-black/20"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                {item === "login" ? "Sign in" : "Create account"}
-              </button>
-            ))}
+        <div className="p-5 sm:p-7 lg:p-8">
+          <div className="grid grid-cols-2 gap-1 rounded-lg border border-white/[0.08] bg-[#07090e] p-1">
+            <button
+              type="button"
+              onClick={() => {
+                setMode("login");
+                setError(false);
+                setMessage("");
+              }}
+              className={`min-h-10 rounded-md text-sm font-black transition ${mode === "login" ? "bg-white text-slate-950" : "text-slate-500 hover:text-white"}`}
+            >
+              Sign in
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("signup");
+                setError(false);
+                setMessage("");
+              }}
+              className={`min-h-10 rounded-md text-sm font-black transition ${mode === "signup" ? "bg-white text-slate-950" : "text-slate-500 hover:text-white"}`}
+            >
+              Create account
+            </button>
           </div>
-        </header>
 
-        <div className="mt-6">
+          <div className="mt-6">
+            <h2 className="text-2xl font-black tracking-[-0.04em] text-white">{mode === "login" ? "Welcome back" : "Create your Recharza account"}</h2>
+            <p className="mt-1.5 text-sm text-slate-500">{mode === "login" ? "Use the email and password attached to your account." : "One account for checkout, tracking, receipts and support."}</p>
+          </div>
+
           {mode === "login" ? (
-            <form onSubmit={submitLogin} className="grid gap-4">
-              <label className="text-sm font-semibold text-slate-200">
-                Email address
-                <input
-                  required
-                  type="email"
-                  autoComplete="email"
-                  value={loginEmail}
-                  onChange={(event) => setLoginEmail(event.target.value)}
-                  className={inputClassName}
-                  placeholder="you@example.com"
-                />
-              </label>
-              <label className="text-sm font-semibold text-slate-200">
-                Password
-                <input
-                  required
-                  type="password"
-                  autoComplete="current-password"
-                  value={loginPassword}
-                  onChange={(event) => setLoginPassword(event.target.value)}
-                  className={inputClassName}
-                  placeholder="Your password"
-                />
-              </label>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-xs text-slate-600">Secure password sign-in</span>
-                <Link href="/forgot-password" className="text-sm font-bold text-violet-300 hover:text-violet-200">
-                  Forgot password?
-                </Link>
+            <form onSubmit={submitLogin} className="mt-5 grid gap-4">
+              <Field label="Email address">
+                <input required type="email" autoComplete="email" value={loginEmail} onChange={(event) => setLoginEmail(event.target.value)} className={inputClassName} placeholder="you@example.com" />
+              </Field>
+              <Field label="Password">
+                <input required type="password" autoComplete="current-password" value={loginPassword} onChange={(event) => setLoginPassword(event.target.value)} className={inputClassName} placeholder="Your password" />
+              </Field>
+              <div className="flex items-center justify-end">
+                <Link href="/forgot-password" className="text-xs font-black text-violet-300 hover:text-violet-200">Forgot password?</Link>
               </div>
-              <button
-                disabled={submitting}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3.5 text-sm font-black text-slate-950 transition hover:bg-violet-100 disabled:cursor-wait disabled:opacity-60"
-              >
-                {submitting ? "Signing in..." : "Sign in to Recharza"}
-                {!submitting ? <StorefrontIcon name="arrow" className="h-4 w-4" /> : null}
+              <button disabled={submitting} className="min-h-12 rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60">
+                {submitting ? "Signing in…" : "Sign in"}
               </button>
             </form>
           ) : (
-            <form onSubmit={submitSignup} className="grid gap-4 sm:grid-cols-2">
-              <label className="text-sm font-semibold text-slate-200 sm:col-span-2">
-                Full name
+            <form onSubmit={submitSignup} className="mt-5 grid gap-4 sm:grid-cols-2">
+              <Field label="Full name" className="sm:col-span-2">
                 <input required autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} className={inputClassName} placeholder="Your full name" />
-              </label>
-              <label className="text-sm font-semibold text-slate-200">
-                Username
-                <input
-                  required
-                  autoComplete="username"
-                  value={username}
-                  onChange={(event) => setUsername(event.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))}
-                  className={inputClassName}
-                  placeholder="username"
-                />
-              </label>
-              <label className="text-sm font-semibold text-slate-200">
-                Email address
+              </Field>
+              <Field label="Username">
+                <input required autoComplete="username" value={username} onChange={(event) => setUsername(event.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ""))} className={inputClassName} placeholder="username" />
+              </Field>
+              <Field label="Email address">
                 <input required type="email" autoComplete="email" value={signupEmail} onChange={(event) => setSignupEmail(event.target.value)} className={inputClassName} placeholder="you@example.com" />
-              </label>
-              <label className="text-sm font-semibold text-slate-200">
-                Password
+              </Field>
+              <Field label="Password">
                 <input required type="password" autoComplete="new-password" value={signupPassword} onChange={(event) => setSignupPassword(event.target.value)} className={inputClassName} placeholder="10+ characters" />
-              </label>
-              <label className="text-sm font-semibold text-slate-200">
-                Confirm password
+              </Field>
+              <Field label="Confirm password">
                 <input required type="password" autoComplete="new-password" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} className={inputClassName} placeholder="Repeat password" />
-              </label>
-              <p className="rounded-xl border border-white/[0.08] bg-white/[0.025] px-3 py-3 text-xs leading-5 text-slate-500 sm:col-span-2">
-                Use at least 10 characters with uppercase, lowercase, and a number. By creating an account you agree to Recharza&apos;s Terms and Privacy Policy.
-              </p>
-              <button
-                disabled={submitting}
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 py-3.5 text-sm font-black text-slate-950 transition hover:bg-violet-100 disabled:cursor-wait disabled:opacity-60 sm:col-span-2"
-              >
-                {submitting ? "Creating account..." : "Create Recharza account"}
-                {!submitting ? <StorefrontIcon name="arrow" className="h-4 w-4" /> : null}
+              </Field>
+              <p className="text-xs leading-5 text-slate-600 sm:col-span-2">Use at least 10 characters and a password you do not reuse elsewhere.</p>
+              <button disabled={submitting} className="min-h-12 rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60 sm:col-span-2">
+                {submitting ? "Creating account…" : "Create account"}
               </button>
             </form>
           )}
 
           {message ? (
-            <p
-              aria-live={error ? "assertive" : "polite"}
-              className={`mt-5 rounded-xl border px-4 py-3 text-sm ${
-                error
-                  ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
-                  : "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
-              }`}
-            >
+            <p className={`mt-4 rounded-lg border px-3 py-2.5 text-sm ${error ? "border-rose-300/20 bg-rose-300/[0.07] text-rose-100" : "border-emerald-300/20 bg-emerald-300/[0.07] text-emerald-100"}`}>
               {message}
             </p>
           ) : null}
         </div>
       </div>
     </section>
+  );
+}
+
+function Field({ label, children, className = "" }: { label: string; children: React.ReactNode; className?: string }) {
+  return (
+    <label className={`text-xs font-black text-slate-400 ${className}`}>
+      {label}
+      {children}
+    </label>
+  );
+}
+
+function Benefit({ icon, title, text }: { icon: Parameters<typeof StorefrontIcon>[0]["name"]; title: string; text: string }) {
+  return (
+    <div className="flex gap-3">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-violet-500/10 text-violet-300">
+        <StorefrontIcon name={icon} className="h-4 w-4" />
+      </span>
+      <div>
+        <p className="font-black text-white">{title}</p>
+        <p className="mt-0.5 text-xs leading-5 text-slate-500">{text}</p>
+      </div>
+    </div>
+  );
+}
+
+function Info({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="bg-[#0c100f] p-3.5">
+      <dt className="text-[10px] font-black uppercase tracking-[0.12em] text-slate-600">{label}</dt>
+      <dd className="mt-1 break-all text-sm font-bold text-slate-200">{value}</dd>
+    </div>
   );
 }
