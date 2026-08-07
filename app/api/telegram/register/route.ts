@@ -42,14 +42,20 @@ export async function POST(request: Request) {
     );
   }
 
-  const webhookUrl = new URL("/api/telegram/webhook", request.url).toString();
+  const incomingUrl = new URL(request.url);
+  const webhookUrl = new URL("/api/telegram/webhook", incomingUrl.origin);
+  const protectionBypass = incomingUrl.searchParams.get("x-vercel-protection-bypass");
+  if (protectionBypass) {
+    webhookUrl.searchParams.set("x-vercel-protection-bypass", protectionBypass);
+  }
+
   const telegramResponse = await fetch(
     `https://api.telegram.org/bot${token}/setWebhook`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        url: webhookUrl,
+        url: webhookUrl.toString(),
         secret_token: webhookSecret,
         allowed_updates: ["message", "callback_query"],
         drop_pending_updates: true,
@@ -77,7 +83,7 @@ export async function POST(request: Request) {
 
   return Response.json({
     ok: true,
-    webhookUrl,
+    webhookUrl: webhookUrl.toString(),
     telegram: payload,
   });
 }
