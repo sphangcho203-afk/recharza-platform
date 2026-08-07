@@ -1,5 +1,7 @@
 import "server-only";
 
+import { getMailDeliveryConfiguration } from "@/lib/mail-delivery";
+
 export type DeploymentCheck = {
   id: string;
   label: string;
@@ -66,17 +68,14 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
     isGoogleClientId(googleClientId) &&
     Boolean(value("GOOGLE_CLIENT_SECRET")) &&
     isLongSecret("GOOGLE_OAUTH_STATE_SECRET");
-  const gmailMailReady =
-    isGoogleClientId(value("GOOGLE_MAIL_CLIENT_ID")) &&
-    Boolean(value("GOOGLE_MAIL_CLIENT_SECRET")) &&
-    Boolean(value("GOOGLE_MAIL_REFRESH_TOKEN"));
-  const resendMailReady =
-    Boolean(value("RESEND_API_KEY")) && Boolean(value("RESEND_FROM_EMAIL"));
-  const emailDeliveryReady = gmailMailReady || resendMailReady;
+  const mailConfiguration = getMailDeliveryConfiguration();
+  const emailDeliveryReady = Boolean(mailConfiguration.provider);
   const razorpayKeyId = value("RAZORPAY_KEY_ID");
   const razorpayKeySecret = value("RAZORPAY_KEY_SECRET");
   const razorpayWebhookSecret = value("RAZORPAY_WEBHOOK_SECRET");
-  const paymentAny = Boolean(razorpayKeyId || razorpayKeySecret || razorpayWebhookSecret);
+  const paymentAny = Boolean(
+    razorpayKeyId || razorpayKeySecret || razorpayWebhookSecret,
+  );
   const paymentReady =
     razorpayKeyId.startsWith("rzp_test_") &&
     Boolean(razorpayKeySecret) &&
@@ -85,14 +84,17 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
   const supplierCategories = value("FAZERCARDS_PUBLISHED_CATEGORY_IDS");
   const supplierCreatePath = value("FAZERCARDS_ORDER_CREATE_PATH");
   const supplierStatusPath = value("FAZERCARDS_ORDER_STATUS_PATH");
-  const supplierWritesEnabled = value("FAZERCARDS_ORDER_WRITES_ENABLED") === "true";
+  const supplierWritesEnabled =
+    value("FAZERCARDS_ORDER_WRITES_ENABLED") === "true";
   const statusTemplateValid =
     !supplierStatusPath ||
     supplierStatusPath.includes("{order_id}") ||
     supplierStatusPath.includes(":orderId");
   const supplierWriteSafe =
     !supplierWritesEnabled ||
-    (Boolean(supplierKey) && Boolean(supplierCreatePath) && statusTemplateValid);
+    (Boolean(supplierKey) &&
+      Boolean(supplierCreatePath) &&
+      statusTemplateValid);
 
   const checks: DeploymentCheck[] = [
     {
@@ -110,9 +112,12 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
       label: "Public application URL",
       category: "core",
       required: true,
-      ready: isHttpUrl(appUrl) && (!hosted || !/localhost|127\.0\.0\.1/i.test(appUrl)),
+      ready:
+        isHttpUrl(appUrl) &&
+        (!hosted || !/localhost|127\.0\.0\.1/i.test(appUrl)),
       message:
-        isHttpUrl(appUrl) && (!hosted || !/localhost|127\.0\.0\.1/i.test(appUrl))
+        isHttpUrl(appUrl) &&
+        (!hosted || !/localhost|127\.0\.0\.1/i.test(appUrl))
           ? "The public application URL is configured."
           : "NEXT_PUBLIC_APP_URL must be the deployed HTTP(S) URL, not localhost.",
     },
@@ -168,15 +173,18 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
     },
     {
       id: "email-delivery",
-      label: "Verified email delivery",
+      label: "Transactional email delivery",
       category: "accounts",
       required: hosted,
       ready: emailDeliveryReady,
-      message: gmailMailReady
-        ? "Gmail API OAuth delivery is configured for account and order emails."
-        : resendMailReady
-          ? "Resend delivery is configured for account and order emails."
-          : "Configure Gmail OAuth mail credentials or Resend credentials for hosted email delivery.",
+      message:
+        mailConfiguration.requestedProvider === "gmail"
+          ? mailConfiguration.gmail.configured
+            ? "Gmail API OAuth is the active Recharza account and order email transport."
+            : `Gmail is required but incomplete: ${mailConfiguration.gmail.missing.join(", ") || "configuration missing"}.`
+          : mailConfiguration.resend.configured
+            ? "Resend is explicitly selected as the Recharza transactional email transport."
+            : "Resend is selected but its delivery configuration is incomplete.",
     },
     {
       id: "razorpay-test",
@@ -227,8 +235,11 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
     },
   ];
 
-  const coreReady = checks.filter((check) => check.required).every((check) => check.ready);
-  const fullReady = coreReady && checks.every((check) => !check.required || check.ready);
+  const coreReady = checks
+    .filter((check) => check.required)
+    .every((check) => check.ready);
+  const fullReady =
+    coreReady && checks.every((check) => !check.required || check.ready);
 
   return {
     environment,
