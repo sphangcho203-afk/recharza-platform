@@ -38,31 +38,65 @@ function base64Url(value: string) {
     .replace(/=+$/g, "");
 }
 
+function selectedProvider(): MailProvider {
+  const configured = value("EMAIL_DELIVERY_PROVIDER").toLowerCase();
+  return configured === "resend" ? "resend" : "gmail";
+}
+
+function gmailClientId() {
+  return value("GOOGLE_MAIL_CLIENT_ID") || value("GOOGLE_CLIENT_ID");
+}
+
+function gmailClientSecret() {
+  return value("GOOGLE_MAIL_CLIENT_SECRET") || value("GOOGLE_CLIENT_SECRET");
+}
+
+function gmailRefreshToken() {
+  return value("GOOGLE_MAIL_REFRESH_TOKEN");
+}
+
 function gmailSender() {
-  const configured = value("GOOGLE_MAIL_FROM") || value("NEXT_PUBLIC_SUPPORT_EMAIL") || DEFAULT_GMAIL_FROM;
-  if (configured.includes("<") && configured.includes(">")) return cleanHeader(configured);
+  const configured =
+    value("GOOGLE_MAIL_FROM") ||
+    value("NEXT_PUBLIC_SUPPORT_EMAIL") ||
+    DEFAULT_GMAIL_FROM;
+  if (configured.includes("<") && configured.includes(">")) {
+    return cleanHeader(configured);
+  }
   return `Recharza <${cleanHeader(configured)}>`;
 }
 
 function gmailConfigured() {
-  return Boolean(
-    value("GOOGLE_MAIL_CLIENT_ID") &&
-      value("GOOGLE_MAIL_CLIENT_SECRET") &&
-      value("GOOGLE_MAIL_REFRESH_TOKEN"),
-  );
+  return Boolean(gmailClientId() && gmailClientSecret() && gmailRefreshToken());
 }
 
 function resendConfigured() {
   return Boolean(value("RESEND_API_KEY") && value("RESEND_FROM_EMAIL"));
 }
 
+function gmailMissingFields() {
+  const missing: string[] = [];
+  if (!gmailClientId()) missing.push("Google OAuth client ID");
+  if (!gmailClientSecret()) missing.push("Google OAuth client secret");
+  if (!gmailRefreshToken()) missing.push("GOOGLE_MAIL_REFRESH_TOKEN");
+  return missing;
+}
+
 export function getMailDeliveryConfiguration() {
+  const requestedProvider = selectedProvider();
   const gmail = {
-    clientId: Boolean(value("GOOGLE_MAIL_CLIENT_ID")),
-    clientSecret: Boolean(value("GOOGLE_MAIL_CLIENT_SECRET")),
-    refreshToken: Boolean(value("GOOGLE_MAIL_REFRESH_TOKEN")),
+    clientId: Boolean(gmailClientId()),
+    clientSecret: Boolean(gmailClientSecret()),
+    refreshToken: Boolean(gmailRefreshToken()),
     from: gmailSender(),
     configured: gmailConfigured(),
+    usingSharedGoogleClient: Boolean(
+      !value("GOOGLE_MAIL_CLIENT_ID") &&
+        !value("GOOGLE_MAIL_CLIENT_SECRET") &&
+        value("GOOGLE_CLIENT_ID") &&
+        value("GOOGLE_CLIENT_SECRET"),
+    ),
+    missing: gmailMissingFields(),
   };
   const resend = {
     apiKey: Boolean(value("RESEND_API_KEY")),
@@ -71,19 +105,30 @@ export function getMailDeliveryConfiguration() {
   };
 
   return {
-    provider: gmail.configured ? ("gmail" as const) : resend.configured ? ("resend" as const) : null,
+    requestedProvider,
+    provider:
+      requestedProvider === "gmail"
+        ? gmail.configured
+          ? ("gmail" as const)
+          : null
+        : resend.configured
+          ? ("resend" as const)
+          : null,
     gmail,
     resend,
   };
 }
 
 async function gmailAccessToken() {
-  const clientId = value("GOOGLE_MAIL_CLIENT_ID");
-  const clientSecret = value("GOOGLE_MAIL_CLIENT_SECRET");
-  const refreshToken = value("GOOGLE_MAIL_REFRESH_TOKEN");
+  const clientId = gmailClientId();
+  const clientSecret = gmailClientSecret();
+  const refreshToken = gmailRefreshToken();
 
   if (!clientId || !clientSecret || !refreshToken) {
-    throw new Error("Gmail OAuth delivery is not configured.");
+    const missing = gmailMissingFields();
+    throw new Error(
+      `Gmail OAuth delivery is incomplete${missing.length ? `: missing ${missing.join(", ")}` : ""}.`,
+    );
   }
 
   const response = await fetch("https://oauth2.googleapis.com/token", {
@@ -110,7 +155,7 @@ async function gmailAccessToken() {
         : typeof payload?.error === "string"
           ? payload.error
           : `Google OAuth token exchange returned HTTP ${response.status}.`;
-    throw new Error(reason);
+    throw new Error(`Gmail OAuth token exchange failed: ${reason}`);
   }
 
   return payload.access_token;
@@ -128,10 +173,13 @@ function buildGmailRawMessage(input: SystemEmailInput) {
 
   if (input.replyTo) headers.push(`Reply-To: ${cleanHeader(input.replyTo)}`);
   if (input.idempotencyKey) {
-    headers.push(`X-Recharza-Idempotency-Key: ${cleanHeader(input.idempotencyKey).slice(0, 200)}`);
+    headers.push(
+      `X-Recharza-Idempotency-Key: ${cleanHeader(input.idempotencyKey).slice(0, 200)}`,
+    );
   }
 
-  const text = input.text?.trim() || "This message requires an HTML-capable email client.";
+  const text =
+    input.text?.trim() || "This message requires an HTML-capable email client.";
   return [
     ...headers,
     "",
@@ -150,18 +198,23 @@ function buildGmailRawMessage(input: SystemEmailInput) {
   ].join("\r\n");
 }
 
-async function sendWithGmail(input: SystemEmailInput): Promise<SystemEmailResult> {
+async function sendWithGmail(
+  input: SystemEmailInput,
+): Promise<SystemEmailResult> {
   const accessToken = await gmailAccessToken();
-  const response = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/json",
+  const response = await fetch(
+    "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ raw: base64Url(buildGmailRawMessage(input)) }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
     },
-    body: JSON.stringify({ raw: base64Url(buildGmailRawMessage(input)) }),
-    cache: "no-store",
-    signal: AbortSignal.timeout(15_000),
-  });
+  );
 
   const payload = (await response.json().catch(() => null)) as
     | { id?: unknown; error?: { message?: unknown } }
@@ -172,13 +225,15 @@ async function sendWithGmail(input: SystemEmailInput): Promise<SystemEmailResult
       typeof payload?.error?.message === "string"
         ? payload.error.message
         : `Gmail API returned HTTP ${response.status}.`;
-    throw new Error(reason);
+    throw new Error(`Gmail API send failed: ${reason}`);
   }
 
   return { provider: "gmail", messageId: payload.id };
 }
 
-async function sendWithResend(input: SystemEmailInput): Promise<SystemEmailResult> {
+async function sendWithResend(
+  input: SystemEmailInput,
+): Promise<SystemEmailResult> {
   const apiKey = value("RESEND_API_KEY");
   const from = value("RESEND_FROM_EMAIL");
   if (!apiKey || !from) throw new Error("Resend delivery is not configured.");
@@ -189,7 +244,9 @@ async function sendWithResend(input: SystemEmailInput): Promise<SystemEmailResul
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
       ...(input.idempotencyKey
-        ? { "Idempotency-Key": cleanHeader(input.idempotencyKey).slice(0, 256) }
+        ? {
+            "Idempotency-Key": cleanHeader(input.idempotencyKey).slice(0, 256),
+          }
         : {}),
     },
     body: JSON.stringify({
@@ -221,9 +278,24 @@ async function sendWithResend(input: SystemEmailInput): Promise<SystemEmailResul
   return { provider: "resend", messageId: payload.id };
 }
 
-export async function sendSystemEmail(input: SystemEmailInput): Promise<SystemEmailResult> {
+export async function sendSystemEmail(
+  input: SystemEmailInput,
+): Promise<SystemEmailResult> {
   const configuration = getMailDeliveryConfiguration();
-  if (configuration.provider === "gmail") return sendWithGmail(input);
-  if (configuration.provider === "resend") return sendWithResend(input);
-  throw new Error("No email delivery provider is configured.");
+
+  if (configuration.requestedProvider === "gmail") {
+    if (!configuration.gmail.configured) {
+      throw new Error(
+        `Gmail is the configured Recharza mail transport but OAuth is incomplete: ${configuration.gmail.missing.join(", ") || "unknown Gmail configuration error"}.`,
+      );
+    }
+    return sendWithGmail(input);
+  }
+
+  if (!configuration.resend.configured) {
+    throw new Error(
+      "Resend is explicitly selected but its API key or sender is missing.",
+    );
+  }
+  return sendWithResend(input);
 }
