@@ -38,12 +38,6 @@ export default async function GameCheckoutPage({ params }: { params: Promise<{ g
     const marketCount = new Set(packages.map((item) => item.marketCode)).size;
     const gameLogo = media.get(`game.${gameSlug}.logo`);
     const gameArtwork = media.get(`game.${gameSlug}.artwork`);
-    const itemIcons = Object.fromEntries(
-      packages.flatMap((item) => {
-        const placement = media.get(`product.${item.id}.icon`);
-        return placement ? [[item.id, placement.url] as const] : [];
-      }),
-    );
 
     return (
       <main className="storefront-page min-h-screen overflow-x-clip text-white">
@@ -106,7 +100,6 @@ export default async function GameCheckoutPage({ params }: { params: Promise<{ g
             gameTitle={definition.title}
             packages={packages}
             fxSnapshot={fxSnapshot}
-            itemIcons={itemIcons}
           />
         </section>
 
