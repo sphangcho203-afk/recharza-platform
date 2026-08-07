@@ -1,5 +1,10 @@
 import { timingSafeEqual } from "node:crypto";
 
+import {
+  getMailDeliveryConfiguration,
+  sendSystemEmail,
+} from "@/lib/mail-delivery";
+
 export const runtime = "nodejs";
 
 function secretsMatch(received: string | null, expected: string | undefined) {
@@ -25,92 +30,71 @@ export async function POST(request: Request) {
     return Response.json({ ok: false, message: "Invalid diagnostics secret." }, { status: 401 });
   }
 
-  const apiKey = process.env.RESEND_API_KEY?.trim() || "";
-  const from = process.env.RESEND_FROM_EMAIL?.trim() || "";
+  const configuration = getMailDeliveryConfiguration();
   const to =
     process.env.SUPPORT_NOTIFICATION_EMAIL?.trim() ||
     process.env.NEXT_PUBLIC_SUPPORT_EMAIL?.trim() ||
     "";
 
   const configured = {
-    apiKey: Boolean(apiKey),
-    from: Boolean(from),
+    provider: configuration.provider,
     recipient: Boolean(to),
+    gmail: {
+      clientId: configuration.gmail.clientId,
+      clientSecret: configuration.gmail.clientSecret,
+      refreshToken: configuration.gmail.refreshToken,
+      configured: configuration.gmail.configured,
+    },
+    resend: {
+      apiKey: configuration.resend.apiKey,
+      from: configuration.resend.from,
+      configured: configuration.resend.configured,
+    },
   };
 
-  if (!configured.apiKey || !configured.from || !configured.recipient) {
+  if (!configuration.provider || !to) {
     return Response.json(
       {
         ok: false,
         configured,
-        senderDomain: from ? addressDomain(from) : null,
         recipientDomain: to ? addressDomain(to) : null,
-        message: "Resend support email configuration is incomplete.",
+        message: "Recharza email delivery configuration is incomplete.",
       },
       { status: 503 },
     );
   }
 
   try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": `support-diagnostic-${Date.now()}`,
-      },
-      body: JSON.stringify({
-        from,
-        to: [to],
-        subject: "Recharza support email diagnostic",
-        html: "<div style=\"font-family:Arial,sans-serif\"><h2>Recharza Support</h2><p>Email delivery is connected.</p><p>This diagnostic contains no customer data.</p></div>",
-        text: "Recharza Support email delivery is connected. This diagnostic contains no customer data.",
-      }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(15_000),
+    const result = await sendSystemEmail({
+      to,
+      subject: "Recharza support email diagnostic",
+      html: "<div style=\"font-family:Arial,sans-serif\"><h2>Recharza Support</h2><p>Email delivery is connected.</p><p>This diagnostic contains no customer data.</p></div>",
+      text: "Recharza Support email delivery is connected. This diagnostic contains no customer data.",
+      idempotencyKey: `support-diagnostic-${Date.now()}`,
     });
-
-    const payload = (await response.json().catch(() => null)) as
-      | { id?: unknown; message?: unknown; name?: unknown; statusCode?: unknown }
-      | null;
-
-    const safe = {
-      configured,
-      senderDomain: addressDomain(from),
-      recipientDomain: addressDomain(to),
-      usingResendTestingDomain: addressDomain(from) === "resend.dev",
-      providerHttpStatus: response.status,
-    };
-
-    if (!response.ok || typeof payload?.id !== "string") {
-      return Response.json(
-        {
-          ok: false,
-          ...safe,
-          providerError:
-            typeof payload?.message === "string"
-              ? payload.message.slice(0, 1_000)
-              : `Resend returned HTTP ${response.status}.`,
-        },
-        { status: 502 },
-      );
-    }
 
     return Response.json({
       ok: true,
-      ...safe,
-      providerMessageId: payload.id,
-      message: "Diagnostic email accepted by Resend.",
+      configured,
+      provider: result.provider,
+      senderDomain:
+        result.provider === "gmail"
+          ? addressDomain(configuration.gmail.from)
+          : process.env.RESEND_FROM_EMAIL
+            ? addressDomain(process.env.RESEND_FROM_EMAIL)
+            : null,
+      recipientDomain: addressDomain(to),
+      providerMessageId: result.messageId,
+      message: `Diagnostic email accepted by ${result.provider === "gmail" ? "Gmail API" : "Resend"}.`,
     });
   } catch (error) {
     return Response.json(
       {
         ok: false,
         configured,
-        senderDomain: addressDomain(from),
+        provider: configuration.provider,
         recipientDomain: addressDomain(to),
-        usingResendTestingDomain: addressDomain(from) === "resend.dev",
-        providerError: error instanceof Error ? error.message : "Resend request failed.",
+        providerError: error instanceof Error ? error.message : "Email request failed.",
       },
       { status: 502 },
     );
