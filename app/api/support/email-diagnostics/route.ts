@@ -26,8 +26,16 @@ export async function POST(request: Request) {
     process.env.SUPPORT_DIAGNOSTICS_SECRET?.trim() ||
     process.env.TELEGRAM_WEBHOOK_SECRET?.trim();
 
-  if (!secretsMatch(request.headers.get("x-recharza-diagnostics-secret"), diagnosticSecret)) {
-    return Response.json({ ok: false, message: "Invalid diagnostics secret." }, { status: 401 });
+  if (
+    !secretsMatch(
+      request.headers.get("x-recharza-diagnostics-secret"),
+      diagnosticSecret,
+    )
+  ) {
+    return Response.json(
+      { ok: false, message: "Invalid diagnostics secret." },
+      { status: 401 },
+    );
   }
 
   const configuration = getMailDeliveryConfiguration();
@@ -37,13 +45,16 @@ export async function POST(request: Request) {
     "";
 
   const configured = {
-    provider: configuration.provider,
+    requestedProvider: configuration.requestedProvider,
+    activeProvider: configuration.provider,
     recipient: Boolean(to),
     gmail: {
       clientId: configuration.gmail.clientId,
       clientSecret: configuration.gmail.clientSecret,
       refreshToken: configuration.gmail.refreshToken,
       configured: configuration.gmail.configured,
+      usingSharedGoogleClient: configuration.gmail.usingSharedGoogleClient,
+      missing: configuration.gmail.missing,
     },
     resend: {
       apiKey: configuration.resend.apiKey,
@@ -58,7 +69,10 @@ export async function POST(request: Request) {
         ok: false,
         configured,
         recipientDomain: to ? addressDomain(to) : null,
-        message: "Recharza email delivery configuration is incomplete.",
+        message:
+          configuration.requestedProvider === "gmail"
+            ? "Recharza requires Gmail delivery, but the Gmail OAuth transport is incomplete."
+            : "Recharza email delivery configuration is incomplete.",
       },
       { status: 503 },
     );
@@ -67,9 +81,9 @@ export async function POST(request: Request) {
   try {
     const result = await sendSystemEmail({
       to,
-      subject: "Recharza support email diagnostic",
-      html: "<div style=\"font-family:Arial,sans-serif\"><h2>Recharza Support</h2><p>Email delivery is connected.</p><p>This diagnostic contains no customer data.</p></div>",
-      text: "Recharza Support email delivery is connected. This diagnostic contains no customer data.",
+      subject: "Recharza Gmail transport diagnostic",
+      html: '<div style="font-family:Arial,sans-serif"><h2>Recharza Mail</h2><p>The selected transactional email transport accepted this diagnostic.</p><p>This diagnostic contains no customer data.</p></div>',
+      text: "Recharza transactional email transport accepted this diagnostic. This diagnostic contains no customer data.",
       idempotencyKey: `support-diagnostic-${Date.now()}`,
     });
 
@@ -92,9 +106,10 @@ export async function POST(request: Request) {
       {
         ok: false,
         configured,
-        provider: configuration.provider,
+        provider: configuration.requestedProvider,
         recipientDomain: addressDomain(to),
-        providerError: error instanceof Error ? error.message : "Email request failed.",
+        providerError:
+          error instanceof Error ? error.message : "Email request failed.",
       },
       { status: 502 },
     );
