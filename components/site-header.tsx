@@ -5,6 +5,7 @@ import { RecharzaMark } from "@/components/recharza-mark";
 import { StorefrontCategoryNav } from "@/components/storefront-category-nav";
 import { StorefrontSearch } from "@/components/storefront-search";
 import { StorefrontIcon } from "@/components/storefront-icon";
+import { getPublicMediaPlacements } from "@/lib/media-assets";
 import {
   getPublishedStorefrontContent,
   type StorefrontContent,
@@ -14,59 +15,74 @@ type SiteHeaderProps = {
   content?: Pick<StorefrontContent, "navigation">;
 };
 
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/#games", label: "Games" },
+  { href: "/orders/lookup", label: "Orders" },
+  { href: "/support", label: "Help Center" },
+];
+
 export async function SiteHeader({ content }: SiteHeaderProps = {}) {
-  const storefront = content ?? (await getPublishedStorefrontContent());
+  const [storefront, media] = await Promise.all([
+    content ? Promise.resolve(content) : getPublishedStorefrontContent(),
+    getPublicMediaPlacements(),
+  ]);
+  const brandLogo = media.get("brand.primary.logo");
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#05060b]/94 backdrop-blur-2xl">
-      <div className="mx-auto max-w-7xl px-3 sm:px-5 lg:px-8">
-        <div className="grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-3 py-3">
+    <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#090a0f]/96 shadow-[0_8px_32px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
+        <div className="grid min-h-[4.25rem] grid-cols-[auto_1fr_auto] items-center gap-4 py-2.5">
           <Link
-            href="/#top"
-            className="shrink-0 rounded-lg outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-cyan-300"
+            href="/"
+            className="shrink-0 rounded-lg outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400"
             aria-label="Recharza home"
           >
-            <RecharzaMark compact />
+            <RecharzaMark compact logoUrl={brandLogo?.url} logoAlt={brandLogo?.altText} />
           </Link>
 
-          <div className="order-3 col-span-3 min-w-0 sm:order-none sm:col-span-1">
-            <StorefrontSearch />
-          </div>
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="rounded-lg px-3 py-2 text-[13px] font-bold text-slate-300 transition hover:bg-white/[0.05] hover:text-white"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
 
-          <div className="flex items-center justify-end gap-2">
-            <Link
-              href="/orders/lookup"
-              className="hidden min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-black text-slate-400 transition hover:bg-white/[0.05] hover:text-white lg:inline-flex"
-            >
-              <StorefrontIcon name="track" className="h-4 w-4" />
-              Orders
-            </Link>
-            <Link
-              href="/support"
-              className="hidden min-h-10 items-center gap-2 rounded-xl px-3 text-xs font-black text-slate-400 transition hover:bg-white/[0.05] hover:text-white xl:inline-flex"
-            >
-              <StorefrontIcon name="support" className="h-4 w-4" />
-              Support
-            </Link>
+          <div className="ml-auto flex items-center gap-2">
+            <div className="hidden w-[20rem] xl:block 2xl:w-[25rem]">
+              <StorefrontSearch />
+            </div>
+            <span className="hidden min-h-10 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-3 text-[11px] font-black text-slate-300 md:inline-flex">
+              IN / INR
+            </span>
             <Link
               href="/cart"
               aria-label="Open cart"
-              className="grid h-10 w-10 place-items-center rounded-xl border border-white/[0.09] bg-white/[0.035] text-cyan-200 transition hover:border-cyan-300/25 hover:bg-cyan-300/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
+              className="grid h-10 w-10 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025] text-slate-300 transition hover:border-white/[0.16] hover:bg-white/[0.06] hover:text-white"
             >
-              <StorefrontIcon name="cart" className="h-[18px] w-[18px]" />
+              <StorefrontIcon name="cart" className="h-[17px] w-[17px]" />
             </Link>
             <Link
               href="/account"
-              aria-label="Open Recharza account"
-              className="grid h-10 w-10 place-items-center rounded-full border border-violet-300/20 bg-[linear-gradient(145deg,rgba(139,92,246,0.26),rgba(34,211,238,0.1))] text-violet-100 transition hover:border-violet-300/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+              className="inline-flex min-h-10 items-center rounded-lg bg-violet-500 px-3.5 text-[12px] font-black text-white shadow-[0_10px_28px_rgba(124,58,237,0.24)] transition hover:bg-violet-400 sm:px-4"
             >
-              <StorefrontIcon name="account" className="h-[18px] w-[18px]" />
+              <span className="hidden sm:inline">Log in / Sign up</span>
+              <StorefrontIcon name="account" className="h-[17px] w-[17px] sm:hidden" />
             </Link>
+          </div>
+
+          <div className="col-span-3 xl:hidden">
+            <StorefrontSearch />
           </div>
         </div>
 
         {storefront.navigation.visibleIds.length > 0 ? (
-          <Suspense fallback={<div aria-hidden="true" className="h-14 border-t border-white/[0.06]" />}>
+          <Suspense fallback={<div aria-hidden="true" className="h-11 border-t border-white/[0.06]" />}>
             <StorefrontCategoryNav />
           </Suspense>
         ) : null}
