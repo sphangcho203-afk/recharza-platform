@@ -24,6 +24,40 @@ type TransactionalEmailInput = {
   orderId?: string;
 };
 
+type Accent = {
+  primary: string;
+  soft: string;
+  border: string;
+};
+
+const ACCENTS: Record<EmailMessageKind, Accent> = {
+  ACCOUNT_CREATED: {
+    primary: "#67e8f9",
+    soft: "#0c2029",
+    border: "#155e75",
+  },
+  PASSWORD_RESET: {
+    primary: "#fcd34d",
+    soft: "#2a2110",
+    border: "#713f12",
+  },
+  PASSWORD_CHANGED: {
+    primary: "#c4b5fd",
+    soft: "#1a1530",
+    border: "#4c1d95",
+  },
+  ORDER_COMPLETED: {
+    primary: "#6ee7b7",
+    soft: "#0b211b",
+    border: "#14532d",
+  },
+  ORDER_FAILED: {
+    primary: "#fda4af",
+    soft: "#2a1318",
+    border: "#881337",
+  },
+};
+
 function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
@@ -42,78 +76,94 @@ function formatTimestamp(date: Date) {
 }
 
 function renderEmail(input: TransactionalEmailInput) {
+  const accent = ACCENTS[input.kind];
   const details = (input.details ?? [])
     .map(
-      (item) => `
-        <tr>
-          <td style="padding:13px 14px;color:#8b93a7;font-size:11px;text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid #262636;">${escapeHtml(item.label)}</td>
-          <td style="padding:13px 14px;color:#ffffff;font-size:14px;font-weight:750;text-align:right;border-bottom:1px solid #262636;">${escapeHtml(item.value)}</td>
-        </tr>`,
+      (item) => `<tr>
+        <td style="padding:14px 15px;color:#7f879b;font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid #252536;">${escapeHtml(item.label)}</td>
+        <td style="padding:14px 15px;color:#f8fafc;font-size:13px;font-weight:850;text-align:right;border-bottom:1px solid #252536;">${escapeHtml(item.value)}</td>
+      </tr>`,
     )
     .join("");
 
   const action = input.action
-    ? `<a href="${escapeHtml(input.action.url)}" style="display:block;margin-top:24px;padding:15px 18px;background:#f8fafc;color:#09090f;text-decoration:none;text-align:center;border-radius:13px;font-size:14px;font-weight:900;box-shadow:0 12px 30px rgba(255,255,255,.08);">${escapeHtml(input.action.label)}</a>`
+    ? `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;"><tr><td align="center">
+        <a href="${escapeHtml(input.action.url)}" style="display:block;padding:15px 18px;background:#f8fafc;color:#08080d;text-decoration:none;text-align:center;border-radius:12px;font-size:13px;font-weight:950;letter-spacing:.01em;">${escapeHtml(input.action.label)}</a>
+      </td></tr></table>`
     : "";
 
   return `<!doctype html>
 <html lang="en">
-  <body style="margin:0;background:#07070b;color:#ffffff;font-family:Inter,Arial,sans-serif;">
-    <div style="padding:32px 14px;">
-      <div style="max-width:640px;margin:0 auto;border:1px solid #252535;border-radius:24px;overflow:hidden;background:#101018;box-shadow:0 24px 70px rgba(0,0,0,.42);">
-        <div style="padding:22px 24px;border-bottom:1px solid #262638;background:#0a0a11;">
-          <table role="presentation" style="width:100%;border-collapse:collapse;">
-            <tr>
-              <td style="vertical-align:middle;">
-                <table role="presentation" style="border-collapse:collapse;">
-                  <tr>
-                    <td style="vertical-align:middle;">
-                      <div style="width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#67e8f9,#8b5cf6 52%,#f472b6);display:flex;align-items:center;justify-content:center;color:#ffffff;font-size:23px;font-weight:950;font-style:italic;box-shadow:0 0 28px rgba(124,58,237,.28);">R</div>
-                    </td>
-                    <td style="padding-left:12px;vertical-align:middle;">
-                      <div style="font-size:18px;font-weight:950;letter-spacing:-.045em;text-transform:uppercase;">RECHARZA</div>
-                      <div style="margin-top:3px;color:#a78bfa;font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;">Play. Pay. Delivered.</div>
-                    </td>
-                  </tr>
-                </table>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="supported-color-schemes" content="dark">
+  <title>${escapeHtml(input.subject)}</title>
+</head>
+<body style="margin:0;padding:0;background:#06060a;color:#f8fafc;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(input.message)}</div>
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;background:#06060a;padding:28px 12px;">
+    <tr><td align="center">
+      <table role="presentation" width="620" cellspacing="0" cellpadding="0" style="width:100%;max-width:620px;border-collapse:separate;border-spacing:0;background:#0f0f17;border:1px solid #282838;border-radius:22px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.45);">
+        <tr>
+          <td style="padding:20px 22px;background:#09090f;border-bottom:1px solid #242433;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>
+              <td valign="middle">
+                <table role="presentation" cellspacing="0" cellpadding="0"><tr>
+                  <td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;background:#7c3aed;border-radius:12px;color:#ffffff;font-size:20px;font-style:italic;font-weight:950;">R</td>
+                  <td style="padding-left:11px;">
+                    <div style="color:#ffffff;font-size:17px;font-weight:950;letter-spacing:-.04em;text-transform:uppercase;">RECHARZA</div>
+                    <div style="margin-top:2px;color:#8b5cf6;font-size:9px;font-weight:850;letter-spacing:.19em;text-transform:uppercase;">Play · Pay · Delivered</div>
+                  </td>
+                </tr></table>
               </td>
-              <td style="text-align:right;color:#64748b;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;">Secure notification</td>
-            </tr>
-          </table>
-        </div>
+              <td align="right" valign="middle" style="color:#5f6677;font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;">Secure notification</td>
+            </tr></table>
+          </td>
+        </tr>
 
-        <div style="padding:30px 24px;background:radial-gradient(circle at top left,#312e81 0,#171728 48%,#101018 100%);border-bottom:1px solid #2c2c43;">
-          <div style="color:#c4b5fd;font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;">${escapeHtml(input.eyebrow)}</div>
-          <h1 style="margin:10px 0 0;font-size:30px;line-height:1.12;letter-spacing:-.04em;">${escapeHtml(input.title)}</h1>
-          <p style="margin:14px 0 0;max-width:540px;color:#cbd5e1;font-size:15px;line-height:1.72;">${escapeHtml(input.message)}</p>
-        </div>
+        <tr>
+          <td style="padding:30px 22px 28px;background:#151522;border-bottom:1px solid #2a2a3d;">
+            <table role="presentation" cellspacing="0" cellpadding="0"><tr>
+              <td style="padding:7px 10px;border-radius:999px;background:${accent.soft};border:1px solid ${accent.border};color:${accent.primary};font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;">${escapeHtml(input.eyebrow)}</td>
+            </tr></table>
+            <h1 style="margin:15px 0 0;color:#ffffff;font-size:28px;line-height:1.12;letter-spacing:-.04em;font-weight:900;">${escapeHtml(input.title)}</h1>
+            <p style="margin:13px 0 0;color:#b8c0cf;font-size:14px;line-height:1.75;">${escapeHtml(input.message)}</p>
+          </td>
+        </tr>
 
-        <div style="padding:24px;">
-          ${details ? `<table role="presentation" style="width:100%;border-collapse:separate;border-spacing:0;border:1px solid #27273a;border-radius:15px;overflow:hidden;background:#0a0a11;">${details}</table>` : ""}
-          ${action}
+        <tr>
+          <td style="padding:22px;">
+            ${details ? `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;border:1px solid #28283a;border-radius:14px;overflow:hidden;background:#0a0a10;">${details}</table>` : ""}
+            ${action}
 
-          <div style="margin-top:24px;padding:15px;border:1px solid #1f3a35;border-radius:13px;background:#0b1715;color:#9dd9cc;font-size:12px;line-height:1.65;">
-            <strong style="display:block;margin-bottom:4px;color:#d1fae5;">Security reminder</strong>
-            Recharza support will never ask for your password, OTP, UPI PIN, card PIN, or remote-device access.
-          </div>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:22px;background:#0b1715;border:1px solid #1f3a35;border-radius:12px;">
+              <tr><td style="padding:14px;color:#91cfc1;font-size:11px;line-height:1.7;">
+                <strong style="display:block;margin-bottom:3px;color:#d1fae5;font-size:11px;">Security reminder</strong>
+                Recharza will never ask for your password, OTP, UPI PIN, card PIN, or remote-device access by email, chat, or call.
+              </td></tr>
+            </table>
 
-          <p style="margin:22px 0 0;color:#6b7280;font-size:12px;line-height:1.65;">${escapeHtml(input.footer ?? "This is an automated Recharza account and order message. Keep account and tracking credentials private.")}</p>
-          <p style="margin:10px 0 0;color:#6b7280;font-size:12px;line-height:1.65;">Support: <a href="mailto:${SUPPORT_EMAIL}" style="color:#c4b5fd;text-decoration:none;font-weight:700;">${SUPPORT_EMAIL}</a></p>
-        </div>
+            <p style="margin:20px 0 0;color:#697184;font-size:11px;line-height:1.7;">${escapeHtml(input.footer ?? "This notification was generated automatically from activity on your Recharza account or order.")}</p>
+            <p style="margin:8px 0 0;color:#697184;font-size:11px;line-height:1.7;">Need help? <a href="mailto:${SUPPORT_EMAIL}" style="color:#c4b5fd;text-decoration:none;font-weight:800;">${SUPPORT_EMAIL}</a></p>
+          </td>
+        </tr>
 
-        <div style="padding:16px 24px;border-top:1px solid #252535;background:#0a0a10;color:#525a6d;font-size:10px;line-height:1.6;text-align:center;">
-          Game names, artwork, currencies, and trademarks belong to their respective publishers. Recharza is an independent digital top-up platform unless a specific partnership is stated.
-        </div>
-      </div>
-    </div>
-  </body>
+        <tr><td style="padding:14px 22px;background:#09090f;border-top:1px solid #242433;text-align:center;color:#4e5566;font-size:9px;line-height:1.6;">
+          © ${new Date().getUTCFullYear()} ${BRAND_NAME}. Automated transactional notification. Game names and trademarks belong to their respective owners.
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
 </html>`;
 }
 
 function renderTextEmail(input: TransactionalEmailInput) {
   const detailLines = (input.details ?? []).map((item) => `${item.label}: ${item.value}`);
   return [
-    input.eyebrow,
+    `RECHARZA — ${input.eyebrow}`,
     input.title,
     "",
     input.message,
@@ -122,7 +172,7 @@ function renderTextEmail(input: TransactionalEmailInput) {
     input.action ? "" : null,
     input.action ? `${input.action.label}: ${input.action.url}` : null,
     "",
-    input.footer ?? "This is an automated Recharza account and order message. Keep account and tracking credentials private.",
+    input.footer ?? "This notification was generated automatically from activity on your Recharza account or order.",
     `Support: ${SUPPORT_EMAIL}`,
   ]
     .filter((line): line is string => line !== null)
@@ -205,11 +255,11 @@ export function sendAccountCreatedEmail(input: {
   return sendTransactionalEmail({
     kind: "ACCOUNT_CREATED",
     to: input.email,
-    subject: "Your Recharza account is ready",
+    subject: "Welcome to Recharza — your account is ready",
     eyebrow: "Account created",
-    title: `Welcome to ${BRAND_NAME}, ${input.displayName}`,
+    title: `Welcome, ${input.displayName}.`,
     message:
-      "Your account was created successfully. You can now manage orders, saved players, billing details, security, and support from one workspace.",
+      "Your Recharza account is active. Orders, saved player details, billing information, account security, and support now live in one protected workspace.",
     details: [
       { label: "Username", value: input.username },
       { label: "Email", value: input.email },
@@ -235,16 +285,16 @@ export function sendPasswordResetEmail(input: {
     to: input.email,
     subject: "Reset your Recharza password",
     eyebrow: "Password reset requested",
-    title: "Create a new password",
+    title: "Create a new password.",
     message:
-      "We received a request to reset your Recharza password. The link is single-use and expires after 20 minutes.",
+      "A password reset was requested for your Recharza account. The secure link is single-use and expires after 20 minutes.",
     details: [
       { label: "Requested", value: formatTimestamp(input.requestedAt) },
       { label: "Expires", value: formatTimestamp(input.expiresAt) },
     ],
-    action: { label: "Reset password", url: input.resetUrl },
+    action: { label: "Reset password securely", url: input.resetUrl },
     footer:
-      "If you did not request this change, ignore this email. Your current password remains active.",
+      "If you did not request this change, do not open the reset link. Your current password remains active.",
     customerId: input.customerId,
   });
 }
@@ -259,16 +309,16 @@ export function sendPasswordChangedEmail(input: {
     to: input.email,
     subject: "Your Recharza password was changed",
     eyebrow: "Security update",
-    title: "Password changed successfully",
+    title: "Password changed successfully.",
     message:
-      "Your password was changed and existing account sessions were revoked. Sign in again with the new password.",
+      "Your account password was changed and existing account sessions were revoked. Sign in again with the new password.",
     details: [{ label: "Changed", value: formatTimestamp(input.changedAt) }],
     action: {
       label: "Sign in to Recharza",
       url: `${(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "")}/account`,
     },
     footer:
-      "If you did not make this change, contact Recharza support immediately.",
+      "If you did not make this change, contact Recharza support immediately and secure the email account linked to Recharza.",
     customerId: input.customerId,
   });
 }
