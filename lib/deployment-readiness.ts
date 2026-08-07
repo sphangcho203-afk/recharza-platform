@@ -66,6 +66,13 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
     isGoogleClientId(googleClientId) &&
     Boolean(value("GOOGLE_CLIENT_SECRET")) &&
     isLongSecret("GOOGLE_OAUTH_STATE_SECRET");
+  const gmailMailReady =
+    isGoogleClientId(value("GOOGLE_MAIL_CLIENT_ID")) &&
+    Boolean(value("GOOGLE_MAIL_CLIENT_SECRET")) &&
+    Boolean(value("GOOGLE_MAIL_REFRESH_TOKEN"));
+  const resendMailReady =
+    Boolean(value("RESEND_API_KEY")) && Boolean(value("RESEND_FROM_EMAIL"));
+  const emailDeliveryReady = gmailMailReady || resendMailReady;
   const razorpayKeyId = value("RAZORPAY_KEY_ID");
   const razorpayKeySecret = value("RAZORPAY_KEY_SECRET");
   const razorpayWebhookSecret = value("RAZORPAY_WEBHOOK_SECRET");
@@ -164,11 +171,12 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
       label: "Verified email delivery",
       category: "accounts",
       required: hosted,
-      ready: Boolean(value("RESEND_API_KEY")) && Boolean(value("RESEND_FROM_EMAIL")),
-      message:
-        value("RESEND_API_KEY") && value("RESEND_FROM_EMAIL")
-          ? "Production-style magic-link email delivery is configured."
-          : "RESEND_API_KEY and RESEND_FROM_EMAIL are required for hosted sign-in.",
+      ready: emailDeliveryReady,
+      message: gmailMailReady
+        ? "Gmail API OAuth delivery is configured for account and order emails."
+        : resendMailReady
+          ? "Resend delivery is configured for account and order emails."
+          : "Configure Gmail OAuth mail credentials or Resend credentials for hosted email delivery.",
     },
     {
       id: "razorpay-test",
