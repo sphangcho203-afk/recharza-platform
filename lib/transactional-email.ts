@@ -1,4 +1,5 @@
 import type { EmailMessageKind } from "@/generated/prisma/client";
+import { sendSystemEmail } from "@/lib/mail-delivery";
 import { getPrisma } from "@/lib/prisma";
 
 const BRAND_NAME = "Recharza";
@@ -109,6 +110,25 @@ function renderEmail(input: TransactionalEmailInput) {
 </html>`;
 }
 
+function renderTextEmail(input: TransactionalEmailInput) {
+  const detailLines = (input.details ?? []).map((item) => `${item.label}: ${item.value}`);
+  return [
+    input.eyebrow,
+    input.title,
+    "",
+    input.message,
+    detailLines.length ? "" : null,
+    ...detailLines,
+    input.action ? "" : null,
+    input.action ? `${input.action.label}: ${input.action.url}` : null,
+    "",
+    input.footer ?? "This is an automated Recharza account and order message. Keep account and tracking credentials private.",
+    `Support: ${SUPPORT_EMAIL}`,
+  ]
+    .filter((line): line is string => line !== null)
+    .join("\n");
+}
+
 export async function sendTransactionalEmail(input: TransactionalEmailInput) {
   const prisma = getPrisma();
   const delivery = await prisma.emailDelivery.create({
@@ -127,70 +147,37 @@ export async function sendTransactionalEmail(input: TransactionalEmailInput) {
     },
   });
 
-  const apiKey = process.env.RESEND_API_KEY?.trim();
-  const from = process.env.RESEND_FROM_EMAIL?.trim();
-
-  if (!apiKey || !from) {
-    await prisma.emailDelivery.update({
-      where: { id: delivery.id },
-      data: {
-        status: "FAILED",
-        attempts: 1,
-        errorMessage: "Resend delivery is not configured.",
-      },
-    });
-    return { ok: false as const, deliveryId: delivery.id };
-  }
-
   try {
-    const response = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from,
-        to: [input.to],
-        subject: input.subject,
-        html: renderEmail(input),
-      }),
+    const result = await sendSystemEmail({
+      to: input.to,
+      subject: input.subject,
+      html: renderEmail(input),
+      text: renderTextEmail(input),
+      idempotencyKey: `transactional-${delivery.id}`,
     });
-
-    const result = (await response.json().catch(() => null)) as
-      | { id?: string; message?: string; error?: { message?: string } }
-      | null;
-
-    if (!response.ok || !result?.id) {
-      const message =
-        result?.message ||
-        result?.error?.message ||
-        `Resend returned HTTP ${response.status}.`;
-      await prisma.emailDelivery.update({
-        where: { id: delivery.id },
-        data: {
-          status: "FAILED",
-          attempts: 1,
-          errorMessage: message.slice(0, 500),
-        },
-      });
-      return { ok: false as const, deliveryId: delivery.id };
-    }
 
     await prisma.emailDelivery.update({
       where: { id: delivery.id },
       data: {
         status: "SENT",
         attempts: 1,
-        providerMessageId: result.id,
+        providerMessageId: result.messageId,
         sentAt: new Date(),
+        payload: {
+          eyebrow: input.eyebrow,
+          title: input.title,
+          details: input.details ?? [],
+          actionLabel: input.action?.label ?? null,
+          provider: result.provider,
+        },
       },
     });
 
     return {
       ok: true as const,
       deliveryId: delivery.id,
-      providerMessageId: result.id,
+      provider: result.provider,
+      providerMessageId: result.messageId,
     };
   } catch (error) {
     await prisma.emailDelivery.update({
@@ -201,7 +188,7 @@ export async function sendTransactionalEmail(input: TransactionalEmailInput) {
         errorMessage:
           error instanceof Error
             ? error.message.slice(0, 500)
-            : "Unknown Resend delivery failure.",
+            : "Unknown email delivery failure.",
       },
     });
     return { ok: false as const, deliveryId: delivery.id };
