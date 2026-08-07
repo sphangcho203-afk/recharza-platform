@@ -1,7 +1,11 @@
 import { createHash } from "node:crypto";
 
 import { consumeMagicLink, createSessionCookie, sanitizeReturnPath } from "@/lib/auth";
-import { sendAccountSignInEmail } from "@/lib/lifecycle-email";
+import {
+  getRequestDeviceFingerprint,
+  sendAccountSignInEmail,
+} from "@/lib/lifecycle-email";
+import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
 export const runtime = "nodejs";
@@ -19,12 +23,19 @@ export async function GET(request: Request) {
     }
 
     try {
+      const matchingDeviceSessions = await getPrisma().authSession.count({
+        where: {
+          customerId: result.customer.id,
+          userAgentHash: getRequestDeviceFingerprint(request),
+        },
+      });
+
       await sendAccountSignInEmail({
         customerId: result.customer.id,
         email: result.customer.email,
         displayName: result.customer.displayName,
         request,
-        newDevice: false,
+        newDevice: matchingDeviceSessions <= 1,
         signedInAt: new Date(),
         sessionId: createHash("sha256")
           .update(result.sessionToken)
