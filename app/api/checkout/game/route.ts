@@ -4,6 +4,7 @@ import { validateBillingSelection } from "@/lib/commerce/billing";
 import { convertInrPaiseToCurrencyMinor } from "@/lib/commerce/currencies";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { validateSupplierCheckoutIdentity } from "@/lib/commerce/game-identity";
+import { sendOrderCreatedLifecycleEmail } from "@/lib/lifecycle-email";
 import {
   deriveOrderAccessToken,
   hashOrderAccessToken,
@@ -478,6 +479,24 @@ export async function POST(request: Request) {
       }
 
       throw error;
+    }
+
+    try {
+      await sendOrderCreatedLifecycleEmail({
+        databaseOrderId: order.id,
+        publicOrderId: order.publicId,
+        customerId: order.customerId,
+        email: order.billingEmail ?? order.customer.email,
+        gameSlug: order.gameSlug,
+        packageName: order.packageName,
+        amountInPaise: order.amountInPaise,
+        playerId: order.playerId,
+        zoneId: order.zoneId,
+        nickname: order.verifiedNickname,
+        occurredAt: order.createdAt,
+      });
+    } catch (error) {
+      console.error("Order-created email failed", error);
     }
 
     return Response.json(createCheckoutResponse(order, accessToken, false), {

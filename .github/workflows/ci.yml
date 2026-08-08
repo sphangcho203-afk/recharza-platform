@@ -40,6 +40,9 @@ jobs:
           GOOGLE_CLIENT_ID: ci-google-client.apps.googleusercontent.com
           GOOGLE_CLIENT_SECRET: ci-google-client-secret-placeholder
           GOOGLE_OAUTH_STATE_SECRET: ci-google-oauth-state-secret-32-characters-minimum
+          EMAIL_DELIVERY_PROVIDER: gmail
+          GOOGLE_MAIL_REFRESH_TOKEN: ci-google-mail-refresh-token-placeholder
+          GOOGLE_MAIL_FROM: recherzatopup@gmail.com
           RESEND_API_KEY: re_ci_placeholder
           RESEND_FROM_EMAIL: Recharza <accounts@example.test>
           RAZORPAY_KEY_ID: rzp_test_ci_placeholder

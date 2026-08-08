@@ -1,43 +1,153 @@
 :root {
   --storefront-container: 80rem;
   --storefront-page-pad: clamp(1rem, 3vw, 2rem);
-  --surface-elevated: rgba(13, 15, 25, 0.86);
+  --surface-elevated: rgba(13, 15, 25, 0.88);
   --surface-muted: rgba(255, 255, 255, 0.028);
   --border-interactive: rgba(255, 255, 255, 0.12);
   --shadow-elevated: 0 24px 80px rgba(0, 0, 0, 0.42);
-  --shadow-accent: 0 18px 55px rgba(91, 124, 255, 0.12);
-  --radius-card: 1rem;
-  --radius-banner: 1.25rem;
 }
 
 .storefront-page {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-.customer-mobile-nav {
-  max-width: 34rem;
-  margin-inline: auto;
+.storefront-feed-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 520px;
 }
 
-@media (hover: hover) {
-  .storefront-card:hover {
-    box-shadow:
-      var(--shadow-elevated),
-      0 0 0 1px color-mix(in srgb, var(--game-accent) 48%, transparent),
-      0 18px 55px color-mix(in srgb, var(--game-accent) 14%, transparent);
+.recharza-popular-rail {
+  display: flex;
+  max-width: 100%;
+  gap: 0.75rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline mandatory;
+  padding-bottom: 0.5rem;
+  scrollbar-width: none;
+}
+
+.recharza-popular-rail::-webkit-scrollbar {
+  display: none;
+}
+
+.recharza-popular-card {
+  width: min(64vw, 16rem);
+  min-width: min(64vw, 16rem);
+  scroll-snap-align: start;
+}
+
+.recharza-game-feed {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.recharza-market-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.recharza-process-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 640px) {
+  .recharza-game-feed {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.9rem;
+  }
+
+  .recharza-market-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .recharza-process-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
   }
 }
 
-@media (max-width: 639px) {
-  :root {
-    --radius-card: 0.9rem;
-    --radius-banner: 1rem;
+@media (min-width: 1100px) {
+  .recharza-popular-rail {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    overflow: visible;
+    padding-bottom: 0;
+  }
+
+  .recharza-popular-card {
+    width: auto;
+    min-width: 0;
+  }
+
+  .recharza-game-feed {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 919px) {
+  .storefront-page h1,
+  .storefront-page h2,
+  .storefront-page h3,
+  .storefront-page p {
+    overflow-wrap: break-word;
+    word-break: normal;
+  }
+
+  form nav[aria-label="Checkout steps"] {
+    display: flex !important;
+    max-width: 100%;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 0.25rem;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+  }
+
+  form nav[aria-label="Checkout steps"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  form nav[aria-label="Checkout steps"] > button {
+    min-width: 7.5rem;
+    scroll-snap-align: start;
+  }
+
+  form .sm\:grid-cols-2 {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  form .sm\:flex-row {
+    flex-direction: column !important;
+  }
+
+  form .sm\:items-start,
+  form .sm\:items-end,
+  form .sm\:items-center {
+    align-items: stretch !important;
+  }
+
+  form .sm\:max-w-xs {
+    max-width: none !important;
+  }
+
+  form .max-h-\[24rem\] {
+    max-height: none !important;
+    overflow: visible !important;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .storefront-card,
-  .storefront-card * {
-    transform: none !important;
+  .storefront-page *,
+  .storefront-page *::before,
+  .storefront-page *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
   }
 }

@@ -10,6 +10,10 @@ import {
   consumeGoogleOAuthState,
   createGoogleOAuthClient,
 } from "@/lib/google-oauth";
+import {
+  isKnownCustomerDevice,
+  sendAccountSignInEmail,
+} from "@/lib/lifecycle-email";
 import { getPrisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
@@ -99,7 +103,7 @@ export async function GET(request: Request) {
             lastLoginAt: now,
           },
         });
-        return { kind: "ok" as const, customerId: customer.id };
+        return { kind: "ok" as const, customer };
       }
 
       const emailCustomer = await transaction.customer.findUnique({
@@ -126,7 +130,7 @@ export async function GET(request: Request) {
             lastLoginAt: now,
           },
         });
-        return { kind: "ok" as const, customerId: customer.id };
+        return { kind: "ok" as const, customer };
       }
 
       const customer = await transaction.customer.create({
@@ -139,7 +143,7 @@ export async function GET(request: Request) {
           lastLoginAt: now,
         },
       });
-      return { kind: "ok" as const, customerId: customer.id };
+      return { kind: "ok" as const, customer };
     });
 
     if (linked.kind === "restricted") {
@@ -149,7 +153,24 @@ export async function GET(request: Request) {
       return accountError(request, "google_conflict");
     }
 
-    const session = await createCustomerSession(linked.customerId, request);
+    const knownDevice = await isKnownCustomerDevice(linked.customer.id, request);
+    const session = await createCustomerSession(linked.customer.id, request);
+
+    try {
+      await sendAccountSignInEmail({
+        customerId: linked.customer.id,
+        email: linked.customer.email,
+        displayName: linked.customer.displayName,
+        request,
+        newDevice: !knownDevice,
+        signedInAt: now,
+        sessionId: session.sessionId,
+        method: "google",
+      });
+    } catch (error) {
+      console.error("Google sign-in security email failed", error);
+    }
+
     const destination = new URL(state.returnTo, request.url);
 
     return redirectResponse(destination, [

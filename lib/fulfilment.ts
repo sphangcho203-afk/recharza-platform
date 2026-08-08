@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
+import { sendTopupProcessingLifecycleEmail } from "@/lib/lifecycle-email";
 import { getPrisma } from "@/lib/prisma";
 import {
   createFazerCardsTopup,
@@ -24,7 +25,7 @@ export async function ensureOrderFulfilment(input: {
   const prisma = getPrisma();
   const order = await prisma.order.findUnique({
     where: { id: input.orderId },
-    include: { supplierProduct: true },
+    include: { supplierProduct: true, customer: true },
   });
 
   if (!order) return { ok: false, state: "missing-order" as const };
@@ -193,6 +194,7 @@ export async function ensureOrderFulfilment(input: {
       return { ok: true, state: "planned", dryRun: true, attemptId: attempt.id };
     }
 
+    const startedAt = new Date();
     await prisma.$transaction([
       prisma.fulfilmentAttempt.update({
         where: { id: attempt.id },
@@ -202,7 +204,7 @@ export async function ensureOrderFulfilment(input: {
           providerOrderId: result.providerOrderId,
           requestPayload: result.requestPayload as Prisma.InputJsonValue,
           responsePayload: result.responsePayload as Prisma.InputJsonValue,
-          submittedAt: new Date(),
+          submittedAt: startedAt,
         },
       }),
       prisma.order.update({
@@ -225,6 +227,24 @@ export async function ensureOrderFulfilment(input: {
         },
       }),
     ]);
+
+    try {
+      await sendTopupProcessingLifecycleEmail({
+        databaseOrderId: order.id,
+        publicOrderId: order.publicId,
+        customerId: order.customerId,
+        email: order.billingEmail ?? order.customer.email,
+        gameSlug: order.gameSlug,
+        packageName: order.packageName,
+        amountInPaise: order.amountInPaise,
+        playerId: order.playerId,
+        zoneId: order.zoneId,
+        nickname: order.verifiedNickname,
+        occurredAt: startedAt,
+      });
+    } catch (error) {
+      console.error("Top-up processing email failed", error);
+    }
 
     return {
       ok: true,

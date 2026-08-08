@@ -5,6 +5,10 @@ import {
 } from "@/lib/auth";
 import { isSignInAllowed } from "@/lib/access-control";
 import { verifyCustomerPassword } from "@/lib/customer-password";
+import {
+  isKnownCustomerDevice,
+  sendAccountSignInEmail,
+} from "@/lib/lifecycle-email";
 import { getPrisma } from "@/lib/prisma";
 import {
   consumeRateLimit,
@@ -79,12 +83,30 @@ export async function POST(request: Request) {
       );
     }
 
+    const signedInAt = new Date();
+    const knownDevice = await isKnownCustomerDevice(customer.id, request);
+
     await prisma.customer.update({
       where: { id: customer.id },
-      data: { lastLoginAt: new Date() },
+      data: { lastLoginAt: signedInAt },
     });
 
     const session = await createCustomerSession(customer.id, request);
+
+    try {
+      await sendAccountSignInEmail({
+        customerId: customer.id,
+        email: customer.email,
+        displayName: customer.displayName,
+        request,
+        newDevice: !knownDevice,
+        signedInAt,
+        sessionId: session.sessionId,
+        method: "password",
+      });
+    } catch (error) {
+      console.error("Sign-in security email failed", error);
+    }
 
     return Response.json(
       {

@@ -2,133 +2,94 @@ import Link from "next/link";
 
 import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { StorefrontIcon } from "@/components/storefront-icon";
-import type { StorefrontArtworkKey } from "@/lib/storefront-artwork";
 import type { StorefrontContent } from "@/lib/storefront-content";
 
-type PromoSlide = {
-  eyebrow: string;
-  title: string;
-  description: string;
-  href: string;
-  cta: string;
-  artworkKey: StorefrontArtworkKey;
-  sources: string[];
-  alt: string;
-  accentClass: string;
-};
-
 const trustPoints = [
-  { icon: "receipt" as const, label: "Fast fulfilment" },
-  { icon: "shield" as const, label: "Protected payments" },
-  { icon: "support" as const, label: "Customer support" },
+  { icon: "receipt" as const, label: "Transparent pricing" },
+  { icon: "shield" as const, label: "Secure checkout" },
+  { icon: "support" as const, label: "24/7 support" },
 ];
 
 export function StorefrontHero({
   content,
+  imageUrl,
+  imageAlt,
 }: {
   content: StorefrontContent["hero"];
+  imageUrl?: string | null;
+  imageAlt?: string;
 }) {
-  const slides: PromoSlide[] = [
-    {
-      eyebrow: content.eyebrow,
-      title: `${content.title} ${content.accent}`,
-      description: content.description,
-      href: content.primaryCtaHref,
-      cta: content.primaryCtaLabel,
-      artworkKey: "mobile-legends-india",
-      sources: ["/assets/founder/mobile-legends.svg"],
-      alt: "Mobile Legends regional top-up promotion",
-      accentClass: "from-violet-700/90 via-indigo-700/45",
-    },
-    {
-      eyebrow: "Featured top-up",
-      title: "Free Fire MAX diamonds and memberships.",
-      description: "Choose a published offer and review the exact player destination before payment.",
-      href: "/games/free-fire",
-      cta: "Browse Free Fire",
-      artworkKey: "free-fire",
-      sources: ["/assets/founder/free-fire.svg"],
-      alt: "Free Fire MAX top-up promotion",
-      accentClass: "from-amber-700/90 via-orange-700/40",
-    },
-    {
-      eyebrow: "Curated catalogue",
-      title: "PUBG Mobile UC through a recoverable order flow.",
-      description: "Live offers, clear market labels, protected order creation and private tracking.",
-      href: "/games/pubg-mobile",
-      cta: "Browse PUBG Mobile",
-      artworkKey: "pubg-mobile",
-      sources: ["/assets/founder/pubg-mobile.svg"],
-      alt: "PUBG Mobile UC top-up promotion",
-      accentClass: "from-sky-800/90 via-cyan-700/35",
-    },
-  ];
+  const sources = imageUrl
+    ? [imageUrl]
+    : [
+        "https://play-lh.googleusercontent.com/D8r13ijO9c-0_1N-CP4d63mR1w6YhDuR2mBQUl27ELJAx0sKdaKtM5vCUnSLODKBVzUx7rZ9cW4Ir9jYiufsSQ=w960-h960",
+        "https://upload.wikimedia.org/wikipedia/en/8/86/Mobile_Legends_Bang_Bang.jpg",
+        "/assets/founder/mobile-legends.svg",
+      ];
 
   return (
-    <section className="relative px-4 pb-8 pt-5 sm:px-6 sm:pb-10 sm:pt-7 lg:px-8">
-      <div className="pointer-events-none absolute inset-x-0 top-[-10rem] -z-10 h-[32rem] overflow-hidden">
-        <div className="storefront-ambient-grid absolute inset-0 opacity-35" />
-        <div className="absolute left-[8%] top-12 h-72 w-72 rounded-full bg-violet-600/12 blur-[120px]" />
-        <div className="absolute right-[4%] top-6 h-72 w-72 rounded-full bg-cyan-500/9 blur-[120px]" />
-      </div>
+    <section className="px-4 pb-6 pt-5 sm:px-6 sm:pb-8 sm:pt-6 lg:px-8">
+      <div className="mx-auto max-w-[1240px]">
+        <div className="relative overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[#0b0d14] shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
+          <div className="grid min-h-[22rem] lg:grid-cols-[0.92fr_1.08fr] lg:min-h-[24rem]">
+            <div className="relative z-10 flex flex-col justify-center px-6 py-9 sm:px-9 lg:px-12">
+              <h1 className="max-w-xl text-4xl font-black leading-[0.98] tracking-[-0.055em] text-white sm:text-5xl lg:text-[3.5rem]">
+                {content.title}
+                <span className="block text-violet-400">{content.accent}</span>
+              </h1>
+              <p className="mt-4 max-w-lg text-sm leading-6 text-slate-400 sm:text-[15px]">
+                {content.description}
+              </p>
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <Link
+                  href={content.primaryCtaHref}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400"
+                >
+                  {content.primaryCtaLabel}
+                  <StorefrontIcon name="arrow" className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/orders/lookup"
+                  className="inline-flex min-h-11 items-center rounded-lg border border-white/[0.1] bg-white/[0.025] px-5 text-sm font-black text-slate-200 transition hover:bg-white/[0.06]"
+                >
+                  Track order
+                </Link>
+              </div>
+            </div>
 
-      <div className="mx-auto max-w-7xl">
-        <div
-          aria-label="Recharza promotions"
-          className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {slides.map((slide, index) => (
             <Link
-              key={slide.href}
-              href={slide.href}
-              className="group relative aspect-[16/9] w-[92%] min-w-[92%] snap-center overflow-hidden rounded-2xl border border-white/[0.1] bg-[#0b0d16] shadow-[0_24px_70px_rgba(0,0,0,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 sm:aspect-[3/1] sm:w-full sm:min-w-full"
+              href={content.primaryCtaHref}
+              aria-label={content.primaryCtaLabel}
+              className="relative min-h-[18rem] overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-violet-400 lg:min-h-0"
             >
               <StorefrontArtwork
-                artworkKey={slide.artworkKey}
-                sources={slide.sources}
-                alt={slide.alt}
-                fallbackLabel={slide.title}
-                loading={index === 0 ? "eager" : "lazy"}
-                priority={index === 0}
-                sizes="(max-width: 640px) 92vw, 1280px"
-                className="absolute inset-0 h-full w-full transition-transform duration-500 motion-safe:group-hover:scale-[1.025]"
+                artworkKey="mobile-legends-india"
+                sources={sources}
+                alt={imageAlt ?? "Recharza game top-up storefront"}
+                fallbackLabel="Recharza"
+                priority
+                loading="eager"
+                sizes="(max-width: 1024px) 100vw, 55vw"
+                className="absolute inset-0 h-full w-full"
                 fallbackClassName="absolute inset-0 h-full w-full"
+                objectPosition="center"
+                objectFit="cover"
               />
-              <div className={`absolute inset-0 bg-gradient-to-r ${slide.accentClass} to-transparent`} />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#05060b]/90 via-[#05060b]/15 to-transparent sm:bg-gradient-to-r sm:from-[#05060b]/90 sm:via-[#05060b]/38 sm:to-transparent" />
-
-              <div className="absolute inset-0 flex max-w-3xl flex-col justify-end p-5 sm:justify-center sm:p-8 lg:p-10">
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-cyan-200 sm:text-[10px]">
-                  {slide.eyebrow}
-                </p>
-                <h1 className="mt-2 max-w-2xl text-2xl font-black leading-[1.02] tracking-[-0.045em] text-white sm:text-3xl lg:text-4xl">
-                  {slide.title}
-                </h1>
-                <p className="mt-2 hidden max-w-xl text-sm leading-6 text-slate-300/85 sm:line-clamp-2 sm:block">
-                  {slide.description}
-                </p>
-                <span className="mt-4 inline-flex min-h-10 w-fit items-center gap-2 rounded-xl bg-white px-4 text-xs font-black text-slate-950 transition group-hover:bg-cyan-50">
-                  {slide.cta}
-                  <StorefrontIcon name="arrow" className="h-4 w-4 transition group-hover:translate-x-0.5" />
-                </span>
-              </div>
-
-              <span className="absolute right-4 top-4 rounded-full border border-white/[0.12] bg-black/45 px-2.5 py-1 font-mono text-[9px] font-black text-white/75 backdrop-blur-xl">
-                {String(index + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
-              </span>
+              <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-32 bg-gradient-to-r from-[#0b0d14] to-transparent lg:block" />
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0b0d14]/80 to-transparent lg:hidden" />
             </Link>
-          ))}
+          </div>
         </div>
 
-        <div className="mt-3 grid grid-cols-3 overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025]">
+        <div className="mt-3 grid grid-cols-3 overflow-hidden rounded-xl border border-white/[0.08] bg-[#0b0d14]">
           {trustPoints.map((point, index) => (
             <div
               key={point.label}
-              className={`flex min-h-16 items-center justify-center gap-2 px-2 text-center text-[10px] font-black text-slate-300 sm:min-h-14 sm:text-xs ${
+              className={`flex min-h-14 items-center justify-center gap-2 px-3 text-center text-[10px] font-black text-slate-400 sm:text-xs ${
                 index > 0 ? "border-l border-white/[0.07]" : ""
               }`}
             >
-              <StorefrontIcon name={point.icon} className="h-4 w-4 shrink-0 text-cyan-300" />
+              <StorefrontIcon name={point.icon} className="h-4 w-4 shrink-0 text-violet-300" />
               <span>{point.label}</span>
             </div>
           ))}

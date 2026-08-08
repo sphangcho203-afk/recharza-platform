@@ -3,101 +3,115 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { ResilientImage } from "@/components/resilient-image";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { StorefrontIcon } from "@/components/storefront-icon";
 import { games } from "@/lib/games";
-import {
-  mobileLegendsMarkets,
-  parseMobileLegendsMarket,
-} from "@/lib/mobile-legends-market";
+import { getPublicMediaPlacements } from "@/lib/media-assets";
+import { mobileLegendsMarkets, parseMobileLegendsMarket } from "@/lib/mobile-legends-market";
 
 export const metadata: Metadata = {
   title: "Mobile Legends Top-Up",
-  description:
-    "Choose a supported Mobile Legends fulfilment market before opening its separate regional checkout version.",
+  description: "Choose a supported Mobile Legends fulfilment market before opening its regional checkout.",
 };
 
-export default async function MobileLegendsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ region?: string }>;
-}) {
+export default async function MobileLegendsPage({ searchParams }: { searchParams: Promise<{ region?: string }> }) {
   const legacyMarket = parseMobileLegendsMarket((await searchParams).region);
   if (legacyMarket) redirect(`/games/mobile-legends/${legacyMarket.code}`);
 
   const mobileLegendsGame = games.find((game) => game.slug === "mobile-legends")!;
+  const media = await getPublicMediaPlacements();
+  const gameLogo = media.get("game.mobile-legends.logo");
+  const gameArtwork = media.get("game.mobile-legends.artwork");
 
   return (
-    <main className="min-h-screen bg-[#06060f] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
+    <main className="storefront-page min-h-screen overflow-x-clip text-white">
       <SiteHeader />
-      <section className="relative overflow-hidden border-b border-white/10">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-[-10rem] top-[-14rem] h-[30rem] w-[30rem] rounded-full bg-blue-600/16 blur-[120px]" />
-          <div className="absolute right-[-8rem] top-0 h-[26rem] w-[26rem] rounded-full bg-violet-600/16 blur-[120px]" />
-          <div className="hero-grid absolute inset-0 opacity-20" />
-        </div>
 
-        <div className="relative mx-auto grid max-w-6xl gap-7 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:px-8">
-          <div className="mx-auto w-full max-w-sm overflow-hidden rounded-3xl border border-white/10 bg-[#10101a] shadow-2xl shadow-black/30 lg:order-2">
-            <div className="aspect-square">
-              <ResilientImage
-                sources={mobileLegendsGame.artworkSources}
-                alt={mobileLegendsGame.artworkAlt}
-                fallbackLabel="ML"
-                loading="eager"
-                className="h-full w-full object-cover"
-                fallbackClassName="h-full w-full"
-              />
-            </div>
+      <section className="border-b border-white/[0.08] bg-[#0a0c12] px-4 py-5 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1240px]">
+          <div className="mb-4 flex items-center gap-2 text-[11px] text-slate-600">
+            <Link href="/" className="hover:text-white">Home</Link>
+            <span>/</span>
+            <Link href="/#games" className="hover:text-white">Top Up</Link>
+            <span>/</span>
+            <span className="text-slate-400">Mobile Legends</span>
           </div>
 
-          <div>
-            <Link href="/#games" className="text-sm font-semibold text-violet-300 hover:text-violet-200">
-              ← Back to games
-            </Link>
-            <p className="mt-7 text-xs font-black uppercase tracking-[0.18em] text-violet-300">Mobile Legends</p>
-            <h1 className="mt-2 text-4xl font-black tracking-[-0.05em] sm:text-5xl">
-              Choose the game-account market.
-            </h1>
-            <p className="mt-4 max-w-xl text-base leading-7 text-slate-400">
-              Every market opens a separate version with its own URL, supplier catalogue, package list, validation route and default currency.
-            </p>
+          <div className="flex flex-col gap-4 rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="flex min-w-0 items-center gap-4">
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-white/[0.08] bg-[#151923] sm:h-20 sm:w-20">
+                <ResilientImage
+                  sources={gameLogo ? [gameLogo.url, ...mobileLegendsGame.logoSources] : mobileLegendsGame.logoSources}
+                  alt={gameLogo?.altText ?? mobileLegendsGame.logoAlt}
+                  fallbackLabel="ML"
+                  fill
+                  priority
+                  sizes="80px"
+                  className="object-contain p-2"
+                  fallbackClassName="absolute inset-0 h-full w-full"
+                />
+              </div>
+              <div>
+                <h1 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">Mobile Legends: Bang Bang Top Up</h1>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-slate-500">
+                  <span className="text-amber-300">★ 4.9</span>
+                  <span>{mobileLegendsMarkets.length} markets</span>
+                  <span className="inline-flex items-center gap-1 text-emerald-300"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Secure</span>
+                  <span className="inline-flex items-center gap-1 text-cyan-300"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
+                </div>
+              </div>
+            </div>
+            <div className="relative hidden h-20 w-44 overflow-hidden rounded-lg border border-white/[0.08] bg-[#12151d] md:block">
+              <ResilientImage
+                sources={gameArtwork ? [gameArtwork.url, ...mobileLegendsGame.artworkSources] : mobileLegendsGame.artworkSources}
+                alt={gameArtwork?.altText ?? mobileLegendsGame.artworkAlt}
+                fallbackLabel="Mobile Legends"
+                fill
+                sizes="176px"
+                className="object-cover"
+                fallbackClassName="absolute inset-0 h-full w-full"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-9 sm:px-6 lg:px-8 lg:py-12">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="mx-auto max-w-[1240px] px-4 py-7 sm:px-6 lg:px-8">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">Choose your account market</h2>
+            <p className="mt-1.5 text-sm text-slate-500">The selected market controls packages, currency, validation and fulfilment.</p>
+          </div>
+          <Link href="/support" className="hidden text-xs font-black text-violet-300 hover:text-violet-200 sm:block">Need help?</Link>
+        </div>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {mobileLegendsMarkets.map((market) => (
             <Link
               key={market.code}
               href={`/games/mobile-legends/${market.code}`}
-              className="group overflow-hidden rounded-2xl border border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.13),transparent_45%),#101018] transition hover:-translate-y-0.5 hover:border-violet-400/35"
+              className="group flex min-h-28 items-center gap-4 rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 transition hover:-translate-y-0.5 hover:border-violet-400/35 hover:shadow-[0_14px_36px_rgba(0,0,0,0.24)]"
             >
-              <div className="aspect-[16/9] overflow-hidden">
-                <ResilientImage
-                  sources={mobileLegendsGame.artworkSources}
-                  alt={`${mobileLegendsGame.artworkAlt} for ${market.label}`}
-                  fallbackLabel="ML"
-                  className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]"
-                  fallbackClassName="h-full w-full"
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="text-xl font-black text-white">{market.flag} {market.label}</p>
-                  <span className="rounded-full border border-white/10 bg-black/25 px-2.5 py-1 text-[10px] font-bold text-slate-300">
-                    {market.defaultCurrency}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm leading-6 text-slate-500">{market.note}</p>
-                <span className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-white px-3 py-2 text-xs font-black text-slate-950">
-                  Open {market.label} version →
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-2xl" aria-hidden="true">{market.flag}</span>
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-2">
+                  <strong className="truncate text-sm font-black text-white">{market.label}</strong>
+                  <span className="rounded-md border border-white/[0.08] px-1.5 py-0.5 text-[9px] font-black text-slate-500">{market.defaultCurrency}</span>
                 </span>
-              </div>
+                <span className="mt-1.5 line-clamp-2 block text-xs leading-5 text-slate-500">{market.note}</span>
+              </span>
+              <StorefrontIcon name="arrow" className="h-4 w-4 shrink-0 text-slate-600 transition group-hover:text-white" />
             </Link>
           ))}
         </div>
+
+        <div className="mt-7 rounded-xl border border-white/[0.08] bg-[#0b0d13] p-4 text-xs leading-5 text-slate-500 sm:p-5">
+          Choose a market only when it matches the Mobile Legends account. Recharza does not silently substitute a different region.
+        </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }

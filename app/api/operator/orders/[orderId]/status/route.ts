@@ -1,3 +1,11 @@
+import {
+  sendOrderCancelledLifecycleEmail,
+  sendTopupProcessingLifecycleEmail,
+} from "@/lib/lifecycle-email";
+import {
+  sendOrderCompletedEmail,
+  sendOrderFailedEmail,
+} from "@/lib/order-email";
 import { verifyOperatorAccess } from "@/lib/operator-auth";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
@@ -14,6 +22,31 @@ const TRANSITIONS: Record<string, Set<string>> = {
   FAILED: new Set(),
   CANCELLED: new Set(),
 };
+
+function getGameLabel(gameSlug: string) {
+  const labels: Record<string, string> = {
+    "mobile-legends": "Mobile Legends",
+    "free-fire": "Free Fire MAX",
+    "pubg-mobile": "PUBG Mobile",
+    valorant: "VALORANT",
+    "genshin-impact": "Genshin Impact",
+    bgmi: "BGMI",
+  };
+  return labels[gameSlug] ?? gameSlug.replaceAll("-", " ").replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
+function getPlayerLabel(order: {
+  playerId: string;
+  zoneId: string;
+  verifiedNickname: string | null;
+}) {
+  if (order.verifiedNickname) {
+    return order.zoneId
+      ? `${order.verifiedNickname} · ${order.playerId} (${order.zoneId})`
+      : `${order.verifiedNickname} · ${order.playerId}`;
+  }
+  return order.zoneId ? `${order.playerId} (${order.zoneId})` : order.playerId;
+}
 
 export async function POST(
   request: Request,
@@ -61,7 +94,10 @@ export async function POST(
 
     const { orderId } = await context.params;
     const prisma = getPrisma();
-    const order = await prisma.order.findUnique({ where: { publicId: orderId } });
+    const order = await prisma.order.findUnique({
+      where: { publicId: orderId },
+      include: { customer: true },
+    });
 
     if (!order) {
       return Response.json({ ok: false, message: "Order not found." }, { status: 404 });
@@ -81,6 +117,7 @@ export async function POST(
       );
     }
 
+    const occurredAt = new Date();
     await prisma.$transaction([
       prisma.order.update({
         where: { id: order.id },
@@ -115,6 +152,46 @@ export async function POST(
         },
       }),
     ]);
+
+    const recipient = order.billingEmail ?? order.customer.email;
+    const lifecycleInput = {
+      databaseOrderId: order.id,
+      publicOrderId: order.publicId,
+      customerId: order.customerId,
+      email: recipient,
+      gameSlug: order.gameSlug,
+      packageName: order.packageName,
+      amountInPaise: order.amountInPaise,
+      playerId: order.playerId,
+      zoneId: order.zoneId,
+      nickname: order.verifiedNickname,
+      occurredAt,
+    };
+    const outcomeInput = {
+      orderId: order.publicId,
+      databaseOrderId: order.id,
+      customerId: order.customerId,
+      email: recipient,
+      gameLabel: getGameLabel(order.gameSlug),
+      packageName: order.packageName,
+      playerLabel: getPlayerLabel(order),
+      amountInPaise: order.amountInPaise,
+      occurredAt,
+    };
+
+    try {
+      if (targetStatus === "FULFILLING") {
+        await sendTopupProcessingLifecycleEmail(lifecycleInput);
+      } else if (targetStatus === "COMPLETED") {
+        await sendOrderCompletedEmail(outcomeInput);
+      } else if (targetStatus === "CANCELLED") {
+        await sendOrderCancelledLifecycleEmail({ ...lifecycleInput, reason });
+      } else if (targetStatus === "FAILED") {
+        await sendOrderFailedEmail({ ...outcomeInput, reason });
+      }
+    } catch (error) {
+      console.error("Operator order-status email failed", error);
+    }
 
     return Response.json({
       ok: true,

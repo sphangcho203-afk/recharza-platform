@@ -1,5 +1,7 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { ensureOrderFulfilment } from "@/lib/fulfilment";
+import { sendPaymentConfirmedLifecycleEmail } from "@/lib/lifecycle-email";
+import { sendOrderFailedEmail } from "@/lib/order-email";
 import { getPrisma } from "@/lib/prisma";
 import {
   hashWebhookPayload,
@@ -61,6 +63,31 @@ function resolveTargetStatus(
   }
 
   return currentStatus;
+}
+
+function getGameLabel(gameSlug: string) {
+  const labels: Record<string, string> = {
+    "mobile-legends": "Mobile Legends",
+    "free-fire": "Free Fire MAX",
+    "pubg-mobile": "PUBG Mobile",
+    valorant: "VALORANT",
+    "genshin-impact": "Genshin Impact",
+    bgmi: "BGMI",
+  };
+  return labels[gameSlug] ?? gameSlug.replaceAll("-", " ").replace(/\b\w/g, (character) => character.toUpperCase());
+}
+
+function getPlayerLabel(order: {
+  playerId: string;
+  zoneId: string;
+  verifiedNickname: string | null;
+}) {
+  if (order.verifiedNickname) {
+    return order.zoneId
+      ? `${order.verifiedNickname} · ${order.playerId} (${order.zoneId})`
+      : `${order.verifiedNickname} · ${order.playerId}`;
+  }
+  return order.zoneId ? `${order.playerId} (${order.zoneId})` : order.playerId;
 }
 
 export async function POST(request: Request) {
@@ -145,6 +172,7 @@ export async function POST(request: Request) {
 
     const order = await prisma.order.findUnique({
       where: { paymentSessionId: event.providerOrderId },
+      include: { customer: true },
     });
 
     if (!order) {
@@ -209,6 +237,48 @@ export async function POST(request: Request) {
         },
       }),
     ]);
+
+    const occurredAt = new Date();
+    const recipient = order.billingEmail ?? order.customer.email;
+
+    if (targetStatus === "PAID" && order.status !== "PAID") {
+      try {
+        await sendPaymentConfirmedLifecycleEmail({
+          databaseOrderId: order.id,
+          publicOrderId: order.publicId,
+          customerId: order.customerId,
+          email: recipient,
+          gameSlug: order.gameSlug,
+          packageName: order.packageName,
+          amountInPaise: order.amountInPaise,
+          playerId: order.playerId,
+          zoneId: order.zoneId,
+          nickname: order.verifiedNickname,
+          occurredAt,
+        });
+      } catch (error) {
+        console.error("Payment-confirmed email failed", error);
+      }
+    }
+
+    if (targetStatus === "FAILED" && order.status !== "FAILED") {
+      try {
+        await sendOrderFailedEmail({
+          orderId: order.publicId,
+          databaseOrderId: order.id,
+          customerId: order.customerId,
+          email: recipient,
+          gameLabel: getGameLabel(order.gameSlug),
+          packageName: order.packageName,
+          playerLabel: getPlayerLabel(order),
+          amountInPaise: order.amountInPaise,
+          occurredAt,
+          reason: "The payment provider reported that the payment failed.",
+        });
+      } catch (error) {
+        console.error("Payment-failed email failed", error);
+      }
+    }
 
     let fulfilment = null;
     if (targetStatus === "PAID") {

@@ -1,117 +1,107 @@
 import Link from "next/link";
 
 import { RecharzaMark } from "@/components/recharza-mark";
-import { StorefrontIcon } from "@/components/storefront-icon";
+import { SupportChannelIcon, type SupportChannelIconName } from "@/components/support-channel-icon";
+import { getPublicMediaPlacements } from "@/lib/media-assets";
 import { PUBLIC_POLICY_KEYS, publicPolicies } from "@/lib/public-policies";
+import { getPublicSupportChannels } from "@/lib/support-config";
 
-const storeLinks = [
-  { label: "All games", href: "/#games" },
-  { label: "Mobile Legends", href: "/games/mobile-legends" },
-  { label: "Free Fire MAX", href: "/games/free-fire" },
-  { label: "PUBG Mobile", href: "/games/pubg-mobile" },
-];
-
-const customerLinks = [
-  { label: "Track an order", href: "/orders/lookup" },
+const companyLinks = [
+  { label: "Games", href: "/#games" },
   { label: "My account", href: "/account" },
-  { label: "Cart", href: "/cart" },
-  { label: "Support centre", href: "/support" },
+  { label: "Track order", href: "/orders/lookup" },
 ];
 
-const legalLinks = PUBLIC_POLICY_KEYS.map((key) => ({
-  label: publicPolicies[key].title,
-  href: `/policies/${key}`,
-}));
+const supportLinks = [
+  { label: "Help Center", href: "/support" },
+  { label: "Refund policy", href: "/policies/refunds" },
+  { label: "Privacy policy", href: "/policies/privacy" },
+  { label: "Terms of service", href: "/policies/terms" },
+];
 
-export function SiteFooter() {
+const channelIcons: Record<string, SupportChannelIconName> = {
+  telegram: "telegram",
+  whatsapp: "whatsapp",
+  instagram: "instagram",
+  email: "email",
+};
+
+export async function SiteFooter() {
+  const [media, channels] = await Promise.all([
+    getPublicMediaPlacements().catch(() => new Map()),
+    Promise.resolve(getPublicSupportChannels()),
+  ]);
+  const brandLogo = media.get("brand.primary.logo");
+
   return (
-    <footer className="border-t border-white/[0.08] bg-[#05060b] px-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl py-10 sm:py-12">
-        <div className="grid gap-8 lg:grid-cols-[1.25fr_0.75fr_0.75fr_0.85fr] lg:gap-12">
-          <div>
-            <RecharzaMark />
-            <p className="mt-4 max-w-sm text-sm leading-6 text-slate-500">
-              Independent multi-game top-ups with clear regional selection,
-              protected payment review and private order tracking.
+    <footer className="border-t border-white/[0.08] bg-[#07080c] px-4 pb-6 pt-9 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1240px]">
+        <div className="grid gap-8 md:grid-cols-[1.4fr_0.7fr_0.8fr_0.9fr]">
+          <div className="max-w-sm">
+            <RecharzaMark logoUrl={brandLogo?.url} logoAlt={brandLogo?.altText} />
+            <p className="mt-3 text-sm leading-6 text-slate-500">
+              Game top-ups with published pricing, secure checkout, recoverable order tracking and connected support.
             </p>
-            <a
-              href="mailto:recherzatopup@gmail.com"
-              className="mt-5 inline-flex min-h-11 max-w-full items-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3.5 text-sm font-black text-slate-300 transition hover:border-cyan-300/20 hover:bg-cyan-300/[0.05] hover:text-white"
-            >
-              <StorefrontIcon name="support" className="h-[17px] w-[17px] shrink-0 text-cyan-300" />
-              <span className="truncate">recherzatopup@gmail.com</span>
-            </a>
-
-            <div className="mt-5 flex flex-wrap gap-2" aria-label="Payment information">
-              <span className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.025] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
-                <StorefrontIcon name="shield" className="h-4 w-4 text-emerald-300" />
-                Razorpay checkout
-              </span>
-              <span className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.025] px-3 text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
-                <StorefrontIcon name="receipt" className="h-4 w-4 text-cyan-300" />
-                Methods shown at pay
-              </span>
+            <div className="mt-5 flex gap-2" aria-label="Support channels">
+              {channels.map((channel) => {
+                const icon = channelIcons[channel.id];
+                if (!icon) return null;
+                const className = "grid h-9 w-9 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025] text-slate-400 transition hover:border-white/[0.16] hover:bg-white/[0.05] hover:text-white";
+                return channel.href && channel.available ? (
+                  <a key={channel.id} href={channel.href} target={channel.id === "email" ? undefined : "_blank"} rel={channel.id === "email" ? undefined : "noreferrer"} aria-label={channel.label} className={className}>
+                    <SupportChannelIcon name={icon} className="h-4.5 w-4.5" />
+                  </a>
+                ) : (
+                  <span key={channel.id} aria-label={`${channel.label} unavailable`} className={`${className} opacity-40`}>
+                    <SupportChannelIcon name={icon} className="h-4.5 w-4.5" />
+                  </span>
+                );
+              })}
             </div>
           </div>
 
-          <FooterColumn title="Store" links={storeLinks} />
-          <FooterColumn title="Customer" links={customerLinks} />
-          <FooterColumn title="Legal" links={legalLinks} />
+          <FooterColumn title="Store" links={companyLinks} />
+          <FooterColumn title="Support" links={supportLinks} />
+
+          <div>
+            <h2 className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">Payments</h2>
+            <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-black text-slate-500">
+              {["UPI", "Cards", "Razorpay", "Wallets"].map((item) => (
+                <span key={item} className="rounded-md border border-white/[0.08] bg-white/[0.025] px-2.5 py-2">{item}</span>
+              ))}
+            </div>
+            <p className="mt-4 text-xs leading-5 text-slate-600">Payment availability depends on the active checkout configuration and market.</p>
+          </div>
         </div>
 
-        <div className="mt-10 grid gap-3 border-t border-white/[0.07] pt-5 text-[11px] leading-5 text-slate-600 sm:grid-cols-[1fr_auto] sm:items-center">
-          <p>© 2026 Recharza. All rights reserved.</p>
-          <p className="sm:text-right">
-            Game names, artwork and currencies belong to their respective publishers.
-          </p>
+        <div className="mt-8 flex flex-wrap gap-x-4 gap-y-2 border-t border-white/[0.07] pt-5">
+          {PUBLIC_POLICY_KEYS.map((key) => (
+            <Link key={key} href={`/policies/${key}`} className="text-[10px] font-semibold text-slate-600 transition hover:text-slate-300">
+              {publicPolicies[key].title}
+            </Link>
+          ))}
+        </div>
+
+        <div className="mt-4 flex flex-col gap-1 text-[10px] leading-4 text-slate-700 sm:flex-row sm:justify-between">
+          <p>© 2026 Recharza.</p>
+          <p>Game names and artwork belong to their respective publishers.</p>
         </div>
       </div>
     </footer>
   );
 }
 
-function FooterColumn({
-  title,
-  links,
-}: {
-  title: string;
-  links: Array<{ label: string; href: string }>;
-}) {
+function FooterColumn({ title, links }: { title: string; links: { label: string; href: string }[] }) {
   return (
     <div>
-      <details className="group rounded-xl border border-white/[0.08] bg-white/[0.02] md:hidden">
-        <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between px-4 text-xs font-black uppercase tracking-[0.16em] text-slate-400 marker:content-none [&::-webkit-details-marker]:hidden">
-          {title}
-          <span className="text-base text-slate-600 transition group-open:rotate-45">+</span>
-        </summary>
-        <div className="grid gap-3 border-t border-white/[0.07] px-4 py-4">
-          {links.map((link) => (
-            <FooterLink key={link.href} {...link} />
-          ))}
-        </div>
-      </details>
-
-      <div className="hidden md:block">
-        <p className="text-[10px] font-black uppercase tracking-[0.19em] text-slate-500">
-          {title}
-        </p>
-        <div className="mt-4 grid gap-3">
-          {links.map((link) => (
-            <FooterLink key={link.href} {...link} />
-          ))}
-        </div>
-      </div>
+      <h2 className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">{title}</h2>
+      <nav className="mt-3 grid gap-2.5" aria-label={`${title} links`}>
+        {links.map((link) => (
+          <Link key={link.href} href={link.href} className="text-sm text-slate-500 transition hover:text-white">
+            {link.label}
+          </Link>
+        ))}
+      </nav>
     </div>
-  );
-}
-
-function FooterLink({ label, href }: { label: string; href: string }) {
-  return (
-    <Link
-      href={href}
-      className="text-sm font-semibold text-slate-400 transition hover:text-white"
-    >
-      {label}
-    </Link>
   );
 }

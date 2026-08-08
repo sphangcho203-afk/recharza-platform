@@ -3,15 +3,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { MobileLegendsCheckoutShell } from "@/components/mobile-legends-checkout-shell";
+import { ResilientImage } from "@/components/resilient-image";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { games } from "@/lib/games";
-import {
-  mobileLegendsMarkets,
-  parseMobileLegendsMarket,
-} from "@/lib/mobile-legends-market";
+import { getPublicMediaPlacements } from "@/lib/media-assets";
+import { mobileLegendsMarkets, parseMobileLegendsMarket } from "@/lib/mobile-legends-market";
 import { getMobileLegendsPackages } from "@/lib/storefront-catalog";
 
 export const dynamic = "force-dynamic";
@@ -20,13 +19,8 @@ export function generateStaticParams() {
   return mobileLegendsMarkets.map((market) => ({ market: market.code }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ market: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ market: string }> }): Promise<Metadata> {
   const selectedMarket = parseMobileLegendsMarket((await params).market);
-
   return selectedMarket
     ? {
         title: `Mobile Legends ${selectedMarket.label} Top-Up`,
@@ -35,201 +29,115 @@ export async function generateMetadata({
     : { title: "Mobile Legends Top-Up" };
 }
 
-export default async function MobileLegendsMarketPage({
-  params,
-}: {
-  params: Promise<{ market: string }>;
-}) {
+export default async function MobileLegendsMarketPage({ params }: { params: Promise<{ market: string }> }) {
   const selectedMarket = parseMobileLegendsMarket((await params).market);
   if (!selectedMarket) notFound();
 
   const regionalGame =
-    games.find(
-      (game) => game.slug === `mobile-legends-${selectedMarket.code}`,
-    ) ?? games.find((game) => game.slug === "mobile-legends")!;
-  const [packages, fxSnapshot] = await Promise.all([
+    games.find((game) => game.slug === `mobile-legends-${selectedMarket.code}`) ??
+    games.find((game) => game.slug === "mobile-legends")!;
+  const [packages, fxSnapshot, media] = await Promise.all([
     getMobileLegendsPackages(selectedMarket.code),
     getCurrencyRateSnapshot(),
+    getPublicMediaPlacements(),
   ]);
   const livePricing = packages.some((item) => item.source === "fazercards-live");
+  const gameLogo = media.get("game.mobile-legends.logo");
+  const gameArtwork = media.get("game.mobile-legends.artwork");
 
   if (packages.length === 0) {
     return (
-      <main className="min-h-screen overflow-x-clip bg-[#06060f] text-white">
+      <main className="storefront-page min-h-screen overflow-x-clip text-white">
         <SiteHeader />
-
-        <section className="relative overflow-hidden px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute left-[-10rem] top-[-10rem] h-[28rem] w-[28rem] rounded-full bg-violet-600/10 blur-[130px]" />
-            <div className="absolute right-[-10rem] top-6 h-[25rem] w-[25rem] rounded-full bg-cyan-500/8 blur-[130px]" />
-          </div>
-
-          <div className="relative mx-auto max-w-5xl">
-            <Link
-              href="/games/mobile-legends"
-              className="inline-flex min-h-10 items-center gap-2 rounded-xl text-sm font-black text-violet-300 transition hover:text-violet-200"
-            >
-              ← Mobile Legends markets
-            </Link>
-
-            <div className="mt-6 overflow-hidden rounded-[1.75rem] border border-white/[0.09] bg-[#0a0c13] shadow-[0_30px_90px_rgba(0,0,0,0.42)]">
-              <div className="grid lg:grid-cols-[0.82fr_1.18fr]">
-                <div className="relative aspect-[16/10] overflow-hidden border-b border-white/[0.08] lg:aspect-auto lg:min-h-[28rem] lg:border-b-0 lg:border-r">
-                  <StorefrontArtwork
-                    artworkKey={regionalGame.artworkKey}
-                    sources={regionalGame.artworkSources}
-                    alt={regionalGame.artworkAlt}
-                    fallbackLabel="Mobile Legends"
-                    loading="eager"
-                    className="absolute inset-0 h-full w-full"
-                    fallbackClassName="absolute inset-0 h-full w-full"
-                    objectPosition={regionalGame.artworkPosition}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#080a10] via-transparent to-transparent" />
-                  <div className="absolute bottom-4 left-4 rounded-xl border border-white/[0.12] bg-black/55 px-3 py-2 backdrop-blur-xl">
-                    <p className="text-[9px] font-black uppercase tracking-[0.18em] text-cyan-200">
-                      Selected market
-                    </p>
-                    <p className="mt-1 text-sm font-black text-white">
-                      {selectedMarket.flag} {selectedMarket.label}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="p-5 sm:p-8 lg:p-10">
-                  <span className="grid h-12 w-12 place-items-center rounded-2xl border border-amber-300/15 bg-amber-300/[0.07] text-amber-200">
-                    <StorefrontIcon name="globe" className="h-5 w-5" />
-                  </span>
-                  <p className="mt-6 text-[10px] font-black uppercase tracking-[0.2em] text-amber-200">
-                    Packs temporarily unavailable
-                  </p>
-                  <h1 className="mt-3 text-3xl font-black tracking-[-0.05em] sm:text-4xl">
-                    {selectedMarket.label} is recognised, but not open for checkout.
-                  </h1>
-                  <p className="mt-4 text-sm leading-7 text-slate-400 sm:text-base">
-                    Recharza has not approved a fulfilment catalogue for this market yet.
-                    We will not substitute another region, invent a price, or accept a
-                    payment that cannot be fulfilled.
-                  </p>
-
-                  <div className="mt-6 rounded-2xl border border-white/[0.08] bg-black/20 p-4">
-                    <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">
-                      What to do next
-                    </p>
-                    <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-400">
-                      <li>• Confirm the region shown inside the Mobile Legends account.</li>
-                      <li>• Choose another market only when it truly matches that account.</li>
-                      <li>• Return later after approved packs are published.</li>
-                    </ul>
-                  </div>
-
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    <Link
-                      href="/games/mobile-legends"
-                      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-4 text-sm font-black text-slate-950 transition hover:bg-cyan-50"
-                    >
-                      View all MLBB markets
-                      <StorefrontIcon name="arrow" className="h-4 w-4" />
-                    </Link>
-                    <Link
-                      href="/support"
-                      className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/[0.1] bg-white/[0.035] px-4 text-sm font-black text-white transition hover:border-violet-300/25 hover:bg-violet-300/[0.06]"
-                    >
-                      Ask support
-                      <StorefrontIcon name="support" className="h-4 w-4" />
-                    </Link>
-                  </div>
-                </div>
+        <section className="mx-auto max-w-[900px] px-4 py-10 sm:px-6 lg:px-8">
+          <Link href="/games/mobile-legends" className="text-xs font-black text-violet-300 hover:text-violet-200">← Mobile Legends markets</Link>
+          <div className="mt-5 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-5 sm:p-7">
+            <div className="flex items-start gap-4">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-amber-300/20 bg-amber-300/[0.07] text-amber-200">
+                <StorefrontIcon name="globe" className="h-5 w-5" />
+              </span>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-amber-300">{selectedMarket.flag} {selectedMarket.label}</p>
+                <h1 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">Checkout is not open for this market yet.</h1>
+                <p className="mt-3 text-sm leading-6 text-amber-50/65">No approved fulfilment catalogue is published for this region. Recharza will not substitute another market or invent a price.</p>
               </div>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Link href="/games/mobile-legends" className="inline-flex min-h-10 items-center rounded-lg bg-white px-3.5 text-xs font-black text-slate-950">View markets</Link>
+              <Link href="/support" className="inline-flex min-h-10 items-center rounded-lg border border-white/[0.1] px-3.5 text-xs font-black text-white">Ask support</Link>
             </div>
           </div>
         </section>
+        <SiteFooter />
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen overflow-x-clip bg-[#06060f] pb-[max(1.5rem,env(safe-area-inset-bottom))] text-white">
+    <main className="storefront-page min-h-screen overflow-x-clip text-white">
       <SiteHeader />
 
-      <section className="relative overflow-hidden border-b border-white/10">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute left-[-8rem] top-[-12rem] h-[28rem] w-[28rem] rounded-full bg-blue-600/18 blur-[120px]" />
-          <div className="absolute right-[-8rem] top-0 h-[26rem] w-[26rem] rounded-full bg-violet-600/16 blur-[120px]" />
-          <div className="hero-grid absolute inset-0 opacity-20" />
-        </div>
-
-        <div className="relative mx-auto grid max-w-7xl gap-5 px-4 py-7 sm:px-6 sm:py-9 lg:grid-cols-[1fr_16rem] lg:items-center lg:px-8">
-          <div>
-            <Link
-              href="/games/mobile-legends"
-              className="text-sm font-black text-violet-300 transition hover:text-violet-200"
-            >
-              ← Mobile Legends markets
-            </Link>
-            <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/10 px-3 py-1.5 text-xs font-black uppercase tracking-[0.15em] text-blue-100">
-              <span>{selectedMarket.flag}</span>
-              {selectedMarket.label} checkout
-            </div>
-            <h1 className="mt-4 max-w-3xl text-3xl font-black tracking-[-0.05em] sm:text-4xl">
-              Choose the pack, confirm the player, then pay.
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400 sm:text-base">
-              Every step stays attached to this exact market and a recoverable order.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2 text-xs font-bold">
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                {packages.length} approved offers
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                Private tracking
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">
-                Server-verified payment
-              </span>
-            </div>
+      <section className="border-b border-white/[0.08] bg-[#0a0c12] px-4 py-5 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1240px]">
+          <div className="mb-4 flex items-center gap-2 text-[11px] text-slate-600">
+            <Link href="/" className="hover:text-white">Home</Link>
+            <span>/</span>
+            <Link href="/games/mobile-legends" className="hover:text-white">Mobile Legends</Link>
+            <span>/</span>
+            <span className="text-slate-400">{selectedMarket.label}</span>
           </div>
 
-          <div className="hidden aspect-[4/3] overflow-hidden rounded-3xl border border-white/10 bg-[#10101a] shadow-2xl shadow-black/30 lg:block">
-            <StorefrontArtwork
-              artworkKey={regionalGame.artworkKey}
-              sources={regionalGame.artworkSources}
-              alt={regionalGame.artworkAlt}
-              fallbackLabel="Mobile Legends"
-              loading="eager"
-              className="h-full w-full"
-              fallbackClassName="h-full w-full"
-              objectPosition={regionalGame.artworkPosition}
-            />
+          <div className="flex flex-col gap-4 rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="flex min-w-0 items-center gap-4">
+              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-white/[0.08] bg-[#151923] sm:h-20 sm:w-20">
+                <ResilientImage
+                  sources={gameLogo ? [gameLogo.url, ...regionalGame.logoSources] : regionalGame.logoSources}
+                  alt={gameLogo?.altText ?? regionalGame.logoAlt}
+                  fallbackLabel="ML"
+                  fill
+                  priority
+                  sizes="80px"
+                  className="object-contain p-2"
+                  fallbackClassName="absolute inset-0 h-full w-full"
+                />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">Mobile Legends: Bang Bang Top Up</h1>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-slate-500">
+                  <span>{selectedMarket.flag} {selectedMarket.label}</span>
+                  <span>{packages.length} offers</span>
+                  <span>{selectedMarket.defaultCurrency}</span>
+                  <span className={livePricing ? "text-emerald-300" : "text-amber-300"}>{livePricing ? "Live pricing" : "Protected preview"}</span>
+                  <span className="inline-flex items-center gap-1 text-cyan-300"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative hidden h-20 w-44 overflow-hidden rounded-lg border border-white/[0.08] bg-[#12151d] md:block">
+              <ResilientImage
+                sources={gameArtwork ? [gameArtwork.url, ...regionalGame.artworkSources] : regionalGame.artworkSources}
+                alt={gameArtwork?.altText ?? regionalGame.artworkAlt}
+                fallbackLabel="Mobile Legends"
+                fill
+                sizes="176px"
+                className="object-cover"
+                fallbackClassName="absolute inset-0 h-full w-full"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 lg:py-7">
-        <div className="mb-4 grid gap-3 rounded-2xl border border-violet-400/20 bg-violet-400/10 px-4 py-3 text-sm text-violet-100 sm:grid-cols-[1fr_auto] sm:items-center">
-          <span>
-            <strong>
-              {selectedMarket.flag} {selectedMarket.label}:
-            </strong>{" "}
-            {selectedMarket.note}
-          </span>
-          <div className="flex flex-wrap gap-2">
-            <span className={livePricing ? "font-bold text-emerald-200" : "font-bold text-amber-100"}>
-              {livePricing ? `${packages.length} live offers` : "Protected preview pricing"}
-            </span>
-            <span className="text-violet-200/70">·</span>
-            <span className={fxSnapshot.mode === "live" ? "font-bold text-cyan-100" : "font-bold text-amber-100"}>
-              {fxSnapshot.mode === "live" ? "Live currency conversion" : "INR-only fallback"}
-            </span>
-          </div>
+      <section className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
+        <div className="mb-4 flex flex-col gap-2 rounded-lg border border-white/[0.08] bg-[#0d0f16] px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <span><strong className="text-slate-300">{selectedMarket.flag} {selectedMarket.label}:</strong> {selectedMarket.note}</span>
+          <span className={fxSnapshot.mode === "live" ? "font-black text-cyan-300" : "font-black text-amber-300"}>{fxSnapshot.mode === "live" ? "Live currency conversion" : "INR-only fallback"}</span>
         </div>
 
-        <MobileLegendsCheckoutShell
-          packages={packages}
-          market={selectedMarket}
-          fxSnapshot={fxSnapshot}
-        />
+        <MobileLegendsCheckoutShell packages={packages} market={selectedMarket} fxSnapshot={fxSnapshot} />
       </section>
+
+      <SiteFooter />
     </main>
   );
 }

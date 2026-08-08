@@ -10,43 +10,16 @@ import type { Game } from "@/lib/games";
 import { games } from "@/lib/games";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
 import { getStorefrontPricingSnapshot } from "@/lib/storefront-catalog";
-import {
-  getPublishedStorefrontContent,
-  type StorefrontContent,
-} from "@/lib/storefront-content";
+import { getPublishedStorefrontContent } from "@/lib/storefront-content";
 
 export const dynamic = "force-dynamic";
 
-const checkoutSteps = [
-  {
-    icon: "account" as const,
-    number: "01",
-    title: "Enter Player ID",
-    description: "Confirm the exact account destination and required region or server.",
-  },
-  {
-    icon: "games" as const,
-    number: "02",
-    title: "Select Package",
-    description: "Choose a published diamond, UC, point, pass, or membership offer.",
-  },
-  {
-    icon: "shield" as const,
-    number: "03",
-    title: "Review and Pay",
-    description: "Check billing and final pricing, then continue through protected payment.",
-  },
+const benefitItems = [
+  { icon: "receipt" as const, title: "Clear prices", text: "Published package pricing before payment." },
+  { icon: "shield" as const, title: "Secure checkout", text: "Account-based checkout and protected payment flow." },
+  { icon: "track" as const, title: "Order tracking", text: "Every order gets a recoverable tracking path." },
+  { icon: "support" as const, title: "Real support", text: "Telegram, email and support tickets in one system." },
 ];
-
-function announcementClasses(tone: StorefrontContent["announcement"]["tone"]) {
-  if (tone === "success") {
-    return "border-emerald-300/20 bg-emerald-300/[0.07] text-emerald-100";
-  }
-  if (tone === "warning") {
-    return "border-amber-300/20 bg-amber-300/[0.07] text-amber-100";
-  }
-  return "border-cyan-300/20 bg-cyan-300/[0.07] text-cyan-100";
-}
 
 export default async function Home() {
   const [pricing, storefront, mediaPlacements] = await Promise.all([
@@ -64,13 +37,10 @@ export default async function Home() {
     return {
       ...game,
       logoSources: logoPlacement ? [logoPlacement.url, ...game.logoSources] : game.logoSources,
-      artworkSources: artworkPlacement
-        ? [artworkPlacement.url, ...game.artworkSources]
-        : game.artworkSources,
+      artworkSources: artworkPlacement ? [artworkPlacement.url, ...game.artworkSources] : game.artworkSources,
       logoAlt: logoPlacement?.altText ?? game.logoAlt,
       artworkAlt: artworkPlacement?.altText ?? game.artworkAlt,
-      startingPriceInPaise:
-        typeof liveMinimum === "number" ? liveMinimum : game.startingPriceInPaise,
+      startingPriceInPaise: typeof liveMinimum === "number" ? liveMinimum : game.startingPriceInPaise,
       pricingMode: typeof liveMinimum === "number" ? "live" : game.pricingMode,
     };
   });
@@ -81,67 +51,45 @@ export default async function Home() {
       ? !hiddenSlugs.has("mobile-legends")
       : !hiddenSlugs.has(game.slug),
   );
+  const heroPlacement = mediaPlacements.get("storefront.hero.background");
 
   return (
     <main id="top" className="storefront-page min-h-screen overflow-x-clip text-white">
       <SiteHeader content={storefront} />
 
       {storefront.announcement.enabled ? (
-        <section className="px-4 pt-4 sm:px-6 lg:px-8">
-          <div
-            className={`mx-auto flex max-w-7xl flex-col gap-2 rounded-2xl border px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-5 ${announcementClasses(
-              storefront.announcement.tone,
-            )}`}
-          >
-            <p className="leading-6">
-              <span className="font-black">{storefront.announcement.title}</span>
-              <span className="ml-2 opacity-80">{storefront.announcement.message}</span>
-            </p>
-            <Link
-              href={storefront.announcement.href}
-              className="inline-flex w-fit items-center gap-2 font-black transition hover:text-white"
-            >
+        <section className="border-b border-amber-300/10 bg-[#16130a] px-4 py-2.5 sm:px-6 lg:px-8">
+          <div className="mx-auto flex max-w-[1240px] items-center justify-center gap-2 text-center text-xs text-amber-100/90">
+            <strong>{storefront.announcement.title}</strong>
+            <span className="hidden text-amber-100/60 sm:inline">{storefront.announcement.message}</span>
+            <Link href={storefront.announcement.href} className="font-black text-amber-300 hover:text-amber-200">
               {storefront.announcement.linkLabel}
-              <StorefrontIcon name="arrow" className="h-4 w-4" />
             </Link>
           </div>
         </section>
       ) : null}
 
-      {storefront.hero.enabled ? <StorefrontHero content={storefront.hero} /> : null}
+      {storefront.hero.enabled ? (
+        <StorefrontHero
+          content={storefront.hero}
+          imageUrl={heroPlacement?.url}
+          imageAlt={heroPlacement?.altText}
+        />
+      ) : null}
 
       {storefront.catalogue.enabled ? (
-        <section
-          id="games"
-          className="mx-auto max-w-7xl scroll-mt-36 px-4 py-10 sm:px-6 sm:py-14 lg:px-8 lg:py-16"
-        >
-          <div className="flex flex-col gap-4 border-b border-white/[0.08] pb-6 sm:flex-row sm:items-end sm:justify-between">
+        <section id="games" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
+          <div className="flex items-end justify-between gap-4">
             <div>
-              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.19em] text-cyan-300">
-                <span className="h-px w-7 bg-cyan-300" />
-                {storefront.catalogue.eyebrow}
-              </div>
-              <h2 className="mt-3 text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">
-                {storefront.catalogue.title}
-              </h2>
+              <h2 className="text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">Games & top-ups</h2>
+              <p className="mt-1.5 text-sm text-slate-500">Pick a game, choose the correct market, then select a published package.</p>
             </div>
-            <p className="max-w-2xl text-sm leading-6 text-slate-400 sm:text-right">
-              {storefront.catalogue.description}
-            </p>
+            <Link href="/orders/lookup" className="hidden items-center gap-2 text-xs font-black text-slate-400 hover:text-white sm:inline-flex">
+              Track an order <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
+            </Link>
           </div>
 
-          <Suspense
-            fallback={
-              <div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-5">
-                {Array.from({ length: 10 }, (_, index) => (
-                  <div
-                    key={index}
-                    className="aspect-[3/4] animate-pulse rounded-2xl border border-white/[0.07] bg-white/[0.025]"
-                  />
-                ))}
-              </div>
-            }
-          >
+          <Suspense fallback={<div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">{Array.from({ length: 12 }, (_, index) => <div key={index} className="aspect-[4/5] animate-pulse rounded-xl border border-white/[0.07] bg-white/[0.025]" />)}</div>}>
             <GameCatalogue
               games={visibleGames}
               showRegionalMarkets={storefront.catalogue.showRegionalMarkets}
@@ -152,49 +100,34 @@ export default async function Home() {
         </section>
       ) : null}
 
-      {storefront.process.enabled ? (
-        <section className="border-y border-white/[0.08] bg-white/[0.018] px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
-          <div className="mx-auto max-w-7xl">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <section className="border-y border-white/[0.08] bg-[#0a0c12] px-4 py-7 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2 lg:grid-cols-4">
+          {benefitItems.map((item) => (
+            <div key={item.title} className="flex items-start gap-3 bg-[#0c0e15] p-4 sm:p-5">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-violet-500/10 text-violet-300">
+                <StorefrontIcon name={item.icon} className="h-4.5 w-4.5" />
+              </span>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.19em] text-violet-300">
-                  {storefront.process.eyebrow}
-                </p>
-                <h2 className="mt-3 text-3xl font-black tracking-[-0.045em] text-white sm:text-4xl">
-                  Three clear steps to top up.
-                </h2>
+                <h3 className="text-sm font-black text-white">{item.title}</h3>
+                <p className="mt-1 text-xs leading-5 text-slate-500">{item.text}</p>
               </div>
-              <p className="max-w-xl text-sm leading-6 text-slate-500 sm:text-right">
-                Every order stays recoverable and payment begins only after player, package, and billing details pass validation.
-              </p>
             </div>
+          ))}
+        </div>
+      </section>
 
-            <div className="mt-7 grid gap-3 md:grid-cols-3">
-              {checkoutSteps.map((step) => (
-                <article
-                  key={step.number}
-                  className="rounded-2xl border border-white/[0.08] bg-[#090b12] p-5"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.035] text-cyan-200">
-                      <StorefrontIcon name={step.icon} className="h-[18px] w-[18px]" />
-                    </span>
-                    <span className="font-mono text-[10px] font-black text-white/25">
-                      {step.number}
-                    </span>
-                  </div>
-                  <h3 className="mt-5 text-lg font-black tracking-[-0.025em] text-white">
-                    {step.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    {step.description}
-                  </p>
-                </article>
-              ))}
-            </div>
+      <section className="px-4 py-9 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-[1240px] flex-col gap-5 rounded-2xl border border-white/[0.08] bg-[#0d0f16] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+          <div>
+            <h2 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">Buy, track and get support with one Recharza account.</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">No noisy dashboards during checkout. Just the player details, package, final amount and secure payment.</p>
           </div>
-        </section>
-      ) : null}
+          <div className="flex shrink-0 gap-2">
+            <Link href="/account" className="inline-flex min-h-11 items-center rounded-lg bg-violet-500 px-4 text-sm font-black text-white hover:bg-violet-400">Open account</Link>
+            <Link href="/support" className="inline-flex min-h-11 items-center rounded-lg border border-white/[0.1] px-4 text-sm font-black text-slate-300 hover:bg-white/[0.04] hover:text-white">Support</Link>
+          </div>
+        </div>
+      </section>
 
       <SiteFooter />
     </main>

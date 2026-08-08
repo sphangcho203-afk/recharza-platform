@@ -12,6 +12,7 @@ type StorefrontArtworkProps = {
   priority?: boolean;
   sizes?: string;
   objectPosition?: string;
+  objectFit?: "cover" | "contain";
 };
 
 export function StorefrontArtwork({
@@ -25,6 +26,7 @@ export function StorefrontArtwork({
   priority = false,
   sizes = "100vw",
   objectPosition = "center",
+  objectFit = "cover",
 }: StorefrontArtworkProps) {
   return (
     <span
@@ -39,7 +41,7 @@ export function StorefrontArtwork({
         priority={priority}
         fill
         sizes={sizes}
-        className="object-cover"
+        className={objectFit === "contain" ? "object-contain" : "object-cover"}
         style={{ objectPosition }}
         fallbackClassName={fallbackClassName}
       />

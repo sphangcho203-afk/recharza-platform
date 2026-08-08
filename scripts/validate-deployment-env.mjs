@@ -11,10 +11,6 @@ function value(name) {
   return (process.env[name] || "").trim();
 }
 
-function requireValue(name, message = `${name} is required.`) {
-  if (!value(name)) errors.push(message);
-}
-
 function requireSecret(name, minimum = 32) {
   const current = value(name);
   if (!current) errors.push(`${name} is required.`);
@@ -56,6 +52,43 @@ requireSecret("ORDER_ACCESS_SECRET");
 requireSecret("RATE_LIMIT_SALT");
 requireSecret("CRON_SECRET");
 
+const emailDeliveryProvider = (
+  value("EMAIL_DELIVERY_PROVIDER") || "gmail"
+).toLowerCase();
+if (!["gmail", "resend"].includes(emailDeliveryProvider)) {
+  errors.push("EMAIL_DELIVERY_PROVIDER must be gmail or resend.");
+}
+
+const gmailClientId = value("GOOGLE_MAIL_CLIENT_ID") || value("GOOGLE_CLIENT_ID");
+const gmailClientSecret =
+  value("GOOGLE_MAIL_CLIENT_SECRET") || value("GOOGLE_CLIENT_SECRET");
+const gmailRefreshToken = value("GOOGLE_MAIL_REFRESH_TOKEN");
+const gmailMailReady = Boolean(
+  gmailClientId && gmailClientSecret && gmailRefreshToken,
+);
+const resendMailValues = [value("RESEND_API_KEY"), value("RESEND_FROM_EMAIL")];
+const resendMailConfiguredCount = resendMailValues.filter(Boolean).length;
+const resendMailReady = resendMailConfiguredCount === resendMailValues.length;
+
+if (gmailClientId && !gmailClientId.endsWith(".apps.googleusercontent.com")) {
+  errors.push(
+    "The Google OAuth client used for Gmail delivery must end in .apps.googleusercontent.com.",
+  );
+}
+if (resendMailConfiguredCount > 0 && !resendMailReady) {
+  errors.push("RESEND_API_KEY and RESEND_FROM_EMAIL must be configured together.");
+}
+if (emailDeliveryProvider === "gmail" && !gmailMailReady) {
+  errors.push(
+    "EMAIL_DELIVERY_PROVIDER=gmail requires GOOGLE_MAIL_REFRESH_TOKEN plus a Google OAuth client ID and secret. GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET may be reused when they belong to the same OAuth client.",
+  );
+}
+if (emailDeliveryProvider === "resend" && !resendMailReady) {
+  errors.push(
+    "EMAIL_DELIVERY_PROVIDER=resend requires RESEND_API_KEY and RESEND_FROM_EMAIL.",
+  );
+}
+
 if (hosted) {
   if (!validEmailList(value("AUTH_ADMIN_EMAILS"))) {
     errors.push(
@@ -69,20 +102,21 @@ if (hosted) {
       "GOOGLE_CLIENT_ID must be a Google web client ID ending in .apps.googleusercontent.com.",
     );
   }
-  requireValue(
-    "GOOGLE_CLIENT_SECRET",
-    "GOOGLE_CLIENT_SECRET is required for hosted Google OAuth.",
-  );
+  if (!value("GOOGLE_CLIENT_SECRET")) {
+    errors.push("GOOGLE_CLIENT_SECRET is required for hosted Google OAuth.");
+  }
   requireSecret("GOOGLE_OAUTH_STATE_SECRET");
 
-  requireValue(
-    "RESEND_API_KEY",
-    "RESEND_API_KEY is required for hosted account and order email delivery.",
-  );
-  requireValue(
-    "RESEND_FROM_EMAIL",
-    "RESEND_FROM_EMAIL is required for hosted account and order email delivery.",
-  );
+  if (emailDeliveryProvider === "gmail" && !gmailMailReady) {
+    errors.push(
+      "Hosted Recharza email is set to Gmail, but the Gmail OAuth transport is incomplete.",
+    );
+  }
+  if (emailDeliveryProvider === "resend" && !resendMailReady) {
+    errors.push(
+      "Hosted Recharza email is set to Resend, but the Resend transport is incomplete.",
+    );
+  }
 }
 
 const paymentProvider = (value("PAYMENT_PROVIDER") || "internal").toLowerCase();

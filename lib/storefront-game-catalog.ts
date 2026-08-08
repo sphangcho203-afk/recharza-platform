@@ -1,5 +1,6 @@
 import "server-only";
 
+import { resolveProductMedia, type ProductMedia } from "@/lib/catalog/product-media";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
@@ -10,8 +11,7 @@ export const supplierCheckoutGameSlugs = [
   "genshin-impact",
 ] as const;
 
-export type SupplierCheckoutGameSlug =
-  (typeof supplierCheckoutGameSlugs)[number];
+export type SupplierCheckoutGameSlug = (typeof supplierCheckoutGameSlugs)[number];
 
 export type StorefrontGamePackage = {
   id: string;
@@ -28,6 +28,7 @@ export type StorefrontGamePackage = {
   supplierCategoryId: string;
   supplierOfferId: string;
   expectedMarginInPaise: number;
+  media: ProductMedia;
 };
 
 type SupplierProductView = {
@@ -84,22 +85,17 @@ function getDescription(raw: unknown, marketLabel: string) {
   );
 }
 
-function mapSupplierProduct(
-  product: SupplierProductView,
-): StorefrontGamePackage | null {
-  if (
-    !supplierCheckoutGameSlugs.includes(
-      product.gameSlug as SupplierCheckoutGameSlug,
-    )
-  ) {
+function mapSupplierProduct(product: SupplierProductView): StorefrontGamePackage | null {
+  if (!supplierCheckoutGameSlugs.includes(product.gameSlug as SupplierCheckoutGameSlug)) {
     return null;
   }
 
   const marketLabel = getCategoryLabel(product.raw, product.categoryId);
+  const gameSlug = product.gameSlug as SupplierCheckoutGameSlug;
 
   return {
     id: product.id,
-    gameSlug: product.gameSlug as SupplierCheckoutGameSlug,
+    gameSlug,
     name: product.name,
     description: getDescription(product.raw, marketLabel),
     amountInPaise: product.retailPriceInPaise,
@@ -112,21 +108,19 @@ function mapSupplierProduct(
     supplierCategoryId: product.categoryId,
     supplierOfferId: product.offerId,
     expectedMarginInPaise: product.expectedMarginInPaise,
+    media: resolveProductMedia({
+      gameSlug,
+      productName: product.name,
+      supplierRaw: product.raw,
+    }),
   };
 }
 
-export function isSupplierCheckoutGameSlug(
-  value: unknown,
-): value is SupplierCheckoutGameSlug {
-  return (
-    typeof value === "string" &&
-    supplierCheckoutGameSlugs.includes(value as SupplierCheckoutGameSlug)
-  );
+export function isSupplierCheckoutGameSlug(value: unknown): value is SupplierCheckoutGameSlug {
+  return typeof value === "string" && supplierCheckoutGameSlugs.includes(value as SupplierCheckoutGameSlug);
 }
 
-export async function getPublishedGamePackages(
-  gameSlug: SupplierCheckoutGameSlug,
-): Promise<StorefrontGamePackage[]> {
+export async function getPublishedGamePackages(gameSlug: SupplierCheckoutGameSlug): Promise<StorefrontGamePackage[]> {
   try {
     const products = await getPrisma().supplierProduct.findMany({
       where: {
@@ -148,19 +142,13 @@ export async function getPublishedGamePackages(
       .map((product) => mapSupplierProduct(product))
       .filter((product): product is StorefrontGamePackage => Boolean(product));
   } catch (error) {
-    if (error instanceof RuntimeConfigurationError) {
-      return [];
-    }
-
+    if (error instanceof RuntimeConfigurationError) return [];
     console.error(`Live ${gameSlug} catalogue unavailable`, error);
     throw error;
   }
 }
 
-export async function getPublishedGamePackageForCheckout(
-  gameSlug: SupplierCheckoutGameSlug,
-  packageId: string,
-) {
+export async function getPublishedGamePackageForCheckout(gameSlug: SupplierCheckoutGameSlug, packageId: string) {
   const normalizedPackageId = packageId.trim();
   if (!normalizedPackageId) return null;
 
@@ -178,10 +166,7 @@ export async function getPublishedGamePackageForCheckout(
 
     return product ? mapSupplierProduct(product) : null;
   } catch (error) {
-    if (error instanceof RuntimeConfigurationError) {
-      return null;
-    }
-
+    if (error instanceof RuntimeConfigurationError) return null;
     console.error(`${gameSlug} checkout catalogue unavailable`, error);
     throw error;
   }
