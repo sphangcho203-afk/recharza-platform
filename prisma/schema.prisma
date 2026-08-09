@@ -118,11 +118,52 @@ model Customer {
   passwordResetTokens        PasswordResetToken[]
   carts                      Cart[]
   emailDeliveries            EmailDelivery[]
+  staffCredential            StaffCredential?
+  staffSessions              StaffSession[]
   staffAuditLogs             AdminAuditLog[]      @relation("StaffAuditActor")
   mediaAssets                MediaAsset[]         @relation("MediaAssetCreator")
 
   @@index([role, accessStatus, createdAt])
   @@index([username])
+}
+
+model StaffCredential {
+  id                 String         @id @default(cuid())
+  customerId         String         @unique
+  customer           Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  passwordHash       String
+  passwordVersion    Int            @default(1)
+  mustChangePassword Boolean        @default(false)
+  failedLoginCount   Int            @default(0)
+  lockedUntil        DateTime?
+  lastFailedLoginAt  DateTime?
+  lastLoginAt        DateTime?
+  passwordChangedAt  DateTime       @default(now())
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  sessions           StaffSession[]
+
+  @@index([lockedUntil])
+}
+
+model StaffSession {
+  id                String          @id @default(cuid())
+  tokenHash         String          @unique
+  customerId        String
+  customer          Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  credentialId      String
+  credential        StaffCredential @relation(fields: [credentialId], references: [id], onDelete: Cascade)
+  passwordVersion   Int
+  idleExpiresAt     DateTime
+  absoluteExpiresAt DateTime
+  lastUsedAt        DateTime        @default(now())
+  revokedAt         DateTime?
+  userAgentHash     String?
+  createdAt         DateTime        @default(now())
+
+  @@index([customerId, revokedAt, absoluteExpiresAt])
+  @@index([credentialId, revokedAt])
+  @@index([idleExpiresAt, absoluteExpiresAt, revokedAt])
 }
 
 model AuthSession {
