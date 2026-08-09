@@ -1,19 +1,26 @@
 import nextEnv from "@next/env";
 import { getPrisma } from "../lib/prisma";
 import argon2 from "../lib/argon2-wasm";
+import {
+  normalizeStaffEmail,
+  validateStaffPassword,
+} from "../lib/staff-auth";
 const { loadEnvConfig } = nextEnv;
 
 loadEnvConfig(process.cwd(), false);
 
-const email = process.env.STAFF_EMAIL ?? "";
+const email = normalizeStaffEmail(process.env.STAFF_EMAIL);
 const password = process.env.STAFF_PASSWORD ?? "";
 
 if (!email) {
-  throw new Error("STAFF_EMAIL environment variable is required.");
+  throw new Error(
+    "STAFF_EMAIL environment variable is required and must be a valid email address.",
+  );
 }
 
-if (password.length < 8) {
-  throw new Error("Password must contain at least 8 characters.");
+const passwordError = validateStaffPassword(password);
+if (passwordError) {
+  throw new Error(passwordError);
 }
 
 const prisma = await getPrisma();
