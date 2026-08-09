@@ -19,6 +19,7 @@ import {
   getSupportTicketForWorker,
   linkTelegramSupportTicket,
   markSupportTicketReplied,
+  recordSupportStaffReply,
   updateSupportTicketStatus,
 } from "@/lib/support-service";
 import {
@@ -530,15 +531,21 @@ async function notifyTicketCustomer(
   ticket: Awaited<ReturnType<typeof getSupportTicketForWorker>>,
   text: string,
 ) {
-  if (!ticket?.telegramChatId) return;
-  await sendTelegramCustomerMessage(
-    ticket.telegramChatId,
-    [
-      `<b>RECHARZA SUPPORT // ${ticket.publicId}</b>`,
-      "",
-      escapeHtml(text),
-    ].join("\n"),
-  );
+  if (!ticket?.telegramChatId) return { sent: false, messageId: null };
+  try {
+    const result = await sendTelegramCustomerMessage(
+      ticket.telegramChatId,
+      [
+        `<b>RECHARZA SUPPORT // ${ticket.publicId}</b>`,
+        "",
+        escapeHtml(text),
+      ].join("\n"),
+    );
+    return { sent: true, messageId: String(result.message_id) };
+  } catch (error) {
+    console.error("Customer Telegram notification failed", error);
+    return { sent: false, messageId: null };
+  }
 }
 
 async function handleWorkerCallback(callback: TelegramCallbackQuery) {
@@ -628,8 +635,18 @@ async function handleWorkerCommand(message: TelegramMessage) {
       );
       return true;
     }
-    await notifyTicketCustomer(ticket, reply);
+    const delivered = await notifyTicketCustomer(ticket, reply);
     await markSupportTicketReplied(publicId);
+    await recordSupportStaffReply({
+      publicId,
+      text: reply,
+      actorFingerprint: `telegram-worker:${userId ?? "unknown"}`,
+      actorLabel: "Telegram worker",
+      channel: "TELEGRAM",
+      delivery: delivered.sent ? "SENT" : "FAILED",
+      messageId: delivered.messageId,
+      deliveredAt: new Date(),
+    });
     await sendTelegramCustomerMessage(chatId, `Reply sent for <code>${publicId}</code>.`);
     return true;
   }

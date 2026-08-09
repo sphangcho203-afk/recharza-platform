@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { InternalHeader } from "@/components/internal-header";
 import { ModuleStateBadge } from "@/components/module-state-badge";
 import { OperatorConsole } from "@/components/operator-console";
+import { StaffSupportInbox } from "@/components/staff-support-inbox";
 import { WorkspaceNavigation } from "@/components/workspace-navigation";
 import { getVisibleModules, staffModules } from "@/lib/product-system";
 import { requireWorkspaceSession } from "@/lib/server-session";
@@ -65,7 +66,7 @@ export default async function StaffPage() {
                 Operations queue
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
-                Live order operations remain available. Queue metrics are beta. Support and escalation workflows stay visibly planned until their data models exist.
+                Live order operations and the support inbox are available. Queue metrics are beta. Escalation workflows stay planned until their data models exist.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -147,26 +148,6 @@ export default async function StaffPage() {
             </section>
 
             <div className="grid content-start gap-6">
-              <section id="support" className="system-panel scroll-mt-24 p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <h2 className="text-lg font-black">Support inbox</h2>
-                    <p className="mt-1 text-sm text-slate-500">
-                      Customer conversation workflow is not active yet.
-                    </p>
-                  </div>
-                  <ModuleStateBadge state="planned" />
-                </div>
-                <div className="system-empty-state mt-4 min-h-40">
-                  <div>
-                    <p className="font-black text-slate-300">Support module planned</p>
-                    <p className="mt-2 text-sm leading-6">
-                      Tickets, assignment, replies, and escalation need persistent models before controls become active.
-                    </p>
-                  </div>
-                </div>
-              </section>
-
               <section id="activity" className="system-panel scroll-mt-24 p-5">
                 <div className="flex items-center justify-between gap-3">
                   <h2 className="text-lg font-black">Shift activity</h2>
@@ -209,6 +190,10 @@ export default async function StaffPage() {
             </div>
             <OperatorConsole />
           </section>
+
+          <div className="mt-8">
+            <StaffSupportInbox />
+          </div>
         </div>
       </div>
     </main>
