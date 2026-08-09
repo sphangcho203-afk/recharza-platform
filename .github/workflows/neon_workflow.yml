@@ -48,20 +48,26 @@ jobs:
           expires_at: ${{ env.EXPIRES_AT }}
 
 # The step above creates a new Neon branch.
-# You may want to do something with the new branch, such as run migrations, run tests
-# on it, or send the connection details to a hosting platform environment.
 # The branch DATABASE_URL is available to you via:
 # "${{ steps.create_neon_branch.outputs.db_url_with_pooler }}".
 # It's important you don't log the DATABASE_URL as output as it contains a username and
 # password for your database.
-# For example, you can uncomment the lines below to run a database migration command:
-#      - name: Run Migrations
-#        run: npm run db:migrate
-#        env:
-#          # to use pooled connection
-#          DATABASE_URL: "${{ steps.create_neon_branch.outputs.db_url_with_pooler }}"
-#          # OR to use unpooled connection
-#          # DATABASE_URL: "${{ steps.create_neon_branch.outputs.db_url }}"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.0
+
+      - name: Install dependencies
+        run: npm install --silent
+
+      - name: Run Migrations
+        run: npm run db:deploy
+        env:
+          # unpooled connection for Prisma migrations
+          DATABASE_URL: "${{ steps.create_neon_branch.outputs.db_url }}"
 
 # Following the step above, which runs database migrations, you may want to check
 # for schema changes in your database. We recommend using the following action to

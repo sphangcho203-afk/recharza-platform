@@ -19,6 +19,7 @@
     "deploy:check": "node scripts/validate-deployment-env.mjs",
     "deploy:prepare": "npm run deploy:check && npm run db:deploy",
     "support:telegram:webhook": "node scripts/configure-telegram-support-webhook.mjs",
+    "staff:set-password": "tsx scripts/set-staff-password.ts",
     "ops:rollout:termux": "bash scripts/termux-phase1-rollout.sh",
     "smoke": "node scripts/smoke-test.mjs",
     "smoke:phase1": "node scripts/phase1-smoke-test.mjs"
@@ -28,6 +29,7 @@
     "@prisma/client": "^7.0.0",
     "dotenv": "^17.0.0",
     "google-auth-library": "^10.5.0",
+    "hash-wasm": "^4.12.0",
     "next": "16.2.10",
     "pg": "^8.0.0",
     "react": "19.2.7",
@@ -44,6 +46,7 @@
     "postcss": "latest",
     "prisma": "^7.0.0",
     "tailwindcss": "4.3.3",
+    "tsx": "^4.19.0",
     "typescript": "latest"
   },
   "engines": {
