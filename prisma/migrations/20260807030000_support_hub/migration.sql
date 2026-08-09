@@ -1,6 +1,6 @@
 -- Recharza multi-channel support tickets and secure Telegram linking.
 
-CREATE TABLE "SupportTicket" (
+CREATE TABLE IF NOT EXISTS "SupportTicket" (
   "id" TEXT NOT NULL,
   "publicId" TEXT NOT NULL,
   "status" TEXT NOT NULL DEFAULT 'OPEN',
@@ -36,17 +36,25 @@ CREATE TABLE "SupportTicket" (
   CONSTRAINT "SupportTicket_email_delivery_check" CHECK ("emailDeliveryStatus" IN ('PENDING', 'SENT', 'FAILED', 'SKIPPED'))
 );
 
+DROP INDEX IF EXISTS "SupportTicket_publicId_key";
 CREATE UNIQUE INDEX "SupportTicket_publicId_key" ON "SupportTicket"("publicId");
+DROP INDEX IF EXISTS "SupportTicket_telegramConnectTokenHash_key";
 CREATE UNIQUE INDEX "SupportTicket_telegramConnectTokenHash_key" ON "SupportTicket"("telegramConnectTokenHash");
+DROP INDEX IF EXISTS "SupportTicket_status_createdAt_idx";
 CREATE INDEX "SupportTicket_status_createdAt_idx" ON "SupportTicket"("status", "createdAt");
+DROP INDEX IF EXISTS "SupportTicket_customerId_createdAt_idx";
 CREATE INDEX "SupportTicket_customerId_createdAt_idx" ON "SupportTicket"("customerId", "createdAt");
+DROP INDEX IF EXISTS "SupportTicket_orderId_createdAt_idx";
 CREATE INDEX "SupportTicket_orderId_createdAt_idx" ON "SupportTicket"("orderId", "createdAt");
+DROP INDEX IF EXISTS "SupportTicket_telegramUserId_createdAt_idx";
 CREATE INDEX "SupportTicket_telegramUserId_createdAt_idx" ON "SupportTicket"("telegramUserId", "createdAt");
 
 ALTER TABLE "SupportTicket"
+  DROP CONSTRAINT IF EXISTS "SupportTicket_customerId_fkey",
   ADD CONSTRAINT "SupportTicket_customerId_fkey"
   FOREIGN KEY ("customerId") REFERENCES "Customer"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE "SupportTicket"
+  DROP CONSTRAINT IF EXISTS "SupportTicket_orderId_fkey",
   ADD CONSTRAINT "SupportTicket_orderId_fkey"
   FOREIGN KEY ("orderId") REFERENCES "Order"("id") ON DELETE SET NULL ON UPDATE CASCADE;
