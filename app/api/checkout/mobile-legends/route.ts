@@ -22,6 +22,7 @@ import {
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 import { getMobileLegendsPackageForCheckout } from "@/lib/storefront-catalog";
 import { validateFazerCardsPlayer } from "@/lib/suppliers/fazercards-operations";
+import { VolseverProviderError } from "@/lib/volsever";
 
 export const runtime = "nodejs";
 
@@ -528,6 +529,18 @@ export async function POST(request: Request) {
       return Response.json(
         { ok: false, code: "CONFIGURATION_ERROR", message: error.message },
         { status: 503, headers: rateHeaders },
+      );
+    }
+
+    if (error instanceof VolseverProviderError) {
+      return Response.json(
+        {
+          ok: false,
+          code: "VERIFICATION_UNAVAILABLE",
+          message:
+            "Account validation is temporarily unavailable. Your retry key remains reusable.",
+        },
+        { status: 502, headers: rateHeaders },
       );
     }
 
