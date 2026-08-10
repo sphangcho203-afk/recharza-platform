@@ -1,5 +1,8 @@
 import { createHash } from "node:crypto";
 
+import { RuntimeConfigurationError } from "@/lib/runtime-config";
+import { lookupVolseverGameIdentity } from "@/lib/volsever";
+
 export type PlayerIdentityResult = {
   valid: boolean;
   confirmed: boolean;
@@ -45,6 +48,26 @@ export async function validateMobileLegendsIdentity(input: {
 
   const provider = process.env.IGN_LOOKUP_PROVIDER?.trim().toLowerCase();
 
+  if (provider === "internal") {
+    return {
+      valid: true,
+      confirmed: true,
+      playerId,
+      zoneId,
+      nickname: createPreviewNickname(playerId, zoneId),
+      verificationMode: "account-lookup",
+      message: "Account validated successfully.",
+    };
+  }
+
+  if (provider === "volsever") {
+    return lookupVolseverGameIdentity({
+      gameSlug: "mobile-legends",
+      playerId,
+      zoneId,
+    });
+  }
+
   if (provider === "rapidapi") {
     return {
       valid: false,
@@ -57,13 +80,7 @@ export async function validateMobileLegendsIdentity(input: {
     };
   }
 
-  return {
-    valid: true,
-    confirmed: true,
-    playerId,
-    zoneId,
-    nickname: createPreviewNickname(playerId, zoneId),
-    verificationMode: "account-lookup",
-    message: "Account validated successfully.",
-  };
+  throw new RuntimeConfigurationError(
+    "IGN_LOOKUP_PROVIDER must be set to internal, volsever, or rapidapi.",
+  );
 }
