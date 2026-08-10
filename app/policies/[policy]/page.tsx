@@ -6,12 +6,26 @@ import { RecharzaMark } from "@/components/recharza-mark";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import {
-  parsePublicPolicyKey,
-  publicPolicies,
-} from "@/lib/public-policies";
+  getPublishedPolicy,
+  getPublishedStorefrontContent,
+  type StorefrontPolicyKey,
+} from "@/lib/storefront-content";
 
-export function generateStaticParams() {
-  return Object.keys(publicPolicies).map((policy) => ({ policy }));
+export const dynamic = "force-dynamic";
+
+const POLICY_SLUGS: StorefrontPolicyKey[] = ["terms", "privacy", "refunds", "cookies"];
+
+function parsePolicyKey(value: string): StorefrontPolicyKey | null {
+  return POLICY_SLUGS.includes(value as StorefrontPolicyKey)
+    ? (value as StorefrontPolicyKey)
+    : null;
+}
+
+function policyParagraphs(body: string) {
+  return body
+    .split(/\n{2,}/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
 }
 
 export async function generateMetadata({
@@ -19,13 +33,16 @@ export async function generateMetadata({
 }: {
   params: Promise<{ policy: string }>;
 }): Promise<Metadata> {
-  const key = parsePublicPolicyKey((await params).policy);
+  const key = parsePolicyKey((await params).policy);
   if (!key) return { title: "Policy not found | Recharza" };
 
-  const policy = publicPolicies[key];
+  const content = await getPublishedStorefrontContent();
+  const policy = getPublishedPolicy(content, key);
+  if (!policy) return { title: "Policy not found | Recharza" };
+
   return {
     title: `${policy.title} | Recharza`,
-    description: policy.summary,
+    description: policy.body.slice(0, 200),
   };
 }
 
@@ -34,10 +51,14 @@ export default async function PolicyPage({
 }: {
   params: Promise<{ policy: string }>;
 }) {
-  const key = parsePublicPolicyKey((await params).policy);
+  const key = parsePolicyKey((await params).policy);
   if (!key) notFound();
 
-  const policy = publicPolicies[key];
+  const content = await getPublishedStorefrontContent();
+  const policy = getPublishedPolicy(content, key);
+  if (!policy) notFound();
+
+  const paragraphs = policyParagraphs(policy.body);
 
   return (
     <main className="min-h-screen bg-[var(--surface-0)] text-white">
@@ -52,51 +73,26 @@ export default async function PolicyPage({
             ← Back to Recharza
           </Link>
 
-          <div className="mt-8 grid gap-7 lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-end">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-300">
-                Recharza legal centre
-              </p>
-              <h1 className="mt-3 text-4xl font-black tracking-[-0.055em] sm:text-5xl">
-                {policy.title}
-              </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-slate-400">
-                {policy.summary}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-white/[0.09] bg-black/20 p-4">
-              <p className="text-[9px] font-black uppercase tracking-[0.18em] text-slate-500">
-                Last updated
-              </p>
-              <p className="mt-2 text-sm font-black text-white">
-                {policy.lastUpdated}
-              </p>
-            </div>
+          <div className="mt-8 max-w-3xl">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-300">
+              Recharza legal centre
+            </p>
+            <h1 className="mt-3 text-4xl font-black tracking-[-0.055em] sm:text-5xl">
+              {policy.title}
+            </h1>
           </div>
         </div>
       </section>
 
       <div className="mx-auto grid max-w-5xl gap-8 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[minmax(0,1fr)_17rem] lg:px-8">
         <article className="grid gap-4">
-          {policy.sections.map((section) => (
-            <section
-              key={section.heading}
-              className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-6"
+          {paragraphs.map((paragraph) => (
+            <p
+              key={paragraph.slice(0, 64)}
+              className="whitespace-pre-line rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 text-sm leading-7 text-slate-400 sm:p-6 sm:text-[0.95rem]"
             >
-              <h2 className="text-lg font-black tracking-[-0.025em] text-white sm:text-xl">
-                {section.heading}
-              </h2>
-              <div className="mt-3 grid gap-3">
-                {section.paragraphs.map((paragraph) => (
-                  <p
-                    key={paragraph}
-                    className="text-sm leading-7 text-slate-400 sm:text-[0.95rem]"
-                  >
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            </section>
+              {paragraph}
+            </p>
           ))}
         </article>
 
