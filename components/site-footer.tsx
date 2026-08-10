@@ -18,9 +18,6 @@ const companyLinks = [
 
 const supportLinks = [
   { label: "Help Center", href: "/support" },
-  { label: "Refund policy", href: "/policies/refunds" },
-  { label: "Privacy policy", href: "/policies/privacy" },
-  { label: "Terms of service", href: "/policies/terms" },
 ];
 
 const channelIcons: Record<string, SupportChannelIconName> = {
