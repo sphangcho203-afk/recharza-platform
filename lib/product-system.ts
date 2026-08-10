@@ -268,7 +268,7 @@ export const staffModules: WorkspaceModule[] = [
     label: "Support inbox",
     href: "/staff#support",
     description: "Assigned customer conversations.",
-    state: "planned",
+    state: "live",
     audiences: ["staff", "admin"],
     icon: "support",
   },

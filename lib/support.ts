@@ -64,6 +64,33 @@ export const SUPPORT_CATEGORIES = [
 export type SupportCategory = (typeof SUPPORT_CATEGORIES)[number]["value"];
 export type SupportReplyChannel = "TELEGRAM" | "EMAIL";
 
+export const SUPPORT_TICKET_STATUSES = [
+  "OPEN",
+  "ASSIGNED",
+  "WAITING_CUSTOMER",
+  "UNDER_REVIEW",
+  "RESOLVED",
+  "CLOSED",
+] as const;
+
+export type SupportTicketStatus = (typeof SUPPORT_TICKET_STATUSES)[number];
+
+export function isSupportTicketStatus(value: string): value is SupportTicketStatus {
+  return (SUPPORT_TICKET_STATUSES as readonly string[]).includes(value);
+}
+
+export function supportTicketStatusLabel(status: SupportTicketStatus) {
+  const labels: Record<SupportTicketStatus, string> = {
+    OPEN: "Open",
+    ASSIGNED: "Assigned",
+    WAITING_CUSTOMER: "Waiting on customer",
+    UNDER_REVIEW: "Under review",
+    RESOLVED: "Resolved",
+    CLOSED: "Closed",
+  };
+  return labels[status];
+}
+
 export type SupportTicketInput = {
   category: SupportCategory;
   subject: string;

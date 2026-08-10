@@ -122,6 +122,8 @@ model Customer {
   staffSessions              StaffSession[]
   staffAuditLogs             AdminAuditLog[]      @relation("StaffAuditActor")
   mediaAssets                MediaAsset[]         @relation("MediaAssetCreator")
+  supportTickets             SupportTicket[]      @relation("SupportTicketRequester")
+  assignedSupportTickets     SupportTicket[]      @relation("SupportTicketAssignee")
 
   @@index([role, accessStatus, createdAt])
   @@index([username])
@@ -287,6 +289,7 @@ model Order {
   auditLogs               AdminAuditLog[]
   fulfilmentAttempts      FulfilmentAttempt[]
   emailDeliveries         EmailDelivery[]
+  supportTickets          SupportTicket[]
   createdAt               DateTime    @default(now())
   updatedAt               DateTime    @updatedAt
 
@@ -493,4 +496,69 @@ model RateLimitBucket {
 
   @@unique([fingerprint, route, windowStart], name: "rate_limit_bucket")
   @@index([expiresAt])
+}
+
+model SupportTicket {
+  id                       String     @id
+  publicId                 String     @unique
+  status                   String     @default("OPEN")
+  category                 String
+  subject                  String
+  description              String
+  source                   String     @default("WEB")
+  replyChannel             String
+  requesterName            String?
+  requesterEmail           String?
+  telegramUsername         String?
+  telegramUserId           String?
+  telegramChatId           String?
+  telegramConnectTokenHash String?    @unique
+  orderPublicId            String?
+  gameSlug                 String?
+  customerId               String?
+  orderId                  String?
+  metadata                 Json?
+  telegramDeliveryStatus   String     @default("PENDING")
+  telegramSupportMessageId String?
+  emailDeliveryStatus      String     @default("PENDING")
+  emailProviderMessageId   String?
+  telegramDeliveryError    String?
+  emailDeliveryError       String?
+  lastStaffReplyAt         DateTime?
+  resolvedAt               DateTime?
+  assigneeCustomerId       String?
+  customer                 Customer?  @relation("SupportTicketRequester", fields: [customerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  order                    Order?     @relation(fields: [orderId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  assignee                 Customer?  @relation("SupportTicketAssignee", fields: [assigneeCustomerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  createdAt                DateTime   @default(now())
+  updatedAt                DateTime   @updatedAt
+
+  @@index([status, createdAt])
+  @@index([customerId, createdAt])
+  @@index([orderId, createdAt])
+  @@index([telegramUserId, createdAt])
+  @@index([assigneeCustomerId, status, createdAt])
+}
+
+model SupportBotSession {
+  chatId         String   @id
+  telegramUserId String
+  category       String
+  step           String
+  subject        String?
+  orderPublicId  String?
+  description    String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  expiresAt      DateTime
+
+  @@index([expiresAt])
+  @@index([telegramUserId, updatedAt])
+}
+
+model SupportTelegramUpdate {
+  updateId    String   @id
+  processedAt DateTime @default(now())
+
+  @@index([processedAt])
 }
