@@ -3,7 +3,11 @@ import Link from "next/link";
 import { RecharzaMark } from "@/components/recharza-mark";
 import { SupportChannelIcon, type SupportChannelIconName } from "@/components/support-channel-icon";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
-import { PUBLIC_POLICY_KEYS, publicPolicies } from "@/lib/public-policies";
+import {
+  getPublishedPolicy,
+  getPublishedStorefrontContent,
+  STOREFRONT_POLICY_KEYS,
+} from "@/lib/storefront-content";
 import { getPublicSupportChannels } from "@/lib/support-config";
 
 const companyLinks = [
@@ -27,11 +31,19 @@ const channelIcons: Record<string, SupportChannelIconName> = {
 };
 
 export async function SiteFooter() {
-  const [media, channels] = await Promise.all([
+  const [media, channels, storefront] = await Promise.all([
     getPublicMediaPlacements().catch(() => new Map()),
     Promise.resolve(getPublicSupportChannels()),
+    getPublishedStorefrontContent().catch(() => null),
   ]);
   const brandLogo = media.get("brand.primary.logo");
+  const publishedPolicies = storefront
+    ? STOREFRONT_POLICY_KEYS.flatMap((key) => {
+        const policy = getPublishedPolicy(storefront, key);
+        return policy ? [{ key, title: policy.title }] : [];
+      })
+    : [];
+  const showPolicyLinks = storefront?.privateFlags.showPolicyLinks === true;
 
   return (
     <footer className="border-t border-white/[0.08] bg-[#07080c] px-4 pb-6 pt-9 sm:px-6 lg:px-8">
@@ -74,13 +86,15 @@ export async function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-x-4 gap-y-2 border-t border-white/[0.07] pt-5">
-          {PUBLIC_POLICY_KEYS.map((key) => (
-            <Link key={key} href={`/policies/${key}`} className="text-[10px] font-semibold text-slate-600 transition hover:text-slate-300">
-              {publicPolicies[key].title}
-            </Link>
-          ))}
-        </div>
+        {showPolicyLinks && publishedPolicies.length > 0 ? (
+          <div className="mt-8 flex flex-wrap gap-x-4 gap-y-2 border-t border-white/[0.07] pt-5">
+            {publishedPolicies.map((policy) => (
+              <Link key={policy.key} href={`/policies/${policy.key}`} className="text-[10px] font-semibold text-slate-600 transition hover:text-slate-300">
+                {policy.title}
+              </Link>
+            ))}
+          </div>
+        ) : null}
 
         <div className="mt-4 flex flex-col gap-1 text-[10px] leading-4 text-slate-700 sm:flex-row sm:justify-between">
           <p>© 2026 Recharza.</p>
