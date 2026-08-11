@@ -9,6 +9,7 @@ export const VOLSEVER_DEFAULT_BASE_URL = "https://gate.volsever.com";
 export const VOLSEVER_DEFAULT_TIMEOUT_MS = 15_000;
 export const VOLSEVER_MIN_TIMEOUT_MS = 1_000;
 export const VOLSEVER_MAX_TIMEOUT_MS = 60_000;
+export const VOLSEVER_MAX_RESPONSE_BYTES = 64 * 1024;
 export const VOLSEVER_VERIFICATION_MODE = "volsever-lookup";
 
 export const volseverGameSlugs = {
@@ -63,6 +64,44 @@ function boundedNumber(value: unknown) {
   return value;
 }
 
+async function readResponseBody(response: Response, maxBytes: number) {
+  const contentLength = response.headers.get("content-length");
+  if (contentLength) {
+    const length = Number(contentLength);
+    if (!Number.isSafeInteger(length) || length < 0 || length > maxBytes) {
+      throw new VolseverProviderError();
+    }
+  }
+
+  if (!response.body) {
+    const text = await response.text();
+    if (new TextEncoder().encode(text).byteLength > maxBytes) {
+      throw new VolseverProviderError();
+    }
+    return text;
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let totalBytes = 0;
+  let text = "";
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      totalBytes += value.byteLength;
+      if (totalBytes > maxBytes) {
+        throw new VolseverProviderError();
+      }
+      text += decoder.decode(value, { stream: true });
+    }
+    return text + decoder.decode();
+  } finally {
+    await reader.cancel().catch(() => undefined);
+  }
+}
+
 export function getVolseverConfiguration() {
   const baseUrl =
     (process.env.VOLSEVER_API_BASE_URL ?? VOLSEVER_DEFAULT_BASE_URL)
@@ -108,7 +147,21 @@ export async function lookupVolseverGameIdentity(
   const timeoutMs = options.timeoutMs ?? config.timeoutMs;
   const fetchImpl = options.fetchImpl ?? fetch;
 
-  const url = new URL(`${baseUrl}/proxy/api/game/${slug}`);
+  let url: URL;
+  try {
+    url = new URL(`${baseUrl}/proxy/api/game/${slug}`);
+  } catch {
+    throw new RuntimeConfigurationError(
+      "VOLSEVER_API_BASE_URL is not a valid URL.",
+    );
+  }
+
+  if (url.protocol !== "https:") {
+    throw new RuntimeConfigurationError(
+      "VOLSEVER_API_BASE_URL must use HTTPS.",
+    );
+  }
+
   url.searchParams.set("id", playerId);
   if (zoneId) url.searchParams.set("zone", zoneId);
 
@@ -120,14 +173,19 @@ export async function lookupVolseverGameIdentity(
         "X-API-Key": apiKey,
       },
       cache: "no-store",
+      redirect: "error",
       signal: AbortSignal.timeout(timeoutMs),
     });
   } catch {
     throw new VolseverProviderError();
   }
 
-  const rawText = await response.text().catch(() => null);
-  if (rawText === null) throw new VolseverProviderError();
+  const rawText = await readResponseBody(response, VOLSEVER_MAX_RESPONSE_BYTES).catch(
+    (error) => {
+      if (error instanceof VolseverProviderError) throw error;
+      throw new VolseverProviderError();
+    },
+  );
 
   let payload: unknown;
   try {
