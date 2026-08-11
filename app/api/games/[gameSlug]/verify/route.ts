@@ -67,16 +67,6 @@ export async function POST(
       );
     }
 
-    if (process.env.IGN_LOOKUP_PROVIDER?.trim().toLowerCase() !== "volsever") {
-      return Response.json(
-        {
-          valid: false,
-          message: "Account validation is not configured correctly.",
-        },
-        { status: 503, headers: rateHeaders },
-      );
-    }
-
     const payload = await request.json().catch(() => null);
     if (!payload || typeof payload !== "object") {
       return Response.json(
@@ -124,11 +114,36 @@ export async function POST(
     if (!isVolseverGameSlug(slug)) {
       return Response.json(
         {
-          valid: false,
+          valid: true,
+          confirmed: false,
+          nickname: null,
+          verificationMode: "format-only",
+          playerId: identity.playerId,
+          zoneId: identity.zoneId,
+          marketCode: selectedPackage.marketCode,
+          packageId: selectedPackage.id,
           message:
-            "Live account verification is not available for this game yet.",
+            "Player details are valid. Live account lookup is not configured for this game yet.",
         },
-        { status: 400, headers: rateHeaders },
+        { status: 200, headers: rateHeaders },
+      );
+    }
+
+    if (process.env.IGN_LOOKUP_PROVIDER?.trim().toLowerCase() !== "volsever") {
+      return Response.json(
+        {
+          valid: true,
+          confirmed: false,
+          nickname: null,
+          verificationMode: "format-only",
+          playerId: identity.playerId,
+          zoneId: identity.zoneId,
+          marketCode: selectedPackage.marketCode,
+          packageId: selectedPackage.id,
+          message:
+            "Player details are valid. Live account lookup is temporarily disabled.",
+        },
+        { status: 200, headers: rateHeaders },
       );
     }
 
@@ -176,7 +191,7 @@ export async function POST(
       );
     }
 
-    console.error(`Volsever verification failed for ${slug}`, error);
+    console.error(`Game verification failed for ${slug}`, error);
     return Response.json(
       {
         valid: false,
