@@ -1,4 +1,5 @@
 import { getRequestSession } from "@/lib/auth";
+import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
 export const runtime = "nodejs";
@@ -9,6 +10,11 @@ export async function GET(request: Request) {
     if (!session) {
       return Response.json({ ok: true, authenticated: false }, { headers: { "Cache-Control": "no-store" } });
     }
+
+    const identity = await getPrisma().customer.findUnique({
+      where: { id: session.customer.id },
+      select: { authSubject: true },
+    });
 
     return Response.json(
       {
@@ -21,6 +27,7 @@ export async function GET(request: Request) {
           username: session.customer.username,
           role: session.customer.role.toLowerCase(),
           emailVerified: Boolean(session.customer.emailVerifiedAt),
+          needsDisplayName: Boolean(identity?.authSubject?.startsWith("google:") && !session.customer.displayName),
         },
         expiresAt: session.expiresAt.toISOString(),
       },
