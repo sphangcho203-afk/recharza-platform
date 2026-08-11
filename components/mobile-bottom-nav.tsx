@@ -18,7 +18,13 @@ const items: Array<{
     label: "Home",
     href: "/",
     icon: "games",
-    matches: (path) => path === "/" || path.startsWith("/games"),
+    matches: (path) => path === "/",
+  },
+  {
+    label: "Games",
+    href: "/#games",
+    icon: "games",
+    matches: (path) => path.startsWith("/games"),
   },
   {
     label: "Orders",
@@ -27,10 +33,10 @@ const items: Array<{
     matches: (path) => path.startsWith("/orders"),
   },
   {
-    label: "Support",
-    href: "/support",
-    icon: "support",
-    matches: (path) => path.startsWith("/support"),
+    label: "Cart",
+    href: "/cart",
+    icon: "cart",
+    matches: (path) => path.startsWith("/cart"),
   },
   {
     label: "Account",
@@ -63,7 +69,7 @@ export function MobileBottomNav() {
       />
       <nav
         aria-label="Mobile customer navigation"
-        className="fixed inset-x-0 bottom-0 z-[70] grid grid-cols-4 border-t border-white/[0.09] bg-[#05070d]/97 px-1 pt-1 pb-[max(0.35rem,env(safe-area-inset-bottom))] shadow-[0_-12px_35px_rgba(0,0,0,0.42)] backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-[70] grid grid-cols-5 border-t border-white/[0.09] bg-[#05070d]/97 px-1 pt-1 pb-[max(0.35rem,env(safe-area-inset-bottom))] shadow-[0_-12px_35px_rgba(0,0,0,0.42)] backdrop-blur-xl lg:hidden"
       >
         {items.map((item) => {
           const active = item.matches(pathname);
