@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CustomerAccountShell } from "@/components/customer-account-shell";
+import { GoogleOAuthNameGate } from "@/components/google-oauth-name-gate";
 import { GoogleOAuthPanel } from "@/components/google-oauth-panel";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -53,7 +54,9 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
         <div className="mt-6 grid gap-3">
           <GoogleOAuthPanel returnTo={returnTo} authError={rawAuthError} />
-          <CustomerAccountShell />
+          <GoogleOAuthNameGate>
+            <CustomerAccountShell />
+          </GoogleOAuthNameGate>
         </div>
       </section>
       <SiteFooter />
