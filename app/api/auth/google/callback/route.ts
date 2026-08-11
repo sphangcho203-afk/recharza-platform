@@ -46,86 +46,48 @@ export async function GET(request: Request) {
   }
 
   try {
-    const state = consumeGoogleOAuthState(
-      requestUrl.searchParams.get("state"),
-      request,
-    );
+    const state = consumeGoogleOAuthState(requestUrl.searchParams.get("state"), request);
     if (!state) return accountError(request, "google_state");
 
     const code = requestUrl.searchParams.get("code");
-    if (!code || code.length > 2048) {
-      return accountError(request, "google_response");
-    }
+    if (!code || code.length > 2048) return accountError(request, "google_response");
 
     const { client, configuration } = createGoogleOAuthClient();
     const { tokens } = await client.getToken(code);
     if (!tokens.id_token) return accountError(request, "google_response");
 
-    const ticket = await client.verifyIdToken({
-      idToken: tokens.id_token,
-      audience: configuration.clientId,
-    });
+    const ticket = await client.verifyIdToken({ idToken: tokens.id_token, audience: configuration.clientId });
     const payload = ticket.getPayload();
     const email = normalizeAuthEmail(payload?.email);
 
-    if (
-      !payload?.sub ||
-      !email ||
-      payload.email_verified !== true ||
-      payload.sub.length > 255
-    ) {
+    if (!payload?.sub || !email || payload.email_verified !== true || payload.sub.length > 255) {
       return accountError(request, "google_account");
     }
 
     const authSubject = `google:${payload.sub}`;
-    const displayName =
-      typeof payload.name === "string" && payload.name.trim()
-        ? payload.name.trim().slice(0, 120)
-        : null;
     const now = new Date();
     const prisma = getPrisma();
 
     const linked = await prisma.$transaction(async (transaction) => {
-      const subjectCustomer = await transaction.customer.findUnique({
-        where: { authSubject },
-      });
+      const subjectCustomer = await transaction.customer.findUnique({ where: { authSubject } });
 
       if (subjectCustomer) {
-        if (!isSignInAllowed(subjectCustomer.accessStatus)) {
-          return { kind: "restricted" as const };
-        }
-
+        if (!isSignInAllowed(subjectCustomer.accessStatus)) return { kind: "restricted" as const };
         const customer = await transaction.customer.update({
           where: { id: subjectCustomer.id },
-          data: {
-            displayName: subjectCustomer.displayName ?? displayName,
-            emailVerifiedAt: subjectCustomer.emailVerifiedAt ?? now,
-            lastLoginAt: now,
-          },
+          data: { emailVerifiedAt: subjectCustomer.emailVerifiedAt ?? now, lastLoginAt: now },
         });
         return { kind: "ok" as const, customer };
       }
 
-      const emailCustomer = await transaction.customer.findUnique({
-        where: { email },
-      });
-
+      const emailCustomer = await transaction.customer.findUnique({ where: { email } });
       if (emailCustomer) {
-        if (
-          emailCustomer.authSubject &&
-          emailCustomer.authSubject !== authSubject
-        ) {
-          return { kind: "conflict" as const };
-        }
-        if (!isSignInAllowed(emailCustomer.accessStatus)) {
-          return { kind: "restricted" as const };
-        }
-
+        if (emailCustomer.authSubject && emailCustomer.authSubject !== authSubject) return { kind: "conflict" as const };
+        if (!isSignInAllowed(emailCustomer.accessStatus)) return { kind: "restricted" as const };
         const customer = await transaction.customer.update({
           where: { id: emailCustomer.id },
           data: {
             authSubject,
-            displayName: emailCustomer.displayName ?? displayName,
             emailVerifiedAt: emailCustomer.emailVerifiedAt ?? now,
             lastLoginAt: now,
           },
@@ -136,7 +98,7 @@ export async function GET(request: Request) {
       const customer = await transaction.customer.create({
         data: {
           email,
-          displayName,
+          displayName: null,
           authSubject,
           role: resolveBootstrapRole(email),
           emailVerifiedAt: now,
@@ -146,12 +108,8 @@ export async function GET(request: Request) {
       return { kind: "ok" as const, customer };
     });
 
-    if (linked.kind === "restricted") {
-      return accountError(request, "google_restricted");
-    }
-    if (linked.kind === "conflict") {
-      return accountError(request, "google_conflict");
-    }
+    if (linked.kind === "restricted") return accountError(request, "google_restricted");
+    if (linked.kind === "conflict") return accountError(request, "google_conflict");
 
     const knownDevice = await isKnownCustomerDevice(linked.customer.id, request);
     const session = await createCustomerSession(linked.customer.id, request);
@@ -172,7 +130,6 @@ export async function GET(request: Request) {
     }
 
     const destination = new URL(state.returnTo, request.url);
-
     return redirectResponse(destination, [
       createSessionCookie(session.sessionToken, session.expiresAt),
       clearGoogleOAuthCookie(),
