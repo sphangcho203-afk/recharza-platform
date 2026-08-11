@@ -8,9 +8,11 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
+import { listSavedAddresses } from "@/lib/commerce/saved-addresses";
 import { games } from "@/lib/games";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
 import { mobileLegendsMarkets, parseMobileLegendsMarket } from "@/lib/mobile-legends-market";
+import { getServerSession } from "@/lib/server-session";
 import { getMobileLegendsPackages } from "@/lib/storefront-catalog";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +43,9 @@ export default async function MobileLegendsMarketPage({ params }: { params: Prom
     getCurrencyRateSnapshot(),
     getPublicMediaPlacements(),
   ]);
+  const session = await getServerSession();
+  const savedAddresses = session ? await listSavedAddresses(session.customer.id) : [];
+  const isAuthenticated = Boolean(session);
   const livePricing = packages.some((item) => item.source === "fazercards-live");
   const gameLogo = media.get("game.mobile-legends.logo");
   const gameArtwork = media.get("game.mobile-legends.artwork");
@@ -134,7 +139,13 @@ export default async function MobileLegendsMarketPage({ params }: { params: Prom
           <span className={fxSnapshot.mode === "live" ? "font-black text-cyan-300" : "font-black text-amber-300"}>{fxSnapshot.mode === "live" ? "Live currency conversion" : "INR-only fallback"}</span>
         </div>
 
-        <MobileLegendsCheckoutShell packages={packages} market={selectedMarket} fxSnapshot={fxSnapshot} />
+        <MobileLegendsCheckoutShell
+          packages={packages}
+          market={selectedMarket}
+          fxSnapshot={fxSnapshot}
+          savedAddresses={savedAddresses}
+          isAuthenticated={isAuthenticated}
+        />
       </section>
 
       <SiteFooter />

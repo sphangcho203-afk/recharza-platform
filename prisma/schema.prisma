@@ -113,6 +113,7 @@ model Customer {
   createdAt                  DateTime             @default(now())
   updatedAt                  DateTime             @updatedAt
   orders                     Order[]
+  addresses                  CustomerAddress[]
   sessions                   AuthSession[]
   magicLinks                 AuthMagicLink[]
   passwordResetTokens        PasswordResetToken[]
@@ -127,6 +128,27 @@ model Customer {
 
   @@index([role, accessStatus, createdAt])
   @@index([username])
+}
+
+model CustomerAddress {
+  id          String   @id @default(cuid())
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  fullName    String
+  email       String
+  phone       String
+  line1       String
+  line2       String?
+  city        String
+  state       String
+  postalCode  String
+  countryCode String
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([customerId, isDefault])
+  @@index([customerId, createdAt])
 }
 
 model StaffCredential {

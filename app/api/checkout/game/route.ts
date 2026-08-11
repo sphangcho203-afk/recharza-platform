@@ -357,9 +357,7 @@ export async function POST(request: Request) {
         email: billingEmail,
         displayName: billing.fullName,
       },
-      update: {
-        displayName: billing.fullName,
-      },
+      update: {},
       select: {
         id: true,
         email: true,

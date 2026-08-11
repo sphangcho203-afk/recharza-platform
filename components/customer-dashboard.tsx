@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import { SavedAddressesPanel } from "@/components/saved-addresses-panel";
 import { formatInr } from "@/lib/mobile-legends";
 
 type Customer = {
@@ -286,6 +287,8 @@ export function CustomerDashboard() {
           </article>
         ))}
       </section>
+
+      <SavedAddressesPanel />
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
         <section className="min-w-0">

@@ -6,6 +6,7 @@ import { type FormEvent, useMemo, useRef, useState } from "react";
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 import { ResilientImage } from "@/components/resilient-image";
+import { SavedAddressPicker } from "@/components/saved-address-picker";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import {
   convertInrPaiseToCurrencyMinor,
@@ -13,6 +14,8 @@ import {
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
 import { getSupplierSelectOptions, validateSupplierCheckoutIdentity } from "@/lib/commerce/game-identity";
+import { toBillingFormState } from "@/lib/commerce/saved-address-form";
+import type { SavedAddressView } from "@/lib/commerce/saved-addresses";
 import { formatInr } from "@/lib/mobile-legends";
 import type { SupplierCheckoutGameSlug } from "@/lib/storefront-game-catalog";
 
@@ -92,11 +95,15 @@ export function SupplierGameCheckoutShell({
   gameTitle,
   packages,
   fxSnapshot,
+  savedAddresses = [],
+  isAuthenticated = false,
 }: {
   gameSlug: SupplierCheckoutGameSlug;
   gameTitle: string;
   packages: CheckoutPackage[];
   fxSnapshot: FxSnapshot;
+  savedAddresses?: SavedAddressView[];
+  isAuthenticated?: boolean;
 }) {
   const markets = useMemo(() => {
     const map = new Map<string, string>();
@@ -109,7 +116,16 @@ export function SupplierGameCheckoutShell({
   const marketPackages = useMemo(() => packages.filter((item) => item.marketCode === marketCode), [marketCode, packages]);
   const [packageId, setPackageId] = useState(packages.find((item) => item.marketCode === firstMarketCode)?.id ?? "");
   const [identity, setIdentity] = useState<IdentityState>(initialIdentity);
-  const [billing, setBilling] = useState<BillingFormState>(initialBillingForm);
+  const [billing, setBilling] = useState<BillingFormState>(() => {
+    const defaultAddress = savedAddresses.find((item) => item.isDefault);
+    if (defaultAddress) return toBillingFormState(defaultAddress, fxSnapshot.mode);
+    return initialBillingForm;
+  });
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+    () => savedAddresses.find((item) => item.isDefault)?.id ?? null,
+  );
+  const [saveNewAddress, setSaveNewAddress] = useState(false);
+  const [addressSaveNote, setAddressSaveNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -130,6 +146,41 @@ export function SupplierGameCheckoutShell({
     setPaymentVerified(false);
     setMessage("");
     setError("");
+    setAddressSaveNote("");
+  }
+
+  function applySavedAddress(address: SavedAddressView | null) {
+    if (!address) {
+      setSelectedAddressId(null);
+      return;
+    }
+    setSelectedAddressId(address.id);
+    setSaveNewAddress(false);
+    setBilling(toBillingFormState(address, fxSnapshot.mode));
+    resetOrder();
+  }
+
+  async function saveBillingAddress() {
+    try {
+      const response = await fetch("/api/account/addresses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: billing.fullName,
+          email: billing.email,
+          phone: billing.phone,
+          line1: billing.line1,
+          line2: billing.line2 || null,
+          city: billing.city,
+          state: billing.state,
+          postalCode: billing.postalCode,
+          countryCode: billing.countryCode,
+        }),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
   }
 
   function chooseMarket(nextMarketCode: string) {
@@ -193,6 +244,14 @@ export function SupplierGameCheckoutShell({
       sessionStorage.setItem(`recharza-order:${result.order.id}`, result.order.tracking.accessToken);
       setOrder(result.order);
       setMessage(result.paymentSession?.message ?? "Order saved. Complete payment in the secure checkout below.");
+
+      if (isAuthenticated && saveNewAddress && selectedAddressId === null) {
+        void saveBillingAddress().then((saved) => {
+          if (!saved) {
+            setAddressSaveNote("Your billing address could not be saved to your account. Your order is unaffected.");
+          }
+        });
+      }
     } catch {
       setError("The checkout service could not be reached. Retrying uses the same protected order key.");
       setMessage("");
@@ -356,7 +415,15 @@ export function SupplierGameCheckoutShell({
           </div>
         </section>
 
-        <div id="billing">
+        <div id="billing" className="space-y-5">
+          {isAuthenticated && savedAddresses.length > 0 ? (
+            <SavedAddressPicker
+              addresses={savedAddresses}
+              selectedAddressId={selectedAddressId}
+              onSelect={applySavedAddress}
+            />
+          ) : null}
+
           <BillingAddressFields
             value={billing}
             onChange={(nextBilling) => {
@@ -367,6 +434,21 @@ export function SupplierGameCheckoutShell({
             stepNumber="03"
             stepLabel="Billing and currency"
           />
+
+          {isAuthenticated && selectedAddressId === null ? (
+            <label className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3">
+              <input
+                type="checkbox"
+                checked={saveNewAddress}
+                onChange={(event) => setSaveNewAddress(event.target.checked)}
+                className="mt-0.5 h-4 w-4 accent-violet-500"
+              />
+              <span className="text-sm text-slate-200">
+                <strong className="font-black text-white">Save this billing address</strong>
+                <span className="mt-0.5 block text-xs text-slate-500">Keep this address for faster checkout on your next top-up.</span>
+              </span>
+            </label>
+          ) : null}
         </div>
 
         {error ? <p className="rounded-lg border border-rose-300/20 bg-rose-300/[0.07] px-4 py-3 text-sm text-rose-100">{error}</p> : null}
@@ -378,6 +460,7 @@ export function SupplierGameCheckoutShell({
               <div>
                 <h2 className="text-sm font-black text-emerald-100">Order {order.id} created</h2>
                 <p className="mt-1 text-xs text-emerald-100/60">The order is saved and recoverable before payment.</p>
+                {addressSaveNote ? <p className="mt-2 text-xs leading-5 text-amber-200/80">{addressSaveNote}</p> : null}
               </div>
               <Link href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`} className="text-xs font-black text-emerald-300 underline">Open tracking</Link>
             </div>

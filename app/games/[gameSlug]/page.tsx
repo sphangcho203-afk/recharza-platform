@@ -9,8 +9,10 @@ import { StorefrontIcon } from "@/components/storefront-icon";
 import { SupplierGameCheckoutShell } from "@/components/supplier-game-checkout-shell";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { getGameCheckoutDefinition } from "@/lib/commerce/game-checkout";
+import { listSavedAddresses } from "@/lib/commerce/saved-addresses";
 import { mainGames } from "@/lib/games";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
+import { getServerSession } from "@/lib/server-session";
 import { getPublishedGamePackages, isSupplierCheckoutGameSlug } from "@/lib/storefront-game-catalog";
 
 export const dynamic = "force-dynamic";
@@ -38,6 +40,9 @@ export default async function GameCheckoutPage({ params }: { params: Promise<{ g
     const marketCount = new Set(packages.map((item) => item.marketCode)).size;
     const gameLogo = media.get(`game.${gameSlug}.logo`);
     const gameArtwork = media.get(`game.${gameSlug}.artwork`);
+    const session = await getServerSession();
+    const savedAddresses = session ? await listSavedAddresses(session.customer.id) : [];
+    const isAuthenticated = Boolean(session);
 
     return (
       <main className="storefront-page min-h-screen overflow-x-clip text-white">
@@ -100,6 +105,8 @@ export default async function GameCheckoutPage({ params }: { params: Promise<{ g
             gameTitle={definition.title}
             packages={packages}
             fxSnapshot={fxSnapshot}
+            savedAddresses={savedAddresses}
+            isAuthenticated={isAuthenticated}
           />
         </section>
 

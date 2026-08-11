@@ -6,12 +6,15 @@ import { type ChangeEvent, type FormEvent, useMemo, useRef, useState } from "rea
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 import { ResilientImage } from "@/components/resilient-image";
+import { SavedAddressPicker } from "@/components/saved-address-picker";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import {
   convertInrPaiseToCurrencyMinor,
   formatCurrencyMinor,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
+import { toBillingFormState } from "@/lib/commerce/saved-address-form";
+import type { SavedAddressView } from "@/lib/commerce/saved-addresses";
 import { formatInr, type MobileLegendsPackage } from "@/lib/mobile-legends";
 import type { MobileLegendsMarket } from "@/lib/mobile-legends-market";
 
@@ -81,20 +84,33 @@ export function MobileLegendsCheckoutShell({
   packages,
   market,
   fxSnapshot,
+  savedAddresses = [],
+  isAuthenticated = false,
 }: {
   packages: MobileLegendsPackage[];
   market: MobileLegendsMarket;
   fxSnapshot: FxSnapshot;
+  savedAddresses?: SavedAddressView[];
+  isAuthenticated?: boolean;
 }) {
   const firstPackage = packages.find((item) => item.featured) ?? packages[0];
   const [packageId, setPackageId] = useState(firstPackage?.id ?? "");
   const [packageQuery, setPackageQuery] = useState("");
   const [playerId, setPlayerId] = useState("");
   const [zoneId, setZoneId] = useState("");
-  const [billing, setBilling] = useState<BillingFormState>(() => ({
-    ...initialBillingForm,
-    presentmentCurrency: fxSnapshot.mode === "live" ? market.defaultCurrency : "INR",
-  }));
+  const [billing, setBilling] = useState<BillingFormState>(() => {
+    const defaultAddress = savedAddresses.find((item) => item.isDefault);
+    if (defaultAddress) return toBillingFormState(defaultAddress, fxSnapshot.mode);
+    return {
+      ...initialBillingForm,
+      presentmentCurrency: fxSnapshot.mode === "live" ? market.defaultCurrency : "INR",
+    };
+  });
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
+    () => savedAddresses.find((item) => item.isDefault)?.id ?? null,
+  );
+  const [saveNewAddress, setSaveNewAddress] = useState(false);
+  const [addressSaveNote, setAddressSaveNote] = useState("");
   const [verification, setVerification] = useState<VerificationState>(initialVerification);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
@@ -135,6 +151,41 @@ export function MobileLegendsCheckoutShell({
     setPaymentVerified(false);
     setCheckoutError("");
     setCheckoutMessage("");
+    setAddressSaveNote("");
+  }
+
+  function applySavedAddress(address: SavedAddressView | null) {
+    if (!address) {
+      setSelectedAddressId(null);
+      return;
+    }
+    setSelectedAddressId(address.id);
+    setSaveNewAddress(false);
+    setBilling(toBillingFormState(address, fxSnapshot.mode));
+    resetCreatedOrder();
+  }
+
+  async function saveBillingAddress() {
+    try {
+      const response = await fetch("/api/account/addresses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: billing.fullName,
+          email: billing.email,
+          phone: billing.phone,
+          line1: billing.line1,
+          line2: billing.line2 || null,
+          city: billing.city,
+          state: billing.state,
+          postalCode: billing.postalCode,
+          countryCode: billing.countryCode,
+        }),
+      });
+      return response.ok;
+    } catch {
+      return false;
+    }
   }
 
   function resetVerification() {
@@ -223,6 +274,14 @@ export function MobileLegendsCheckoutShell({
       setOrder(result.order);
       setDuplicate(Boolean(result.duplicate));
       setCheckoutMessage(result.paymentSession?.message ?? "Order saved. Continue to payment below.");
+
+      if (isAuthenticated && saveNewAddress && selectedAddressId === null) {
+        void saveBillingAddress().then((saved) => {
+          if (!saved) {
+            setAddressSaveNote("Your billing address could not be saved to your account. Your order is unaffected.");
+          }
+        });
+      }
     } catch {
       setCheckoutError("The checkout service could not be reached. Retrying uses the same safe order key.");
       setCheckoutMessage("");
@@ -361,7 +420,15 @@ export function MobileLegendsCheckoutShell({
           {visiblePackages.length === 0 ? <p className="mt-3 rounded-lg border border-dashed border-white/[0.1] p-8 text-center text-sm text-slate-500">No package matches that search.</p> : null}
         </section>
 
-        <div id="billing">
+        <div id="billing" className="space-y-5">
+          {isAuthenticated && savedAddresses.length > 0 ? (
+            <SavedAddressPicker
+              addresses={savedAddresses}
+              selectedAddressId={selectedAddressId}
+              onSelect={applySavedAddress}
+            />
+          ) : null}
+
           <BillingAddressFields
             value={billing}
             onChange={(nextBilling) => {
@@ -372,6 +439,21 @@ export function MobileLegendsCheckoutShell({
             stepNumber="03"
             stepLabel="Billing and currency"
           />
+
+          {isAuthenticated && selectedAddressId === null ? (
+            <label className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3">
+              <input
+                type="checkbox"
+                checked={saveNewAddress}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => setSaveNewAddress(event.target.checked)}
+                className="mt-0.5 h-4 w-4 accent-violet-500"
+              />
+              <span className="text-sm text-slate-200">
+                <strong className="font-black text-white">Save this billing address</strong>
+                <span className="mt-0.5 block text-xs text-slate-500">Keep this address for faster checkout on your next top-up.</span>
+              </span>
+            </label>
+          ) : null}
         </div>
 
         {checkoutError ? <p aria-live="assertive" className="rounded-lg border border-rose-400/20 bg-rose-400/[0.07] px-4 py-3 text-sm text-rose-200">{checkoutError}</p> : null}
@@ -384,6 +466,7 @@ export function MobileLegendsCheckoutShell({
                 <p className="text-[10px] font-black uppercase tracking-[0.14em] text-emerald-300">{duplicate ? "Existing order recovered" : "Order created"}</p>
                 <h3 className="mt-1 break-all text-lg font-black text-white">{order.id}</h3>
                 <p className="mt-1 text-xs leading-5 text-emerald-100/65">{checkoutMessage}</p>
+                {addressSaveNote ? <p className="mt-2 text-xs leading-5 text-amber-200/80">{addressSaveNote}</p> : null}
               </div>
               <span className="w-fit rounded-md border border-emerald-300/20 bg-emerald-300/[0.07] px-2 py-1 text-[10px] font-black text-emerald-200">{order.ownership.accountLinked ? "Linked account" : "Guest checkout"}</span>
             </div>
