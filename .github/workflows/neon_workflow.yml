@@ -8,8 +8,12 @@ on:
       - synchronize
       - closed
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   setup:
@@ -61,7 +65,10 @@ jobs:
           node-version: 24.18.0
 
       - name: Install dependencies
-        run: npm install --silent
+        run: npm ci --ignore-scripts
+
+      - name: Generate Prisma client
+        run: npx prisma generate
 
       - name: Run Migrations
         run: npm run db:deploy
@@ -80,8 +87,8 @@ jobs:
 #   pull-requests: write
 #
 # You can also check out https://github.com/neondatabase/schema-diff-action for more
-# information on how to use the schema diff action.
-# You can uncomment the lines below to enable the schema diff action.
+# information on how to use the schema diff action. You can uncomment the lines below to
+# enable the schema diff action.
 #      - name: Post Schema Diff Comment to PR
 #        uses: neondatabase/schema-diff-action@v1
 #        with:
