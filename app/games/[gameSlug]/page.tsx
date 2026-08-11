@@ -32,17 +32,66 @@ export default async function GameCheckoutPage({ params }: { params: Promise<{ g
   if (!definition || !game || gameSlug === "mobile-legends") notFound();
 
   if (isSupplierCheckoutGameSlug(gameSlug)) {
-    const [packages, fxSnapshot, media] = await Promise.all([
-      getPublishedGamePackages(gameSlug),
-      getCurrencyRateSnapshot(),
-      getPublicMediaPlacements(),
-    ]);
-    const marketCount = new Set(packages.map((item) => item.marketCode)).size;
+    let packages: Awaited<ReturnType<typeof getPublishedGamePackages>> = [];
+    let fxSnapshot: Awaited<ReturnType<typeof getCurrencyRateSnapshot>>;
+    let media: Awaited<ReturnType<typeof getPublicMediaPlacements>>;
+    let session: Awaited<ReturnType<typeof getServerSession>> = null;
+
+    try {
+      packages = await getPublishedGamePackages(gameSlug);
+    } catch (error) {
+      console.error(`Live ${gameSlug} catalogue unavailable during page render`, error);
+    }
+
+    try {
+      fxSnapshot = await getCurrencyRateSnapshot();
+    } catch (error) {
+      console.error(`FX snapshot unavailable during ${gameSlug} page render`, error);
+      fxSnapshot = {
+        base: "INR",
+        mode: "inr-only",
+        source: "fallback",
+        quotedAt: new Date().toISOString(),
+        ratesFromInrMicros: {
+          INR: 1_000_000,
+          USD: 0,
+          EUR: 0,
+          GBP: 0,
+          SGD: 0,
+          MYR: 0,
+          IDR: 0,
+          PHP: 0,
+          BRL: 0,
+          TRY: 0,
+        },
+      };
+    }
+
+    try {
+      media = await getPublicMediaPlacements();
+    } catch (error) {
+      console.error(`Public media unavailable during ${gameSlug} page render`, error);
+      media = new Map();
+    }
+
+    try {
+      session = await getServerSession();
+    } catch (error) {
+      console.error(`Customer session unavailable during ${gameSlug} page render`, error);
+    }
+
     const gameLogo = media.get(`game.${gameSlug}.logo`);
     const gameArtwork = media.get(`game.${gameSlug}.artwork`);
-    const session = await getServerSession();
-    const savedAddresses = session ? await listSavedAddresses(session.customer.id) : [];
+    let savedAddresses: Awaited<ReturnType<typeof listSavedAddresses>> = [];
+    if (session) {
+      try {
+        savedAddresses = await listSavedAddresses(session.customer.id);
+      } catch (error) {
+        console.error(`Saved addresses unavailable during ${gameSlug} page render`, error);
+      }
+    }
     const isAuthenticated = Boolean(session);
+    const marketCount = new Set(packages.map((item) => item.marketCode)).size;
 
     return (
       <main className="storefront-page min-h-screen overflow-x-clip text-white">
