@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+
+import { CartPage } from "@/components/cart-page";
 
 export const metadata: Metadata = {
-  title: "Continue Top-Up | Recharza",
-  description:
-    "Continue through Recharza's canonical Mobile Legends top-up checkout.",
+  title: "Cart | Recharza",
+  description: "Review the products currently in your Recharza cart.",
 };
 
-export default function CartPage() {
-  redirect("/games/mobile-legends/india");
+export default function CartRoute() {
+  return <CartPage />;
 }
