@@ -18,6 +18,12 @@ export const runtime = "nodejs";
 
 const VERIFY_LIMIT = 20;
 const VERIFY_WINDOW_MS = 10 * 60 * 1000;
+const MAX_GAME_SLUG_LENGTH = 64;
+const MAX_VERIFY_BODY_BYTES = 8 * 1024;
+
+function jsonError(message: string, status: number, headers: Record<string, string>) {
+  return Response.json({ valid: false, message }, { status, headers });
+}
 
 export async function POST(
   request: Request,
@@ -28,6 +34,19 @@ export async function POST(
   let rateHeaders: Record<string, string> = {};
 
   try {
+    // Reject malformed/oversized route keys before they can create rate-limit buckets.
+    if (
+      slug.length === 0 ||
+      slug.length > MAX_GAME_SLUG_LENGTH ||
+      !/^[a-z0-9-]+$/.test(slug)
+    ) {
+      return jsonError("That game is not registered for checkout.", 400, rateHeaders);
+    }
+
+    if (!isSupplierCheckoutGameSlug(slug)) {
+      return jsonError("That game is not registered for checkout.", 400, rateHeaders);
+    }
+
     const rateLimit = await consumeRateLimit({
       request,
       route: `POST:/api/games/${slug}/verify`,
@@ -57,22 +76,28 @@ export async function POST(
       );
     }
 
-    if (!isSupplierCheckoutGameSlug(slug)) {
-      return Response.json(
-        {
-          valid: false,
-          message: "That game is not registered for checkout.",
-        },
-        { status: 400, headers: rateHeaders },
-      );
+    const contentLength = request.headers.get("content-length");
+    if (contentLength) {
+      const parsedLength = Number(contentLength);
+      if (!Number.isSafeInteger(parsedLength) || parsedLength < 0 || parsedLength > MAX_VERIFY_BODY_BYTES) {
+        return jsonError("Player details payload is too large.", 413, rateHeaders);
+      }
     }
 
-    const payload = await request.json().catch(() => null);
-    if (!payload || typeof payload !== "object") {
-      return Response.json(
-        { valid: false, message: "Player details are required." },
-        { status: 400, headers: rateHeaders },
-      );
+    const rawBody = await request.text();
+    if (new TextEncoder().encode(rawBody).byteLength > MAX_VERIFY_BODY_BYTES) {
+      return jsonError("Player details payload is too large.", 413, rateHeaders);
+    }
+
+    let payload: unknown;
+    try {
+      payload = JSON.parse(rawBody);
+    } catch {
+      payload = null;
+    }
+
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+      return jsonError("Player details are required.", 400, rateHeaders);
     }
 
     const data = payload as Record<string, unknown>;
