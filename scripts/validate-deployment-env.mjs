@@ -3,6 +3,7 @@ const environment = (
   (process.env.NODE_ENV === "production" ? "production" : "development")
 ).toLowerCase();
 const hosted = environment === "staging" || environment === "production";
+const runningUnderVercel = Boolean(process.env.VERCEL_ENV);
 
 const errors = [];
 const warnings = [];
@@ -11,9 +12,15 @@ function value(name) {
   return (process.env[name] || "").trim();
 }
 
+function isVercelRedacted(name) {
+  return runningUnderVercel && value(name) === "[SENSITIVE]";
+}
+
 function requireSecret(name, minimum = 32) {
   const current = value(name);
-  if (!current) errors.push(`${name} is required.`);
+  if (isVercelRedacted(name)) {
+    warnings.push(`${name} is redacted by Vercel CLI; its value cannot be validated by vercel env run.`);
+  } else if (!current) errors.push(`${name} is required.`);
   else if (current.length < minimum) {
     errors.push(`${name} must contain at least ${minimum} characters.`);
   }
@@ -37,7 +44,11 @@ function validEmailList(input) {
 }
 
 const databaseUrl = value("DATABASE_URL");
-if (!/^postgres(?:ql)?:\/\//i.test(databaseUrl)) {
+if (isVercelRedacted("DATABASE_URL")) {
+  warnings.push(
+    "DATABASE_URL is redacted by Vercel CLI; its PostgreSQL format cannot be validated by vercel env run.",
+  );
+} else if (!/^postgres(?:ql)?:\/\//i.test(databaseUrl)) {
   errors.push("DATABASE_URL must be a PostgreSQL connection string.");
 }
 
@@ -55,7 +66,12 @@ requireSecret("CRON_SECRET");
 const emailDeliveryProvider = (
   value("EMAIL_DELIVERY_PROVIDER") || "gmail"
 ).toLowerCase();
-if (!["gmail", "resend"].includes(emailDeliveryProvider)) {
+const emailProviderRedacted = isVercelRedacted("EMAIL_DELIVERY_PROVIDER");
+if (emailProviderRedacted) {
+  warnings.push(
+    "EMAIL_DELIVERY_PROVIDER is redacted by Vercel CLI; provider selection cannot be validated by vercel env run.",
+  );
+} else if (!["gmail", "resend"].includes(emailDeliveryProvider)) {
   errors.push("EMAIL_DELIVERY_PROVIDER must be gmail or resend.");
 }
 
@@ -63,6 +79,10 @@ const gmailClientId = value("GOOGLE_MAIL_CLIENT_ID") || value("GOOGLE_CLIENT_ID"
 const gmailClientSecret =
   value("GOOGLE_MAIL_CLIENT_SECRET") || value("GOOGLE_CLIENT_SECRET");
 const gmailRefreshToken = value("GOOGLE_MAIL_REFRESH_TOKEN");
+const gmailMailRedacted =
+  isVercelRedacted("GOOGLE_MAIL_CLIENT_SECRET") ||
+  isVercelRedacted("GOOGLE_CLIENT_SECRET") ||
+  isVercelRedacted("GOOGLE_MAIL_REFRESH_TOKEN");
 const gmailMailReady = Boolean(
   gmailClientId && gmailClientSecret && gmailRefreshToken,
 );
@@ -70,7 +90,7 @@ const resendMailValues = [value("RESEND_API_KEY"), value("RESEND_FROM_EMAIL")];
 const resendMailConfiguredCount = resendMailValues.filter(Boolean).length;
 const resendMailReady = resendMailConfiguredCount === resendMailValues.length;
 
-if (gmailClientId && !gmailClientId.endsWith(".apps.googleusercontent.com")) {
+if (gmailClientId && !isVercelRedacted("GOOGLE_MAIL_CLIENT_ID") && !isVercelRedacted("GOOGLE_CLIENT_ID") && !gmailClientId.endsWith(".apps.googleusercontent.com")) {
   errors.push(
     "The Google OAuth client used for Gmail delivery must end in .apps.googleusercontent.com.",
   );
@@ -78,7 +98,7 @@ if (gmailClientId && !gmailClientId.endsWith(".apps.googleusercontent.com")) {
 if (resendMailConfiguredCount > 0 && !resendMailReady) {
   errors.push("RESEND_API_KEY and RESEND_FROM_EMAIL must be configured together.");
 }
-if (emailDeliveryProvider === "gmail" && !gmailMailReady) {
+if (emailDeliveryProvider === "gmail" && !gmailMailReady && !gmailMailRedacted) {
   errors.push(
     "EMAIL_DELIVERY_PROVIDER=gmail requires GOOGLE_MAIL_REFRESH_TOKEN plus a Google OAuth client ID and secret. GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET may be reused when they belong to the same OAuth client.",
   );
@@ -86,6 +106,11 @@ if (emailDeliveryProvider === "gmail" && !gmailMailReady) {
 if (emailDeliveryProvider === "resend" && !resendMailReady) {
   errors.push(
     "EMAIL_DELIVERY_PROVIDER=resend requires RESEND_API_KEY and RESEND_FROM_EMAIL.",
+  );
+}
+if (gmailMailRedacted && emailDeliveryProvider === "gmail") {
+  warnings.push(
+    "Gmail delivery credentials are redacted by Vercel CLI; credential completeness cannot be validated by vercel env run.",
   );
 }
 
@@ -97,17 +122,17 @@ if (hosted) {
   }
 
   const googleClientId = value("GOOGLE_CLIENT_ID");
-  if (!googleClientId.endsWith(".apps.googleusercontent.com")) {
+  if (!isVercelRedacted("GOOGLE_CLIENT_ID") && !googleClientId.endsWith(".apps.googleusercontent.com")) {
     errors.push(
       "GOOGLE_CLIENT_ID must be a Google web client ID ending in .apps.googleusercontent.com.",
     );
   }
-  if (!value("GOOGLE_CLIENT_SECRET")) {
+  if (!value("GOOGLE_CLIENT_SECRET") && !isVercelRedacted("GOOGLE_CLIENT_SECRET")) {
     errors.push("GOOGLE_CLIENT_SECRET is required for hosted Google OAuth.");
   }
   requireSecret("GOOGLE_OAUTH_STATE_SECRET");
 
-  if (emailDeliveryProvider === "gmail" && !gmailMailReady) {
+  if (emailDeliveryProvider === "gmail" && !gmailMailReady && !gmailMailRedacted) {
     errors.push(
       "Hosted Recharza email is set to Gmail, but the Gmail OAuth transport is incomplete.",
     );
@@ -162,12 +187,21 @@ if (paymentProvider === "razorpay" && !razorpayKeyId) {
 }
 
 const ignProvider = (value("IGN_LOOKUP_PROVIDER") || "internal").toLowerCase();
-if (!["internal", "rapidapi"].includes(ignProvider)) {
-  errors.push("IGN_LOOKUP_PROVIDER must be internal or rapidapi.");
+if (isVercelRedacted("IGN_LOOKUP_PROVIDER")) {
+  warnings.push(
+    "IGN_LOOKUP_PROVIDER is redacted by Vercel CLI; provider selection cannot be validated by vercel env run.",
+  );
+} else if (!["internal", "volsever", "rapidapi"].includes(ignProvider)) {
+  errors.push("IGN_LOOKUP_PROVIDER must be internal, volsever, or rapidapi.");
 }
 if (ignProvider === "rapidapi") {
   warnings.push(
     "External player lookup is selected. Confirm the provider adapter and credentials before deployment.",
+  );
+}
+if (ignProvider === "volsever") {
+  warnings.push(
+    "Volsever live player lookup is selected. Confirm provider credentials and game coverage before deployment.",
   );
 }
 
