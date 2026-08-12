@@ -3,7 +3,6 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getRequestSession } from "@/lib/auth";
 
 function isProtectedStorefrontPath(pathname: string) {
-  if (pathname === "/cart" || pathname.startsWith("/cart/")) return true;
   if (pathname.startsWith("/api/checkout/")) return true;
 
   if (!pathname.startsWith("/games/")) return false;
@@ -23,7 +22,13 @@ function signInUrl(request: NextRequest) {
 }
 
 export async function proxy(request: NextRequest) {
-  if (!isProtectedStorefrontPath(request.nextUrl.pathname)) {
+  const pathname = request.nextUrl.pathname;
+
+  if (pathname === "/cart" || pathname.startsWith("/cart/")) {
+    return NextResponse.redirect(new URL("/games/mobile-legends/india", request.url));
+  }
+
+  if (!isProtectedStorefrontPath(pathname)) {
     return NextResponse.next();
   }
 

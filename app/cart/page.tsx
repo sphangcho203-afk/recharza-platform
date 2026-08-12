@@ -7,6 +7,8 @@ export const metadata: Metadata = {
     "Continue through Recharza's canonical Mobile Legends top-up checkout.",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function CartPage() {
   redirect("/games/mobile-legends/india");
 }
