@@ -65,17 +65,6 @@ export async function POST(
       );
     }
 
-    if (slug === "mobile-legends") {
-      return Response.json(
-        {
-          valid: false,
-          message:
-            "Mobile Legends has its own dedicated verification route.",
-        },
-        { status: 400, headers: rateHeaders },
-      );
-    }
-
     const contentLength = request.headers.get("content-length");
     if (contentLength) {
       const parsedLength = Number(contentLength);
