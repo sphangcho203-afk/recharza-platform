@@ -10,11 +10,12 @@ import {
 
 type CurrencySelectorProps = {
   ratesFromInrMicros: Partial<Record<SupportedCurrencyCode, number>>;
+  compact?: boolean;
 };
 
 const STORAGE_KEY = "recharza.display-currency";
 
-export function CurrencySelector({ ratesFromInrMicros }: CurrencySelectorProps) {
+export function CurrencySelector({ ratesFromInrMicros, compact = false }: CurrencySelectorProps) {
   const [currency, setCurrency] = useState<SupportedCurrencyCode>(() => {
     if (typeof window === "undefined") return "INR";
     const stored = window.localStorage.getItem(STORAGE_KEY)?.toUpperCase();
@@ -40,13 +41,13 @@ export function CurrencySelector({ ratesFromInrMicros }: CurrencySelectorProps) 
   }
 
   return (
-    <label className="group relative hidden min-h-10 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.025] px-2.5 md:flex">
+    <label className={`group relative inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.025] px-2.5 ${compact ? "max-w-[5.25rem]" : ""}`}>
       <StorefrontIcon name="globe" className="h-3.5 w-3.5 shrink-0 text-cyan-300" />
       <span className="sr-only">Display currency</span>
       <select
         value={currency}
         onChange={(event) => handleChange(event.target.value)}
-        className="max-w-[7.25rem] appearance-none bg-transparent pr-1 text-[11px] font-black text-slate-200 outline-none"
+        className={`${compact ? "max-w-[3.1rem]" : "max-w-[7.25rem]"} appearance-none bg-transparent pr-1 text-[11px] font-black text-slate-200 outline-none`}
         aria-label="Display currency"
       >
         {supportedCurrencies.map((item) => (

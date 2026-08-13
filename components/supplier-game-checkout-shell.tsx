@@ -370,6 +370,9 @@ export function SupplierGameCheckoutShell({
     }
   }
 
+  const selectedMarketLabel = markets.find((market) => market.code === marketCode)?.label ?? "Selected market";
+  const gameLabel = gameSlug === "free-fire" ? "Free Fire MAX" : gameSlug === "valorant" ? "VALORANT" : gameSlug === "pubg-mobile" ? "PUBG Mobile" : gameSlug === "genshin-impact" ? "Genshin Impact" : "Game top-up";
+
   if (!selectedPackage) {
     return (
       <div className="rounded-xl border border-amber-300/20 bg-amber-300/[0.07] p-4 text-sm text-amber-100">
@@ -382,6 +385,16 @@ export function SupplierGameCheckoutShell({
   return (
     <form onSubmit={submitCheckout} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="min-w-0 space-y-5">
+        <section className="relative overflow-hidden rounded-2xl border border-violet-300/[0.16] bg-[radial-gradient(circle_at_0%_0%,rgba(139,92,246,0.18),transparent_42%),#0d0f18] p-5 sm:p-6">
+          <div className="relative flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-violet-200/80"><span className="h-1.5 w-1.5 rounded-full bg-emerald-300" /> {gameLabel} · {selectedMarketLabel}</div>
+              <h1 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">Build your top-up</h1>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Choose a package, verify the player destination, and review the final amount in your selected display currency before payment.</p>
+            </div>
+            <div className="rounded-xl border border-white/[0.1] bg-white/[0.04] px-3 py-2 text-right"><div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Protected flow</div><div className="mt-1 text-xs font-bold text-emerald-200">ID check · clear pricing</div></div>
+          </div>
+        </section>
         {markets.length > 1 && gameSlug !== "free-fire" ? (
           <section className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex min-w-max gap-2">

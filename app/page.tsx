@@ -94,6 +94,26 @@ export default async function Home() {
         </div>
       </section>
 
+      <section id="offers" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 pb-3 sm:px-6 lg:px-8">
+        <div className="grid gap-3 md:grid-cols-3">
+          <Link href="/#games" className="group rounded-2xl border border-amber-300/[0.16] bg-[linear-gradient(135deg,rgba(245,158,11,0.12),rgba(17,24,39,0.6))] p-4 transition hover:-translate-y-0.5 hover:border-amber-200/30">
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-amber-200/80">Featured market</p>
+            <h3 className="mt-2 text-base font-black text-white">Golden Month · MLBB India</h3>
+            <p className="mt-1 text-xs leading-5 text-slate-400">A region-first top-up path with local package context.</p>
+          </Link>
+          <Link href="/#games" className="group rounded-2xl border border-cyan-300/[0.16] bg-[linear-gradient(135deg,rgba(34,211,238,0.1),rgba(17,24,39,0.6))] p-4 transition hover:-translate-y-0.5 hover:border-cyan-200/30">
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-200/80">Always visible</p>
+            <h3 className="mt-2 text-base font-black text-white">Clear prices in your currency</h3>
+            <p className="mt-1 text-xs leading-5 text-slate-400">Choose display currency from the header before you shop.</p>
+          </Link>
+          <Link href="/#how-it-works" className="group rounded-2xl border border-violet-300/[0.16] bg-[linear-gradient(135deg,rgba(139,92,246,0.12),rgba(17,24,39,0.6))] p-4 transition hover:-translate-y-0.5 hover:border-violet-200/30">
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-200/80">Recharza standard</p>
+            <h3 className="mt-2 text-base font-black text-white">Verify first. Pay with confidence.</h3>
+            <p className="mt-1 text-xs leading-5 text-slate-400">The account check and order summary stay in one flow.</p>
+          </Link>
+        </div>
+      </section>
+
       {storefront.catalogue.enabled ? (
         <section id="games" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
