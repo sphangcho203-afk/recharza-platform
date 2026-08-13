@@ -23,9 +23,9 @@ const routes = [
   { path: "/support", expected: [200], label: "support" },
   {
     path: "/cart",
-    expected: [307, 308],
-    expectedLocation: "/games/mobile-legends/india",
-    label: "legacy cart redirect",
+    expected: [200],
+    expectBody: "Your cart",
+    label: "cart page",
   },
   {
     path: "/games/mobile-legends/india",
@@ -53,7 +53,11 @@ for (const route of routes) {
     const statusPassed = route.expected.includes(response.status);
     const locationPassed =
       !route.expectedLocation || location === route.expectedLocation;
-    const passed = statusPassed && locationPassed;
+    let contentPassed = true;
+    if (route.expectBody && response.ok) {
+      contentPassed = (await response.text()).includes(route.expectBody);
+    }
+    const passed = statusPassed && locationPassed && contentPassed;
 
     console.log(
       `${passed ? "PASS" : "FAIL"} ${response.status} ${duration}ms ${route.label} ${route.path}${location ? ` -> ${location}` : ""}`,

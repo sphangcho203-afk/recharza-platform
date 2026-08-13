@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 
 import { RecharzaMark } from "@/components/recharza-mark";
+import { CartBadge } from "@/components/cart-badge";
 import { StorefrontCategoryNav } from "@/components/storefront-category-nav";
 import { StorefrontSearch } from "@/components/storefront-search";
 import { StorefrontIcon } from "@/components/storefront-icon";
@@ -60,13 +61,7 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
             <span className="hidden min-h-10 items-center rounded-lg border border-white/[0.08] bg-white/[0.025] px-3 text-[11px] font-black text-slate-300 md:inline-flex">
               IN / INR
             </span>
-            <Link
-              href="/cart"
-              aria-label="Open cart"
-              className="grid h-10 w-10 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025] text-slate-300 transition hover:border-white/[0.16] hover:bg-white/[0.06] hover:text-white"
-            >
-              <StorefrontIcon name="cart" className="h-[17px] w-[17px]" />
-            </Link>
+            <CartBadge />
             <Link
               href="/account"
               className="inline-flex min-h-10 items-center rounded-lg bg-violet-500 px-3.5 text-[12px] font-black text-white shadow-[0_10px_28px_rgba(124,58,237,0.24)] transition hover:bg-violet-400 sm:px-4"

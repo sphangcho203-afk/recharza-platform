@@ -24,10 +24,6 @@ function signInUrl(request: NextRequest) {
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  if (pathname === "/cart" || pathname.startsWith("/cart/")) {
-    return NextResponse.redirect(new URL("/games/mobile-legends/india", request.url));
-  }
-
   if (!isProtectedStorefrontPath(pathname)) {
     return NextResponse.next();
   }
@@ -65,5 +61,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/cart/:path*", "/games/:path*", "/api/checkout/:path*"],
+  matcher: ["/games/:path*", "/api/checkout/:path*"],
 };

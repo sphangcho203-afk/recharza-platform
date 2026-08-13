@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { type ChangeEvent, type FormEvent, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
+import { AddToCartButton } from "@/components/add-to-cart-button";
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 import { ResilientImage } from "@/components/resilient-image";
@@ -15,6 +16,7 @@ import {
 } from "@/lib/commerce/currencies";
 import { toBillingFormState } from "@/lib/commerce/saved-address-form";
 import type { SavedAddressView } from "@/lib/commerce/saved-addresses";
+import type { CartSnapshot } from "@/lib/cart-snapshot";
 import { formatInr, type MobileLegendsPackage } from "@/lib/mobile-legends";
 import type { MobileLegendsMarket } from "@/lib/mobile-legends-market";
 
@@ -86,12 +88,14 @@ export function MobileLegendsCheckoutShell({
   fxSnapshot,
   savedAddresses = [],
   isAuthenticated = false,
+  initialCartItemId = null,
 }: {
   packages: MobileLegendsPackage[];
   market: MobileLegendsMarket;
   fxSnapshot: FxSnapshot;
   savedAddresses?: SavedAddressView[];
   isAuthenticated?: boolean;
+  initialCartItemId?: string | null;
 }) {
   const firstPackage = packages.find((item) => item.featured) ?? packages[0];
   const [packageId, setPackageId] = useState(firstPackage?.id ?? "");
@@ -118,7 +122,36 @@ export function MobileLegendsCheckoutShell({
   const [order, setOrder] = useState<CreatedOrder | null>(null);
   const [duplicate, setDuplicate] = useState(false);
   const [paymentVerified, setPaymentVerified] = useState(false);
+  const [restoredFromCart, setRestoredFromCart] = useState(false);
   const idempotencyKey = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!initialCartItemId) return;
+    let active = true;
+
+    fetch("/api/cart", { cache: "no-store" })
+      .then(async (response) => {
+        const result = (await response.json()) as {
+          ok?: boolean;
+          cart?: CartSnapshot;
+        };
+        if (!active || !response.ok || !result.ok || !result.cart) return;
+        const item = result.cart.items.find(
+          (entry) => entry.id === initialCartItemId,
+        );
+        if (!item) return;
+        if (!packages.some((entry) => entry.id === item.package.id)) return;
+        setPackageId(item.package.id);
+        setPlayerId(item.player.playerId ?? "");
+        setZoneId(item.player.zoneId ?? "");
+        setRestoredFromCart(true);
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, [initialCartItemId, packages]);
 
   const selectedPackage = useMemo(
     () => packages.find((item) => item.id === packageId) ?? packages[0],
@@ -190,6 +223,7 @@ export function MobileLegendsCheckoutShell({
 
   function resetVerification() {
     setVerification(initialVerification);
+    setRestoredFromCart(false);
     resetCreatedOrder();
   }
 
@@ -360,6 +394,13 @@ export function MobileLegendsCheckoutShell({
             {verification.message}
             {verification.nickname ? <strong className="ml-1 text-white">{verification.nickname}</strong> : null}
           </div>
+
+          {restoredFromCart ? (
+            <p className="mt-3 rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-3 py-2.5 text-xs leading-5 text-cyan-100">
+              Package restored from your cart. Verify the player destination
+              before paying for this order.
+            </p>
+          ) : null}
         </section>
 
         <section>
@@ -368,52 +409,74 @@ export function MobileLegendsCheckoutShell({
               <h2 className="text-lg font-black tracking-[-0.025em] text-white">Choose a package</h2>
               <p className="mt-1 text-xs text-slate-500">{packages.length} offers · {market.flag} {market.label}</p>
             </div>
-            <label className="block w-full sm:max-w-xs">
-              <span className="sr-only">Search packages</span>
-              <input
-                type="search"
-                value={packageQuery}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => setPackageQuery(event.target.value)}
-                placeholder="Search diamonds or passes"
-                className="min-h-10 w-full rounded-lg border border-white/[0.08] bg-[#0d0f16] px-3 text-xs text-white outline-none placeholder:text-slate-700 focus:border-violet-400/45"
-              />
-            </label>
+            <div className="flex items-center gap-3">
+              <Link href="/cart" className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 text-[11px] font-black text-slate-300 transition hover:border-white/[0.16] hover:text-white">
+                <StorefrontIcon name="cart" className="h-3.5 w-3.5" />
+                My cart
+              </Link>
+              <label className="block w-full sm:max-w-xs">
+                <span className="sr-only">Search packages</span>
+                <input
+                  type="search"
+                  value={packageQuery}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => setPackageQuery(event.target.value)}
+                  placeholder="Search diamonds or passes"
+                  className="min-h-10 w-full rounded-lg border border-white/[0.08] bg-[#0d0f16] px-3 text-xs text-white outline-none placeholder:text-slate-700 focus:border-violet-400/45"
+                />
+              </label>
+            </div>
           </div>
 
           <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4">
             {visiblePackages.map((item) => {
               const selected = item.id === selectedPackage.id;
               return (
-                <button
+                <div
                   key={item.id}
-                  type="button"
-                  onClick={() => {
-                    setPackageId(item.id);
-                    resetVerification();
-                  }}
                   className={`group overflow-hidden rounded-xl border text-left transition ${
                     selected
                       ? "border-violet-400/55 bg-violet-500/[0.08] shadow-[0_0_0_1px_rgba(139,92,246,0.15)]"
                       : "border-white/[0.08] bg-[#0d0f16] hover:border-white/[0.17]"
                   }`}
                 >
-                  <span className="relative block aspect-[4/3] overflow-hidden bg-[#141821]">
-                    <ResilientImage
-                      sources={item.media.sources}
-                      alt={item.media.alt}
-                      fallbackLabel={item.name.slice(0, 2).toUpperCase()}
-                      fill
-                      sizes="(max-width: 640px) 45vw, 190px"
-                      className="object-contain p-4 transition duration-300 group-hover:scale-[1.035]"
-                      fallbackClassName="absolute inset-0 h-full w-full"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPackageId(item.id);
+                      resetVerification();
+                    }}
+                    aria-pressed={selected}
+                    className="block w-full text-left"
+                  >
+                    <span className="relative block aspect-[4/3] overflow-hidden bg-[#141821]">
+                      <ResilientImage
+                        sources={item.media.sources}
+                        alt={item.media.alt}
+                        fallbackLabel={item.name.slice(0, 2).toUpperCase()}
+                        fill
+                        sizes="(max-width: 640px) 45vw, 190px"
+                        className="object-contain p-4 transition duration-300 group-hover:scale-[1.035]"
+                        fallbackClassName="absolute inset-0 h-full w-full"
+                      />
+                    </span>
+                    <span className="block p-3">
+                      <strong className="line-clamp-2 min-h-10 text-xs leading-5 text-white sm:text-[13px]">{item.name}</strong>
+                      <span className="mt-1.5 block text-base font-black text-violet-300">{formatPresentment(item.amountInPaise)}</span>
+                      <span className="mt-1 block text-[10px] text-slate-600">{item.source === "fazercards-live" ? "Live offer" : "Preview offer"}</span>
+                    </span>
+                  </button>
+                  <div className="px-3 pb-3">
+                    <AddToCartButton
+                      gameSlug="mobile-legends"
+                      marketCode={market.code}
+                      packageId={item.id}
+                      packageName={item.name}
+                      playerId={playerId || null}
+                      zoneId={zoneId || null}
+                      disabled={verification.status === "loading"}
                     />
-                  </span>
-                  <span className="block p-3">
-                    <strong className="line-clamp-2 min-h-10 text-xs leading-5 text-white sm:text-[13px]">{item.name}</strong>
-                    <span className="mt-1.5 block text-base font-black text-violet-300">{formatPresentment(item.amountInPaise)}</span>
-                    <span className="mt-1 block text-[10px] text-slate-600">{item.source === "fazercards-live" ? "Live offer" : "Preview offer"}</span>
-                  </span>
-                </button>
+                  </div>
+                </div>
               );
             })}
           </div>

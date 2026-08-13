@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { type FormEvent, useMemo, useRef, useState } from "react";
+import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
+
+import { AddToCartButton } from "@/components/add-to-cart-button";
 
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
@@ -16,6 +18,7 @@ import {
 import { getSupplierSelectOptions, validateSupplierCheckoutIdentity } from "@/lib/commerce/game-identity";
 import { toBillingFormState } from "@/lib/commerce/saved-address-form";
 import type { SavedAddressView } from "@/lib/commerce/saved-addresses";
+import type { CartSnapshot } from "@/lib/cart-snapshot";
 import { formatInr } from "@/lib/mobile-legends";
 import type { SupplierCheckoutGameSlug } from "@/lib/storefront-game-catalog";
 
@@ -97,6 +100,7 @@ export function SupplierGameCheckoutShell({
   fxSnapshot,
   savedAddresses = [],
   isAuthenticated = false,
+  initialCartItemId = null,
 }: {
   gameSlug: SupplierCheckoutGameSlug;
   gameTitle: string;
@@ -104,6 +108,7 @@ export function SupplierGameCheckoutShell({
   fxSnapshot: FxSnapshot;
   savedAddresses?: SavedAddressView[];
   isAuthenticated?: boolean;
+  initialCartItemId?: string | null;
 }) {
   const markets = useMemo(() => {
     const map = new Map<string, string>();
@@ -131,7 +136,42 @@ export function SupplierGameCheckoutShell({
   const [error, setError] = useState("");
   const [order, setOrder] = useState<CreatedOrder | null>(null);
   const [paymentVerified, setPaymentVerified] = useState(false);
+  const [restoredFromCart, setRestoredFromCart] = useState(false);
   const idempotencyKey = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!initialCartItemId) return;
+    let active = true;
+
+    fetch("/api/cart", { cache: "no-store" })
+      .then(async (response) => {
+        const result = (await response.json()) as {
+          ok?: boolean;
+          cart?: CartSnapshot;
+        };
+        if (!active || !response.ok || !result.ok || !result.cart) return;
+        const item = result.cart.items.find(
+          (entry) => entry.id === initialCartItemId,
+        );
+        if (!item) return;
+        const restoredPackage = packages.find(
+          (entry) => entry.id === item.package.id,
+        );
+        if (!restoredPackage) return;
+        setMarketCode(restoredPackage.marketCode);
+        setPackageId(item.package.id);
+        setIdentity((current) => ({
+          ...current,
+          playerId: item.player.playerId ?? "",
+        }));
+        setRestoredFromCart(true);
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, [initialCartItemId, packages]);
 
   const selectedPackage = marketPackages.find((item) => item.id === packageId) ?? marketPackages[0];
   const serverOptions = getSupplierSelectOptions(selectedPackage?.fields, /server/);
@@ -188,6 +228,7 @@ export function SupplierGameCheckoutShell({
     setMarketCode(nextMarketCode);
     setPackageId(nextPackage?.id ?? "");
     setIdentity(initialIdentity);
+    setRestoredFromCart(false);
     resetOrder();
   }
 
@@ -373,43 +414,67 @@ export function SupplierGameCheckoutShell({
               <h2 className="text-lg font-black tracking-[-0.025em] text-white">Choose a package</h2>
               <p className="mt-1 text-xs text-slate-500">{marketPackages.length} published offers for {selectedPackage.marketLabel}.</p>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.12em] text-violet-300">Step 2</span>
+            <Link href="/cart" className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 text-[11px] font-black text-slate-300 transition hover:border-white/[0.16] hover:text-white">
+              <StorefrontIcon name="cart" className="h-3.5 w-3.5" />
+              My cart
+            </Link>
           </div>
+
+          {restoredFromCart ? (
+            <p className="mt-3 rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-3 py-2.5 text-xs leading-5 text-cyan-100">
+              Package restored from your cart. Confirm the destination details
+              before paying for this order.
+            </p>
+          ) : null}
 
           <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4">
             {marketPackages.map((item) => {
               const selected = item.id === selectedPackage.id;
               return (
-                <button
+                <div
                   key={item.id}
-                  type="button"
-                  onClick={() => {
-                    setPackageId(item.id);
-                    resetOrder();
-                  }}
                   className={`group overflow-hidden rounded-xl border text-left transition ${
                     selected
                       ? "border-violet-400/55 bg-violet-500/[0.08] shadow-[0_0_0_1px_rgba(139,92,246,0.15)]"
                       : "border-white/[0.08] bg-[#0d0f16] hover:border-white/[0.17]"
                   }`}
                 >
-                  <span className="relative block aspect-[4/3] overflow-hidden bg-[#141821]">
-                    <ResilientImage
-                      sources={item.media.sources}
-                      alt={item.media.alt}
-                      fallbackLabel={item.name.slice(0, 2).toUpperCase()}
-                      fill
-                      sizes="(max-width: 640px) 45vw, 190px"
-                      className="object-contain p-4 transition duration-300 group-hover:scale-[1.035]"
-                      fallbackClassName="absolute inset-0 h-full w-full"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPackageId(item.id);
+                      setRestoredFromCart(false);
+                      resetOrder();
+                    }}
+                    aria-pressed={selected}
+                    className="block w-full text-left"
+                  >
+                    <span className="relative block aspect-[4/3] overflow-hidden bg-[#141821]">
+                      <ResilientImage
+                        sources={item.media.sources}
+                        alt={item.media.alt}
+                        fallbackLabel={item.name.slice(0, 2).toUpperCase()}
+                        fill
+                        sizes="(max-width: 640px) 45vw, 190px"
+                        className="object-contain p-4 transition duration-300 group-hover:scale-[1.035]"
+                        fallbackClassName="absolute inset-0 h-full w-full"
+                      />
+                    </span>
+                    <span className="block p-3">
+                      <strong className="line-clamp-2 min-h-10 text-xs leading-5 text-white sm:text-[13px]">{item.name}</strong>
+                      <span className="mt-1.5 block text-base font-black text-violet-300">{formatPresentment(item.amountInPaise)}</span>
+                      {selected ? <span className="mt-1 block text-[10px] font-black text-emerald-300">Selected</span> : null}
+                    </span>
+                  </button>
+                  <div className="px-3 pb-3">
+                    <AddToCartButton
+                      gameSlug={gameSlug}
+                      marketCode={item.marketCode}
+                      packageId={item.id}
+                      packageName={item.name}
                     />
-                  </span>
-                  <span className="block p-3">
-                    <strong className="line-clamp-2 min-h-10 text-xs leading-5 text-white sm:text-[13px]">{item.name}</strong>
-                    <span className="mt-1.5 block text-base font-black text-violet-300">{formatPresentment(item.amountInPaise)}</span>
-                    {selected ? <span className="mt-1 block text-[10px] font-black text-emerald-300">Selected</span> : null}
-                  </span>
-                </button>
+                  </div>
+                </div>
               );
             })}
           </div>

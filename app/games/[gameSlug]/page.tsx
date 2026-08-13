@@ -25,8 +25,15 @@ export async function generateMetadata({ params }: { params: Promise<{ gameSlug:
     : { title: "Game checkout" };
 }
 
-export default async function GameCheckoutPage({ params }: { params: Promise<{ gameSlug: string }> }) {
+export default async function GameCheckoutPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ gameSlug: string }>;
+  searchParams: Promise<{ cartItem?: string }>;
+}) {
   const { gameSlug } = await params;
+  const { cartItem } = await searchParams;
   const definition = getGameCheckoutDefinition(gameSlug);
   const game = mainGames.find((item) => item.slug === gameSlug);
   if (!definition || !game || gameSlug === "mobile-legends") notFound();
@@ -161,6 +168,7 @@ export default async function GameCheckoutPage({ params }: { params: Promise<{ g
             fxSnapshot={fxSnapshot}
             savedAddresses={savedAddresses}
             isAuthenticated={isAuthenticated}
+            initialCartItemId={cartItem?.trim() ? cartItem : null}
           />
         </section>
 

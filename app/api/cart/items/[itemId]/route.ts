@@ -1,4 +1,5 @@
 import { getCartForRequest, serializeCart } from "@/lib/cart";
+import { CART_MAX_QUANTITY } from "@/lib/cart-snapshot";
 import { validateMobileLegendsIdentity } from "@/lib/player-identity-provider";
 import { getPrisma } from "@/lib/prisma";
 import {
@@ -16,6 +17,15 @@ async function findOwnedItem(request: Request, itemId: string) {
   const cartResult = await getCartForRequest(request, { create: false });
   const item = cartResult.cart?.items.find((entry) => entry.id === itemId) ?? null;
   return { cartResult, item };
+}
+
+function readQuantity(value: unknown) {
+  return typeof value === "number" &&
+    Number.isInteger(value) &&
+    value >= 1 &&
+    value <= CART_MAX_QUANTITY
+    ? value
+    : null;
 }
 
 export async function PATCH(
@@ -58,6 +68,48 @@ export async function PATCH(
     }
 
     const data = payload as Record<string, unknown>;
+    const quantity = readQuantity(data.quantity);
+
+    if (quantity !== null) {
+      await getPrisma().cartItem.update({
+        where: { id: item.id },
+        data: { quantity },
+      });
+
+      const updated = await getPrisma().cart.findUnique({
+        where: { id: cartResult.cart.id },
+        include: { items: { orderBy: { createdAt: "asc" } } },
+      });
+
+      return Response.json(
+        {
+          ok: true,
+          message: `Quantity updated to ${quantity}.`,
+          cart: serializeCart(updated),
+        },
+        {
+          headers: {
+            ...rateHeaders,
+            "Cache-Control": "no-store",
+            ...(cartResult.setCookie
+              ? { "Set-Cookie": cartResult.setCookie }
+              : {}),
+          },
+        },
+      );
+    }
+
+    if (item.gameSlug !== "mobile-legends") {
+      return Response.json(
+        {
+          ok: false,
+          message:
+            "Player identity is attached during checkout for this game.",
+        },
+        { status: 400, headers: rateHeaders },
+      );
+    }
+
     const identity = await validateMobileLegendsIdentity({
       playerId: data.playerId,
       zoneId: data.zoneId,

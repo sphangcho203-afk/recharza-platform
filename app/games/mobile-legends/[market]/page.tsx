@@ -31,9 +31,17 @@ export async function generateMetadata({ params }: { params: Promise<{ market: s
     : { title: "Mobile Legends Top-Up" };
 }
 
-export default async function MobileLegendsMarketPage({ params }: { params: Promise<{ market: string }> }) {
+export default async function MobileLegendsMarketPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ market: string }>;
+  searchParams: Promise<{ cartItem?: string }>;
+}) {
   const selectedMarket = parseMobileLegendsMarket((await params).market);
   if (!selectedMarket) notFound();
+
+  const { cartItem } = await searchParams;
 
   const regionalGame =
     games.find((game) => game.slug === `mobile-legends-${selectedMarket.code}`) ??
@@ -145,6 +153,7 @@ export default async function MobileLegendsMarketPage({ params }: { params: Prom
           fxSnapshot={fxSnapshot}
           savedAddresses={savedAddresses}
           isAuthenticated={isAuthenticated}
+          initialCartItemId={cartItem?.trim() ? cartItem : null}
         />
       </section>
 
