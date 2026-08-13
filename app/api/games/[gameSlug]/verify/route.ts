@@ -9,7 +9,6 @@ import {
   isSupplierCheckoutGameSlug,
 } from "@/lib/storefront-game-catalog";
 import {
-  isVolseverGameSlug,
   lookupVolseverGameIdentity,
   VolseverProviderError,
 } from "@/lib/volsever";
@@ -34,7 +33,6 @@ export async function POST(
   let rateHeaders: Record<string, string> = {};
 
   try {
-    // Reject malformed/oversized route keys before they can create rate-limit buckets.
     if (
       slug.length === 0 ||
       slug.length > MAX_GAME_SLUG_LENGTH ||
@@ -122,24 +120,6 @@ export async function POST(
       return Response.json(
         { valid: false, message: identity.message },
         { status: 400, headers: rateHeaders },
-      );
-    }
-
-    if (!isVolseverGameSlug(slug)) {
-      return Response.json(
-        {
-          valid: true,
-          confirmed: false,
-          nickname: null,
-          verificationMode: "format-only",
-          playerId: identity.playerId,
-          zoneId: identity.zoneId,
-          marketCode: selectedPackage.marketCode,
-          packageId: selectedPackage.id,
-          message:
-            "Player details are valid. Live account lookup is not configured for this game yet.",
-        },
-        { status: 200, headers: rateHeaders },
       );
     }
 
