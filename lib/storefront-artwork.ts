@@ -14,7 +14,6 @@ export const storefrontArtworkPositions = {
   "mobile-legends-singapore": { column: 0, row: 3 },
   "mobile-legends-turkey": { column: 1, row: 3 },
   "mobile-legends-united-states": { column: 2, row: 3 },
-  "mobile-legends-global": { column: 3, row: 3 },
 } as const;
 
 export type StorefrontArtworkKey = keyof typeof storefrontArtworkPositions;

@@ -6,7 +6,9 @@ import { CartBadge } from "@/components/cart-badge";
 import { StorefrontCategoryNav } from "@/components/storefront-category-nav";
 import { StorefrontSearch } from "@/components/storefront-search";
 import { StorefrontIcon } from "@/components/storefront-icon";
+import { CurrencySelector } from "@/components/currency-selector";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
+import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import {
   getPublishedStorefrontContent,
   type StorefrontContent,
@@ -24,9 +26,10 @@ const navLinks = [
 ];
 
 export async function SiteHeader({ content }: SiteHeaderProps = {}) {
-  const [storefront, media] = await Promise.all([
+  const [storefront, media, rates] = await Promise.all([
     content ? Promise.resolve(content) : getPublishedStorefrontContent(),
     getPublicMediaPlacements().catch(() => new Map()),
+    getCurrencyRateSnapshot(),
   ]);
   const brandLogo = media.get("brand.primary.logo");
 
@@ -65,10 +68,7 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
             <div className="hidden w-[20rem] xl:block 2xl:w-[25rem]">
               <StorefrontSearch />
             </div>
-            <span className="hidden min-h-10 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.025] px-3 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 md:inline-flex">
-              <StorefrontIcon name="globe" className="h-3.5 w-3.5 text-cyan-300" />
-              INR · India
-            </span>
+            <CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} />
             <CartBadge />
             <Link
               href="/account"

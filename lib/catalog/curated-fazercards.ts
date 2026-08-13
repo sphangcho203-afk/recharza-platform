@@ -309,7 +309,6 @@ const mobileLegendsCategoryMarkets: Record<
   string,
   readonly MobileLegendsMarketCode[]
 > = {
-  mobile_legends_global: ["global"],
   mobile_legends_indonesia: ["indonesia"],
   mobile_legends_philippines: ["philippines"],
   mobile_legends_malaysia: ["malaysia"],
@@ -326,7 +325,7 @@ const mobileLegendsOfferMarketOverrides = new Map<
       "mobile_legends_global",
       "5_diamonds",
     ),
-    ["global", "philippines"],
+    ["philippines"],
   ],
   [
     createCuratedFazerCardsProductKey(
@@ -334,7 +333,7 @@ const mobileLegendsOfferMarketOverrides = new Map<
       "mobile_legends_global",
       "12_diamonds",
     ),
-    ["global", "philippines"],
+    ["philippines"],
   ],
   [
     createCuratedFazerCardsProductKey(
@@ -342,7 +341,7 @@ const mobileLegendsOfferMarketOverrides = new Map<
       "mobile_legends_global",
       "19_diamonds",
     ),
-    ["global", "philippines"],
+    ["philippines"],
   ],
   [
     createCuratedFazerCardsProductKey(
@@ -350,7 +349,7 @@ const mobileLegendsOfferMarketOverrides = new Map<
       "mobile_legends_global",
       "28_diamonds",
     ),
-    ["global", "philippines"],
+    ["philippines"],
   ],
 ]);
 
