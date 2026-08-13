@@ -61,6 +61,7 @@ const mobileLegendsBase = {
     "https://upload.wikimedia.org/wikipedia/en/thumb/4/4e/Mobile_Legends_Bang_Bang_logo.png/512px-Mobile_Legends_Bang_Bang_logo.png",
   ],
   artworkSources: [
+    "/assets/user-supplied-v2/1000166202-card.jpg",
     "/assets/founder/mobile-legends.svg",
     "https://play-lh.googleusercontent.com/D8r13ijO9c-0_1N-CP4d63mR1w6YhDuR2mBQUl27ELJAx0sKdaKtM5vCUnSLODKBVzUx7rZ9cW4Ir9jYiufsSQ=w960-h960",
     "https://upload.wikimedia.org/wikipedia/en/8/86/Mobile_Legends_Bang_Bang.jpg",
@@ -102,14 +103,14 @@ export const games: Game[] = [
       artworkSources: [
         `/assets/user-supplied-v2/${
           ({
-            india: "1000166218-card.jpg",
+            india: "1000166202-card.jpg",
             indonesia: "1000166215-card.jpg",
             philippines: "1000166207-card.jpg",
-            brazil: "1000166202-card.jpg",
-            malaysia: "1000166205-card.jpg",
-            singapore: "1000166199-card.jpg",
-            turkey: "1000166221-card.jpg",
-            "united-states": "1000166222-card.jpg",
+            brazil: "1000166205-card.jpg",
+            malaysia: "1000166199-card.jpg",
+            singapore: "1000166201-card.jpg",
+            turkey: "1000166202-card.jpg",
+            "united-states": "1000166215-card.jpg",
           } as Record<MobileLegendsMarketCode, string>)[region.code]
         }`,
         ...mobileLegendsBase.artworkSources,
@@ -159,7 +160,7 @@ export const games: Game[] = [
       "https://www.pubgmobile.com/images/event/brandassets/img-logo1.png",
     ],
     artworkSources: [
-      "/assets/user-supplied-v2/1000166202-card.jpg",
+      "/assets/user-supplied-v2/1000166210-card.jpg",
       "/assets/founder/pubg-mobile.svg",
       "https://upload.wikimedia.org/wikipedia/en/9/9f/Pubgbattlegrounds.png",
     ],
@@ -263,7 +264,7 @@ export const games: Game[] = [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Genshin_Impact_wordmark.svg/960px-Genshin_Impact_wordmark.svg.png",
     ],
     artworkSources: [
-      "/assets/user-supplied-v2/1000166205-card.jpg",
+      "/assets/user-supplied-v2/1000166212-card.jpg",
       "/assets/founder/genshin-impact.svg",
       "https://upload.wikimedia.org/wikipedia/en/5/5d/Genshin_Impact_cover.jpg",
     ],
