@@ -14,8 +14,10 @@ export const VOLSEVER_VERIFICATION_MODE = "volsever-lookup";
 
 export const volseverGameSlugs = {
   "mobile-legends": "mobile-legends",
-  "genshin-impact": "genshin-impact",
+  "free-fire": "free-fire",
   "pubg-mobile": "pubg-mobile-global",
+  "valorant": "valorant",
+  "genshin-impact": "genshin-impact",
 } as const;
 
 export type RecharzaVolseverGameSlug = keyof typeof volseverGameSlugs;

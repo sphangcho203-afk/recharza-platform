@@ -71,7 +71,18 @@ type IdentityState = {
   serverId: string;
 };
 
+type VerificationState = {
+  status: "idle" | "loading" | "success" | "error";
+  message: string;
+  nickname: string | null;
+};
+
 const initialIdentity: IdentityState = { playerId: "", riotId: "", serverId: "" };
+const initialVerification: VerificationState = {
+  status: "idle",
+  message: "Enter the destination details, then verify the account.",
+  nickname: null,
+};
 const fieldClassName = "mt-2 min-h-12 w-full rounded-lg border border-white/[0.09] bg-[#080a10] px-3.5 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/10";
 
 function createIdempotencyKey() {
@@ -121,6 +132,7 @@ export function SupplierGameCheckoutShell({
   const marketPackages = useMemo(() => packages.filter((item) => item.marketCode === marketCode), [marketCode, packages]);
   const [packageId, setPackageId] = useState(packages.find((item) => item.marketCode === firstMarketCode)?.id ?? "");
   const [identity, setIdentity] = useState<IdentityState>(initialIdentity);
+  const [verification, setVerification] = useState<VerificationState>(initialVerification);
   const [billing, setBilling] = useState<BillingFormState>(() => {
     const defaultAddress = savedAddresses.find((item) => item.isDefault);
     if (defaultAddress) return toBillingFormState(defaultAddress, fxSnapshot.mode);
@@ -178,7 +190,8 @@ export function SupplierGameCheckoutShell({
   const identityResult = selectedPackage ? validateSupplierCheckoutIdentity(gameSlug, identity, selectedPackage.fields) : null;
   const selectedRate = fxSnapshot.ratesFromInrMicros[billing.presentmentCurrency] ?? 0;
   const canConvert = billing.presentmentCurrency === "INR" || selectedRate > 0;
-  const canSubmit = Boolean(selectedPackage && identityResult?.valid && billingIsComplete(billing) && canConvert);
+  const playerComplete = verification.status === "success";
+  const canSubmit = Boolean(selectedPackage && playerComplete && billingIsComplete(billing) && canConvert);
 
   function resetOrder() {
     idempotencyKey.current = null;
@@ -187,6 +200,60 @@ export function SupplierGameCheckoutShell({
     setMessage("");
     setError("");
     setAddressSaveNote("");
+  }
+
+  function resetVerification() {
+    setVerification(initialVerification);
+    setRestoredFromCart(false);
+    resetOrder();
+  }
+
+  async function verifyPlayer() {
+    if (!selectedPackage || !identityResult?.valid) return;
+    setVerification({
+      status: "loading",
+      message: `Checking ${selectedPackage.marketLabel} account details for ${selectedPackage.name}...`,
+      nickname: null,
+    });
+    resetOrder();
+
+    try {
+      const response = await fetch(`/api/games/${gameSlug}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          packageId: selectedPackage.id,
+          playerId: identity.playerId,
+          serverId: identity.serverId,
+          riotId: identity.riotId,
+        }),
+      });
+      const result = (await response.json()) as {
+        valid?: boolean;
+        code?: string;
+        message?: string;
+        nickname?: string | null;
+      };
+      if (!response.ok || !result.valid) {
+        setVerification({
+          status: "error",
+          message: result.message ?? "The account could not be validated for this package.",
+          nickname: null,
+        });
+        return;
+      }
+      setVerification({
+        status: "success",
+        message: result.message ?? `Account confirmed for ${selectedPackage.marketLabel}.`,
+        nickname: result.nickname ?? null,
+      });
+    } catch {
+      setVerification({
+        status: "error",
+        message: "The verification service could not be reached. Check the server and retry.",
+        nickname: null,
+      });
+    }
   }
 
   function applySavedAddress(address: SavedAddressView | null) {
@@ -229,7 +296,7 @@ export function SupplierGameCheckoutShell({
     setPackageId(nextPackage?.id ?? "");
     setIdentity(initialIdentity);
     setRestoredFromCart(false);
-    resetOrder();
+    resetVerification();
   }
 
   function formatPresentment(amountInPaise: number) {
@@ -242,11 +309,13 @@ export function SupplierGameCheckoutShell({
 
   async function submitCheckout(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!canSubmit || !selectedPackage || !identityResult?.valid) {
+    if (!canSubmit || !selectedPackage || !identityResult?.valid || !playerComplete) {
       setError(
         identityResult && !identityResult.valid
           ? identityResult.message
-          : "Complete the player, package and billing details before continuing.",
+          : !playerComplete
+            ? "Verify the account destination before continuing."
+            : "Complete the player, package and billing details before continuing.",
       );
       return;
     }
@@ -356,7 +425,7 @@ export function SupplierGameCheckoutShell({
                   value={identity.riotId}
                   onChange={(event) => {
                     setIdentity({ ...identity, riotId: event.target.value.slice(0, 32) });
-                    resetOrder();
+                    resetVerification();
                   }}
                   placeholder="PlayerName#TAG"
                   className={fieldClassName}
@@ -374,7 +443,7 @@ export function SupplierGameCheckoutShell({
                   onChange={(event) => {
                     const playerId = event.target.value.replace(/\D/g, "").slice(0, 20);
                     setIdentity({ ...identity, playerId });
-                    resetOrder();
+                    resetVerification();
                   }}
                   placeholder={gameSlug === "genshin-impact" ? "9 or 10 digit UID" : "Numeric player ID"}
                   className={fieldClassName}
@@ -390,7 +459,7 @@ export function SupplierGameCheckoutShell({
                   value={identity.serverId}
                   onChange={(event) => {
                     setIdentity({ ...identity, serverId: event.target.value });
-                    resetOrder();
+                    resetVerification();
                   }}
                   className={fieldClassName}
                 >
@@ -403,9 +472,35 @@ export function SupplierGameCheckoutShell({
             ) : null}
           </div>
 
-          <p className={`mt-3 text-xs ${identityResult?.valid ? "text-emerald-300" : "text-slate-600"}`}>
-            {identityResult?.valid ? `Destination format confirmed for ${selectedPackage.marketLabel}.` : identityResult?.message ?? "Enter the destination details to continue."}
-          </p>
+          <button
+            type="button"
+            onClick={() => void verifyPlayer()}
+            disabled={verification.status === "loading" || !identityResult?.valid}
+            className="mt-4 min-h-12 rounded-lg border border-violet-400/35 bg-violet-500/12 px-4 text-xs font-black text-white transition hover:bg-violet-500/20 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {verification.status === "loading" ? "Checking…" : "Verify account"}
+          </button>
+
+          <div
+            aria-live="polite"
+            className={`mt-3 rounded-lg border px-3 py-2.5 text-xs leading-5 ${
+              verification.status === "success"
+                ? "border-emerald-400/20 bg-emerald-400/[0.07] text-emerald-200"
+                : verification.status === "error"
+                  ? "border-rose-400/20 bg-rose-400/[0.07] text-rose-200"
+                  : "border-white/[0.08] bg-black/10 text-slate-600"
+            }`}
+          >
+            {verification.message}
+            {verification.nickname ? <strong className="ml-1 text-white">{verification.nickname}</strong> : null}
+          </div>
+
+          {restoredFromCart ? (
+            <p className="mt-3 rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-3 py-2.5 text-xs leading-5 text-cyan-100">
+              Package restored from your cart. Verify the account destination
+              before paying for this order.
+            </p>
+          ) : null}
         </section>
 
         <section>
@@ -444,7 +539,7 @@ export function SupplierGameCheckoutShell({
                     onClick={() => {
                       setPackageId(item.id);
                       setRestoredFromCart(false);
-                      resetOrder();
+                      resetVerification();
                     }}
                     aria-pressed={selected}
                     className="block w-full text-left"
@@ -557,6 +652,12 @@ export function SupplierGameCheckoutShell({
               <dt className="text-slate-500">Market</dt>
               <dd className="font-bold text-slate-200">{selectedPackage.marketLabel}</dd>
             </div>
+            <div className="flex items-center justify-between gap-4">
+              <dt className="text-slate-500">Player</dt>
+              <dd className="max-w-[11rem] truncate font-bold text-slate-200">
+                {verification.nickname || (gameSlug === "valorant" ? identity.riotId : identity.playerId) || "Not verified"}
+              </dd>
+            </div>
             <div className="flex items-center justify-between gap-4 border-t border-white/[0.08] pt-3">
               <dt className="font-black text-slate-300">Total</dt>
               <dd className="text-xl font-black text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd>
@@ -571,7 +672,9 @@ export function SupplierGameCheckoutShell({
             {isSubmitting ? "Creating order…" : order ? "Order created" : canSubmit ? "Continue to payment" : "Complete details"}
           </button>
 
-          {!billingIsComplete(billing) ? (
+          {!playerComplete ? (
+            <p className="mt-3 text-center text-[11px] text-slate-600">Verify the account destination first.</p>
+          ) : !billingIsComplete(billing) ? (
             <a href="#billing" className="mt-3 block text-center text-[11px] font-black text-slate-500 hover:text-white">Complete billing details</a>
           ) : null}
 

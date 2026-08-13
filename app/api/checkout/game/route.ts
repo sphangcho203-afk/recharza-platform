@@ -20,6 +20,10 @@ import {
   getPublishedGamePackageForCheckout,
   isSupplierCheckoutGameSlug,
 } from "@/lib/storefront-game-catalog";
+import {
+  lookupVolseverGameIdentity,
+  VolseverProviderError,
+} from "@/lib/volsever";
 
 export const runtime = "nodejs";
 
@@ -325,6 +329,33 @@ export async function POST(request: Request) {
       );
     }
 
+    let verificationMode: string = identity.verificationMode;
+    let verifiedNickname: string | null = null;
+
+    if (
+      process.env.IGN_LOOKUP_PROVIDER?.trim().toLowerCase() === "volsever"
+    ) {
+      const liveVerification = await lookupVolseverGameIdentity({
+        gameSlug,
+        playerId: identity.playerId,
+        zoneId: identity.zoneId,
+      });
+
+      if (!liveVerification.valid) {
+        return Response.json(
+          {
+            ok: false,
+            code: "PLAYER_NOT_CONFIRMED",
+            message: liveVerification.message,
+          },
+          { status: 400, headers: rateHeaders },
+        );
+      }
+
+      verificationMode = liveVerification.verificationMode;
+      verifiedNickname = liveVerification.nickname;
+    }
+
     const fxSnapshot = await getCurrencyRateSnapshot();
     const presentmentCurrency = billingResult.selection.presentmentCurrency;
     const fxRateFromInrMicros =
@@ -415,8 +446,8 @@ export async function POST(request: Request) {
           billingCountryCode: billing.countryCode,
           playerId: identity.playerId,
           zoneId: identity.zoneId,
-          verifiedNickname: null,
-          verificationMode: identity.verificationMode,
+          verifiedNickname,
+          verificationMode,
           customerId: customer.id,
           supplierProductId: selectedPackage.supplierProductId,
           supplierCategoryId: selectedPackage.supplierCategoryId,
@@ -443,7 +474,7 @@ export async function POST(request: Request) {
                 fxQuotedAt: fxQuotedAt.toISOString(),
                 fxMode: fxSnapshot.mode,
                 billingCountryCode: billing.countryCode,
-                verificationMode: identity.verificationMode,
+                verificationMode,
                 customerRole: customer.role,
               },
             },
@@ -490,7 +521,7 @@ export async function POST(request: Request) {
         amountInPaise: order.amountInPaise,
         playerId: order.playerId,
         zoneId: order.zoneId,
-        nickname: order.verifiedNickname,
+        nickname: verifiedNickname,
         occurredAt: order.createdAt,
       });
     } catch (error) {
@@ -510,6 +541,18 @@ export async function POST(request: Request) {
           message: error.message,
         },
         { status: 503, headers: rateHeaders },
+      );
+    }
+
+    if (error instanceof VolseverProviderError) {
+      return Response.json(
+        {
+          ok: false,
+          code: "VERIFICATION_UNAVAILABLE",
+          message:
+            "Account validation is temporarily unavailable. Your retry key remains reusable.",
+        },
+        { status: 502, headers: rateHeaders },
       );
     }
 
