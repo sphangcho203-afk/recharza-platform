@@ -77,6 +77,23 @@ export default async function Home() {
         />
       ) : null}
 
+      <section className="px-4 pb-5 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-[1240px] overflow-hidden rounded-2xl border border-white/[0.1] bg-[linear-gradient(110deg,rgba(124,58,237,0.18),rgba(15,23,42,0.9)_42%,rgba(8,145,178,0.12))] shadow-[0_20px_70px_rgba(0,0,0,0.24)] sm:grid-cols-3">
+          <div className="flex items-center gap-3 border-b border-white/[0.08] px-4 py-4 sm:border-b-0 sm:border-r sm:px-5">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.1] text-violet-200 ring-1 ring-white/[0.1]"><StorefrontIcon name="shield" className="h-4 w-4" /></span>
+            <div><p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-200/75">Verified checkout</p><p className="mt-0.5 text-xs font-bold text-white">Destination checked before order</p></div>
+          </div>
+          <div className="flex items-center gap-3 border-b border-white/[0.08] px-4 py-4 sm:border-b-0 sm:border-r sm:px-5">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.1] text-cyan-200 ring-1 ring-white/[0.1]"><StorefrontIcon name="receipt" className="h-4 w-4" /></span>
+            <div><p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-200/75">Fast delivery</p><p className="mt-0.5 text-xs font-bold text-white">Packages prepared for your market</p></div>
+          </div>
+          <div className="flex items-center gap-3 px-4 py-4 sm:px-5">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.1] text-emerald-200 ring-1 ring-white/[0.1]"><StorefrontIcon name="support" className="h-4 w-4" /></span>
+            <div><p className="text-[10px] font-black uppercase tracking-[0.16em] text-emerald-200/75">Human support</p><p className="mt-0.5 text-xs font-bold text-white">Real people when you need help</p></div>
+          </div>
+        </div>
+      </section>
+
       {storefront.catalogue.enabled ? (
         <section id="games" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
