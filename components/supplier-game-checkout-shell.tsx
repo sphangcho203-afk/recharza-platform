@@ -65,6 +65,14 @@ type CheckoutResponse = {
   paymentSession?: { message?: string };
 };
 
+type IdentityVerification = {
+  valid: boolean;
+  confirmed: boolean;
+  nickname: string | null;
+  verificationMode: string;
+  message: string;
+};
+
 type IdentityState = {
   playerId: string;
   riotId: string;
@@ -95,7 +103,6 @@ function billingIsComplete(billing: BillingFormState) {
 
 export function SupplierGameCheckoutShell({
   gameSlug,
-  gameTitle,
   packages,
   fxSnapshot,
   savedAddresses = [],
@@ -103,7 +110,6 @@ export function SupplierGameCheckoutShell({
   initialCartItemId = null,
 }: {
   gameSlug: SupplierCheckoutGameSlug;
-  gameTitle: string;
   packages: CheckoutPackage[];
   fxSnapshot: FxSnapshot;
   savedAddresses?: SavedAddressView[];
@@ -132,6 +138,8 @@ export function SupplierGameCheckoutShell({
   const [saveNewAddress, setSaveNewAddress] = useState(false);
   const [addressSaveNote, setAddressSaveNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verification, setVerification] = useState<IdentityVerification | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [order, setOrder] = useState<CreatedOrder | null>(null);
@@ -178,7 +186,18 @@ export function SupplierGameCheckoutShell({
   const identityResult = selectedPackage ? validateSupplierCheckoutIdentity(gameSlug, identity, selectedPackage.fields) : null;
   const selectedRate = fxSnapshot.ratesFromInrMicros[billing.presentmentCurrency] ?? 0;
   const canConvert = billing.presentmentCurrency === "INR" || selectedRate > 0;
-  const canSubmit = Boolean(selectedPackage && identityResult?.valid && billingIsComplete(billing) && canConvert);
+  const canSubmit = Boolean(
+    selectedPackage &&
+      identityResult?.valid &&
+      verification?.valid &&
+      billingIsComplete(billing) &&
+      canConvert,
+  );
+
+  function resetVerification() {
+    setVerification(null);
+    setError("");
+  }
 
   function resetOrder() {
     idempotencyKey.current = null;
@@ -187,6 +206,52 @@ export function SupplierGameCheckoutShell({
     setMessage("");
     setError("");
     setAddressSaveNote("");
+  }
+
+  async function verifyIdentity() {
+    if (!selectedPackage || !identityResult?.valid) {
+      setError(
+        identityResult && !identityResult.valid
+          ? identityResult.message
+          : "Enter valid player details before verifying.",
+      );
+      return;
+    }
+
+    setIsVerifying(true);
+    setVerification(null);
+    setError("");
+    setMessage("Checking the game account...");
+
+    try {
+      const response = await fetch(`/api/games/${gameSlug}/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          packageId: selectedPackage.id,
+          marketCode: selectedPackage.marketCode,
+          identity,
+        }),
+      });
+      const result = (await response.json()) as IdentityVerification;
+      if (!response.ok || !result.valid) {
+        setError(result.message ?? "We could not verify that game account.");
+        setMessage("");
+        return;
+      }
+
+      setVerification(result);
+      setMessage(
+        result.confirmed && result.nickname
+          ? `Account verified as ${result.nickname}.`
+          : "Player details verified. Live account lookup is not enabled.",
+      );
+    } catch {
+      setError("The account verification service could not be reached. Please retry.");
+      setMessage("");
+    } finally {
+      setIsVerifying(false);
+    }
   }
 
   function applySavedAddress(address: SavedAddressView | null) {
@@ -228,6 +293,7 @@ export function SupplierGameCheckoutShell({
     setMarketCode(nextMarketCode);
     setPackageId(nextPackage?.id ?? "");
     setIdentity(initialIdentity);
+    resetVerification();
     setRestoredFromCart(false);
     resetOrder();
   }
@@ -356,6 +422,7 @@ export function SupplierGameCheckoutShell({
                   value={identity.riotId}
                   onChange={(event) => {
                     setIdentity({ ...identity, riotId: event.target.value.slice(0, 32) });
+                    resetVerification();
                     resetOrder();
                   }}
                   placeholder="PlayerName#TAG"
@@ -374,6 +441,7 @@ export function SupplierGameCheckoutShell({
                   onChange={(event) => {
                     const playerId = event.target.value.replace(/\D/g, "").slice(0, 20);
                     setIdentity({ ...identity, playerId });
+                    resetVerification();
                     resetOrder();
                   }}
                   placeholder={gameSlug === "genshin-impact" ? "9 or 10 digit UID" : "Numeric player ID"}
@@ -390,6 +458,7 @@ export function SupplierGameCheckoutShell({
                   value={identity.serverId}
                   onChange={(event) => {
                     setIdentity({ ...identity, serverId: event.target.value });
+                    resetVerification();
                     resetOrder();
                   }}
                   className={fieldClassName}
@@ -403,9 +472,23 @@ export function SupplierGameCheckoutShell({
             ) : null}
           </div>
 
-          <p className={`mt-3 text-xs ${identityResult?.valid ? "text-emerald-300" : "text-slate-600"}`}>
-            {identityResult?.valid ? `Destination format confirmed for ${selectedPackage.marketLabel}.` : identityResult?.message ?? "Enter the destination details to continue."}
-          </p>
+          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className={`text-xs ${verification?.confirmed ? "text-emerald-300" : identityResult?.valid ? "text-slate-300" : "text-slate-600"}`}>
+              {verification?.confirmed && verification.nickname
+                ? `Verified IGN: ${verification.nickname}`
+                : identityResult?.valid
+                  ? `Destination format confirmed for ${selectedPackage.marketLabel}. Verify before continuing.`
+                  : identityResult?.message ?? "Enter the destination details to continue."}
+            </p>
+            <button
+              type="button"
+              onClick={() => void verifyIdentity()}
+              disabled={!identityResult?.valid || isVerifying}
+              className="min-h-10 shrink-0 rounded-lg border border-emerald-300/25 bg-emerald-300/[0.08] px-4 text-xs font-black text-emerald-200 transition hover:border-emerald-300/45 hover:bg-emerald-300/[0.14] disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              {isVerifying ? "Verifying…" : verification?.valid ? "Verify again" : "Verify account"}
+            </button>
+          </div>
         </section>
 
         <section>
@@ -444,6 +527,7 @@ export function SupplierGameCheckoutShell({
                     onClick={() => {
                       setPackageId(item.id);
                       setRestoredFromCart(false);
+                      resetVerification();
                       resetOrder();
                     }}
                     aria-pressed={selected}
@@ -568,7 +652,7 @@ export function SupplierGameCheckoutShell({
             disabled={!canSubmit || isSubmitting || Boolean(order)}
             className="mt-5 min-h-12 w-full rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
           >
-            {isSubmitting ? "Creating order…" : order ? "Order created" : canSubmit ? "Continue to payment" : "Complete details"}
+            {isSubmitting ? "Creating order…" : order ? "Order created" : canSubmit ? "Continue to payment" : verification?.valid ? "Complete details" : "Verify account first"}
           </button>
 
           {!billingIsComplete(billing) ? (

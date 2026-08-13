@@ -27,7 +27,7 @@ Recharza is a mobile-first game top-up platform built around verified account ow
 
 ## Requirements
 
-- Node.js 20.19 or newer
+- Node.js 24.x
 - npm
 - PostgreSQL
 - Resend credentials for production email delivery

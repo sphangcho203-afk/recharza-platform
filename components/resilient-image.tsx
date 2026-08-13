@@ -113,8 +113,8 @@ function ResolvedImage({
   };
 
   return fill ? (
-    <Image {...sharedProps} fill />
+    <Image {...sharedProps} alt={alt} fill />
   ) : (
-    <Image {...sharedProps} width={width} height={height} />
+    <Image {...sharedProps} alt={alt} width={width} height={height} />
   );
 }

@@ -110,7 +110,7 @@ export function AdminCatalogueConsole() {
     }
   }
 
-  const products = snapshot?.products ?? [];
+  const products = useMemo(() => snapshot?.products ?? [], [snapshot]);
   const visibleProducts = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     if (!normalized) return products;
