@@ -9,6 +9,7 @@ import { StorefrontIcon } from "@/components/storefront-icon";
 import type { Game } from "@/lib/games";
 import { games } from "@/lib/games";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
+import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { getStorefrontPricingSnapshot } from "@/lib/storefront-catalog";
 import { getPublishedStorefrontContent } from "@/lib/storefront-content";
 
@@ -22,10 +23,11 @@ const benefitItems = [
 ];
 
 export default async function Home() {
-  const [pricing, storefront, mediaPlacements] = await Promise.all([
+  const [pricing, storefront, mediaPlacements, fxSnapshot] = await Promise.all([
     getStorefrontPricingSnapshot(),
     getPublishedStorefrontContent(),
     getPublicMediaPlacements(),
+    getCurrencyRateSnapshot(),
   ]);
 
   const enrichedGames: Game[] = games.map((game) => {
@@ -135,6 +137,7 @@ export default async function Home() {
               showRegionalMarkets={storefront.catalogue.showRegionalMarkets}
               showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges}
               showPricingSnapshots={storefront.privateFlags.showPricingSnapshots}
+              ratesFromInrMicros={fxSnapshot.ratesFromInrMicros}
             />
           </Suspense>
         </section>
