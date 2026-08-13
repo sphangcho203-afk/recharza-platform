@@ -9,7 +9,6 @@ import {
   isSupplierCheckoutGameSlug,
 } from "@/lib/storefront-game-catalog";
 import {
-  isVolseverGameSlug,
   lookupVolseverGameIdentity,
   VolseverProviderError,
 } from "@/lib/volsever";
@@ -46,23 +45,9 @@ export async function POST(
       );
     }
 
-    if (slug === "mobile-legends") {
-      return Response.json(
-        {
-          valid: false,
-          message:
-            "Mobile Legends has its own dedicated verification route.",
-        },
-        { status: 400, headers: rateHeaders },
-      );
-    }
-
     if (!isSupplierCheckoutGameSlug(slug)) {
       return Response.json(
-        {
-          valid: false,
-          message: "That game is not registered for checkout.",
-        },
+        { valid: false, message: "That game is not registered for checkout." },
         { status: 400, headers: rateHeaders },
       );
     }
@@ -78,7 +63,7 @@ export async function POST(
     }
 
     const payload = await request.json().catch(() => null);
-    if (!payload || typeof payload !== "object") {
+    if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
       return Response.json(
         { valid: false, message: "Player details are required." },
         { status: 400, headers: rateHeaders },
@@ -117,17 +102,6 @@ export async function POST(
     if (!identity.valid) {
       return Response.json(
         { valid: false, message: identity.message },
-        { status: 400, headers: rateHeaders },
-      );
-    }
-
-    if (!isVolseverGameSlug(slug)) {
-      return Response.json(
-        {
-          valid: false,
-          message:
-            "Live account verification is not available for this game yet.",
-        },
         { status: 400, headers: rateHeaders },
       );
     }
