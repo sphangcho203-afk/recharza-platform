@@ -29,7 +29,7 @@ function preferredArtworkSources(game: Game) {
   const remote = game.artworkSources.filter((source) => source.startsWith("https://"));
   const local = game.artworkSources.filter((source) => source.startsWith("/") && !source.includes("/assets/founder/"));
   const founder = game.artworkSources.filter((source) => source.includes("/assets/founder/"));
-  return unique([...remote, ...local, ...founder]);
+  return unique([...local, ...remote, ...founder]);
 }
 
 function preferredLogoSources(game: Game) {

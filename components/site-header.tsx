@@ -7,6 +7,7 @@ import { StorefrontCategoryNav } from "@/components/storefront-category-nav";
 import { StorefrontSearch } from "@/components/storefront-search";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { CurrencySelector } from "@/components/currency-selector";
+import { MobileNavMenu } from "@/components/mobile-nav-menu";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import {
@@ -20,6 +21,7 @@ type SiteHeaderProps = {
 
 const navLinks = [
   { href: "/#games", label: "Browse games", icon: "games" as const },
+  { href: "/#offers", label: "Featured offers", icon: "receipt" as const },
   { href: "/#how-it-works", label: "How it works", icon: "shield" as const },
   { href: "/orders/lookup", label: "Track order", icon: "track" as const },
   { href: "/support", label: "Help center", icon: "support" as const },
@@ -43,13 +45,16 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
       </div>
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="grid min-h-[4.75rem] grid-cols-[auto_1fr_auto] items-center gap-3 py-2.5 sm:gap-5">
-          <Link
-            href="/"
-            className="shrink-0 rounded-lg outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400"
-            aria-label="Recharza home"
-          >
-            <RecharzaMark compact logoUrl={brandLogo?.url} logoAlt={brandLogo?.altText} />
-          </Link>
+          <div className="flex items-center gap-2">
+            <MobileNavMenu />
+            <Link
+              href="/"
+              className="shrink-0 rounded-lg outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400"
+              aria-label="Recharza home"
+            >
+              <RecharzaMark compact logoUrl={brandLogo?.url} logoAlt={brandLogo?.altText} />
+            </Link>
+          </div>
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
             {navLinks.map((link) => (
@@ -68,7 +73,8 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
             <div className="hidden w-[20rem] xl:block 2xl:w-[25rem]">
               <StorefrontSearch />
             </div>
-            <CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} />
+            <div className="hidden sm:block"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} /></div>
+            <div className="sm:hidden"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} compact /></div>
             <CartBadge />
             <Link
               href="/account"
