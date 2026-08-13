@@ -54,7 +54,7 @@ export function GameCard({
   const card = (
     <article
       style={accentStyle}
-      className={`group h-full overflow-hidden rounded-xl border bg-[#0d0f16] transition duration-200 ${
+      className={`storefront-card group h-full overflow-hidden rounded-xl border bg-[#0d0f16] transition duration-200 ${
         interactive
           ? "border-white/[0.08] hover:-translate-y-0.5 hover:border-white/[0.18] hover:shadow-[0_14px_36px_rgba(0,0,0,0.28)]"
           : "border-white/[0.06] opacity-65"
@@ -105,7 +105,7 @@ export function GameCard({
               {price ?? game.packages[0] ?? label}
             </p>
           </div>
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-md border border-white/[0.08] bg-white/[0.035] text-slate-400 transition group-hover:bg-white group-hover:text-slate-950">
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035] text-slate-400 transition group-hover:border-violet-300/30 group-hover:bg-violet-300 group-hover:text-slate-950">
             <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
           </span>
         </div>

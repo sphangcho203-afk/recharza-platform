@@ -9,7 +9,6 @@ export const mobileLegendsMarketCodes = [
   "singapore",
   "turkey",
   "united-states",
-  "global",
 ] as const;
 
 export type MobileLegendsMarketCode = (typeof mobileLegendsMarketCodes)[number];
@@ -87,14 +86,6 @@ export const mobileLegendsMarkets: MobileLegendsMarket[] = [
     note: "For accounts confirmed against the FazerCards United States product line.",
     defaultCurrency: "USD",
     providerAliases: ["united states", "usa", "us"],
-  },
-  {
-    code: "global",
-    label: "Global",
-    flag: "🌐",
-    note: "Use only when player validation confirms the account belongs to an approved Global catalogue.",
-    defaultCurrency: "USD",
-    providerAliases: ["global", "worldwide", "international"],
   },
 ];
 

@@ -50,7 +50,6 @@ const mobileLegendsRegionArtwork: Record<
   singapore: "mobile-legends-singapore",
   turkey: "mobile-legends-turkey",
   "united-states": "mobile-legends-united-states",
-  global: "mobile-legends-global",
 };
 
 const mobileLegendsBase = {
@@ -92,7 +91,7 @@ export const games: Game[] = [
     (region): Game => ({
       ...mobileLegendsBase,
       slug: `mobile-legends-${region.code}`,
-      title: "Mobile Legends",
+      title: `${region.label} · Mobile Legends`,
       kind: "mobile-legends-region",
       status: "checkout",
       available: true,
@@ -100,7 +99,22 @@ export const games: Game[] = [
       pricingMode: "fallback",
       region,
       artworkKey: mobileLegendsRegionArtwork[region.code],
-      artworkAlt: `Mobile Legends ${region.label} market artwork`,
+      artworkSources: [
+        `/assets/user-supplied/${
+          ({
+            india: "1000166207.jpg",
+            indonesia: "1000166217.jpg",
+            philippines: "1000166215.jpg",
+            brazil: "1000166204.jpg",
+            malaysia: "1000166217.jpg",
+            singapore: "1000166207.jpg",
+            turkey: "1000166215.jpg",
+            "united-states": "1000166204.jpg",
+          } as Record<MobileLegendsMarketCode, string>)[region.code]
+        }`,
+        ...mobileLegendsBase.artworkSources,
+      ],
+      artworkAlt: `${region.label} Mobile Legends market artwork`,
     }),
   ),
   {
@@ -116,6 +130,7 @@ export const games: Game[] = [
       "/assets/games/free-fire/logo.webp",
     ],
     artworkSources: [
+      "/assets/user-supplied/1000166214.jpg",
       "/assets/founder/free-fire.svg",
       "https://freefiremobile-a.akamaihd.net/common/web_event/official2.ff.garena.all/img/20228/e14db15cad1206214fe56520563e2aa7.jpg",
     ],
@@ -144,6 +159,7 @@ export const games: Game[] = [
       "https://www.pubgmobile.com/images/event/brandassets/img-logo1.png",
     ],
     artworkSources: [
+      "/assets/user-supplied/1000166210.jpg",
       "/assets/founder/pubg-mobile.svg",
       "https://upload.wikimedia.org/wikipedia/en/9/9f/Pubgbattlegrounds.png",
     ],
@@ -169,6 +185,7 @@ export const games: Game[] = [
     status: "coming-soon",
     logoSources: ["https://upload.wikimedia.org/wikipedia/commons/9/99/Battlegrounds_Mobile_India%2C_BGMI_LOGO_white_-_1082x360.png"],
     artworkSources: [
+      "/assets/user-supplied/1000166209.jpg",
       "https://upload.wikimedia.org/wikipedia/en/6/6f/Battlegrounds_Mobile_India.jpg",
       "/assets/games/bgmi/cover.webp",
     ],
@@ -191,6 +208,7 @@ export const games: Game[] = [
     status: "coming-soon",
     logoSources: ["https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Call_of_Duty_Mobile_2023_logo.svg/1280px-Call_of_Duty_Mobile_2023_logo.svg.png"],
     artworkSources: [
+      "/assets/user-supplied/1000166211.jpg",
       "https://upload.wikimedia.org/wikipedia/en/thumb/0/07/Call_of_Duty_Mobile_Logo.png/512px-Call_of_Duty_Mobile_Logo.png",
       "/assets/games/call-of-duty-mobile/cover.webp",
     ],
@@ -216,6 +234,7 @@ export const games: Game[] = [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Valorant_logo.svg/960px-Valorant_logo.svg.png",
     ],
     artworkSources: [
+      "/assets/user-supplied/1000166213.jpg",
       "/assets/founder/valorant.svg",
       "https://upload.wikimedia.org/wikipedia/en/b/ba/Valorant_cover.jpg",
     ],
@@ -244,6 +263,7 @@ export const games: Game[] = [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Genshin_Impact_wordmark.svg/960px-Genshin_Impact_wordmark.svg.png",
     ],
     artworkSources: [
+      "/assets/user-supplied/1000166212.jpg",
       "/assets/founder/genshin-impact.svg",
       "https://upload.wikimedia.org/wikipedia/en/5/5d/Genshin_Impact_cover.jpg",
     ],

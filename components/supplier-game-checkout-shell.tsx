@@ -124,7 +124,10 @@ export function SupplierGameCheckoutShell({
 
   const firstMarketCode = markets[0]?.code ?? "";
   const [marketCode, setMarketCode] = useState(firstMarketCode);
-  const marketPackages = useMemo(() => packages.filter((item) => item.marketCode === marketCode), [marketCode, packages]);
+  const marketPackages = useMemo(
+    () => (gameSlug === "free-fire" ? packages : packages.filter((item) => item.marketCode === marketCode)),
+    [gameSlug, marketCode, packages],
+  );
   const [packageId, setPackageId] = useState(packages.find((item) => item.marketCode === firstMarketCode)?.id ?? "");
   const [identity, setIdentity] = useState<IdentityState>(initialIdentity);
   const [billing, setBilling] = useState<BillingFormState>(() => {
@@ -181,7 +184,7 @@ export function SupplierGameCheckoutShell({
     };
   }, [initialCartItemId, packages]);
 
-  const selectedPackage = marketPackages.find((item) => item.id === packageId) ?? marketPackages[0];
+  const selectedPackage = packages.find((item) => item.id === packageId) ?? marketPackages[0];
   const serverOptions = getSupplierSelectOptions(selectedPackage?.fields, /server/);
   const identityResult = selectedPackage ? validateSupplierCheckoutIdentity(gameSlug, identity, selectedPackage.fields) : null;
   const selectedRate = fxSnapshot.ratesFromInrMicros[billing.presentmentCurrency] ?? 0;
@@ -379,7 +382,7 @@ export function SupplierGameCheckoutShell({
   return (
     <form onSubmit={submitCheckout} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="min-w-0 space-y-5">
-        {markets.length > 1 ? (
+        {markets.length > 1 && gameSlug !== "free-fire" ? (
           <section className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex min-w-max gap-2">
               {markets.map((market) => (
@@ -430,8 +433,9 @@ export function SupplierGameCheckoutShell({
                 />
               </label>
             ) : (
-              <label className="text-xs font-black text-slate-400">
+                <label className="text-xs font-black text-slate-400">
                 {gameSlug === "genshin-impact" ? "UID" : "Player ID"}
+                {gameSlug === "free-fire" ? <span className="ml-2 font-normal text-slate-600">works across supported regions</span> : null}
                 <input
                   required
                   inputMode="numeric"
@@ -495,7 +499,9 @@ export function SupplierGameCheckoutShell({
           <div className="flex items-end justify-between gap-3">
             <div>
               <h2 className="text-lg font-black tracking-[-0.025em] text-white">Choose a package</h2>
-              <p className="mt-1 text-xs text-slate-500">{marketPackages.length} published offers for {selectedPackage.marketLabel}.</p>
+              <p className="mt-1 text-xs text-slate-500">
+                {marketPackages.length} published offers{gameSlug === "free-fire" ? " across supported regions" : ` for ${selectedPackage.marketLabel}`}.
+              </p>
             </div>
             <Link href="/cart" className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 text-[11px] font-black text-slate-300 transition hover:border-white/[0.16] hover:text-white">
               <StorefrontIcon name="cart" className="h-3.5 w-3.5" />
@@ -546,6 +552,9 @@ export function SupplierGameCheckoutShell({
                     </span>
                     <span className="block p-3">
                       <strong className="line-clamp-2 min-h-10 text-xs leading-5 text-white sm:text-[13px]">{item.name}</strong>
+                      {gameSlug === "free-fire" && item.marketLabel ? (
+                        <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{item.marketLabel}</span>
+                      ) : null}
                       <span className="mt-1.5 block text-base font-black text-violet-300">{formatPresentment(item.amountInPaise)}</span>
                       {selected ? <span className="mt-1 block text-[10px] font-black text-emerald-300">Selected</span> : null}
                     </span>

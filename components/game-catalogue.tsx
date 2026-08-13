@@ -11,10 +11,36 @@ import type { Game } from "@/lib/games";
 type CatalogueFilter = "all" | "mobile" | "pc-console" | "gift-cards" | "popular";
 
 const supportedFilters = new Set<CatalogueFilter>(["all", "mobile", "pc-console", "gift-cards", "popular"]);
-const mainGameOrder = ["mobile-legends", "free-fire", "pubg-mobile", "genshin-impact", "valorant", "bgmi", "call-of-duty-mobile", "fortnite"];
-const mobileGameSlugs = new Set(["mobile-legends", "free-fire", "pubg-mobile", "genshin-impact", "bgmi", "call-of-duty-mobile"]);
+const regionalMlbbSlugs = new Set([
+  "mobile-legends-india",
+  "mobile-legends-indonesia",
+  "mobile-legends-philippines",
+  "mobile-legends-brazil",
+  "mobile-legends-malaysia",
+  "mobile-legends-singapore",
+  "mobile-legends-turkey",
+  "mobile-legends-united-states",
+]);
+const mainGameOrder = [
+  ...Array.from(regionalMlbbSlugs),
+  "free-fire",
+  "pubg-mobile",
+  "genshin-impact",
+  "valorant",
+  "bgmi",
+  "call-of-duty-mobile",
+  "fortnite",
+];
+const mobileGameSlugs = new Set([
+  ...regionalMlbbSlugs,
+  "free-fire",
+  "pubg-mobile",
+  "genshin-impact",
+  "bgmi",
+  "call-of-duty-mobile",
+]);
 const pcConsoleGameSlugs = new Set(["valorant", "genshin-impact", "fortnite"]);
-const popularGameSlugs = new Set(mainGameOrder.slice(0, 6));
+const popularGameSlugs = new Set(mainGameOrder.slice(0, 10));
 
 const filters: { id: CatalogueFilter; label: string; icon: Parameters<typeof StorefrontIcon>[0]["name"] }[] = [
   { id: "all", label: "All", icon: "games" },
@@ -57,7 +83,10 @@ export function GameCatalogue({
   const requestedFilter = (searchParams.get("category") ?? "all") as CatalogueFilter;
   const filter = supportedFilters.has(requestedFilter) ? requestedFilter : "all";
 
-  const mainGames = useMemo(() => sortByOrder(games.filter((game) => game.kind === "game")), [games]);
+  const mainGames = useMemo(
+    () => sortByOrder(games.filter((game) => game.slug !== "mobile-legends")),
+    [games],
+  );
   const filteredGames = useMemo(
     () => mainGames.filter((game) => matchesFilter(game, filter) && (!normalizedQuery || matchesSearch(game, normalizedQuery))),
     [filter, mainGames, normalizedQuery],
@@ -120,7 +149,7 @@ export function GameCatalogue({
         </div>
       )}
 
-      {filter === "all" && !normalizedQuery && regionalMarkets.length > 0 ? (
+      {false && filter === "all" && !normalizedQuery && regionalMarkets.length > 0 ? (
         <div className="mt-8 border-t border-white/[0.08] pt-5">
           <div className="flex items-center justify-between gap-3">
             <div>
