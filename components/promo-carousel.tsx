@@ -12,7 +12,7 @@ const slides = [
     description: "A focused India market experience with clear packs, verified player IDs, and fast delivery.",
     href: "/games/mobile-legends/india",
     cta: "Shop MLBB India",
-    image: "/assets/user-supplied-v2/1000166218.jpg",
+    image: "/assets/user-supplied-v2/1000166202.jpg",
     accent: "from-amber-300/90 to-orange-500/90",
   },
   {
@@ -21,7 +21,7 @@ const slides = [
     description: "See the market, package, and final display currency before you confirm your order.",
     href: "/#how-it-works",
     cta: "See how it works",
-    image: "/assets/user-supplied-v2/1000166221.jpg",
+    image: "/assets/user-supplied-v2/1000166215.jpg",
     accent: "from-cyan-300/90 to-violet-400/90",
   },
   {
@@ -30,7 +30,7 @@ const slides = [
     description: "Choose a regional tile once and continue through a checkout designed for that exact destination.",
     href: "/#games",
     cta: "Browse the catalogue",
-    image: "/assets/user-supplied-v2/1000166222.jpg",
+    image: "/assets/user-supplied-v2/1000166213.jpg",
     accent: "from-violet-300/90 to-fuchsia-400/90",
   },
 ];
