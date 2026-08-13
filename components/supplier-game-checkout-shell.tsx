@@ -95,7 +95,6 @@ function billingIsComplete(billing: BillingFormState) {
 
 export function SupplierGameCheckoutShell({
   gameSlug,
-  gameTitle,
   packages,
   fxSnapshot,
   savedAddresses = [],
@@ -103,7 +102,6 @@ export function SupplierGameCheckoutShell({
   initialCartItemId = null,
 }: {
   gameSlug: SupplierCheckoutGameSlug;
-  gameTitle: string;
   packages: CheckoutPackage[];
   fxSnapshot: FxSnapshot;
   savedAddresses?: SavedAddressView[];

@@ -96,7 +96,7 @@ export async function POST(
       }
     }
 
-    const updated = await assignSupportTicket({
+    await assignSupportTicket({
       publicId: normalized,
       assigneeCustomerId,
     });

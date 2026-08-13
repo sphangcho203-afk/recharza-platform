@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 
 type StaffLoginFormProps = {
@@ -7,6 +8,7 @@ type StaffLoginFormProps = {
 };
 
 export function StaffLoginForm({ forbidden }: StaffLoginFormProps) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -38,7 +40,7 @@ export function StaffLoginForm({ forbidden }: StaffLoginFormProps) {
         throw new Error(result.message ?? "Staff sign-in failed.");
       }
 
-      window.location.assign("/admin");
+      router.push("/admin");
     } catch (error) {
       setIsError(true);
       setMessage(
