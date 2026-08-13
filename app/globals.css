@@ -25,6 +25,8 @@
   --radius-lg: 1.5rem;
   --radius-xl: 2rem;
   --shadow-panel: 0 18px 60px rgba(0, 0, 0, 0.26);
+  --shadow-float: 0 18px 46px rgba(0, 0, 0, 0.22);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 * {
@@ -71,6 +73,20 @@ select,
 summary {
   font: inherit;
   -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a {
+  transition-timing-function: var(--ease-out);
+}
+
+button:active:not(:disabled),
+a:active {
+  transform: scale(0.985);
+}
+
+::placeholder {
+  color: rgba(148, 163, 184, 0.42);
 }
 
 :focus-visible {
@@ -148,6 +164,44 @@ summary {
 
 .storefront-card:hover::after {
   opacity: 1;
+}
+
+.storefront-card,
+.system-card,
+.system-panel {
+  transition: border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out), transform 180ms var(--ease-out);
+}
+
+.storefront-card:hover,
+.system-card:hover {
+  border-color: rgba(196, 181, 253, 0.22);
+  box-shadow: var(--shadow-float);
+}
+
+.storefront-section-label {
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.625rem;
+  font-weight: 900;
+  color: rgba(165, 180, 252, 0.78);
+}
+
+.storefront-input {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(5, 7, 14, 0.76);
+  border-radius: 0.875rem;
+  transition: border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out), background 180ms var(--ease-out);
+}
+
+.storefront-input:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.storefront-input:focus {
+  border-color: rgba(167, 139, 250, 0.7);
+  background: rgba(8, 10, 18, 0.96);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+  outline: none;
 }
 
 .storefront-float {

@@ -13,11 +13,20 @@ export const VOLSEVER_MAX_RESPONSE_BYTES = 64 * 1024;
 export const VOLSEVER_VERIFICATION_MODE = "volsever-lookup";
 
 const volseverGameAliases: Record<string, string> = {
-  "free-fire": "free-fire-india",
+  // Volsever's region-neutral route accepts Free Fire IDs from supported markets.
+  // The legacy India route remains a compatibility fallback for older accounts.
+  "free-fire": "free-fire",
   "pubg-mobile": "pubg-mobile-global",
   valorant: "valorant-indonesia",
   "genshin-impact": "genshin-impact",
 };
+
+function getVolseverGameCandidates(value: unknown) {
+  const normalized = normalizeGameSlug(value);
+  if (!normalized) return [];
+  if (normalized === "free-fire") return ["free-fire", "free-fire-india"];
+  return [volseverGameAliases[normalized] ?? normalized];
+}
 
 export type RecharzaVolseverGameSlug = string;
 
@@ -141,8 +150,8 @@ export async function lookupVolseverGameIdentity(
     fetchImpl?: typeof fetch;
   } = {},
 ): Promise<VolseverIdentityResult> {
-  const slug = getVolseverGameSlug(input.gameSlug);
-  if (!slug) throw new VolseverProviderError("Invalid Volsever game slug.");
+  const slugs = getVolseverGameCandidates(input.gameSlug);
+  if (slugs.length === 0) throw new VolseverProviderError("Invalid Volsever game slug.");
 
   const playerId = readString(input.playerId, 64);
   const zoneId = readString(input.zoneId, 64);
@@ -153,91 +162,106 @@ export async function lookupVolseverGameIdentity(
   const timeoutMs = options.timeoutMs ?? config.timeoutMs;
   const fetchImpl = options.fetchImpl ?? fetch;
 
-  let url: URL;
-  try {
-    url = new URL(`${baseUrl}/proxy/api/game/${slug}`);
-  } catch {
-    throw new RuntimeConfigurationError("VOLSEVER_API_BASE_URL is not a valid URL.");
-  }
+  let lastInvalidResult: VolseverIdentityResult | null = null;
 
-  if (url.protocol !== "https:") {
-    throw new RuntimeConfigurationError("VOLSEVER_API_BASE_URL must use HTTPS.");
-  }
-
-  url.searchParams.set("id", playerId);
-  if (zoneId) url.searchParams.set("zone", zoneId);
-
-  let response: Response;
-  try {
-    response = await fetchImpl(url, {
-      headers: { Accept: "application/json", "X-API-Key": apiKey },
-      cache: "no-store",
-      redirect: "error",
-      signal: AbortSignal.timeout(timeoutMs),
-    });
-  } catch {
-    throw new VolseverProviderError();
-  }
-
-  const rawText = await readResponseBody(response, VOLSEVER_MAX_RESPONSE_BYTES).catch(
-    (error) => {
-      if (error instanceof VolseverProviderError) throw error;
-      throw new VolseverProviderError();
-    },
-  );
-
-  let payload: unknown;
-  try {
-    payload = JSON.parse(rawText);
-  } catch {
-    throw new VolseverProviderError();
-  }
-
-  const object = asObject(payload);
-  if (!object) throw new VolseverProviderError();
-
-  const code = boundedNumber(object.code);
-  const status = object.status === true;
-  const message = safeMessage(object, "Game account validation could not be completed.");
-  const data = asObject(object.data);
-
-  if (code === 401) {
-    throw new RuntimeConfigurationError("VOLSEVER_API_KEY was rejected by the Volsever service.");
-  }
-
-  if (status && data) {
-    const echoedId = readString(data.user_id, 64);
-    const username = readString(data.username, 64);
-    const echoedZone = readString(data.zone, 64);
-
-    if (
-      echoedId === playerId &&
-      username.length > 0 &&
-      (!zoneId || !echoedZone || echoedZone === zoneId)
-    ) {
-      return {
-        valid: true,
-        confirmed: true,
-        playerId,
-        zoneId: echoedZone || zoneId,
-        nickname: username,
-        verificationMode: VOLSEVER_VERIFICATION_MODE,
-        message: "Account validated successfully.",
-      };
+  for (const slug of slugs) {
+    let url: URL;
+    try {
+      url = new URL(`${baseUrl}/proxy/api/game/${slug}`);
+    } catch {
+      throw new RuntimeConfigurationError("VOLSEVER_API_BASE_URL is not a valid URL.");
     }
+
+    if (url.protocol !== "https:") {
+      throw new RuntimeConfigurationError("VOLSEVER_API_BASE_URL must use HTTPS.");
+    }
+
+    url.searchParams.set("id", playerId);
+    if (zoneId) url.searchParams.set("zone", zoneId);
+
+    let response: Response;
+    try {
+      response = await fetchImpl(url, {
+        headers: { Accept: "application/json", "X-API-Key": apiKey },
+        cache: "no-store",
+        redirect: "error",
+        signal: AbortSignal.timeout(timeoutMs),
+      });
+    } catch {
+      throw new VolseverProviderError();
+    }
+
+    const rawText = await readResponseBody(response, VOLSEVER_MAX_RESPONSE_BYTES).catch(
+      (error) => {
+        if (error instanceof VolseverProviderError) throw error;
+        throw new VolseverProviderError();
+      },
+    );
+
+    let payload: unknown;
+    try {
+      payload = JSON.parse(rawText);
+    } catch {
+      throw new VolseverProviderError();
+    }
+
+    const object = asObject(payload);
+    if (!object) throw new VolseverProviderError();
+
+    const code = boundedNumber(object.code);
+    const status = object.status === true;
+    const message = safeMessage(object, "Game account validation could not be completed.");
+    const data = asObject(object.data);
+
+    if (code === 401) {
+      throw new RuntimeConfigurationError("VOLSEVER_API_KEY was rejected by the Volsever service.");
+    }
+
+    if (status && data) {
+      const echoedId = readString(data.user_id, 64);
+      const username = readString(data.username, 64);
+      const echoedZone = readString(data.zone, 64);
+
+      if (
+        echoedId === playerId &&
+        username.length > 0 &&
+        (!zoneId || !echoedZone || echoedZone === zoneId)
+      ) {
+        return {
+          valid: true,
+          confirmed: true,
+          playerId,
+          zoneId: echoedZone || zoneId,
+          nickname: username,
+          verificationMode: VOLSEVER_VERIFICATION_MODE,
+          message: "Account validated successfully.",
+        };
+      }
+    }
+
+    if (code !== null && code >= 400 && code < 500) {
+      lastInvalidResult = {
+        valid: false,
+        confirmed: false,
+        playerId,
+        zoneId,
+        nickname: null,
+        verificationMode: VOLSEVER_VERIFICATION_MODE,
+        message,
+      };
+      continue;
+    }
+
+    throw new VolseverProviderError();
   }
 
-  if (code !== null && code >= 400 && code < 500) {
-    return {
-      valid: false,
-      confirmed: false,
-      playerId,
-      zoneId,
-      nickname: null,
-      verificationMode: VOLSEVER_VERIFICATION_MODE,
-      message,
-    };
-  }
-
-  throw new VolseverProviderError();
+  return lastInvalidResult ?? {
+    valid: false,
+    confirmed: false,
+    playerId,
+    zoneId,
+    nickname: null,
+    verificationMode: VOLSEVER_VERIFICATION_MODE,
+    message: "Game account validation could not be completed.",
+  };
 }

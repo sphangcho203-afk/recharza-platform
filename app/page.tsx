@@ -79,12 +79,15 @@ export default async function Home() {
 
       {storefront.catalogue.enabled ? (
         <section id="games" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
-          <div className="flex items-end justify-between gap-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">Games & top-ups</h2>
-              <p className="mt-1.5 text-sm text-slate-500">Pick a game, choose the correct market, then select a published package.</p>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-violet-300/15 bg-violet-300/[0.07] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-violet-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-violet-300" /> Curated digital catalogue
+              </div>
+              <h2 className="text-3xl font-black tracking-[-0.055em] text-white sm:text-4xl">Top up the games you play.</h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Choose a title, verify your destination, and pay securely. Your package and account details stay visible at every step.</p>
             </div>
-            <Link href="/orders/lookup" className="hidden items-center gap-2 text-xs font-black text-slate-400 hover:text-white sm:inline-flex">
+            <Link href="/orders/lookup" className="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-white">
               Track an order <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -100,11 +103,19 @@ export default async function Home() {
         </section>
       ) : null}
 
-      <section className="border-y border-white/[0.08] bg-[#0a0c12] px-4 py-7 sm:px-6 lg:px-8">
+      <section id="how-it-works" className="scroll-mt-32 border-y border-white/[0.08] bg-[#0a0c12] px-4 py-9 sm:px-6 lg:px-8">
+        <div className="mx-auto mb-5 flex max-w-[1240px] items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/80">Simple by design</p>
+            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">From ID to delivery in three steps.</h2>
+          </div>
+          <span className="hidden text-xs font-bold text-slate-600 sm:block">Built for speed, clarity, and support.</span>
+        </div>
         <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2 lg:grid-cols-4">
-          {benefitItems.map((item) => (
-            <div key={item.title} className="flex items-start gap-3 bg-[#0c0e15] p-4 sm:p-5">
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-violet-500/10 text-violet-300">
+          {benefitItems.map((item, index) => (
+            <div key={item.title} className="group relative flex items-start gap-3 bg-[#0c0e15] p-4 transition hover:bg-[#10131d] sm:p-5">
+              <span className="absolute right-4 top-4 text-[10px] font-black text-slate-700">0{index + 1}</span>
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet-500/10 text-violet-300 ring-1 ring-violet-300/10">
                 <StorefrontIcon name={item.icon} className="h-4.5 w-4.5" />
               </span>
               <div>
