@@ -30,12 +30,18 @@ export function StorefrontHero({
   return (
     <section className="px-4 pb-6 pt-5 sm:px-6 sm:pb-8 sm:pt-6 lg:px-8">
       <div className="mx-auto max-w-[1240px]">
-        <div className="relative overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[#0b0d14] shadow-[0_24px_70px_rgba(0,0,0,0.36)]">
+        <div className="relative overflow-hidden rounded-[1.5rem] border border-violet-200/[0.14] bg-[linear-gradient(135deg,#0d1020_0%,#0a0d16_48%,#11152b_100%)] shadow-[0_28px_90px_rgba(49,22,94,0.32)]">
           <div className="grid min-h-[22rem] lg:grid-cols-[0.92fr_1.08fr] lg:min-h-[24rem]">
             <div className="relative z-10 flex flex-col justify-center px-6 py-10 sm:px-9 lg:px-12">
-              <div className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.06] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-200/90">
-                <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.8)]" /> Digital goods, delivered with confidence
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-2 rounded-full border border-cyan-300/15 bg-cyan-300/[0.06] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-cyan-200/90">
+                  <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.8)]" /> Digital goods, delivered with confidence
+                </span>
+                <span className="rounded-full border border-emerald-300/15 bg-emerald-300/[0.06] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-emerald-200/80">Systems online</span>
               </div>
+              {/* Legacy label retained in content order for accessible crawlers. */}
+              <span className="sr-only">
+                Digital goods, delivered with confidence</span>
               <h1 className="max-w-xl text-4xl font-black leading-[0.96] tracking-[-0.06em] text-white sm:text-5xl lg:text-[3.8rem]">
                 {content.title}
                 <span className="block text-violet-400">{content.accent}</span>
@@ -78,8 +84,14 @@ export function StorefrontHero({
                 objectPosition="center"
                 objectFit="cover"
               />
-              <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-32 bg-gradient-to-r from-[#0b0d14] to-transparent lg:block" />
+              <div className="pointer-events-none absolute inset-y-0 left-0 hidden w-40 bg-gradient-to-r from-[#0b0d14] to-transparent lg:block" />
               <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#0b0d14]/80 to-transparent lg:hidden" />
+              <div className="absolute right-5 top-5 hidden rounded-2xl border border-white/[0.16] bg-[#080a12]/75 px-4 py-3 text-white shadow-2xl backdrop-blur-xl sm:block">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-emerald-200"><span className="h-2 w-2 rounded-full bg-emerald-300 shadow-[0_0_14px_rgba(110,231,183,0.9)]" /> Live store</div>
+                <div className="mt-2 text-lg font-black tracking-[-0.04em]">Fast. Clear. Verified.</div>
+                <div className="mt-1 text-[11px] text-slate-300/75">Market-aware packs for every player.</div>
+              </div>
+              <div className="absolute bottom-5 left-5 hidden rounded-xl border border-white/[0.14] bg-[#080a12]/75 px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-white shadow-xl backdrop-blur-xl sm:block">01 · Pick a game&nbsp;&nbsp; 02 · Verify ID&nbsp;&nbsp; 03 · Get credited</div>
             </Link>
           </div>
         </div>
