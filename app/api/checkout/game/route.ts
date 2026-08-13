@@ -17,6 +17,10 @@ import {
 } from "@/lib/rate-limit";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 import {
+  lookupVolseverGameIdentity,
+  VolseverProviderError,
+} from "@/lib/volsever";
+import {
   getPublishedGamePackageForCheckout,
   isSupplierCheckoutGameSlug,
 } from "@/lib/storefront-game-catalog";
@@ -325,6 +329,31 @@ export async function POST(request: Request) {
       );
     }
 
+    let verifiedNickname: string | null = null;
+    let verificationMode: string = identity.verificationMode;
+    if (process.env.IGN_LOOKUP_PROVIDER?.trim().toLowerCase() === "volsever") {
+      const liveIdentity = await lookupVolseverGameIdentity({
+        gameSlug,
+        playerId: identity.playerId,
+        zoneId: identity.zoneId,
+      });
+
+      if (!liveIdentity.valid || !liveIdentity.confirmed) {
+        return Response.json(
+          {
+            ok: false,
+            code: "PLAYER_NOT_FOUND",
+            field: gameSlug === "valorant" ? "riotId" : "playerId",
+            message: liveIdentity.message || "We could not confirm that game account.",
+          },
+          { status: 400, headers: rateHeaders },
+        );
+      }
+
+      verifiedNickname = liveIdentity.nickname;
+      verificationMode = liveIdentity.verificationMode;
+    }
+
     const fxSnapshot = await getCurrencyRateSnapshot();
     const presentmentCurrency = billingResult.selection.presentmentCurrency;
     const fxRateFromInrMicros =
@@ -415,8 +444,8 @@ export async function POST(request: Request) {
           billingCountryCode: billing.countryCode,
           playerId: identity.playerId,
           zoneId: identity.zoneId,
-          verifiedNickname: null,
-          verificationMode: identity.verificationMode,
+          verifiedNickname,
+          verificationMode,
           customerId: customer.id,
           supplierProductId: selectedPackage.supplierProductId,
           supplierCategoryId: selectedPackage.supplierCategoryId,
@@ -443,7 +472,8 @@ export async function POST(request: Request) {
                 fxQuotedAt: fxQuotedAt.toISOString(),
                 fxMode: fxSnapshot.mode,
                 billingCountryCode: billing.countryCode,
-                verificationMode: identity.verificationMode,
+                verificationMode,
+                verifiedNickname,
                 customerRole: customer.role,
               },
             },
@@ -510,6 +540,17 @@ export async function POST(request: Request) {
           message: error.message,
         },
         { status: 503, headers: rateHeaders },
+      );
+    }
+
+    if (error instanceof VolseverProviderError) {
+      return Response.json(
+        {
+          ok: false,
+          code: "PLAYER_VERIFICATION_UNAVAILABLE",
+          message: "Account validation is temporarily unavailable. Please retry shortly.",
+        },
+        { status: 502, headers: rateHeaders },
       );
     }
 
