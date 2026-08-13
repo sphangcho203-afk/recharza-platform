@@ -3,10 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { StorefrontIcon } from "@/components/storefront-icon";
-import {
-  supportedCurrencies,
-  type SupportedCurrencyCode,
-} from "@/lib/commerce/currencies";
+import { supportedCurrencies, type SupportedCurrencyCode } from "@/lib/commerce/currencies";
 
 type CurrencySelectorProps = {
   ratesFromInrMicros: Partial<Record<SupportedCurrencyCode, number>>;
@@ -14,16 +11,18 @@ type CurrencySelectorProps = {
 };
 
 const STORAGE_KEY = "recharza.display-currency";
+const CURRENCY_EVENT = "recharza:currency-change";
+
+function readStoredCurrency(): SupportedCurrencyCode {
+  if (typeof window === "undefined") return "INR";
+  const stored = window.localStorage.getItem(STORAGE_KEY)?.toUpperCase();
+  return supportedCurrencies.some((item) => item.code === stored)
+    ? (stored as SupportedCurrencyCode)
+    : "INR";
+}
 
 export function CurrencySelector({ ratesFromInrMicros, compact = false }: CurrencySelectorProps) {
-  const [currency, setCurrency] = useState<SupportedCurrencyCode>(() => {
-    if (typeof window === "undefined") return "INR";
-    const stored = window.localStorage.getItem(STORAGE_KEY)?.toUpperCase();
-    return supportedCurrencies.some((item) => item.code === stored)
-      ? (stored as SupportedCurrencyCode)
-      : "INR";
-  });
-
+  const [currency, setCurrency] = useState<SupportedCurrencyCode>(readStoredCurrency);
   const selected = supportedCurrencies.find((item) => item.code === currency) ?? supportedCurrencies[0];
   const usdToSelected = useMemo(() => {
     if (currency === "USD") return 1;
@@ -34,29 +33,32 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
   }, [currency, ratesFromInrMicros]);
 
   function handleChange(next: string) {
+    if (!supportedCurrencies.some((item) => item.code === next)) return;
     const parsed = next as SupportedCurrencyCode;
     setCurrency(parsed);
     window.localStorage.setItem(STORAGE_KEY, parsed);
-    window.dispatchEvent(new CustomEvent("recharza:currency-change", { detail: parsed }));
+    window.dispatchEvent(new CustomEvent(CURRENCY_EVENT, { detail: parsed }));
   }
 
   return (
-    <label className={`group relative inline-flex min-h-10 items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.025] px-2.5 ${compact ? "max-w-[5.25rem]" : ""}`}>
-      <StorefrontIcon name="globe" className="h-3.5 w-3.5 shrink-0 text-cyan-300" />
-      <span className="sr-only">Display currency</span>
-      <select
-        value={currency}
-        onChange={(event) => handleChange(event.target.value)}
-        className={`${compact ? "max-w-[3.1rem]" : "max-w-[7.25rem]"} appearance-none bg-transparent pr-1 text-[11px] font-black text-slate-200 outline-none`}
-        aria-label="Display currency"
-      >
-        {supportedCurrencies.map((item) => (
-          <option key={item.code} value={item.code} className="bg-[#11131d] text-white">
-            {item.code} · {item.region}
-          </option>
-        ))}
-      </select>
-      <span className="hidden border-l border-white/[0.1] pl-2 text-[10px] font-bold text-slate-500 2xl:inline">
+    <label className={`group inline-flex min-h-10 items-center gap-3 rounded-lg border border-border bg-surface px-3 transition-colors duration-150 ease-out hover:border-primary/60 ${compact ? "max-w-[9rem]" : "min-w-[13rem]"}`}>
+      <StorefrontIcon name="globe" className="h-4 w-4 shrink-0 text-primary" />
+      <span className="grid min-w-0 gap-0.5">
+        <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">Currency</span>
+        <select
+          value={currency}
+          onChange={(event) => handleChange(event.target.value)}
+          className="input-base min-w-0 appearance-none bg-transparent pr-1 text-sm font-semibold text-text-primary outline-none"
+          aria-label="Display currency"
+        >
+          {supportedCurrencies.map((item) => (
+            <option key={item.code} value={item.code} className="bg-[#11131d] text-white">
+              {item.code} · {item.region}
+            </option>
+          ))}
+        </select>
+      </span>
+      <span className="ml-auto hidden whitespace-nowrap text-xs text-text-muted xl:block">
         {usdToSelected ? `1 USD ≈ ${usdToSelected.toFixed(2)} ${selected.code}` : "Live FX"}
       </span>
     </label>
