@@ -12,23 +12,30 @@ export const VOLSEVER_MAX_TIMEOUT_MS = 60_000;
 export const VOLSEVER_MAX_RESPONSE_BYTES = 64 * 1024;
 export const VOLSEVER_VERIFICATION_MODE = "volsever-lookup";
 
-export const volseverGameSlugs = {
-  "mobile-legends": "mobile-legends",
-  "genshin-impact": "genshin-impact",
+const volseverGameAliases: Record<string, string> = {
+  "free-fire": "free-fire-india",
   "pubg-mobile": "pubg-mobile-global",
-} as const;
+  valorant: "valorant-indonesia",
+  "genshin-impact": "genshin-impact",
+};
 
-export type RecharzaVolseverGameSlug = keyof typeof volseverGameSlugs;
+export type RecharzaVolseverGameSlug = string;
+
+function normalizeGameSlug(value: unknown) {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLowerCase();
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalized)) return null;
+  return normalized;
+}
 
 export function isVolseverGameSlug(value: unknown): value is RecharzaVolseverGameSlug {
-  return (
-    typeof value === "string" &&
-    Object.prototype.hasOwnProperty.call(volseverGameSlugs, value)
-  );
+  return Boolean(normalizeGameSlug(value));
 }
 
 export function getVolseverGameSlug(value: unknown) {
-  return isVolseverGameSlug(value) ? volseverGameSlugs[value] : null;
+  const normalized = normalizeGameSlug(value);
+  if (!normalized) return null;
+  return volseverGameAliases[normalized] ?? normalized;
 }
 
 export type VolseverIdentityResult = {
@@ -134,15 +141,14 @@ export async function lookupVolseverGameIdentity(
     fetchImpl?: typeof fetch;
   } = {},
 ): Promise<VolseverIdentityResult> {
-  const slug = volseverGameSlugs[input.gameSlug];
+  const slug = getVolseverGameSlug(input.gameSlug);
+  if (!slug) throw new VolseverProviderError("Invalid Volsever game slug.");
+
   const playerId = readString(input.playerId, 64);
   const zoneId = readString(input.zoneId, 64);
-
   const config = getVolseverConfiguration();
   const apiKey =
-    options.apiKey && options.apiKey.trim().length > 0
-      ? options.apiKey.trim()
-      : requireEnvironmentVariable("VOLSEVER_API_KEY", { minLength: 12 });
+    options.apiKey?.trim() || requireEnvironmentVariable("VOLSEVER_API_KEY", { minLength: 12 });
   const baseUrl = (options.baseUrl ?? config.baseUrl).replace(/\/+$/, "");
   const timeoutMs = options.timeoutMs ?? config.timeoutMs;
   const fetchImpl = options.fetchImpl ?? fetch;
@@ -151,15 +157,11 @@ export async function lookupVolseverGameIdentity(
   try {
     url = new URL(`${baseUrl}/proxy/api/game/${slug}`);
   } catch {
-    throw new RuntimeConfigurationError(
-      "VOLSEVER_API_BASE_URL is not a valid URL.",
-    );
+    throw new RuntimeConfigurationError("VOLSEVER_API_BASE_URL is not a valid URL.");
   }
 
   if (url.protocol !== "https:") {
-    throw new RuntimeConfigurationError(
-      "VOLSEVER_API_BASE_URL must use HTTPS.",
-    );
+    throw new RuntimeConfigurationError("VOLSEVER_API_BASE_URL must use HTTPS.");
   }
 
   url.searchParams.set("id", playerId);
@@ -168,10 +170,7 @@ export async function lookupVolseverGameIdentity(
   let response: Response;
   try {
     response = await fetchImpl(url, {
-      headers: {
-        Accept: "application/json",
-        "X-API-Key": apiKey,
-      },
+      headers: { Accept: "application/json", "X-API-Key": apiKey },
       cache: "no-store",
       redirect: "error",
       signal: AbortSignal.timeout(timeoutMs),
@@ -203,24 +202,24 @@ export async function lookupVolseverGameIdentity(
   const data = asObject(object.data);
 
   if (code === 401) {
-    throw new RuntimeConfigurationError(
-      "VOLSEVER_API_KEY was rejected by the Volsever service.",
-    );
+    throw new RuntimeConfigurationError("VOLSEVER_API_KEY was rejected by the Volsever service.");
   }
 
   if (status && data) {
     const echoedId = readString(data.user_id, 64);
     const username = readString(data.username, 64);
+    const echoedZone = readString(data.zone, 64);
 
     if (
       echoedId === playerId &&
-      username.length > 0
+      username.length > 0 &&
+      (!zoneId || !echoedZone || echoedZone === zoneId)
     ) {
       return {
         valid: true,
         confirmed: true,
         playerId,
-        zoneId,
+        zoneId: echoedZone || zoneId,
         nickname: username,
         verificationMode: VOLSEVER_VERIFICATION_MODE,
         message: "Account validated successfully.",
