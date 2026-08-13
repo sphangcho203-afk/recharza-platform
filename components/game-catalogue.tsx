@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { GameCard } from "@/components/game-card";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import type { Game } from "@/lib/games";
+import { supportedCurrencyCodes, type SupportedCurrencyCode } from "@/lib/commerce/currencies";
 
 type CatalogueFilter = "all" | "mobile" | "pc-console" | "gift-cards" | "popular";
 
@@ -72,12 +73,32 @@ export function GameCatalogue({
   showRegionalMarkets = true,
   showDevelopmentBadges = true,
   showPricingSnapshots = true,
+  ratesFromInrMicros,
 }: {
   games: Game[];
   showRegionalMarkets?: boolean;
   showDevelopmentBadges?: boolean;
   showPricingSnapshots?: boolean;
+  ratesFromInrMicros: Partial<Record<SupportedCurrencyCode, number>>;
 }) {
+  const [displayCurrency, setDisplayCurrency] = useState<SupportedCurrencyCode>(() => {
+    if (typeof window === "undefined") return "INR";
+    const stored = window.localStorage.getItem("recharza.display-currency")?.toUpperCase();
+    return stored && supportedCurrencyCodes.includes(stored as SupportedCurrencyCode)
+      ? (stored as SupportedCurrencyCode)
+      : "INR";
+  });
+
+  useEffect(() => {
+    const handleCurrencyChange = (event: Event) => {
+      const next = (event as CustomEvent<string>).detail?.toUpperCase();
+      if (supportedCurrencyCodes.includes(next as SupportedCurrencyCode)) {
+        setDisplayCurrency(next as SupportedCurrencyCode);
+      }
+    };
+    window.addEventListener("recharza:currency-change", handleCurrencyChange);
+    return () => window.removeEventListener("recharza:currency-change", handleCurrencyChange);
+  }, []);
   const searchParams = useSearchParams();
   const normalizedQuery = (searchParams.get("q") ?? "").trim().toLowerCase();
   const requestedFilter = (searchParams.get("category") ?? "all") as CatalogueFilter;
@@ -138,6 +159,8 @@ export function GameCatalogue({
               priority={index < 4}
               showDevelopmentBadges={showDevelopmentBadges}
               showPricingSnapshots={showPricingSnapshots}
+              displayCurrency={displayCurrency}
+              ratesFromInrMicros={ratesFromInrMicros}
             />
           ))}
         </div>

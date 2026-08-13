@@ -109,7 +109,7 @@ export const games: Game[] = [
             brazil: "1000166205-card.jpg",
             malaysia: "1000166199-card.jpg",
             singapore: "1000166201-card.jpg",
-            turkey: "1000166202-card.jpg",
+            turkey: "1000166207-card.jpg",
             "united-states": "1000166215-card.jpg",
           } as Record<MobileLegendsMarketCode, string>)[region.code]
         }`,

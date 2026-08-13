@@ -4,6 +4,11 @@ import Link from "next/link";
 import { ResilientImage } from "@/components/resilient-image";
 import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { StorefrontIcon } from "@/components/storefront-icon";
+import {
+  convertInrPaiseToCurrencyMinor,
+  formatCurrencyMinor,
+  type SupportedCurrencyCode,
+} from "@/lib/commerce/currencies";
 import type { Game } from "@/lib/games";
 import { formatInr } from "@/lib/mobile-legends";
 
@@ -13,6 +18,8 @@ type GameCardProps = {
   priority?: boolean;
   showDevelopmentBadges?: boolean;
   showPricingSnapshots?: boolean;
+  displayCurrency?: SupportedCurrencyCode;
+  ratesFromInrMicros?: Partial<Record<SupportedCurrencyCode, number>>;
 };
 
 function actionLabel(game: Game, showDevelopmentBadges: boolean) {
@@ -43,11 +50,19 @@ export function GameCard({
   priority = false,
   showDevelopmentBadges = true,
   showPricingSnapshots = true,
+  displayCurrency = "INR",
+  ratesFromInrMicros,
 }: GameCardProps) {
   const interactive = Boolean(game.available && game.href);
   const label = actionLabel(game, showDevelopmentBadges);
+  const displayRate = ratesFromInrMicros?.[displayCurrency];
   const price = showPricingSnapshots && game.startingPriceInPaise
-    ? formatInr(game.startingPriceInPaise)
+    ? displayRate
+      ? formatCurrencyMinor(
+          convertInrPaiseToCurrencyMinor(game.startingPriceInPaise, displayCurrency, displayRate),
+          displayCurrency,
+        )
+      : formatInr(game.startingPriceInPaise)
     : null;
   const accentStyle = { "--game-accent": game.accent } as CSSProperties;
 
@@ -74,8 +89,11 @@ export function GameCard({
           objectPosition={game.artworkPosition}
           objectFit="cover"
         />
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/75 to-transparent" />
-        <span className="absolute bottom-2.5 left-2.5 flex h-6 max-w-[6.25rem] items-center rounded-md bg-black/55 px-2 backdrop-blur-md">
+
+      </div>
+
+      <div className="p-3">
+        <div className="mb-3 flex min-h-7 items-center justify-between gap-2">
           <ResilientImage
             sources={preferredLogoSources(game)}
             alt={game.logoAlt}
@@ -83,18 +101,11 @@ export function GameCard({
             width={110}
             height={30}
             sizes="90px"
-            className={`max-h-4 w-auto max-w-[5rem] object-contain ${game.logoTreatment === "invert" ? "brightness-0 invert" : ""}`}
-            fallbackClassName="h-4 w-7"
+            className={`max-h-5 w-auto max-w-[6.5rem] object-contain object-left ${game.logoTreatment === "invert" ? "brightness-0 invert" : ""}`}
+            fallbackClassName="h-5 w-8"
           />
-        </span>
-        {!interactive ? (
-          <span className="absolute right-2.5 top-2.5 rounded-md border border-white/10 bg-black/70 px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-slate-300">
-            {label}
-          </span>
-        ) : null}
-      </div>
-
-      <div className="p-3">
+          {!interactive ? <span className="rounded-md border border-white/[0.1] bg-white/[0.04] px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-slate-400">{label}</span> : null}
+        </div>
         <h3 className="line-clamp-2 min-h-10 text-[13px] font-black leading-5 tracking-[-0.015em] text-white sm:text-sm">
           {game.title}
         </h3>
