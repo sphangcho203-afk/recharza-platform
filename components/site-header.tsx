@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 
+import { getRequestSession } from "@/lib/auth";
 import { RecharzaMark } from "@/components/recharza-mark";
 import { CartBadge } from "@/components/cart-badge";
 import { StorefrontCategoryNav } from "@/components/storefront-category-nav";
@@ -24,9 +25,21 @@ const navLinks = [
 ];
 
 export async function SiteHeader({ content }: SiteHeaderProps = {}) {
-  const [storefront, media] = await Promise.all([
+  const requestHeaders = await import("next/headers");
+  const requestCookies = await requestHeaders.cookies();
+  const requestHeaderStore = await requestHeaders.headers();
+
+  const request = new Request("http://recharza.local/account", {
+    headers: {
+      cookie: requestCookies.toString(),
+      "user-agent": requestHeaderStore.get("user-agent") ?? "",
+    },
+  });
+
+  const [storefront, media, session] = await Promise.all([
     content ? Promise.resolve(content) : getPublishedStorefrontContent(),
     getPublicMediaPlacements().catch(() => new Map()),
+    getRequestSession(request).catch(() => null),
   ]);
   const brandLogo = media.get("brand.primary.logo");
 
@@ -64,9 +77,16 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
             <CartBadge />
             <Link
               href="/account"
+              aria-label={session ? "Open account" : "Log in or sign up"}
               className="inline-flex min-h-10 items-center rounded-lg bg-violet-500 px-3.5 text-[12px] font-black text-white shadow-[0_10px_28px_rgba(124,58,237,0.24)] transition hover:bg-violet-400 sm:px-4"
             >
-              <span className="hidden sm:inline">Log in / Sign up</span>
+              <span className="hidden sm:inline">
+                {session
+                  ? session.customer.displayName ||
+                    session.customer.username ||
+                    "Account"
+                  : "Log in / Sign up"}
+              </span>
               <StorefrontIcon name="account" className="h-[17px] w-[17px] sm:hidden" />
             </Link>
           </div>
