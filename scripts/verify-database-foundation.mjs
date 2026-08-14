@@ -4,10 +4,16 @@ import pg from "pg";
 
 const { Client } = pg;
 const requireRemote = process.argv.includes("--require-remote");
-const databaseUrl = process.env.DATABASE_URL?.trim();
+const databaseUrl =
+  process.env.DATABASE_URL?.trim() || process.env.POSTGRES_PRISMA_URL?.trim();
+const databaseUrlSource = process.env.DATABASE_URL?.trim()
+  ? "DATABASE_URL"
+  : process.env.POSTGRES_PRISMA_URL?.trim()
+    ? "POSTGRES_PRISMA_URL"
+    : null;
 
 if (!databaseUrl) {
-  console.error("DATABASE_URL is missing.");
+  console.error("DATABASE_URL or POSTGRES_PRISMA_URL is missing.");
   process.exit(1);
 }
 
@@ -15,14 +21,16 @@ let parsed;
 try {
   parsed = new URL(databaseUrl);
 } catch {
-  console.error("DATABASE_URL is not a valid PostgreSQL connection string.");
+  console.error(
+    `The configured ${databaseUrlSource ?? "database"} is not a valid PostgreSQL connection string.`,
+  );
   process.exit(1);
 }
 
 const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
 if (requireRemote && localHosts.has(parsed.hostname)) {
   console.error(
-    "DATABASE_URL still points to local PostgreSQL. Configure the Neon connection before continuing.",
+    `${databaseUrlSource} still points to local PostgreSQL. Configure the Neon connection before continuing.`,
   );
   process.exit(1);
 }
@@ -93,7 +101,7 @@ try {
   } else {
     const info = identity.rows[0];
     console.log(
-      `Database foundation verified on ${parsed.hostname}/${info.database_name} as ${info.role_name}.`,
+      `Database foundation verified via ${databaseUrlSource} on ${parsed.hostname}/${info.database_name} as ${info.role_name}.`,
     );
     console.log("Account, recovery, cart, order-email, and Prisma history checks passed.");
   }

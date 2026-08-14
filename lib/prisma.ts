@@ -1,7 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 
 import { PrismaClient } from "@/generated/prisma/client";
-import { requireEnvironmentVariable } from "@/lib/runtime-config";
+import { requireDatabaseUrl } from "@/lib/database-url";
 
 const globalForPrisma = globalThis as typeof globalThis & {
   recharzaPrisma?: PrismaClient;
@@ -9,7 +9,7 @@ const globalForPrisma = globalThis as typeof globalThis & {
 
 export function getPrisma() {
   if (!globalForPrisma.recharzaPrisma) {
-    const connectionString = requireEnvironmentVariable("DATABASE_URL");
+    const connectionString = requireDatabaseUrl();
     const adapter = new PrismaPg({ connectionString });
 
     globalForPrisma.recharzaPrisma = new PrismaClient({ adapter });
