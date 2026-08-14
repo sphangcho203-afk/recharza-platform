@@ -100,7 +100,7 @@ export async function SiteFooter() {
             </nav>
           ) : (
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              Policies will appear here after they are approved and published.
+              Legal pages will appear here when they contain content and are published.
             </p>
           )}
         </section>

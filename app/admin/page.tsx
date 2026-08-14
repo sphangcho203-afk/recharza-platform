@@ -31,7 +31,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Admin Control Center | Recharza",
   description:
-    "Private whole-store control center for Recharza commands, databases, website interfaces, catalogue, media, pricing, suppliers, payments, people, permissions, content, policies, security, audit, and order operations.",
+    "Private whole-store control center for Recharza storefront content, catalogue, media, pricing, suppliers, payments, people, security, audit, and order operations.",
   robots: { index: false, follow: false },
 };
 
@@ -111,6 +111,55 @@ export default async function AdminPage() {
                 <p className="text-[9px] font-bold uppercase tracking-wider text-amber-300/70">Planned</p>
               </div>
             </div>
+          </section>
+
+          <section aria-labelledby="sync-heading" className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <h2 id="sync-heading" className="sr-only">Connected operations snapshots</h2>
+            {[
+              {
+                label: "Storefront",
+                value: `Draft ${storefrontSnapshot.draftRevision}`,
+                note: `Published ${storefrontSnapshot.publishedRevision}`,
+                href: "#content",
+              },
+              {
+                label: "Catalogue",
+                value: `${storefrontSnapshot.availableGames.length} games`,
+                note: `${snapshot.datasets.find((item) => item.id === "products")?.total ?? 0} supplier products`,
+                href: "#catalogue",
+              },
+              {
+                label: "Payments",
+                value: `${paymentSnapshot.webhooks.length} events`,
+                note: `${paymentSnapshot.webhooks.filter((webhook) => webhook.status.toLowerCase() === "failed").length} failed`,
+                href: "#payments",
+              },
+              {
+                label: "Media",
+                value: `${mediaSnapshot.metrics.totalAssets} assets`,
+                note: `${mediaSnapshot.metrics.assignedPlacements} placements`,
+                href: "#media",
+              },
+              {
+                label: "People",
+                value: `${peopleSnapshot.people.length} loaded`,
+                note: `${peopleSnapshot.permissionDefinitions.length} permission sets`,
+                href: "#staff",
+              },
+            ].map((source) => (
+              <a
+                key={source.label}
+                href={source.href}
+                className="group rounded-xl border border-white/10 bg-white/[0.025] p-4 transition duration-150 ease-out hover:-translate-y-0.5 hover:border-violet-300/25 hover:bg-violet-300/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60"
+              >
+                <span className="flex items-center justify-between gap-3">
+                  <span className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">{source.label}</span>
+                  <span aria-hidden="true" className="text-slate-600 transition group-hover:text-violet-200">↗</span>
+                </span>
+                <span className="mt-3 block text-sm font-black text-white">{source.value}</span>
+                <span className="mt-1 block text-xs text-slate-500">{source.note}</span>
+              </a>
+            ))}
           </section>
 
           <AdminControlCenter snapshot={controlSnapshot} />
@@ -204,7 +253,7 @@ export default async function AdminPage() {
               </p>
               <h2 className="mt-1 text-2xl font-black">Catalogue control</h2>
               <p className="mt-2 text-sm text-slate-500">
-                Publish or pause supplier products and override product names or reviewed
+                Publish or pause supplier products and manage product names or reviewed
                 image sources with a complete audit trail.
               </p>
             </div>

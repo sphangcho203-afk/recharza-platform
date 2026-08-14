@@ -6,7 +6,6 @@ import { getPrisma } from "@/lib/prisma";
 import { customerNavigation } from "@/lib/product-system";
 
 export type StorefrontAnnouncementTone = "info" | "success" | "warning";
-export type StorefrontPolicyState = "DRAFT" | "REVIEW" | "APPROVED";
 export type StorefrontPolicyKey = "terms" | "privacy" | "refunds" | "cookies";
 
 export type StorefrontStep = {
@@ -22,7 +21,6 @@ export type StorefrontBenefit = {
 
 export type StorefrontPolicy = {
   title: string;
-  status: StorefrontPolicyState;
   visible: boolean;
   body: string;
 };
@@ -78,7 +76,6 @@ export type StorefrontContent = {
   privateFlags: {
     showDevelopmentBadges: boolean;
     showPricingSnapshots: boolean;
-    showPolicyLinks: boolean;
   };
   policies: Record<StorefrontPolicyKey, StorefrontPolicy>;
 };
@@ -217,30 +214,25 @@ export const DEFAULT_STOREFRONT_CONTENT: StorefrontContent = {
   privateFlags: {
     showDevelopmentBadges: true,
     showPricingSnapshots: true,
-    showPolicyLinks: false,
   },
   policies: {
     terms: {
       title: "Terms of service",
-      status: "DRAFT",
       visible: false,
       body: "",
     },
     privacy: {
       title: "Privacy policy",
-      status: "DRAFT",
       visible: false,
       body: "",
     },
     refunds: {
       title: "Refund policy",
-      status: "DRAFT",
       visible: false,
       body: "",
     },
     cookies: {
       title: "Cookie notice",
-      status: "DRAFT",
       visible: false,
       body: "",
     },
@@ -256,12 +248,6 @@ const announcementTones = new Set<StorefrontAnnouncementTone>([
   "success",
   "warning",
 ]);
-const policyStates = new Set<StorefrontPolicyState>([
-  "DRAFT",
-  "REVIEW",
-  "APPROVED",
-]);
-
 function asObject(value: unknown): Record<string, unknown> {
   return value && typeof value === "object" && !Array.isArray(value)
     ? (value as Record<string, unknown>)
@@ -356,15 +342,9 @@ function cleanPolicy(
   fallback: StorefrontPolicy,
 ): StorefrontPolicy {
   const object = asObject(value);
-  const state =
-    typeof object.status === "string" &&
-    policyStates.has(object.status as StorefrontPolicyState)
-      ? (object.status as StorefrontPolicyState)
-      : fallback.status;
 
   return {
     title: cleanText(object.title, fallback.title, 120),
-    status: state,
     visible: cleanBoolean(object.visible, fallback.visible),
     body: cleanMultiline(object.body, fallback.body, 40_000),
   };
@@ -557,10 +537,6 @@ export function sanitizeStorefrontContent(value: unknown): StorefrontContent {
         privateFlags.showPricingSnapshots,
         DEFAULT_STOREFRONT_CONTENT.privateFlags.showPricingSnapshots,
       ),
-      showPolicyLinks: cleanBoolean(
-        privateFlags.showPolicyLinks,
-        DEFAULT_STOREFRONT_CONTENT.privateFlags.showPolicyLinks,
-      ),
     },
     policies: {
       terms: cleanPolicy(
@@ -713,7 +689,5 @@ export function getPublishedPolicy(
   key: StorefrontPolicyKey,
 ) {
   const policy = content.policies[key];
-  return policy.visible && policy.status === "APPROVED" && policy.body.trim()
-    ? policy
-    : null;
+  return policy.visible && policy.body.trim() ? policy : null;
 }
