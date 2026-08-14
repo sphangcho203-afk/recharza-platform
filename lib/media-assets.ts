@@ -288,34 +288,39 @@ export type PublicMediaPlacement = {
 };
 
 export async function getPublicMediaPlacements() {
-  const placements = await getPrisma().mediaPlacement.findMany({
-    where: { asset: { status: "APPROVED" } },
-    select: {
-      placementKey: true,
-      assetId: true,
-      asset: {
-        select: {
-          altText: true,
-          mimeType: true,
-          checksum: true,
+  try {
+    const placements = await getPrisma().mediaPlacement.findMany({
+      where: { asset: { status: "APPROVED" } },
+      select: {
+        placementKey: true,
+        assetId: true,
+        asset: {
+          select: {
+            altText: true,
+            mimeType: true,
+            checksum: true,
+          },
         },
       },
-    },
-  });
+    });
 
-  return new Map<string, PublicMediaPlacement>(
-    placements.map((placement) => [
-      placement.placementKey,
-      {
-        placementKey: placement.placementKey,
-        assetId: placement.assetId,
-        url: `/api/media/assets/${placement.assetId}`,
-        altText: placement.asset.altText,
-        mimeType: placement.asset.mimeType,
-        checksum: placement.asset.checksum,
-      },
-    ]),
-  );
+    return new Map<string, PublicMediaPlacement>(
+      placements.map((placement) => [
+        placement.placementKey,
+        {
+          placementKey: placement.placementKey,
+          assetId: placement.assetId,
+          url: `/api/media/assets/${placement.assetId}`,
+          altText: placement.asset.altText,
+          mimeType: placement.asset.mimeType,
+          checksum: placement.asset.checksum,
+        },
+      ]),
+    );
+  } catch (error) {
+    console.error("Public media placements unavailable; using catalogue artwork", error);
+    return new Map<string, PublicMediaPlacement>();
+  }
 }
 
 export function sanitizeMediaTags(value: unknown) {
