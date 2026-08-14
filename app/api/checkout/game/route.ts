@@ -336,6 +336,7 @@ export async function POST(request: Request) {
         gameSlug,
         playerId: identity.playerId,
         zoneId: identity.zoneId,
+        marketCode: selectedPackage.marketCode,
       });
 
       if (!liveIdentity.valid || !liveIdentity.confirmed) {

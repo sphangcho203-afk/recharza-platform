@@ -13,18 +13,24 @@ export const VOLSEVER_MAX_RESPONSE_BYTES = 64 * 1024;
 export const VOLSEVER_VERIFICATION_MODE = "volsever-lookup";
 
 const volseverGameAliases: Record<string, string> = {
-  // Volsever's region-neutral route accepts Free Fire IDs from supported markets.
-  // The legacy India route remains a compatibility fallback for older accounts.
-  "free-fire": "free-fire",
+  "free-fire": "free-fire-asia",
   "pubg-mobile": "pubg-mobile-global",
   valorant: "valorant-indonesia",
   "genshin-impact": "genshin-impact",
 };
 
-function getVolseverGameCandidates(value: unknown) {
+function getVolseverGameCandidates(value: unknown, marketCode?: unknown) {
   const normalized = normalizeGameSlug(value);
   if (!normalized) return [];
-  if (normalized === "free-fire") return ["free-fire", "free-fire-india"];
+
+  if (normalized === "free-fire") {
+    const market = typeof marketCode === "string" ? marketCode.trim().toLowerCase() : "";
+    const isIndonesia = /(^|[-_])(id|indonesia)([-_]|$)/.test(market);
+    return isIndonesia
+      ? ["free-fire-indonesia", "free-fire-asia"]
+      : ["free-fire-asia", "free-fire-indonesia"];
+  }
+
   return [volseverGameAliases[normalized] ?? normalized];
 }
 
@@ -142,6 +148,7 @@ export async function lookupVolseverGameIdentity(
     gameSlug: RecharzaVolseverGameSlug;
     playerId: string;
     zoneId: string;
+    marketCode?: string;
   },
   options: {
     apiKey?: string;
@@ -150,7 +157,7 @@ export async function lookupVolseverGameIdentity(
     fetchImpl?: typeof fetch;
   } = {},
 ): Promise<VolseverIdentityResult> {
-  const slugs = getVolseverGameCandidates(input.gameSlug);
+  const slugs = getVolseverGameCandidates(input.gameSlug, input.marketCode);
   if (slugs.length === 0) throw new VolseverProviderError("Invalid Volsever game slug.");
 
   const playerId = readString(input.playerId, 64);
