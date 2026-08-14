@@ -118,15 +118,15 @@ export function GameCatalogue({
   );
 
   return (
-    <div className="mt-8">
-      <div className="relative -mx-1 border-b border-white/[0.08] pb-4">
+    <div className="mt-6 sm:mt-8">
+      <div className="relative -mx-1 border-b border-white/[0.08] pb-3 sm:pb-4">
         <div className="flex gap-2 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
         {filters.map((item) => (
           <Link
             key={item.id}
             href={item.id === "all" ? "/#games" : `/?category=${item.id}#games`}
-            className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+            className={`inline-flex min-h-9 shrink-0 items-center gap-2 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
               filter === item.id
                 ? "border-primary/60 bg-primary/15 text-text-primary"
                 : "border-border bg-surface text-text-secondary hover:border-primary/60 hover:text-text-primary"
@@ -140,9 +140,9 @@ export function GameCatalogue({
         <span aria-hidden="true" className="pointer-events-none absolute right-0 top-0 h-10 w-10 bg-gradient-to-l from-[#080910] to-transparent sm:hidden" />
       </div>
 
-      <div className="mt-8 grid gap-4 sm:flex sm:items-end sm:justify-between">
+      <div className="mt-6 grid gap-3 sm:flex sm:items-end sm:justify-between">
         <div>
-          <h3 className="text-2xl font-heading font-semibold tracking-tight text-text-primary">
+          <h3 className="text-xl font-heading font-semibold tracking-tight text-text-primary sm:text-2xl">
             {normalizedQuery ? "Search results" : filter === "all" ? "Hot-selling top-up games" : filters.find((item) => item.id === filter)?.label}
           </h3>
           <p className="mt-2 text-sm text-text-secondary">
@@ -155,7 +155,7 @@ export function GameCatalogue({
       </div>
 
       {filteredGames.length ? (
-        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {filteredGames.map((game, index) => (
             <GameCard
               key={game.slug}
@@ -169,7 +169,7 @@ export function GameCatalogue({
           ))}
         </div>
       ) : (
-        <div className="fable-surface-flat mt-6 grid min-h-48 place-items-center rounded-lg border border-dashed border-border p-6 text-center">
+        <div className="fable-surface-flat mt-5 grid min-h-48 rounded-lg border border-dashed border-border p-6 text-center">
           <StorefrontIcon name="search" className="mx-auto h-5 w-5 text-slate-500" />
           <p className="mt-4 text-base font-semibold text-text-primary">No matching game</p>
           <p className="mt-2 text-sm text-text-secondary">Try another title, package or category.</p>

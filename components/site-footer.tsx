@@ -40,7 +40,6 @@ export async function SiteFooter() {
         return policy ? [{ key, title: policy.title }] : [];
       })
     : [];
-  const showPolicyLinks = storefront?.privateFlags.showPolicyLinks === true;
 
   return (
     <footer className="border-t border-white/[0.08] bg-[#07080c] px-4 pb-6 pt-9 sm:px-6 lg:px-8">
@@ -83,15 +82,28 @@ export async function SiteFooter() {
           </div>
         </div>
 
-        {showPolicyLinks && publishedPolicies.length > 0 ? (
-          <div className="mt-8 flex flex-wrap gap-x-4 gap-y-2 border-t border-white/[0.07] pt-5">
-            {publishedPolicies.map((policy) => (
-              <Link key={policy.key} href={`/policies/${policy.key}`} className="text-[10px] font-semibold text-slate-600 transition hover:text-slate-300">
-                {policy.title}
-              </Link>
-            ))}
-          </div>
-        ) : null}
+        <section aria-labelledby="footer-legal-heading" className="mt-8 border-t border-white/[0.07] pt-5">
+          <h2 id="footer-legal-heading" className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">
+            Legal
+          </h2>
+          {publishedPolicies.length > 0 ? (
+            <nav aria-label="Legal policies" className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+              {publishedPolicies.map((policy) => (
+                <Link
+                  key={policy.key}
+                  href={`/policies/${policy.key}`}
+                  className="inline-flex min-h-9 items-center rounded-lg text-sm font-semibold text-slate-500 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07080c]"
+                >
+                  {policy.title}
+                </Link>
+              ))}
+            </nav>
+          ) : (
+            <p className="mt-3 text-sm leading-6 text-slate-600">
+              Policies will appear here after they are approved and published.
+            </p>
+          )}
+        </section>
 
         <div className="mt-4 flex flex-col gap-1 text-[10px] leading-4 text-slate-700 sm:flex-row sm:justify-between">
           <p>© 2026 Recharza.</p>

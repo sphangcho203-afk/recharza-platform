@@ -110,7 +110,7 @@ export default async function Home() {
             </Link>
           </div>
 
-          <Suspense fallback={<div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">{Array.from({ length: 12 }, (_, index) => <div key={index} className="aspect-[4/5] animate-pulse rounded-xl border border-white/[0.07] bg-white/[0.025]" />)}</div>}>
+          <Suspense fallback={<div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">{Array.from({ length: 12 }, (_, index) => <div key={index} className="aspect-square animate-pulse rounded-lg border border-white/[0.07] bg-white/[0.025]" />)}</div>}>
             <GameCatalogue
               games={visibleGames}
               showRegionalMarkets={storefront.catalogue.showRegionalMarkets}

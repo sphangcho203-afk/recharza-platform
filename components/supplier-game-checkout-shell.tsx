@@ -386,13 +386,21 @@ export function SupplierGameCheckoutShell({
     <form onSubmit={submitCheckout} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="min-w-0 space-y-5">
         <section className="relative overflow-hidden rounded-2xl border border-violet-300/[0.16] bg-[radial-gradient(circle_at_0%_0%,rgba(139,92,246,0.18),transparent_42%),#0d0f18] p-5 sm:p-6">
-          <div className="relative flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <div className="flex flex-wrap items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-violet-200/80"><span className="h-1.5 w-1.5 rounded-full bg-emerald-300" /> {gameLabel} · {selectedMarketLabel}</div>
-              <h1 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">Build your top-up</h1>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Choose a package, verify the player destination, and review the final amount in your selected display currency before payment.</p>
+          <div className="relative">
+            <Link href="/#games" className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-white">
+              <StorefrontIcon name="arrow" className="h-3 w-3 rotate-180" /> Browse games <span className="text-slate-700">/</span> {gameLabel}
+            </Link>
+            <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-200"><span className="h-1.5 w-1.5 rounded-full bg-emerald-300" /> Verified checkout</span>
+                  <span className="rounded-full border border-violet-300/20 bg-violet-300/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-violet-200">{selectedMarketLabel}</span>
+                </div>
+                <h1 className="mt-3 text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">Build your top-up</h1>
+                <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Choose a package, verify the player destination, and review the final amount in your selected display currency before payment.</p>
+              </div>
+              <div className="rounded-xl border border-white/[0.1] bg-white/[0.04] px-3 py-2 text-right"><div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Protected flow</div><div className="mt-1 text-xs font-bold text-emerald-200">ID check · clear pricing</div></div>
             </div>
-            <div className="rounded-xl border border-white/[0.1] bg-white/[0.04] px-3 py-2 text-right"><div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Protected flow</div><div className="mt-1 text-xs font-bold text-emerald-200">ID check · clear pricing</div></div>
           </div>
         </section>
         {markets.length > 1 && gameSlug !== "free-fire" ? (
@@ -403,7 +411,7 @@ export function SupplierGameCheckoutShell({
                   key={market.code}
                   type="button"
                   onClick={() => chooseMarket(market.code)}
-                  className={`min-h-10 rounded-lg border px-4 text-xs font-black transition ${
+                  className={`min-h-9 rounded-lg border px-3 text-xs font-black transition ${
                     market.code === marketCode
                       ? "border-violet-400/45 bg-violet-500/12 text-white"
                       : "border-white/[0.08] bg-[#0d0f16] text-slate-500 hover:border-white/[0.16] hover:text-white"
@@ -529,13 +537,13 @@ export function SupplierGameCheckoutShell({
             </p>
           ) : null}
 
-          <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
             {marketPackages.map((item) => {
               const selected = item.id === selectedPackage.id;
               return (
                 <div
                   key={item.id}
-                  className={`group overflow-hidden rounded-xl border text-left transition ${
+                  className={`group overflow-hidden rounded-lg border text-left transition ${
                     selected
                       ? "border-violet-400/55 bg-violet-500/[0.08] shadow-[0_0_0_1px_rgba(139,92,246,0.15)]"
                       : "border-white/[0.08] bg-[#0d0f16] hover:border-white/[0.17]"
@@ -552,19 +560,19 @@ export function SupplierGameCheckoutShell({
                     aria-pressed={selected}
                     className="block w-full text-left"
                   >
-                    <span className="relative block aspect-[4/3] overflow-hidden bg-[#141821]">
+                    <span className="relative block aspect-square overflow-hidden bg-[#141821]">
                       <ResilientImage
                         sources={item.media.sources}
                         alt={item.media.alt}
                         fallbackLabel={item.name.slice(0, 2).toUpperCase()}
                         fill
                         sizes="(max-width: 640px) 45vw, 190px"
-                        className="object-contain p-4 transition duration-300 group-hover:scale-[1.035]"
+                        className="object-contain p-3 transition duration-300 group-hover:scale-[1.035]"
                         fallbackClassName="absolute inset-0 h-full w-full"
                       />
                     </span>
-                    <span className="block p-3">
-                      <strong className="line-clamp-2 min-h-10 text-xs leading-5 text-white sm:text-[13px]">{item.name}</strong>
+                    <span className="block p-2.5 sm:p-3">
+                      <strong className="line-clamp-2 min-h-9 text-xs leading-4 text-white sm:text-[13px] sm:leading-5">{item.name}</strong>
                       {gameSlug === "free-fire" && item.marketLabel ? (
                         <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{item.marketLabel}</span>
                       ) : null}
@@ -572,7 +580,7 @@ export function SupplierGameCheckoutShell({
                       {selected ? <span className="mt-1 block text-[10px] font-black text-emerald-300">Selected</span> : null}
                     </span>
                   </button>
-                  <div className="px-3 pb-3">
+                  <div className="px-2.5 pb-2.5 sm:px-3 sm:pb-3">
                     <AddToCartButton
                       gameSlug={gameSlug}
                       marketCode={item.marketCode}
