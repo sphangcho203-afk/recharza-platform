@@ -43,13 +43,24 @@ function validEmailList(input) {
     .some((entry) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(entry));
 }
 
-const databaseUrl = value("DATABASE_URL");
-if (isVercelRedacted("DATABASE_URL")) {
+const databaseUrlName = value("DATABASE_URL")
+  ? "DATABASE_URL"
+  : value("POSTGRES_PRISMA_URL")
+    ? "POSTGRES_PRISMA_URL"
+    : isVercelRedacted("DATABASE_URL")
+      ? "DATABASE_URL"
+      : isVercelRedacted("POSTGRES_PRISMA_URL")
+        ? "POSTGRES_PRISMA_URL"
+        : "DATABASE_URL";
+const databaseUrl = value(databaseUrlName);
+if (isVercelRedacted(databaseUrlName)) {
   warnings.push(
-    "DATABASE_URL is redacted by Vercel CLI; its PostgreSQL format cannot be validated by vercel env run.",
+    `${databaseUrlName} is redacted by Vercel CLI; its PostgreSQL format cannot be validated by vercel env run.`,
   );
 } else if (!/^postgres(?:ql)?:\/\//i.test(databaseUrl)) {
-  errors.push("DATABASE_URL must be a PostgreSQL connection string.");
+  errors.push(
+    "DATABASE_URL or POSTGRES_PRISMA_URL must be a PostgreSQL connection string.",
+  );
 }
 
 const appUrl = value("NEXT_PUBLIC_APP_URL");

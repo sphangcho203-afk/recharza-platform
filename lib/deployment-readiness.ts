@@ -1,5 +1,6 @@
 import "server-only";
 
+import { getDatabaseUrl, getDatabaseUrlSource } from "@/lib/database-url";
 import { getMailDeliveryConfiguration } from "@/lib/mail-delivery";
 
 export type DeploymentCheck = {
@@ -68,6 +69,8 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
     isGoogleClientId(googleClientId) &&
     Boolean(value("GOOGLE_CLIENT_SECRET")) &&
     isLongSecret("GOOGLE_OAUTH_STATE_SECRET");
+  const databaseUrl = getDatabaseUrl();
+  const databaseUrlSource = getDatabaseUrlSource();
   const mailConfiguration = getMailDeliveryConfiguration();
   const emailDeliveryReady = Boolean(mailConfiguration.provider);
   const razorpayKeyId = value("RAZORPAY_KEY_ID");
@@ -102,10 +105,10 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
       label: "PostgreSQL connection",
       category: "core",
       required: true,
-      ready: isPostgresUrl(value("DATABASE_URL")),
-      message: isPostgresUrl(value("DATABASE_URL"))
-        ? "A PostgreSQL connection string is configured."
-        : "DATABASE_URL must be a PostgreSQL connection string.",
+      ready: isPostgresUrl(databaseUrl),
+      message: isPostgresUrl(databaseUrl)
+        ? `A PostgreSQL connection string is configured via ${databaseUrlSource}.`
+        : "DATABASE_URL or POSTGRES_PRISMA_URL must be a PostgreSQL connection string.",
     },
     {
       id: "public-url",
