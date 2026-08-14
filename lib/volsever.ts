@@ -81,6 +81,13 @@ function readString(value: unknown, maxLength = 200) {
   return value.trim().slice(0, maxLength);
 }
 
+function readIdentifier(value: unknown, maxLength = 64) {
+  if (typeof value === "number" && Number.isSafeInteger(value)) {
+    return String(value).slice(0, maxLength);
+  }
+  return readString(value, maxLength);
+}
+
 function boundedNumber(value: unknown) {
   if (typeof value !== "number" || !Number.isFinite(value)) return null;
   return value;
@@ -225,9 +232,9 @@ export async function lookupVolseverGameIdentity(
     }
 
     if (status && data) {
-      const echoedId = readString(data.user_id, 64);
-      const username = readString(data.username, 64);
-      const echoedZone = readString(data.zone, 64);
+      const echoedId = readIdentifier(data.user_id, 64);
+      const username = readString(data.username ?? data.nickname, 64);
+      const echoedZone = readIdentifier(data.zone, 64);
 
       if (
         echoedId === playerId &&
