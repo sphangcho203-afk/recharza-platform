@@ -13,7 +13,7 @@ const slides = [
     href: "/games/mobile-legends/india",
     cta: "Shop MLBB India",
     image: "/assets/user-supplied-v2/1000166202.jpg",
-    accent: "from-amber-300/90 to-orange-500/90",
+    accent: "var(--color-warning)",
   },
   {
     eyebrow: "Recharza promise",
@@ -22,7 +22,7 @@ const slides = [
     href: "/#how-it-works",
     cta: "See how it works",
     image: "/assets/user-supplied-v2/1000166215.jpg",
-    accent: "from-cyan-300/90 to-violet-400/90",
+    accent: "var(--color-info)",
   },
   {
     eyebrow: "Built for every region",
@@ -31,7 +31,7 @@ const slides = [
     href: "/#games",
     cta: "Browse the catalogue",
     image: "/assets/user-supplied-v2/1000166213.jpg",
-    accent: "from-violet-300/90 to-fuchsia-400/90",
+    accent: "var(--color-primary)",
   },
 ];
 
@@ -46,32 +46,36 @@ export function PromoCarousel() {
   const slide = slides[active];
 
   return (
-    <section className="relative overflow-hidden rounded-[1.5rem] border border-white/[0.1] bg-[#0d101a] shadow-[0_28px_90px_rgba(49,22,94,0.24)]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_0%,rgba(139,92,246,0.24),transparent_42%),linear-gradient(120deg,#090b13,#11152a)]" />
-      <div className="relative grid min-h-[20rem] lg:grid-cols-[1.03fr_0.97fr]">
-        <div className="relative z-10 flex flex-col justify-center px-6 py-9 sm:px-9 lg:px-12">
-          <div className="mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-white/[0.12] bg-white/[0.055] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.17em] text-slate-200">
-            <span className={`h-1.5 w-1.5 rounded-full bg-gradient-to-r ${slide.accent}`} />
-            {slide.eyebrow}
+    <section className="fable-elevation-2 relative overflow-hidden rounded-lg border border-border bg-surface" aria-label="Store promotions">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(139,92,246,0.18),transparent_38%),linear-gradient(120deg,rgba(9,9,17,0.98),rgba(16,16,24,0.94))]" />
+      <div className="relative grid min-h-[22rem] grid-cols-1 lg:grid-cols-12">
+        <div className="col-span-1 grid content-center gap-6 p-6 sm:p-8 lg:col-span-7 lg:p-12">
+          <div className="grid gap-3">
+            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: slide.accent }} />
+              {slide.eyebrow}
+            </p>
+            <h1 className="max-w-xl text-4xl font-heading font-semibold leading-tight tracking-tight text-text-primary md:text-5xl">{slide.title}</h1>
+            <p className="max-w-lg text-base leading-relaxed text-text-secondary">{slide.description}</p>
           </div>
-          <h1 className="max-w-xl text-4xl font-black leading-[0.97] tracking-[-0.06em] text-white sm:text-5xl lg:text-[3.6rem]">{slide.title}</h1>
-          <p className="mt-4 max-w-lg text-sm leading-6 text-slate-400 sm:text-[15px]">{slide.description}</p>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Link href={slide.href} className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-5 text-sm font-black text-[#0b0d14] shadow-[0_14px_30px_rgba(255,255,255,0.1)] transition hover:-translate-y-0.5 hover:bg-slate-100">
+          <div className="grid gap-4 sm:flex sm:items-center">
+            <Link href={slide.href} className="inline-flex min-h-11 w-fit items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 ease-out hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
               {slide.cta}<StorefrontIcon name="arrow" className="h-4 w-4" />
             </Link>
-            <span className="inline-flex items-center gap-2 text-[11px] font-bold text-emerald-200/80"><span className="h-1.5 w-1.5 rounded-full bg-emerald-300" /> Systems online</span>
+            <span className="inline-flex items-center gap-2 text-sm text-text-secondary"><span className="h-2 w-2 rounded-full bg-success" /> Systems online</span>
           </div>
-          <div className="mt-7 flex items-center gap-2" aria-label="Promotional slides">
-            {slides.map((item, index) => <button key={item.eyebrow} type="button" aria-label={`Show promotion ${index + 1}`} onClick={() => setActive(index)} className={`h-1.5 rounded-full transition-all ${index === active ? "w-9 bg-violet-300" : "w-2.5 bg-white/20 hover:bg-white/40"}`} />)}
+          <div className="flex items-center gap-2" aria-label="Promotional slides">
+            {slides.map((item, index) => (
+              <button key={item.eyebrow} type="button" aria-label={`Show promotion ${index + 1}`} aria-current={index === active} onClick={() => setActive(index)} className={`h-2 rounded-lg transition-[background-color,width] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${index === active ? "w-8 bg-primary" : "w-2 bg-border hover:bg-text-muted"}`} />
+            ))}
           </div>
         </div>
-        <div className="relative min-h-[14rem] overflow-hidden lg:min-h-0">
-          <img src={slide.image} alt="" className="absolute inset-0 h-full w-full object-cover object-center opacity-80 transition-opacity duration-500" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0c0e16] via-[#0c0e16]/35 to-transparent" />
-          <div className="absolute inset-x-5 bottom-5 rounded-xl border border-white/[0.14] bg-[#080a12]/65 px-4 py-3 text-[10px] font-black uppercase tracking-[0.14em] text-white backdrop-blur-xl sm:inset-x-auto sm:right-5 sm:w-52">
-            <div className="flex items-center gap-2 text-emerald-200"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Protected checkout</div>
-            <div className="mt-1.5 text-slate-300/70">Verify your destination before payment.</div>
+        <div className="relative col-span-1 min-h-56 overflow-hidden border-t border-border lg:col-span-5 lg:min-h-0 lg:border-l lg:border-t-0">
+          <img src={slide.image} alt="" className="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-200 ease-out" />
+          <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/30 to-transparent lg:bg-gradient-to-r" />
+          <div className="fable-surface-raised absolute bottom-6 left-6 right-6 rounded-lg border border-border p-4 lg:left-auto lg:right-6 lg:w-52">
+            <div className="flex items-center gap-2 text-sm font-semibold text-text-primary"><StorefrontIcon name="shield" className="h-4 w-4 text-success" /> Protected checkout</div>
+            <p className="mt-2 text-sm leading-relaxed text-text-secondary">Verify your destination before payment.</p>
           </div>
         </div>
       </div>

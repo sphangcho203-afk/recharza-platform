@@ -69,13 +69,13 @@ export function GameCard({
   const card = (
     <article
       style={accentStyle}
-      className={`storefront-card group h-full overflow-hidden rounded-xl border bg-[#0d0f16] transition duration-200 ${
+      className={`fable-game-card group h-full overflow-hidden rounded-lg border transition-[border-color,box-shadow,transform] duration-200 ease-out ${
         interactive
-          ? "border-white/[0.08] hover:-translate-y-0.5 hover:border-white/[0.18] hover:shadow-[0_14px_36px_rgba(0,0,0,0.28)]"
-          : "border-white/[0.06] opacity-65"
+          ? "fable-surface-raised border-border hover:-translate-y-1 hover:border-primary/50 hover:shadow-elevation-2"
+          : "fable-surface-flat border-border opacity-60"
       }`}
     >
-      <div className="relative aspect-square overflow-hidden bg-[#12151e]">
+      <div className="relative aspect-square overflow-hidden border-b border-border bg-surface-sunken">
         <StorefrontArtwork
           artworkKey={game.artworkKey}
           sources={preferredArtworkSources(game)}
@@ -84,16 +84,15 @@ export function GameCard({
           priority={priority}
           loading={priority ? "eager" : "lazy"}
           sizes="(max-width: 520px) 46vw, (max-width: 900px) 30vw, 180px"
-          className="absolute inset-0 h-full w-full transition-transform duration-300 motion-safe:group-hover:scale-[1.035]"
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-200 ease-out motion-safe:group-hover:scale-[1.03]"
           fallbackClassName="absolute inset-0 h-full w-full"
           objectPosition={game.artworkPosition}
           objectFit="cover"
         />
-
       </div>
 
-      <div className="p-3">
-        <div className="mb-3 flex min-h-7 items-center justify-between gap-2">
+      <div className="grid gap-4 p-6">
+        <div className="flex min-h-8 items-center justify-between gap-3">
           <ResilientImage
             sources={preferredLogoSources(game)}
             alt={game.logoAlt}
@@ -101,23 +100,22 @@ export function GameCard({
             width={110}
             height={30}
             sizes="90px"
-            className={`max-h-5 w-auto max-w-[6.5rem] object-contain object-left ${game.logoTreatment === "invert" ? "brightness-0 invert" : ""}`}
-            fallbackClassName="h-5 w-8"
+            className={`max-h-6 w-auto max-w-[7rem] object-contain object-left ${game.logoTreatment === "invert" ? "brightness-0 invert" : ""}`}
+            fallbackClassName="h-6 w-8"
           />
-          {!interactive ? <span className="rounded-md border border-white/[0.1] bg-white/[0.04] px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-slate-400">{label}</span> : null}
+          {!interactive ? <span className="rounded-lg border border-border bg-surface-sunken px-2 py-1 text-xs font-semibold uppercase tracking-wide text-text-muted">{label}</span> : null}
         </div>
-        <h3 className="line-clamp-2 min-h-10 text-[13px] font-black leading-5 tracking-[-0.015em] text-white sm:text-sm">
-          {game.title}
-        </h3>
-        <div className="mt-2 flex items-end justify-between gap-2">
+        <div className="grid gap-2">
+          <h3 className="line-clamp-2 min-h-12 text-lg font-heading font-semibold leading-tight tracking-tight text-text-primary">{game.title}</h3>
+          <p className="text-sm text-text-muted">{game.region?.label ?? game.category}</p>
+        </div>
+        <div className="flex items-end justify-between gap-4 border-t border-border pt-4">
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold text-slate-500">Starting from</p>
-            <p className="mt-0.5 truncate text-sm font-black" style={{ color: game.accent }}>
-              {price ?? game.packages[0] ?? label}
-            </p>
+            <p className="text-sm text-text-secondary">Starting from</p>
+            <p className="mt-1 truncate text-base font-semibold text-primary">{price ?? game.packages[0] ?? label}</p>
           </div>
-          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035] text-slate-400 transition group-hover:border-violet-300/30 group-hover:bg-violet-300 group-hover:text-slate-950">
-            <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-border bg-surface-sunken text-text-secondary transition-colors duration-150 ease-out group-hover:border-primary group-hover:bg-primary group-hover:text-white">
+            <StorefrontIcon name="arrow" className="h-4 w-4" />
           </span>
         </div>
       </div>
@@ -128,7 +126,7 @@ export function GameCard({
     return (
       <Link
         href={game.href}
-        className="block h-full rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07080c]"
+        className="block h-full rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-sunken"
         aria-label={`${label} ${game.title}`}
       >
         {card}

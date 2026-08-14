@@ -118,16 +118,16 @@ export function GameCatalogue({
   );
 
   return (
-    <div className="mt-5">
+    <div className="mt-8">
       <div className="flex gap-2 overflow-x-auto border-b border-white/[0.08] pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {filters.map((item) => (
           <Link
             key={item.id}
             href={item.id === "all" ? "/#games" : `/?category=${item.id}#games`}
-            className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-lg border px-3.5 text-xs font-black transition ${
+            className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
               filter === item.id
-                ? "border-violet-400/40 bg-violet-500/15 text-white"
-                : "border-white/[0.08] bg-[#0d0f16] text-slate-400 hover:border-white/[0.16] hover:text-white"
+                ? "border-primary/60 bg-primary/15 text-text-primary"
+                : "border-border bg-surface text-text-secondary hover:border-primary/60 hover:text-text-primary"
             }`}
           >
             <StorefrontIcon name={item.icon} className="h-4 w-4" />
@@ -136,22 +136,22 @@ export function GameCatalogue({
         ))}
       </div>
 
-      <div className="mt-5 flex items-end justify-between gap-4">
+      <div className="mt-8 grid gap-4 sm:flex sm:items-end sm:justify-between">
         <div>
-          <h3 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">
+          <h3 className="text-2xl font-heading font-semibold tracking-tight text-text-primary">
             {normalizedQuery ? "Search results" : filter === "all" ? "Hot-selling top-up games" : filters.find((item) => item.id === filter)?.label}
           </h3>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-2 text-sm text-text-secondary">
             {normalizedQuery ? `${filteredGames.length} matching games` : "Choose a game to see live packages and checkout options."}
           </p>
         </div>
         {(normalizedQuery || filter !== "all") ? (
-          <Link href="/#games" className="text-xs font-black text-violet-300 hover:text-violet-200">Clear</Link>
+          <Link href="/#games" className="text-sm font-semibold text-primary transition-colors duration-150 ease-out hover:text-primary-hover">Clear</Link>
         ) : null}
       </div>
 
       {filteredGames.length ? (
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredGames.map((game, index) => (
             <GameCard
               key={game.slug}
@@ -165,10 +165,10 @@ export function GameCatalogue({
           ))}
         </div>
       ) : (
-        <div className="mt-4 rounded-xl border border-dashed border-white/[0.12] px-5 py-12 text-center">
+        <div className="fable-surface-flat mt-6 grid min-h-48 place-items-center rounded-lg border border-dashed border-border p-6 text-center">
           <StorefrontIcon name="search" className="mx-auto h-5 w-5 text-slate-500" />
-          <p className="mt-3 text-sm font-black text-white">No matching game</p>
-          <p className="mt-1 text-xs text-slate-500">Try another title, package or category.</p>
+          <p className="mt-4 text-base font-semibold text-text-primary">No matching game</p>
+          <p className="mt-2 text-sm text-text-secondary">Try another title, package or category.</p>
         </div>
       )}
 
@@ -177,7 +177,7 @@ export function GameCatalogue({
           <div className="flex items-center justify-between gap-3">
             <div>
               <h3 className="text-base font-black text-white">Mobile Legends markets</h3>
-              <p className="mt-1 text-xs text-slate-500">Choose the region that matches the game account.</p>
+              <p className="mt-2 text-sm text-text-secondary">Choose the region that matches the game account.</p>
             </div>
             <Link href="/games/mobile-legends" className="text-xs font-black text-violet-300">View all</Link>
           </div>
