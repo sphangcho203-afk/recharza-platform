@@ -31,7 +31,7 @@ const TABS: Array<{ id: EditorTab; label: string }> = [
   { id: "sections", label: "Sections" },
   { id: "games", label: "Games" },
   { id: "navigation", label: "Navigation" },
-  { id: "policies", label: "Policies" },
+  { id: "policies", label: "Legal pages" },
   { id: "flags", label: "Flags" },
   { id: "history", label: "History" },
 ];
@@ -156,16 +156,6 @@ function Metric({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function policyTone(status: string) {
-  if (status === "APPROVED") {
-    return "border-emerald-300/20 bg-emerald-300/10 text-emerald-100";
-  }
-  if (status === "REVIEW") {
-    return "border-amber-300/20 bg-amber-300/10 text-amber-100";
-  }
-  return "border-white/10 bg-white/5 text-slate-400";
-}
-
 export function AdminStorefrontConsole({
   initialSnapshot,
 }: {
@@ -192,9 +182,9 @@ export function AdminStorefrontConsole({
       ),
     [draft.hiddenGameSlugs, snapshot.availableGames],
   );
-  const approvedPolicies = POLICY_KEYS.filter((key) => {
+  const visibleLegalPages = POLICY_KEYS.filter((key) => {
     const policy = draft.policies[key];
-    return policy.status === "APPROVED" && policy.visible && Boolean(policy.body.trim());
+    return policy.visible && Boolean(policy.body.trim());
   }).length;
 
   function setHero<K extends keyof StorefrontContent["hero"]>(
@@ -401,7 +391,7 @@ export function AdminStorefrontConsole({
           <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
             <Metric label="Visible games" value={visibleGames.length} />
             <Metric label="Featured" value={draft.featuredGameSlugs.length} />
-            <Metric label="Policies" value={approvedPolicies} />
+            <Metric label="Legal pages" value={visibleLegalPages} />
             <Metric label="Nav links" value={draft.navigation.visibleIds.length} />
           </div>
         </article>
@@ -846,10 +836,10 @@ export function AdminStorefrontConsole({
             </div>
           </article>
           <article className="rounded-2xl border border-white/10 bg-black/15 p-5">
-            <Toggle
-              active={draft.footer.enabled}
-              label="Storefront footer"
-              note="Show the copyright, customer links, and approved policy links."
+              <Toggle
+                active={draft.footer.enabled}
+                label="Storefront footer"
+                note="Show the copyright, customer links, and visible legal pages."
               onClick={() =>
                 setDraft((current) => ({
                   ...current,
@@ -885,43 +875,28 @@ export function AdminStorefrontConsole({
           return (
             <article key={key} className="rounded-2xl border border-white/10 bg-black/15 p-5">
               <div className="flex items-start justify-between gap-3">
-                <h3 className="text-lg font-black text-white">{policy.title}</h3>
-                <span className={`rounded-full border px-3 py-1.5 text-xs font-black ${policyTone(policy.status)}`}>
-                  {policy.status}
+                <div>
+                  <h3 className="text-lg font-black text-white">{policy.title}</h3>
+                  <p className="mt-1 text-xs text-slate-500">Published with the next saved storefront version.</p>
+                </div>
+                <span className={`rounded-full border px-3 py-1.5 text-xs font-black ${policy.visible && policy.body.trim() ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-100" : "border-white/10 bg-white/5 text-slate-400"}`}>
+                  {policy.visible && policy.body.trim() ? "Visible" : "Hidden"}
                 </span>
               </div>
               <div className="mt-4 grid gap-4">
                 <TextField label="Page title" value={policy.title} onChange={(value) => setPolicy(key, { title: value })} />
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <label>
-                    <Label>Review state</Label>
-                    <select
-                      value={policy.status}
-                      onChange={(event) =>
-                        setPolicy(key, {
-                          status: event.target.value as typeof policy.status,
-                        })
-                      }
-                      className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-[#11111a] px-3 text-sm text-white"
-                    >
-                      <option value="DRAFT">Draft</option>
-                      <option value="REVIEW">Review</option>
-                      <option value="APPROVED">Approved</option>
-                    </select>
-                  </label>
-                  <Toggle
-                    active={policy.visible}
-                    label="Public visibility"
-                    note="Also requires approved status and non-empty text."
-                    onClick={() => setPolicy(key, { visible: !policy.visible })}
-                  />
-                </div>
+                <Toggle
+                  active={policy.visible}
+                  label="Public visibility"
+                  note="The page appears after this storefront draft is published when its body is not empty."
+                  onClick={() => setPolicy(key, { visible: !policy.visible })}
+                />
                 <TextField
                   multiline
                   rows={12}
                   label="Policy body"
                   value={policy.body}
-                  placeholder="Write reviewed policy text here."
+                  placeholder="Write the legal page content here."
                   onChange={(value) => setPolicy(key, { body: value })}
                 />
                 <p className="rounded-xl border border-white/8 bg-white/[0.025] p-3 font-mono text-xs text-slate-500">
@@ -965,20 +940,6 @@ export function AdminStorefrontConsole({
                   privateFlags: {
                     ...current.privateFlags,
                     showPricingSnapshots: !current.privateFlags.showPricingSnapshots,
-                  },
-                }))
-              }
-            />
-            <Toggle
-              active={draft.privateFlags.showPolicyLinks}
-              label="Policy links"
-              note="Show only approved, visible, non-empty policies."
-              onClick={() =>
-                setDraft((current) => ({
-                  ...current,
-                  privateFlags: {
-                    ...current.privateFlags,
-                    showPolicyLinks: !current.privateFlags.showPolicyLinks,
                   },
                 }))
               }
@@ -1057,14 +1018,14 @@ export function AdminStorefrontConsole({
               </h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
                 Control customer-facing copy, announcements, sections, games, navigation,
-                policies, and safe display flags through private drafts and explicit publication.
+                legal pages, and safe display flags through one database-backed draft and publish workflow.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               <Metric label="Draft" value={snapshot.draftRevision} />
               <Metric label="Published" value={snapshot.publishedRevision} />
               <Metric label="Games" value={visibleGames.length} />
-              <Metric label="Policies" value={approvedPolicies} />
+              <Metric label="Legal pages" value={visibleLegalPages} />
             </div>
           </div>
 
