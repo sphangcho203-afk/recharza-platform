@@ -9,9 +9,9 @@ import { StorefrontIcon } from "@/components/storefront-icon";
 import type { Game } from "@/lib/games";
 import { supportedCurrencyCodes, type SupportedCurrencyCode } from "@/lib/commerce/currencies";
 
-type CatalogueFilter = "all" | "mobile" | "pc-console" | "gift-cards" | "popular";
+type CatalogueFilter = "all" | "top-up" | "gift-cards" | "popular";
 
-const supportedFilters = new Set<CatalogueFilter>(["all", "mobile", "pc-console", "gift-cards", "popular"]);
+const supportedFilters = new Set<CatalogueFilter>(["all", "top-up", "gift-cards", "popular"]);
 const regionalMlbbSlugs = new Set([
   "mobile-legends-india",
   "mobile-legends-indonesia",
@@ -32,23 +32,13 @@ const mainGameOrder = [
   "call-of-duty-mobile",
   "fortnite",
 ];
-const mobileGameSlugs = new Set([
-  ...regionalMlbbSlugs,
-  "free-fire",
-  "pubg-mobile",
-  "genshin-impact",
-  "bgmi",
-  "call-of-duty-mobile",
-]);
-const pcConsoleGameSlugs = new Set(["valorant", "genshin-impact", "fortnite"]);
 const popularGameSlugs = new Set(mainGameOrder.slice(0, 10));
 
 const filters: { id: CatalogueFilter; label: string; icon: Parameters<typeof StorefrontIcon>[0]["name"] }[] = [
   { id: "all", label: "All", icon: "games" },
-  { id: "popular", label: "Top Up", icon: "receipt" },
-  { id: "mobile", label: "Mobile", icon: "account" },
-  { id: "pc-console", label: "PC / Console", icon: "shield" },
+  { id: "top-up", label: "Top Up", icon: "receipt" },
   { id: "gift-cards", label: "Gift Cards", icon: "cart" },
+  { id: "popular", label: "Popular", icon: "shield" },
 ];
 
 function sortByOrder(items: Game[]) {
@@ -57,8 +47,7 @@ function sortByOrder(items: Game[]) {
 }
 
 function matchesFilter(game: Game, filter: CatalogueFilter) {
-  if (filter === "mobile") return mobileGameSlugs.has(game.slug);
-  if (filter === "pc-console") return pcConsoleGameSlugs.has(game.slug);
+  if (filter === "top-up") return !game.packages.some((item) => item.toLowerCase().includes("gift card"));
   if (filter === "gift-cards") return game.packages.some((item) => item.toLowerCase().includes("gift card"));
   if (filter === "popular") return popularGameSlugs.has(game.slug);
   return true;

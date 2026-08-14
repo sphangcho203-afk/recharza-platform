@@ -37,12 +37,6 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#080910]/90 shadow-[0_12px_40px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-      <div className="hidden border-b border-white/[0.06] bg-white/[0.02] sm:block">
-        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 sm:px-6 lg:px-8">
-          <span>Instant digital delivery · Verified account checkout</span>
-          <span className="inline-flex items-center gap-2 text-emerald-300/80"><span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,0.8)]" />Systems online</span>
-        </div>
-      </div>
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="grid min-h-[4.25rem] min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-2.5 sm:min-h-[4.75rem] sm:gap-5">
           <div className="flex items-center gap-2">

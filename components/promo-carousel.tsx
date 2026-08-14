@@ -62,7 +62,6 @@ export function PromoCarousel() {
             <Link href={slide.href} className="inline-flex min-h-11 w-fit items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 ease-out hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
               {slide.cta}<StorefrontIcon name="arrow" className="h-4 w-4" />
             </Link>
-            <span className="inline-flex items-center gap-2 text-sm text-text-secondary"><span className="h-2 w-2 rounded-full bg-success" /> Systems online</span>
           </div>
           <div className="flex items-center gap-2" aria-label="Promotional slides">
             {slides.map((item, index) => (

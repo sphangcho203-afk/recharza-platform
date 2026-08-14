@@ -4,9 +4,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 const categories = [
-  { id: "all", label: "All Games", href: "/#games" },
-  { id: "mobile", label: "Mobile Games", href: "/?category=mobile#games" },
-  { id: "pc-console", label: "PC / Console", href: "/?category=pc-console#games" },
+  { id: "all", label: "All", href: "/#games" },
+  { id: "top-up", label: "Top Up", href: "/?category=top-up#games" },
   { id: "gift-cards", label: "Gift Cards", href: "/?category=gift-cards#games" },
   { id: "popular", label: "Popular", href: "/?category=popular#games" },
 ] as const;
