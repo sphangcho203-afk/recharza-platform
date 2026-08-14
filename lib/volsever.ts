@@ -26,9 +26,13 @@ function getVolseverGameCandidates(value: unknown, marketCode?: unknown) {
   if (normalized === "free-fire") {
     const market = typeof marketCode === "string" ? marketCode.trim().toLowerCase() : "";
     const isIndonesia = /(^|[-_])(id|indonesia)([-_]|$)/.test(market);
+
+    // Volsever's India route is the validated default for the store's
+    // region-neutral Free Fire ID flow. Keep the broader Asia route and the
+    // explicit Indonesia route as fallbacks for accounts from other markets.
     return isIndonesia
-      ? ["free-fire-indonesia", "free-fire-asia"]
-      : ["free-fire-asia", "free-fire-indonesia"];
+      ? ["free-fire-india", "free-fire-indonesia", "free-fire-asia"]
+      : ["free-fire-india", "free-fire-asia", "free-fire-indonesia"];
   }
 
   return [volseverGameAliases[normalized] ?? normalized];
