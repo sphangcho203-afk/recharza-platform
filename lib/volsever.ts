@@ -13,6 +13,7 @@ export const VOLSEVER_MAX_RESPONSE_BYTES = 64 * 1024;
 export const VOLSEVER_VERIFICATION_MODE = "volsever-lookup";
 
 const volseverGameAliases: Record<string, string> = {
+  "mobile-legends": "mobile-legends-wr",
   "free-fire": "free-fire-asia",
   "pubg-mobile": "pubg-mobile-global",
   valorant: "valorant-indonesia",

@@ -5,6 +5,7 @@ import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
 export const supplierCheckoutGameSlugs = [
+  "mobile-legends",
   "free-fire",
   "pubg-mobile",
   "valorant",

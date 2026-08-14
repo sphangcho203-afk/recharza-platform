@@ -92,6 +92,35 @@ export function validateSupplierCheckoutIdentity(
     };
   }
 
+  if (gameSlug === "mobile-legends") {
+    const zoneId = getValue(values, "zoneId");
+    const zoneOptions = getSupplierSelectOptions(fieldSchema, /zone|server/);
+    if (!zoneId) {
+      return {
+        valid: false,
+        field: "zoneId",
+        message: "Zone ID is required for Mobile Legends.",
+      };
+    }
+    if (
+      zoneOptions.length > 0 &&
+      !zoneOptions.some((option) => option.value === zoneId)
+    ) {
+      return {
+        valid: false,
+        field: "zoneId",
+        message: "Choose a zone supported by this supplier offer.",
+      };
+    }
+
+    return {
+      valid: true,
+      playerId,
+      zoneId,
+      verificationMode: "format-only",
+    };
+  }
+
   if (gameSlug === "genshin-impact") {
     if (!/^\d{9,10}$/.test(playerId)) {
       return {
