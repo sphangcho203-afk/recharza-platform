@@ -150,6 +150,7 @@ export async function POST(
       gameSlug: slug,
       playerId: identity.playerId,
       zoneId: identity.zoneId,
+      marketCode: selectedPackage.marketCode,
     });
 
     return Response.json(
