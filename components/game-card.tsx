@@ -1,7 +1,5 @@
-import type { CSSProperties } from "react";
 import Link from "next/link";
 
-import { ResilientImage } from "@/components/resilient-image";
 import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import {
@@ -14,7 +12,6 @@ import { formatInr } from "@/lib/mobile-legends";
 
 type GameCardProps = {
   game: Game;
-  variant?: "rail" | "feed";
   priority?: boolean;
   showDevelopmentBadges?: boolean;
   showPricingSnapshots?: boolean;
@@ -33,16 +30,10 @@ function unique(values: string[]) {
 }
 
 function preferredArtworkSources(game: Game) {
-  const remote = game.artworkSources.filter((source) => source.startsWith("https://"));
   const local = game.artworkSources.filter((source) => source.startsWith("/") && !source.includes("/assets/founder/"));
+  const remote = game.artworkSources.filter((source) => source.startsWith("https://"));
   const founder = game.artworkSources.filter((source) => source.includes("/assets/founder/"));
   return unique([...local, ...remote, ...founder]);
-}
-
-function preferredLogoSources(game: Game) {
-  const actual = game.logoSources.filter((source) => !source.includes("/assets/founder/"));
-  const founder = game.logoSources.filter((source) => source.includes("/assets/founder/"));
-  return unique([...actual, ...founder]);
 }
 
 export function GameCard({
@@ -64,60 +55,48 @@ export function GameCard({
         )
       : formatInr(game.startingPriceInPaise)
     : null;
-  const accentStyle = { "--game-accent": game.accent } as CSSProperties;
+  const isRegional = game.kind === "mobile-legends-region";
+  const title = isRegional ? game.region?.label ?? game.title : game.title;
+  const category = isRegional ? "Mobile Legends" : game.category;
 
   const card = (
     <article
-      style={accentStyle}
-      className={`fable-game-card group h-full overflow-hidden rounded-lg border transition-[border-color,box-shadow,transform] duration-200 ease-out ${
+      className={`group grid h-full gap-3 rounded-lg border p-3 transition-[border-color,box-shadow,transform] duration-200 ease-out sm:p-4 ${
         interactive
-          ? "fable-surface-raised border-border hover:-translate-y-1 hover:border-primary/50 hover:shadow-elevation-2"
+          ? "fable-surface-raised border-border hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-elevation-1"
           : "fable-surface-flat border-border opacity-60"
       }`}
     >
-      <div className="relative aspect-square overflow-hidden border-b border-border bg-surface-sunken">
+      <div className="relative aspect-square overflow-hidden rounded-lg border border-border bg-surface-sunken">
         <StorefrontArtwork
           artworkKey={game.artworkKey}
           sources={preferredArtworkSources(game)}
           alt={game.artworkAlt}
-          fallbackLabel={game.title}
+          fallbackLabel={title}
           priority={priority}
           loading={priority ? "eager" : "lazy"}
-          sizes="(max-width: 520px) 46vw, (max-width: 900px) 30vw, 180px"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-200 ease-out motion-safe:group-hover:scale-[1.03]"
-          fallbackClassName="absolute inset-0 h-full w-full"
+          sizes="(max-width: 639px) 44vw, (max-width: 1023px) 29vw, (max-width: 1279px) 18vw, 15vw"
+          className="h-full w-full object-cover transition-transform duration-200 ease-out motion-safe:group-hover:scale-[1.03]"
+          fallbackClassName="h-full w-full"
           objectPosition={game.artworkPosition}
           objectFit="cover"
         />
       </div>
 
-      <div className="grid gap-4 p-6">
-        <div className="flex min-h-8 items-center justify-between gap-3">
-          <ResilientImage
-            sources={preferredLogoSources(game)}
-            alt={game.logoAlt}
-            fallbackLabel={game.title}
-            width={110}
-            height={30}
-            sizes="90px"
-            className={`max-h-6 w-auto max-w-[7rem] object-contain object-left ${game.logoTreatment === "invert" ? "brightness-0 invert" : ""}`}
-            fallbackClassName="h-6 w-8"
-          />
-          {!interactive ? <span className="rounded-lg border border-border bg-surface-sunken px-2 py-1 text-xs font-semibold uppercase tracking-wide text-text-muted">{label}</span> : null}
+      <div className="grid min-w-0 gap-2">
+        <div className="flex min-w-0 items-center justify-between gap-2">
+          <h3 className="min-w-0 truncate text-sm font-semibold leading-5 text-text-primary sm:text-base">{title}</h3>
+          {isRegional ? <span className="shrink-0 text-base" aria-label={`${game.region?.label ?? title} region`}>{game.region?.flag}</span> : null}
         </div>
-        <div className="grid gap-2">
-          <h3 className="line-clamp-2 min-h-12 text-lg font-heading font-semibold leading-tight tracking-tight text-text-primary">{game.title}</h3>
-          <p className="text-sm text-text-muted">{game.region?.label ?? game.category}</p>
-        </div>
-        <div className="flex items-end justify-between gap-4 border-t border-border pt-4">
-          <div className="min-w-0">
-            <p className="text-sm text-text-secondary">Starting from</p>
-            <p className="mt-1 truncate text-base font-semibold text-primary">{price ?? game.packages[0] ?? label}</p>
-          </div>
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-border bg-surface-sunken text-text-secondary transition-colors duration-150 ease-out group-hover:border-primary group-hover:bg-primary group-hover:text-white">
-            <StorefrontIcon name="arrow" className="h-4 w-4" />
-          </span>
-        </div>
+        <p className="truncate text-xs font-medium text-text-muted">{category}</p>
+        {price ? <p className="truncate text-xs text-text-secondary">From <span className="font-semibold text-primary">{price}</span></p> : null}
+      </div>
+
+      <div className="flex items-center justify-between gap-2 border-t border-border pt-2">
+        <span className="truncate text-xs font-semibold text-text-secondary">{label}</span>
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-border bg-surface-sunken text-text-secondary transition-[background-color,border-color,color] duration-150 ease-out group-hover:border-primary group-hover:bg-primary group-hover:text-white">
+          <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
+        </span>
       </div>
     </article>
   );
@@ -127,7 +106,7 @@ export function GameCard({
       <Link
         href={game.href}
         className="block h-full rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-sunken"
-        aria-label={`${label} ${game.title}`}
+        aria-label={`${label} ${title}`}
       >
         {card}
       </Link>
