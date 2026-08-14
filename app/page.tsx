@@ -16,10 +16,9 @@ import { getPublishedStorefrontContent } from "@/lib/storefront-content";
 export const dynamic = "force-dynamic";
 
 const benefitItems = [
-  { icon: "receipt" as const, title: "Clear prices", text: "Published package pricing before payment." },
-  { icon: "shield" as const, title: "Secure checkout", text: "Account-based checkout and protected payment flow." },
-  { icon: "track" as const, title: "Order tracking", text: "Every order gets a recoverable tracking path." },
-  { icon: "support" as const, title: "Real support", text: "Telegram, email and support tickets in one system." },
+  { icon: "games" as const, title: "Choose a game", text: "Start with a clean regional card and see the right packages." },
+  { icon: "shield" as const, title: "Verify your ID", text: "Confirm the player destination before you pay." },
+  { icon: "track" as const, title: "Pay and track", text: "Complete checkout and keep your order details in one place." },
 ];
 
 export default async function Home() {
@@ -96,26 +95,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="offers" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 pb-3 sm:px-6 lg:px-8">
-        <div className="grid gap-3 md:grid-cols-3">
-          <Link href="/#games" className="group rounded-2xl border border-amber-300/[0.16] bg-[linear-gradient(135deg,rgba(245,158,11,0.12),rgba(17,24,39,0.6))] p-4 transition hover:-translate-y-0.5 hover:border-amber-200/30">
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-amber-200/80">Featured market</p>
-            <h3 className="mt-2 text-base font-black text-white">Golden Month · MLBB India</h3>
-            <p className="mt-1 text-xs leading-5 text-slate-400">A region-first top-up path with local package context.</p>
-          </Link>
-          <Link href="/#games" className="group rounded-2xl border border-cyan-300/[0.16] bg-[linear-gradient(135deg,rgba(34,211,238,0.1),rgba(17,24,39,0.6))] p-4 transition hover:-translate-y-0.5 hover:border-cyan-200/30">
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-200/80">Always visible</p>
-            <h3 className="mt-2 text-base font-black text-white">Clear prices in your currency</h3>
-            <p className="mt-1 text-xs leading-5 text-slate-400">Choose display currency from the header before you shop.</p>
-          </Link>
-          <Link href="/#how-it-works" className="group rounded-2xl border border-violet-300/[0.16] bg-[linear-gradient(135deg,rgba(139,92,246,0.12),rgba(17,24,39,0.6))] p-4 transition hover:-translate-y-0.5 hover:border-violet-200/30">
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-200/80">Recharza standard</p>
-            <h3 className="mt-2 text-base font-black text-white">Verify first. Pay with confidence.</h3>
-            <p className="mt-1 text-xs leading-5 text-slate-400">The account check and order summary stay in one flow.</p>
-          </Link>
-        </div>
-      </section>
-
       {storefront.catalogue.enabled ? (
         <section id="games" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -151,7 +130,7 @@ export default async function Home() {
           </div>
           <span className="hidden text-xs font-bold text-slate-600 sm:block">Built for speed, clarity, and support.</span>
         </div>
-        <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
           {benefitItems.map((item, index) => (
             <div key={item.title} className="group relative flex items-start gap-3 bg-[#0c0e15] p-4 transition hover:bg-[#10131d] sm:p-5">
               <span className="absolute right-4 top-4 text-[10px] font-black text-slate-700">0{index + 1}</span>
@@ -164,6 +143,33 @@ export default async function Home() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section id="offers" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-9 sm:px-6 lg:px-8">
+        <div className="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-200/80">Featured market</p>
+            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Offers worth checking before checkout.</h2>
+          </div>
+          <Link href="/#games" className="text-sm font-semibold text-violet-200 hover:text-white">Browse games</Link>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <Link href="/#games" className="group rounded-lg border border-amber-300/[0.16] bg-[linear-gradient(135deg,rgba(245,158,11,0.12),rgba(17,24,39,0.6))] p-5 transition duration-200 ease-out hover:-translate-y-1 hover:border-amber-200/30 hover:shadow-elevation-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-amber-200/80">Golden Month · India</p>
+            <h3 className="mt-2 text-lg font-heading font-semibold text-white">A region-first MLBB path.</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-400">See the correct market, package context, and currency before you pay.</p>
+          </Link>
+          <Link href="/#games" className="group rounded-lg border border-cyan-300/[0.16] bg-[linear-gradient(135deg,rgba(34,211,238,0.1),rgba(17,24,39,0.6))] p-5 transition duration-200 ease-out hover:-translate-y-1 hover:border-cyan-200/30 hover:shadow-elevation-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-cyan-200/80">Currency control</p>
+            <h3 className="mt-2 text-lg font-heading font-semibold text-white">See the price in your currency.</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-400">Use the header picker to switch the catalogue display without losing your place.</p>
+          </Link>
+          <Link href="/#how-it-works" className="group rounded-lg border border-violet-300/[0.16] bg-[linear-gradient(135deg,rgba(139,92,246,0.12),rgba(17,24,39,0.6))] p-5 transition duration-200 ease-out hover:-translate-y-1 hover:border-violet-200/30 hover:shadow-elevation-1">
+            <p className="text-xs font-semibold uppercase tracking-wide text-violet-200/80">Protected flow</p>
+            <h3 className="mt-2 text-lg font-heading font-semibold text-white">Verify first. Pay with confidence.</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-400">Player destination and order summary stay visible through checkout.</p>
+          </Link>
         </div>
       </section>
 

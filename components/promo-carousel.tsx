@@ -70,12 +70,14 @@ export function PromoCarousel() {
             ))}
           </div>
         </div>
-        <div className="relative col-span-1 min-h-56 overflow-hidden border-t border-border lg:col-span-5 lg:min-h-0 lg:border-l lg:border-t-0">
-          <img src={slide.image} alt="" className="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-200 ease-out" />
-          <div className="absolute inset-0 bg-gradient-to-r from-surface via-surface/30 to-transparent lg:bg-gradient-to-r" />
-          <div className="fable-surface-raised absolute bottom-6 left-6 right-6 rounded-lg border border-border p-4 lg:left-auto lg:right-6 lg:w-52">
+        <div className="grid grid-rows-[minmax(0,1fr)_auto] border-t border-border lg:col-span-5 lg:border-l lg:border-t-0">
+          <div className="relative min-h-56 overflow-hidden lg:min-h-0">
+            <img src={slide.image} alt="" className="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-200 ease-out" />
+            <div className="absolute inset-0 bg-gradient-to-r from-surface/80 via-surface/20 to-transparent" />
+          </div>
+          <div className="fable-surface-raised grid gap-1 border-t border-border p-4">
             <div className="flex items-center gap-2 text-sm font-semibold text-text-primary"><StorefrontIcon name="shield" className="h-4 w-4 text-success" /> Protected checkout</div>
-            <p className="mt-2 text-sm leading-relaxed text-text-secondary">Verify your destination before payment.</p>
+            <p className="text-sm leading-relaxed text-text-secondary">Verify your destination before payment.</p>
           </div>
         </div>
       </div>

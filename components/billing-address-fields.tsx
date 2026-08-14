@@ -1,7 +1,7 @@
 "use client";
 
+import { CountryPicker } from "@/components/country-picker";
 import {
-  billingCountries,
   getDefaultCurrencyForCountry,
   supportedCurrencies,
   type BillingCountryCode,
@@ -145,25 +145,16 @@ export function BillingAddressFields({
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="text-sm font-semibold text-slate-200">
               Country
-              <select
-                required
+              <CountryPicker
                 value={value.countryCode}
-                onChange={(event) => {
-                  const countryCode = event.target.value as BillingCountryCode;
+                onChange={(countryCode) =>
                   onChange({
                     ...value,
                     countryCode,
                     presentmentCurrency: getDefaultCurrencyForCountry(countryCode),
-                  });
-                }}
-                className={inputClassName}
-              >
-                {billingCountries.map((country) => (
-                  <option key={country.code} value={country.code}>
-                    {country.label}
-                  </option>
-                ))}
-              </select>
+                  })
+                }
+              />
             </label>
             <label className="text-sm font-semibold text-slate-200">
               Display currency
