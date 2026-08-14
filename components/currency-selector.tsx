@@ -41,14 +41,14 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
   }
 
   return (
-    <label className={`group inline-flex min-h-10 items-center gap-3 rounded-lg border border-border bg-surface px-3 transition-colors duration-150 ease-out hover:border-primary/60 ${compact ? "max-w-[9rem]" : "min-w-[13rem]"}`}>
+    <label className={`group inline-flex min-h-10 min-w-0 items-center gap-2 rounded-lg border border-border bg-surface px-2.5 transition-colors duration-150 ease-out hover:border-primary/60 sm:gap-3 sm:px-3 ${compact ? "max-w-[5.75rem]" : "min-w-[13rem]"}`}>
       <StorefrontIcon name="globe" className="h-4 w-4 shrink-0 text-primary" />
       <span className="grid min-w-0 gap-0.5">
-        <span className="text-xs font-semibold uppercase tracking-wide text-text-muted">Currency</span>
+        <span className={`${compact ? "sr-only" : "text-xs font-semibold uppercase tracking-wide text-text-muted"}`}>Currency</span>
         <select
           value={currency}
           onChange={(event) => handleChange(event.target.value)}
-          className="input-base min-w-0 appearance-none bg-transparent pr-1 text-sm font-semibold text-text-primary outline-none"
+          className={`input-base min-w-0 appearance-none bg-transparent pr-0 text-sm font-semibold text-text-primary outline-none ${compact ? "w-[3.8rem] truncate" : "w-auto"}`}
           aria-label="Display currency"
         >
           {supportedCurrencies.map((item) => (

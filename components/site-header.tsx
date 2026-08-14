@@ -44,7 +44,7 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
         </div>
       </div>
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="grid min-h-[4.75rem] grid-cols-[auto_1fr_auto] items-center gap-3 py-2.5 sm:gap-5">
+        <div className="grid min-h-[4.25rem] min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-2.5 sm:min-h-[4.75rem] sm:gap-5">
           <div className="flex items-center gap-2">
             <MobileNavMenu />
             <Link
@@ -69,16 +69,16 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex min-w-0 items-center justify-end gap-1.5 sm:gap-2">
             <div className="hidden w-[20rem] xl:block 2xl:w-[25rem]">
               <StorefrontSearch />
             </div>
             <div className="hidden sm:block"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} /></div>
             <div className="sm:hidden"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} compact /></div>
-            <CartBadge />
+            <div className="shrink-0"><CartBadge /></div>
             <Link
               href="/account"
-              className="inline-flex min-h-10 items-center gap-2 rounded-xl bg-violet-500 px-3.5 text-[12px] font-black text-white shadow-[0_12px_30px_rgba(124,58,237,0.28)] transition hover:-translate-y-0.5 hover:bg-violet-400 sm:px-4"
+              className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-lg bg-violet-500 px-3 text-[12px] font-black text-white shadow-[0_12px_30px_rgba(124,58,237,0.28)] transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 sm:px-4"
             >
               <span className="hidden sm:inline">Log in / Sign up</span>
               <StorefrontIcon name="account" className="h-[17px] w-[17px] sm:hidden" />

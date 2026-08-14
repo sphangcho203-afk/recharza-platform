@@ -119,7 +119,9 @@ export function GameCatalogue({
 
   return (
     <div className="mt-8">
-      <div className="flex gap-2 overflow-x-auto border-b border-white/[0.08] pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="relative -mx-1 border-b border-white/[0.08] pb-4">
+        <div className="flex gap-2 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+
         {filters.map((item) => (
           <Link
             key={item.id}
@@ -134,6 +136,8 @@ export function GameCatalogue({
             {item.label}
           </Link>
         ))}
+        </div>
+        <span aria-hidden="true" className="pointer-events-none absolute right-0 top-0 h-10 w-10 bg-gradient-to-l from-[#080910] to-transparent sm:hidden" />
       </div>
 
       <div className="mt-8 grid gap-4 sm:flex sm:items-end sm:justify-between">
