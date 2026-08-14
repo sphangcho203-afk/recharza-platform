@@ -20,14 +20,31 @@ export function MobileNavMenu() {
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
+    const pageContent = Array.from(document.querySelectorAll<HTMLElement>("main, footer"));
+    pageContent.forEach((element) => {
+      if (open) {
+        element.setAttribute("aria-hidden", "true");
+        element.inert = true;
+      } else {
+        element.removeAttribute("aria-hidden");
+        element.inert = false;
+      }
+    });
     if (!open) return;
     const previous = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") setOpen(false);
     }
     document.addEventListener("keydown", onKeyDown);
     return () => {
       document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      pageContent.forEach((element) => {
+        element.removeAttribute("aria-hidden");
+        element.inert = false;
+      });
       (previous ?? triggerRef.current)?.focus?.();
     };
   }, [open]);
@@ -39,12 +56,12 @@ export function MobileNavMenu() {
         <StorefrontIcon name="menu" className="h-[18px] w-[18px]" />
       </button>
       {open ? (
-        <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-[2px]" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
-          <aside id="mobile-navigation" aria-label="Mobile navigation" className="h-full w-[min(22rem,88vw)] border-r border-white/[0.1] bg-[#0e1018] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.5)]">
+        <div className="fixed inset-0 z-[100] isolate bg-black/65 backdrop-blur-[2px]" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
+          <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby="mobile-navigation-title" className="relative h-full w-[min(22rem,88vw)] overflow-y-auto border-r border-white/[0.12] bg-[#0e1018] opacity-100 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.7)]">
             <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-5">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-300">Recharza</p>
-                <h2 className="mt-1 text-xl font-black text-white">Store navigation</h2>
+                <h2 id="mobile-navigation-title" className="mt-1 text-xl font-black text-white">Store navigation</h2>
               </div>
               <button type="button" onClick={() => setOpen(false)} aria-label="Close navigation menu" className="grid h-9 w-9 place-items-center rounded-lg text-slate-400 transition hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">
                 <span aria-hidden="true" className="text-xl leading-none">×</span>

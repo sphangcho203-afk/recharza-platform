@@ -73,17 +73,17 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
         ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
-        className={`group inline-flex min-h-10 min-w-0 items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.035] px-2.5 text-left transition-colors duration-150 ease-out hover:border-violet-300/40 hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 sm:px-3 ${compact ? "max-w-[5.75rem]" : "min-w-[13rem]"}`}
+        className={`group inline-flex min-h-10 min-w-0 items-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.06] px-2.5 text-left transition-colors duration-150 ease-out hover:border-violet-300/45 hover:bg-violet-300/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 sm:px-3 ${compact ? "w-[5.5rem]" : "min-w-[11.5rem]"}`}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={`Display currency: ${selected.code} ${selected.region}`}
       >
-        <StorefrontIcon name="globe" className="h-4 w-4 shrink-0 text-violet-300" />
+        <span aria-hidden="true" className="grid h-6 min-w-8 shrink-0 place-items-center rounded-md bg-violet-300/15 px-1.5 text-[10px] font-black tracking-[0.04em] text-violet-100">{selected.code}</span>
         <span className="min-w-0 flex-1">
-          <span className={`${compact ? "sr-only" : "block text-[10px] font-black uppercase tracking-[0.14em] text-slate-500"}`}>Currency</span>
-          <span className="block truncate text-xs font-black text-white sm:text-sm">{selected.code} · {selected.region}</span>
+          <span className="block truncate text-[10px] font-black uppercase tracking-[0.12em] text-slate-300 sm:text-xs">Currency</span>
+          <span className="sr-only">{selected.label} · {selected.region}</span>
         </span>
-        <StorefrontIcon name="arrow" className="h-3.5 w-3.5 shrink-0 rotate-90 text-slate-500" />
+        <StorefrontIcon name="arrow" className="h-3 w-3 shrink-0 rotate-90 text-violet-200/70" />
       </button>
 
       {open ? (
