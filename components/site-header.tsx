@@ -8,7 +8,6 @@ import { StorefrontSearch } from "@/components/storefront-search";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { CurrencySelector } from "@/components/currency-selector";
 import { MobileNavMenu } from "@/components/mobile-nav-menu";
-import { getPublicMediaPlacements } from "@/lib/media-assets";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import {
   getPublishedStorefrontContent,
@@ -28,12 +27,10 @@ const navLinks = [
 ];
 
 export async function SiteHeader({ content }: SiteHeaderProps = {}) {
-  const [storefront, media, rates] = await Promise.all([
+  const [storefront, rates] = await Promise.all([
     content ? Promise.resolve(content) : getPublishedStorefrontContent(),
-    getPublicMediaPlacements().catch(() => new Map()),
     getCurrencyRateSnapshot(),
   ]);
-  const brandLogo = media.get("brand.primary.logo");
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#080910]/90 shadow-[0_12px_40px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
@@ -46,7 +43,7 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
               className="shrink-0 rounded-lg outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400"
               aria-label="Recharza home"
             >
-              <RecharzaMark compact logoUrl={brandLogo?.url} logoAlt={brandLogo?.altText} />
+              <RecharzaMark compact />
             </Link>
           </div>
 

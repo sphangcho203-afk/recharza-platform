@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { RecharzaMark } from "@/components/recharza-mark";
 import { SupportChannelIcon, type SupportChannelIconName } from "@/components/support-channel-icon";
-import { getPublicMediaPlacements } from "@/lib/media-assets";
 import {
   getPublishedPolicy,
   getPublishedStorefrontContent,
@@ -28,12 +27,10 @@ const channelIcons: Record<string, SupportChannelIconName> = {
 };
 
 export async function SiteFooter() {
-  const [media, channels, storefront] = await Promise.all([
-    getPublicMediaPlacements().catch(() => new Map()),
+  const [channels, storefront] = await Promise.all([
     Promise.resolve(getPublicSupportChannels()),
     getPublishedStorefrontContent().catch(() => null),
   ]);
-  const brandLogo = media.get("brand.primary.logo");
   const publishedPolicies = storefront
     ? STOREFRONT_POLICY_KEYS.flatMap((key) => {
         const policy = getPublishedPolicy(storefront, key);
@@ -46,7 +43,7 @@ export async function SiteFooter() {
       <div className="mx-auto max-w-[1240px]">
         <div className="grid gap-8 md:grid-cols-[1.4fr_0.7fr_0.8fr_0.9fr]">
           <div className="max-w-sm">
-            <RecharzaMark logoUrl={brandLogo?.url} logoAlt={brandLogo?.altText} />
+            <RecharzaMark />
             <p className="mt-3 text-sm leading-6 text-slate-500">
               Game top-ups with published pricing, secure checkout, recoverable order tracking and connected support.
             </p>
