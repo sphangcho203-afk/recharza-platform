@@ -88,6 +88,11 @@ export async function POST(
     }
 
     const data = payload as Record<string, unknown>;
+    const nestedIdentity =
+      data.identity && typeof data.identity === "object" && !Array.isArray(data.identity)
+        ? (data.identity as Record<string, unknown>)
+        : null;
+    const identityData = nestedIdentity ?? data;
     const packageId =
       typeof data.packageId === "string" ? data.packageId.trim() : "";
     const selectedPackage = packageId
@@ -108,10 +113,10 @@ export async function POST(
     const identity = validateSupplierCheckoutIdentity(
       slug,
       {
-        playerId: data.playerId,
-        zoneId: data.zoneId,
-        serverId: data.serverId,
-        riotId: data.riotId,
+        playerId: identityData.playerId,
+        zoneId: identityData.zoneId,
+        serverId: identityData.serverId,
+        riotId: identityData.riotId,
       },
       selectedPackage.fields,
     );

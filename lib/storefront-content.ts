@@ -218,23 +218,23 @@ export const DEFAULT_STOREFRONT_CONTENT: StorefrontContent = {
   policies: {
     terms: {
       title: "Terms of service",
-      visible: false,
-      body: "",
+      visible: true,
+      body: `Last updated: August 2026\n\nRecharza provides digital game top-up products and related account-verification services. By using the store, you agree to provide accurate player and billing information, use the service lawfully, and review each order before payment. Digital fulfilment may begin after payment confirmation, so please check the game, market, player ID, package, and amount before placing an order.\n\nYou must not misuse the store, attempt unauthorized access, submit fraudulent payment details, or request fulfilment for an account you do not control. Recharza may pause an order for verification, supplier review, payment reconciliation, or suspected abuse. Product availability and delivery timing can vary by game, region, supplier, and payment status.\n\nThese terms are a working storefront draft and should be reviewed by qualified counsel for the jurisdictions in which Recharza operates.`,
     },
     privacy: {
       title: "Privacy policy",
-      visible: false,
-      body: "",
+      visible: true,
+      body: `Last updated: August 2026\n\nRecharza may process the information needed to verify a game account, price and fulfil an order, process payment, provide support, prevent abuse, and maintain security. Depending on the transaction, this may include your email address, player ID, server or zone details, billing information, order status, device or session evidence, and communications with support.\n\nWe use information only for legitimate store operations, security, compliance, analytics, and customer support. Payment details are handled by the applicable payment provider where available. We retain operational and audit records only for as long as reasonably needed for these purposes or as required by law. Contact Recharza through the support channel shown on the store if you need to request access, correction, or deletion subject to applicable requirements.\n\nThis policy is a working storefront draft and should be reviewed by qualified counsel for the jurisdictions in which Recharza operates.`,
     },
     refunds: {
       title: "Refund policy",
-      visible: false,
-      body: "",
+      visible: true,
+      body: `Last updated: August 2026\n\nBecause game top-ups are digital products, refund eligibility depends on whether fulfilment has started, whether the game publisher or supplier accepted the top-up, and whether the payment was successfully captured. Contact support promptly with the order ID if a package was not delivered, was delivered to the wrong destination because of a Recharza error, or a payment was captured without a corresponding order.\n\nOrders that were correctly fulfilled to the player details confirmed at checkout may not be reversible. Duplicate charges, failed fulfilment, payment reversals, and supplier-side exceptions are reviewed against the order and payment records. Recharza may request transaction evidence before issuing an eligible refund or correction.\n\nThis policy is a working storefront draft and should be reviewed by qualified counsel and payment partners for the jurisdictions in which Recharza operates.`,
     },
     cookies: {
       title: "Cookie notice",
-      visible: false,
-      body: "",
+      visible: true,
+      body: `Last updated: August 2026\n\nRecharza may use essential cookies or equivalent browser storage to keep the store, account, checkout, security, preferences, and session features working. Optional analytics or preference technologies should be enabled only where configured and permitted by applicable law.\n\nYou can manage browser storage through your browser settings. Blocking essential storage may prevent account access, checkout, verification, or order tracking from working correctly.\n\nThis notice is a working storefront draft and should be reviewed by qualified counsel for the jurisdictions in which Recharza operates.`,
     },
   },
 };
