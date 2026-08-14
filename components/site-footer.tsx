@@ -82,11 +82,9 @@ export async function SiteFooter() {
           </div>
         </div>
 
-        <section aria-labelledby="footer-legal-heading" className="mt-8 border-t border-white/[0.07] pt-5">
-          <h2 id="footer-legal-heading" className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">
-            Legal
-          </h2>
-          {publishedPolicies.length > 0 ? (
+        {publishedPolicies.length > 0 ? (
+          <section aria-labelledby="footer-legal-heading" className="mt-8 border-t border-white/[0.07] pt-5">
+            <h2 id="footer-legal-heading" className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">Legal</h2>
             <nav aria-label="Legal policies" className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
               {publishedPolicies.map((policy) => (
                 <Link
@@ -98,12 +96,8 @@ export async function SiteFooter() {
                 </Link>
               ))}
             </nav>
-          ) : (
-            <p className="mt-3 text-sm leading-6 text-slate-600">
-              Legal pages will appear here when they contain content and are published.
-            </p>
-          )}
-        </section>
+          </section>
+        ) : null}
 
         <div className="mt-4 flex flex-col gap-1 text-[10px] leading-4 text-slate-700 sm:flex-row sm:justify-between">
           <p>© 2026 Recharza.</p>
