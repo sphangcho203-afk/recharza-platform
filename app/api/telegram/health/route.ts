@@ -35,6 +35,25 @@ async function telegramGet<T>(token: string, method: string) {
   return payload.result;
 }
 
+async function telegramSetWebhook(token: string, url: string, secret: string) {
+  const response = await fetch(`${TELEGRAM_API}/bot${token}/setWebhook`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      url,
+      secret_token: secret,
+      allowed_updates: ["message", "callback_query"],
+      drop_pending_updates: true,
+    }),
+    cache: "no-store",
+    signal: AbortSignal.timeout(15_000),
+  });
+  const payload = (await response.json().catch(() => null)) as TelegramEnvelope<boolean> | null;
+  if (!response.ok || !payload?.ok) {
+    throw new Error(payload?.description || `Telegram returned HTTP ${response.status}.`);
+  }
+}
+
 export async function GET(request: Request) {
   const token = process.env.TELEGRAM_BOT_TOKEN?.trim() || "";
   const secretConfigured = Boolean(process.env.TELEGRAM_WEBHOOK_SECRET?.trim());
@@ -67,9 +86,19 @@ export async function GET(request: Request) {
       telegramGet<TelegramWebhookInfo>(token, "getWebhookInfo"),
     ]);
     const actualWebhookUrl = webhook.url || "";
+    let repaired = false;
+    let repairError: string | null = null;
+    if (actualWebhookUrl !== expectedWebhookUrl && secretConfigured) {
+      try {
+        await telegramSetWebhook(token, expectedWebhookUrl, process.env.TELEGRAM_WEBHOOK_SECRET!.trim());
+        repaired = true;
+      } catch (error) {
+        repairError = error instanceof Error ? error.message : "Telegram webhook repair failed.";
+      }
+    }
 
     return Response.json({
-      ok: actualWebhookUrl === expectedWebhookUrl,
+      ok: actualWebhookUrl === expectedWebhookUrl || repaired,
       service: "recharza-telegram-support",
       configured: {
         botToken: true,
@@ -83,8 +112,10 @@ export async function GET(request: Request) {
       },
       webhook: {
         expectedUrl: expectedWebhookUrl,
-        actualUrl: actualWebhookUrl || null,
-        matchesDeployment: actualWebhookUrl === expectedWebhookUrl,
+        actualUrl: repaired ? expectedWebhookUrl : actualWebhookUrl || null,
+        matchesDeployment: actualWebhookUrl === expectedWebhookUrl || repaired,
+        repairAttempted: actualWebhookUrl !== expectedWebhookUrl && secretConfigured,
+        repairError,
         pendingUpdates: webhook.pending_update_count ?? 0,
         lastErrorDate: webhook.last_error_date ?? null,
         lastErrorMessage: webhook.last_error_message ?? null,
