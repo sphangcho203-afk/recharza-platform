@@ -6,6 +6,8 @@ import { createPortal } from "react-dom";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { supportedCurrencies, type SupportedCurrencyCode } from "@/lib/commerce/currencies";
 
+const pickerCurrencies = supportedCurrencies.filter((item) => !["CAD", "MXN"].includes(item.code));
+
 type CurrencySelectorProps = {
   ratesFromInrMicros: Partial<Record<SupportedCurrencyCode, number>>;
   compact?: boolean;
@@ -14,16 +16,31 @@ type CurrencySelectorProps = {
 const STORAGE_KEY = "recharza.display-currency";
 const CURRENCY_EVENT = "recharza:currency-change";
 
-function currencySymbol(code: SupportedCurrencyCode, locale: string) {
-  return new Intl.NumberFormat(locale, { style: "currency", currency: code, currencyDisplay: "narrowSymbol" })
-    .formatToParts(0)
-    .find((part) => part.type === "currency")?.value ?? code;
+function currencySymbol(code: SupportedCurrencyCode, _locale: string) {
+  const marks: Partial<Record<SupportedCurrencyCode, string>> = {
+    INR: "₹",
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+    PHP: "₱",
+    IDR: "Rp",
+    BRL: "R$",
+    CAD: "C$",
+    MXN: "MX$",
+    AED: "د.إ",
+    SAR: "ر.س",
+    TRY: "₺",
+    SGD: "S$",
+    MYR: "RM",
+    THB: "฿",
+  };
+  return marks[code] ?? code;
 }
 
 function readStoredCurrency(): SupportedCurrencyCode {
   if (typeof window === "undefined") return "INR";
   const stored = window.localStorage.getItem(STORAGE_KEY)?.toUpperCase();
-  return supportedCurrencies.some((item) => item.code === stored)
+  return pickerCurrencies.some((item) => item.code === stored)
     ? (stored as SupportedCurrencyCode)
     : "INR";
 }
@@ -46,9 +63,9 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
   }, [currency, ratesFromInrMicros]);
   const filteredCurrencies = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    if (!normalized) return supportedCurrencies;
-    return supportedCurrencies.filter((item) =>
-      `${item.code} ${item.region}`.toLowerCase().includes(normalized),
+    if (!normalized) return pickerCurrencies;
+    return pickerCurrencies.filter((item) =>
+      `${item.code} ${item.label} ${item.region}`.toLowerCase().includes(normalized),
     );
   }, [query]);
 
@@ -103,7 +120,7 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
 
   return (
     <>
-      <button ref={triggerRef} type="button" onClick={() => setOpen(true)} className={`group inline-flex min-h-10 min-w-0 items-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.06] px-2.5 text-left transition-colors duration-150 ease-out hover:border-violet-300/45 hover:bg-violet-300/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 sm:px-3 ${compact ? "w-[6.5rem]" : "min-w-[11.5rem]"}`} aria-haspopup="dialog" aria-expanded={open} aria-label={`Display currency: ${selected.code} ${selected.region}`}>
+      <button ref={triggerRef} type="button" onClick={() => setOpen(true)} className={`group inline-flex min-h-10 min-w-0 items-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.06] px-2.5 text-left transition-colors duration-150 ease-out hover:border-violet-300/45 hover:bg-violet-300/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 sm:px-3 ${compact ? "w-[6.25rem]" : "min-w-[11.5rem]"}`} aria-haspopup="dialog" aria-expanded={open} aria-label={`Display currency: ${selected.code} ${selected.region}`}>
         <span aria-hidden="true" className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-violet-200/25 bg-violet-300/12 text-base font-black text-violet-100">{currencySymbol(selected.code, selected.locale)}</span>
         <span className="min-w-0 flex-1"><span className="block truncate text-[10px] font-black uppercase tracking-[0.12em] text-slate-300 sm:text-xs">{selected.code}</span><span className="sr-only">{selected.label} · {selected.region}</span></span>
         <StorefrontIcon name="arrow" className="h-3 w-3 shrink-0 rotate-90 text-violet-200/70 transition-transform group-hover:translate-y-0.5" />
