@@ -2,19 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { CurrencySelector } from "@/components/currency-selector";
 import { StorefrontIcon } from "@/components/storefront-icon";
+import type { SupportedCurrencyCode } from "@/lib/commerce/currencies";
 
 const links = [
-  { href: "/", label: "Home", icon: "games" as const },
-  { href: "/#games", label: "Browse games", icon: "games" as const },
-  { href: "/cart", label: "Cart", icon: "cart" as const },
-  { href: "/orders/lookup", label: "Track orders", icon: "track" as const },
-  { href: "/support", label: "Support", icon: "support" as const },
-  { href: "/account", label: "Account", icon: "account" as const },
-  { href: "/policies/terms", label: "Legal", icon: "shield" as const },
+  { href: "/?category=top-up#games", label: "Game top-ups", icon: "games" as const },
+  { href: "/?category=gift-cards#games", label: "Gift cards", icon: "receipt" as const },
+  { href: "/#games", label: "All products", icon: "games" as const },
+  { href: "/support", label: "24/7 support", icon: "support" as const },
+  { href: "/orders/lookup", label: "Track an order", icon: "track" as const },
+  { href: "/account", label: "My account", icon: "account" as const },
 ];
 
-export function MobileNavMenu() {
+type MobileNavMenuProps = { ratesFromInrMicros: Partial<Record<SupportedCurrencyCode, number>> };
+
+export function MobileNavMenu({ ratesFromInrMicros }: MobileNavMenuProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -66,11 +69,18 @@ export function MobileNavMenu() {
                 <span aria-hidden="true" className="text-xl leading-none">×</span>
               </button>
             </div>
-            <nav className="mt-5 space-y-1">
+            <div className="mt-5 rounded-2xl border border-yellow-300/20 bg-gradient-to-r from-yellow-300/10 to-violet-300/10 p-3">
+              <div className="flex items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-2 text-sm font-black text-yellow-100"><StorefrontIcon name="globe" className="h-5 w-5 text-yellow-300" />Currency</span>
+                <CurrencySelector ratesFromInrMicros={ratesFromInrMicros} compact />
+              </div>
+            </div>
+            <nav className="mt-3 space-y-2">
               {links.map((link) => (
-                <a key={link.href} href={link.href} onClick={() => setOpen(false)} className="flex min-h-12 items-center gap-3 rounded-xl px-3 py-3 text-sm font-black text-slate-300 transition hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">
-                  <StorefrontIcon name={link.icon} className="h-4 w-4 text-violet-300" />
-                  {link.label}
+                <a key={link.href} href={link.href} onClick={() => setOpen(false)} className="flex min-h-14 items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.035] px-4 py-3 text-sm font-black text-slate-200 transition hover:border-cyan-300/25 hover:bg-cyan-300/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">
+                  <StorefrontIcon name={link.icon} className="h-5 w-5 text-violet-300" />
+                  <span>{link.label}</span>
+                  <StorefrontIcon name="arrow" className="ml-auto h-4 w-4 text-slate-500" />
                 </a>
               ))}
             </nav>
