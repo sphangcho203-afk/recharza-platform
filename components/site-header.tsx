@@ -1,5 +1,5 @@
-import { Suspense } from "react";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { RecharzaMark } from "@/components/recharza-mark";
 import { CartBadge } from "@/components/cart-badge";
@@ -9,21 +9,16 @@ import { StorefrontIcon } from "@/components/storefront-icon";
 import { CurrencySelector } from "@/components/currency-selector";
 import { MobileNavMenu } from "@/components/mobile-nav-menu";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
-import {
-  getPublishedStorefrontContent,
-  type StorefrontContent,
-} from "@/lib/storefront-content";
+import { getPublishedStorefrontContent, type StorefrontContent } from "@/lib/storefront-content";
 
-type SiteHeaderProps = {
-  content?: Pick<StorefrontContent, "navigation">;
-};
+type SiteHeaderProps = { content?: Pick<StorefrontContent, "navigation"> };
 
 const navLinks = [
-  { href: "/#games", label: "Browse games", icon: "games" as const },
-  { href: "/#offers", label: "Featured offers", icon: "receipt" as const },
+  { href: "/#games", label: "Games", icon: "games" as const },
+  { href: "/#offers", label: "Why Recharza", icon: "receipt" as const },
   { href: "/#how-it-works", label: "How it works", icon: "shield" as const },
   { href: "/orders/lookup", label: "Track order", icon: "track" as const },
-  { href: "/support", label: "Help center", icon: "support" as const },
+  { href: "/support", label: "Support", icon: "support" as const },
 ];
 
 export async function SiteHeader({ content }: SiteHeaderProps = {}) {
@@ -33,56 +28,37 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
   ]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/[0.08] bg-[#080910]/90 shadow-[0_12px_40px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+    <header className="site-header sticky top-0 z-50 border-b border-white/[0.08] bg-[#07080e]/90 backdrop-blur-2xl">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        <div className="grid min-h-[4.25rem] min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 py-2.5 sm:min-h-[4.75rem] sm:gap-5">
-          <div className="flex items-center gap-2">
+        <div className="site-header-main">
+          <div className="flex min-w-0 items-center gap-2.5">
             <MobileNavMenu />
-            <Link
-              href="/"
-              className="shrink-0 rounded-lg outline-none transition hover:opacity-90 focus-visible:ring-2 focus-visible:ring-violet-400"
-              aria-label="Recharza home"
-            >
+            <Link href="/" className="site-brand-link" aria-label="Recharza home">
               <RecharzaMark compact />
+              <span className="site-brand-copy"><b>RECHARZA</b><small>play more, wait less</small></span>
             </Link>
           </div>
 
-          <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
+          <nav className="site-primary-nav" aria-label="Primary navigation">
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="group inline-flex items-center gap-2 rounded-xl px-3 py-2 text-[12px] font-extrabold text-slate-400 transition hover:bg-white/[0.06] hover:text-white"
-              >
-                <StorefrontIcon name={link.icon} className="h-4 w-4 text-slate-600 transition group-hover:text-violet-300" />
-                {link.label}
+              <Link key={link.href} href={link.href} className="site-nav-link">
+                <StorefrontIcon name={link.icon} className="h-3.5 w-3.5" />{link.label}
               </Link>
             ))}
           </nav>
 
-          <div className="ml-auto flex min-w-0 items-center justify-end gap-1.5 sm:gap-2">
-            <div className="hidden w-[20rem] xl:block 2xl:w-[25rem]">
-              <StorefrontSearch />
-            </div>
+          <div className="site-header-actions">
+            <div className="site-header-search"><StorefrontSearch /></div>
             <div className="hidden sm:block"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} /></div>
             <div className="sm:hidden"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} compact /></div>
-            <div className="shrink-0"><CartBadge /></div>
-            <Link
-              href="/account"
-              className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-lg bg-violet-500 px-3 text-[12px] font-black text-white shadow-[0_12px_30px_rgba(124,58,237,0.28)] transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 sm:px-4"
-            >
-              <span className="hidden sm:inline">Log in / Sign up</span>
-              <StorefrontIcon name="account" className="h-[17px] w-[17px] sm:hidden" />
-            </Link>
-          </div>
-
-          <div className="col-span-3 xl:hidden">
-            <StorefrontSearch />
+            <CartBadge />
+            <Link href="/account" className="site-account-link"><StorefrontIcon name="account" className="h-4 w-4" /><span className="hidden md:inline">Account</span></Link>
           </div>
         </div>
 
+        <div className="site-mobile-search"><StorefrontSearch /></div>
         {storefront.navigation.visibleIds.length > 0 ? (
-          <Suspense fallback={<div aria-hidden="true" className="h-11 border-t border-white/[0.06]" />}>
+          <Suspense fallback={<div aria-hidden="true" className="h-10 border-t border-white/[0.06]" />}>
             <StorefrontCategoryNav />
           </Suspense>
         ) : null}

@@ -1,10 +1,10 @@
-import { Suspense } from "react";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { GameCatalogue } from "@/components/game-catalogue";
+import { GameCard } from "@/components/game-card";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { StorefrontHero } from "@/components/storefront-hero";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import type { Game } from "@/lib/games";
 import { games } from "@/lib/games";
@@ -15,11 +15,13 @@ import { getPublishedStorefrontContent } from "@/lib/storefront-content";
 
 export const dynamic = "force-dynamic";
 
-const benefitItems = [
-  { icon: "games" as const, title: "Choose a game", text: "Start with a clean regional card and see the right packages." },
-  { icon: "shield" as const, title: "Verify your ID", text: "Confirm the player destination before you pay." },
-  { icon: "track" as const, title: "Pay and track", text: "Complete checkout and keep your order details in one place." },
+const processItems = [
+  { step: "01", icon: "games" as const, title: "Pick the right market", text: "Browse distinct game and regional cards so your account destination is clear from the start." },
+  { step: "02", icon: "shield" as const, title: "Verify before payment", text: "Confirm the player name, Riot ID, UID, or Zone ID before you commit your order." },
+  { step: "03", icon: "track" as const, title: "Pay, then track", text: "Keep the package, order reference, and support path visible from checkout to delivery." },
 ];
+
+const popularSlugs = new Set(["mobile-legends-india", "free-fire", "pubg-mobile", "valorant", "genshin-impact"]);
 
 export default async function Home() {
   const [pricing, storefront, mediaPlacements, fxSnapshot] = await Promise.all([
@@ -52,122 +54,78 @@ export default async function Home() {
       ? !hiddenSlugs.has("mobile-legends")
       : !hiddenSlugs.has(game.slug),
   );
-  const heroPlacement = mediaPlacements.get("storefront.hero.background");
+  const popularGames = visibleGames.filter((game) => popularSlugs.has(game.slug));
 
   return (
     <main id="top" className="storefront-page min-h-screen overflow-x-clip text-white">
       <SiteHeader content={storefront} />
 
       {storefront.announcement.enabled ? (
-        <section className="border-b border-amber-300/10 bg-[#16130a] px-4 py-2.5 sm:px-6 lg:px-8">
-          <div className="mx-auto flex max-w-[1240px] items-center justify-center gap-2 text-center text-xs text-amber-100/90">
+        <div className="storefront-alert border-b border-cyan-300/10 bg-cyan-300/[0.045] px-4 py-2.5 sm:px-6 lg:px-8">
+          <div className="mx-auto flex max-w-[1240px] items-center justify-center gap-2 text-center text-xs text-cyan-100/85">
+            <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.8)]" aria-hidden="true" />
             <strong>{storefront.announcement.title}</strong>
-            <span className="hidden text-amber-100/60 sm:inline">{storefront.announcement.message}</span>
-            <Link href={storefront.announcement.href} className="font-black text-amber-300 hover:text-amber-200">
-              {storefront.announcement.linkLabel}
-            </Link>
+            <span className="hidden text-cyan-100/55 sm:inline">{storefront.announcement.message}</span>
+            <Link href={storefront.announcement.href} className="font-black text-cyan-200 transition hover:text-white">{storefront.announcement.linkLabel}</Link>
           </div>
-        </section>
+        </div>
       ) : null}
 
-      {storefront.hero.enabled ? (
-        <StorefrontHero
-          content={storefront.hero}
-          imageUrl={heroPlacement?.url}
-          imageAlt={heroPlacement?.altText}
-        />
-      ) : null}
-
-      {storefront.catalogue.enabled ? (
-        <section id="games" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-7 sm:px-6 sm:py-9 lg:px-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-violet-300/15 bg-violet-300/[0.07] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-violet-200">
-                <span className="h-1.5 w-1.5 rounded-full bg-violet-300" /> Curated digital catalogue
-              </div>
-              <h2 className="text-3xl font-black tracking-[-0.055em] text-white sm:text-4xl">Top up the games you play.</h2>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-500">Choose a title, verify your destination, and pay securely. Your package and account details stay visible at every step.</p>
+      <section className="storefront-hero-shell relative overflow-hidden border-b border-white/[0.07] px-4 pb-10 pt-8 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16">
+        <div className="storefront-hero-glow storefront-hero-glow-left" aria-hidden="true" />
+        <div className="storefront-hero-glow storefront-hero-glow-right" aria-hidden="true" />
+        <div className="relative mx-auto grid max-w-[1240px] items-end gap-10 lg:grid-cols-[minmax(0,1fr)_23rem] lg:gap-16">
+          <div className="max-w-3xl">
+            <div className="storefront-kicker"><span className="storefront-kicker-dot" /> The player-first top-up store</div>
+            <h1 className="mt-5 max-w-4xl font-heading text-4xl font-semibold leading-[0.98] tracking-[-0.07em] text-white sm:text-6xl lg:text-7xl">Your games.<br /><span className="storefront-gradient-text">Your market.</span><br />Your next move.</h1>
+            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">Buy game currency with the context that matters: the right region, the right package, and a verified player destination before payment.</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href="#games" className="storefront-primary-cta"><StorefrontIcon name="games" className="h-4 w-4" /> Browse games <StorefrontIcon name="arrow" className="h-4 w-4" /></Link>
+              <Link href="/orders/lookup" className="storefront-secondary-cta"><StorefrontIcon name="track" className="h-4 w-4" /> Track an order</Link>
             </div>
-            <Link href="/orders/lookup" className="inline-flex items-center gap-2 text-xs font-black text-slate-400 hover:text-white">
-              Track an order <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-
-          <Suspense fallback={<div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">{Array.from({ length: 12 }, (_, index) => <div key={index} className="aspect-square animate-pulse rounded-lg border border-white/[0.07] bg-white/[0.025]" />)}</div>}>
-            <GameCatalogue
-              games={visibleGames}
-              showRegionalMarkets={storefront.catalogue.showRegionalMarkets}
-              showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges}
-              showPricingSnapshots={storefront.privateFlags.showPricingSnapshots}
-              ratesFromInrMicros={fxSnapshot.ratesFromInrMicros}
-            />
-          </Suspense>
-        </section>
-      ) : null}
-
-      <section id="how-it-works" className="scroll-mt-32 border-y border-white/[0.08] bg-[#0a0c12] px-4 py-9 sm:px-6 lg:px-8">
-        <div className="mx-auto mb-5 flex max-w-[1240px] items-end justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/80">Simple by design</p>
-            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">From ID to delivery in three steps.</h2>
-          </div>
-          <span className="hidden text-xs font-bold text-slate-600 sm:block">Built for speed, clarity, and support.</span>
-        </div>
-        <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
-          {benefitItems.map((item, index) => (
-            <div key={item.title} className="group relative flex items-start gap-3 bg-[#0c0e15] p-4 transition hover:bg-[#10131d] sm:p-5">
-              <span className="absolute right-4 top-4 text-[10px] font-black text-slate-700">0{index + 1}</span>
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet-500/10 text-violet-300 ring-1 ring-violet-300/10">
-                <StorefrontIcon name={item.icon} className="h-4.5 w-4.5" />
-              </span>
-              <div>
-                <h3 className="text-sm font-black text-white">{item.title}</h3>
-                <p className="mt-1 text-xs leading-5 text-slate-500">{item.text}</p>
-              </div>
+            <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs font-semibold text-slate-400">
+              <span className="inline-flex items-center gap-2"><StorefrontIcon name="shield" className="h-4 w-4 text-emerald-300" /> Identity check before pay</span>
+              <span className="inline-flex items-center gap-2"><StorefrontIcon name="receipt" className="h-4 w-4 text-cyan-300" /> Regional pricing</span>
+              <span className="inline-flex items-center gap-2"><StorefrontIcon name="support" className="h-4 w-4 text-violet-300" /> Human support</span>
             </div>
-          ))}
+          </div>
+
+          <div className="storefront-hero-console">
+            <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4"><div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/75">Live storefront</p><p className="mt-1 text-sm font-semibold text-white">Checkout, without guesswork.</p></div><span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-300/10 text-emerald-300"><StorefrontIcon name="shield" className="h-4 w-4" /></span></div>
+            <div className="grid gap-3 p-5">
+              <div className="storefront-console-line"><span className="storefront-console-icon bg-violet-300/10 text-violet-200"><StorefrontIcon name="games" className="h-4 w-4" /></span><span><b>Choose a title</b><small>Game and market stay visible</small></span><strong>01</strong></div>
+              <div className="storefront-console-line"><span className="storefront-console-icon bg-cyan-300/10 text-cyan-200"><StorefrontIcon name="shield" className="h-4 w-4" /></span><span><b>Verify the player</b><small>Nickname returned before payment</small></span><strong>02</strong></div>
+              <div className="storefront-console-line"><span className="storefront-console-icon bg-amber-300/10 text-amber-200"><StorefrontIcon name="receipt" className="h-4 w-4" /></span><span><b>Review the package</b><small>Currency and total are clear</small></span><strong>03</strong></div>
+            </div>
+            <div className="mx-5 mb-5 rounded-xl border border-emerald-300/15 bg-emerald-300/[0.055] px-4 py-3 text-xs text-emerald-100/80"><span className="font-bold text-emerald-200">Protected flow</span><span className="ml-2">No payment is submitted before verification.</span></div>
+          </div>
         </div>
       </section>
 
-      <section id="offers" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-9 sm:px-6 lg:px-8">
-        <div className="mb-4 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-amber-200/80">Featured market</p>
-            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Offers worth checking before checkout.</h2>
-          </div>
-          <Link href="/#games" className="text-sm font-semibold text-violet-200 hover:text-white">Browse games</Link>
-        </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          <Link href="/#games" className="group rounded-lg border border-white/[0.08] bg-[#0d0f16] p-5 transition duration-200 ease-out hover:-translate-y-1 hover:border-violet-300/30 hover:shadow-elevation-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-violet-200/80">Golden Month · India</p>
-            <h3 className="mt-2 text-lg font-heading font-semibold text-white">A region-first MLBB path.</h3>
-            <p className="mt-2 text-sm leading-relaxed text-slate-400">See the correct market, package context, and currency before you pay.</p>
-          </Link>
-          <Link href="/#games" className="group rounded-lg border border-white/[0.08] bg-[#0d0f16] p-5 transition duration-200 ease-out hover:-translate-y-1 hover:border-violet-300/30 hover:shadow-elevation-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-violet-200/80">Currency control</p>
-            <h3 className="mt-2 text-lg font-heading font-semibold text-white">See the price in your currency.</h3>
-            <p className="mt-2 text-sm leading-relaxed text-slate-400">Use the header picker to switch the catalogue display without losing your place.</p>
-          </Link>
-          <Link href="/#how-it-works" className="group rounded-lg border border-white/[0.08] bg-[#0d0f16] p-5 transition duration-200 ease-out hover:-translate-y-1 hover:border-violet-300/30 hover:shadow-elevation-1">
-            <p className="text-xs font-semibold uppercase tracking-wide text-violet-200/80">Protected flow</p>
-            <h3 className="mt-2 text-lg font-heading font-semibold text-white">Verify first. Pay with confidence.</h3>
-            <p className="mt-2 text-sm leading-relaxed text-slate-400">Player destination and order summary stay visible through checkout.</p>
-          </Link>
+      <section className="border-b border-white/[0.07] px-4 py-5 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
+          <div className="storefront-trust-cell"><span className="storefront-trust-number">8+</span><span><b>Regional markets</b><small>MLBB paths built for the account region</small></span></div>
+          <div className="storefront-trust-cell"><span className="storefront-trust-number">815</span><span><b>Supplier products</b><small>Published catalogue records connected</small></span></div>
+          <div className="storefront-trust-cell"><span className="storefront-trust-number">24/7</span><span><b>Support ready</b><small>Track your order when you need it</small></span></div>
         </div>
       </section>
 
-      <section className="px-4 py-9 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-[1240px] flex-col gap-5 rounded-2xl border border-white/[0.08] bg-[#0d0f16] p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
-          <div>
-            <h2 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">Buy, track and get support with one Recharza account.</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">No noisy dashboards during checkout. Just the player details, package, final amount and secure payment.</p>
-          </div>
-          <div className="flex shrink-0 gap-2">
-            <Link href="/account" className="inline-flex min-h-11 items-center rounded-lg bg-violet-500 px-4 text-sm font-black text-white hover:bg-violet-400">Open account</Link>
-            <Link href="/support" className="inline-flex min-h-11 items-center rounded-lg border border-white/[0.1] px-4 text-sm font-black text-slate-300 hover:bg-white/[0.04] hover:text-white">Support</Link>
-          </div>
+      <section id="games" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div><div className="storefront-section-label">The catalogue</div><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">Top up what you play.</h2><p className="mt-3 max-w-xl text-sm leading-6 text-slate-400">Every card takes you to the exact market and package flow for that game. No hidden regional guesswork.</p></div>
+          <Link href="/support" className="storefront-inline-link">Need help choosing? <StorefrontIcon name="arrow" className="h-3.5 w-3.5" /></Link>
         </div>
+
+        {popularGames.length > 0 ? <div className="mt-8"><div className="mb-3 flex items-center justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Start here</p><h3 className="mt-1 text-lg font-semibold text-white">Popular right now</h3></div><Link href="#all-games" className="text-xs font-bold text-cyan-200 transition hover:text-white">See full catalogue</Link></div><div className="storefront-popular-rail">{popularGames.map((game, index) => <div key={game.slug} className="storefront-popular-item"><GameCard game={game} priority={index < 2} showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges} showPricingSnapshots={storefront.privateFlags.showPricingSnapshots} displayCurrency="INR" ratesFromInrMicros={fxSnapshot.ratesFromInrMicros} /></div>)}</div></div> : null}
+
+        <div id="all-games" className="mt-12 scroll-mt-32"><Suspense fallback={<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /></div>}><GameCatalogue games={visibleGames} showRegionalMarkets={storefront.catalogue.showRegionalMarkets} showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges} showPricingSnapshots={storefront.privateFlags.showPricingSnapshots} ratesFromInrMicros={fxSnapshot.ratesFromInrMicros} /></Suspense></div>
       </section>
+
+      <section id="how-it-works" className="border-y border-white/[0.07] bg-[#090b12] px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1240px]"><div className="max-w-2xl"><div className="storefront-section-label">How Recharza works</div><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">Clear steps. Fewer checkout surprises.</h2><p className="mt-3 text-sm leading-6 text-slate-400">The flow is designed around the player destination first, because a correct package is only useful when it reaches the right account.</p></div><div className="mt-8 grid gap-3 md:grid-cols-3">{processItems.map((item) => <article key={item.step} className="storefront-process-card"><div className="flex items-start justify-between"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-white/[0.055] text-cyan-200 ring-1 ring-white/[0.08]"><StorefrontIcon name={item.icon} className="h-5 w-5" /></span><span className="font-mono text-xs font-bold text-slate-600">{item.step}</span></div><h3 className="mt-6 text-base font-semibold text-white">{item.title}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{item.text}</p></article>)}</div></div>
+      </section>
+
+      <section id="offers" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-12 sm:px-6 lg:px-8"><div className="storefront-support-panel"><div><div className="storefront-section-label">Ready when you are</div><h2 className="mt-3 max-w-xl font-heading text-2xl font-semibold tracking-tight text-white sm:text-3xl">A cleaner way to keep every top-up in one place.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Open an account to keep order history together, or go straight to support if you already have a question.</p></div><div className="flex shrink-0 flex-col gap-2 sm:flex-row"><Link href="/account" className="storefront-primary-cta">Open account <StorefrontIcon name="arrow" className="h-4 w-4" /></Link><Link href="/support" className="storefront-secondary-cta">Contact support</Link></div></div></section>
 
       <SiteFooter />
     </main>
