@@ -7,6 +7,7 @@ import { AddToCartButton } from "@/components/add-to-cart-button";
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 import { ResilientImage } from "@/components/resilient-image";
+import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { SavedAddressPicker } from "@/components/saved-address-picker";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import {
@@ -449,13 +450,13 @@ export function MobileLegendsCheckoutShell({
                     className="block w-full text-left"
                   >
                     <span className="relative block aspect-[4/3] overflow-hidden bg-[#141821]">
-                      <ResilientImage
+                      <StorefrontArtwork
                         sources={item.media.sources}
                         alt={item.media.alt}
                         fallbackLabel={item.name.slice(0, 2).toUpperCase()}
-                        fill
+                        className="h-full w-full"
+                        objectFit="contain"
                         sizes="(max-width: 640px) 45vw, 190px"
-                        className="object-contain p-4 transition duration-300 group-hover:scale-[1.035]"
                         fallbackClassName="absolute inset-0 h-full w-full"
                       />
                     </span>

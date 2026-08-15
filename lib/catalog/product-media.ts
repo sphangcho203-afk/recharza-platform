@@ -31,11 +31,10 @@ const imageExtensionPattern = /\.(?:avif|gif|jpe?g|png|webp)(?:$|\?)/i;
 const mobileLegendsMedia = {
   gameIcon:
     "https://play-lh.googleusercontent.com/D8r13ijO9c-0_1N-CP4d63mR1w6YhDuR2mBQUl27ELJAx0sKdaKtM5vCUnSLODKBVzUx7rZ9cW4Ir9jYiufsSQ=w512-h512",
-  diamond: "/assets/packs/mobile-legends/diamond.webp",
+  diamond: "/assets/packs/mobile-legends/diamond-premium.png",
   tickets: "/assets/packs/mobile-legends/tickets-stack.webp",
-  weeklyPass: "/assets/packs/mobile-legends/weekly-diamond-pass-offer.webp",
-  twilightPass:
-    "https://www.joytify.com/static/lapakgaming/images/rebranding/Icon_per_Denom/mobile_legends_twilight.png",
+  weeklyPass: "/assets/packs/mobile-legends/weekly-pass-premium.png",
+  twilightPass: "/assets/packs/mobile-legends/twilight-pass-premium.png",
 } as const;
 
 const gameCurrencyMedia: Record<string, string> = {
@@ -175,7 +174,7 @@ export function extractSupplierProductMedia(raw: unknown) {
 function getMobileLegendsCatalogMedia(productName: string) {
   const normalized = productName.toLowerCase();
 
-  if (normalized.includes("weekly diamond pass")) {
+  if (normalized.includes("weekly diamond pass") || normalized.includes("weekly pass")) {
     return [mobileLegendsMedia.weeklyPass, mobileLegendsMedia.gameIcon];
   }
 
@@ -183,11 +182,35 @@ function getMobileLegendsCatalogMedia(productName: string) {
     return [mobileLegendsMedia.twilightPass, mobileLegendsMedia.gameIcon];
   }
 
-  if (normalized.includes("ticket") || normalized.includes("pass")) {
+  if (normalized.includes("ticket")) {
     return [mobileLegendsMedia.tickets, mobileLegendsMedia.gameIcon];
   }
 
   return [mobileLegendsMedia.diamond, mobileLegendsMedia.gameIcon];
+}
+
+function getGameSpecificItemMedia(gameSlug: string, productName: string) {
+  const normalized = productName.toLowerCase();
+
+  if (gameSlug === "free-fire") {
+    if (normalized.includes("membership") || normalized.includes("pass")) {
+      return "/assets/packs/free-fire/membership-premium.png";
+    }
+  }
+
+  if (gameSlug === "pubg-mobile" || gameSlug === "bgmi") {
+    if (normalized.includes("pass") || normalized.includes("prime")) {
+      return "/assets/packs/pubg-mobile/elite-pass-premium.png";
+    }
+  }
+
+  if (gameSlug === "genshin-impact") {
+    if (normalized.includes("welkin") || normalized.includes("moon") || normalized.includes("pass")) {
+      return "/assets/packs/genshin-impact/welkin-moon-premium.png";
+    }
+  }
+
+  return gameCurrencyMedia[gameSlug];
 }
 
 export function resolveProductMedia(input: {
@@ -200,7 +223,7 @@ export function resolveProductMedia(input: {
   const catalogSources =
     input.gameSlug === "mobile-legends"
       ? getMobileLegendsCatalogMedia(input.productName)
-      : [gameCurrencyMedia[input.gameSlug], ...getGameIconSources(input.gameSlug)].filter(Boolean);
+      : [getGameSpecificItemMedia(input.gameSlug, input.productName), ...getGameIconSources(input.gameSlug)].filter(Boolean);
   const sources = Array.from(
     new Set([
       ...(override ? [override.imageUrl] : []),
