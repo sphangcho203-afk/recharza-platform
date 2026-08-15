@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ResilientImage } from "@/components/resilient-image";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { StorefrontBackButton } from "@/components/storefront-back-button";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { SupplierGameCheckoutShell } from "@/components/supplier-game-checkout-shell";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
@@ -111,7 +112,8 @@ export default async function GameCheckoutPage({
 
         <section className="border-b border-white/[0.08] bg-[#0a0c12] px-4 py-5 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1240px]">
-            <div className="mb-4 flex items-center gap-2 text-[11px] text-slate-600">
+            <StorefrontBackButton />
+            <div className="mb-4 mt-4 flex items-center gap-2 text-[11px] text-slate-600">
               <Link href="/" className="hover:text-white">Home</Link>
               <span>/</span>
               <Link href="/#games" className="hover:text-white">Top Up</Link>
@@ -180,7 +182,7 @@ export default async function GameCheckoutPage({
     <main className="storefront-page min-h-screen text-white">
       <SiteHeader />
       <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <Link href="/#games" className="text-sm font-semibold text-violet-300 hover:text-violet-200">← Back to games</Link>
+        <StorefrontBackButton />
         <div className="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] p-5 sm:p-7">
           <h1 className="text-2xl font-black sm:text-3xl">{definition.title}</h1>
           <p className="mt-3 leading-7 text-amber-100/75">{definition.readinessNote}</p>

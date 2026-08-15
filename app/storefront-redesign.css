@@ -223,3 +223,24 @@
 @media (max-width: 1023px) { .site-primary-nav { display: none; } .site-header-main { grid-template-columns: auto minmax(0,1fr) auto; } .site-header-search { display: none; } .site-mobile-search { display: block; } }
 @media (min-width: 640px) { .site-brand-copy { display: block; } }
 @media (max-width: 639px) { .site-header-main { min-height: 4.15rem; gap: .5rem; } .site-account-link { min-height: 2.35rem; padding-inline: .55rem; } }
+
+
+.storefront-back-button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: .5rem;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: .75rem;
+  padding: 0 .85rem;
+  background: rgba(255,255,255,.035);
+  color: #cbd5e1;
+  font-size: .76rem;
+  font-weight: 850;
+  transition: transform 180ms var(--ease-out), border-color 180ms var(--ease-out), background-color 180ms var(--ease-out), color 180ms var(--ease-out);
+}
+.storefront-back-button:hover { transform: translateX(-2px); border-color: rgba(103,232,249,.38); background: rgba(103,232,249,.08); color: white; }
+.storefront-back-button:active { transform: translateX(-1px) scale(.985); }
+@media (max-width: 639px) { .storefront-back-button { min-height: 3rem; padding-inline: 1rem; } }
+@media (prefers-reduced-motion: reduce) { .storefront-back-button { transition: none; } .storefront-back-button:hover { transform: none; } }
+
