@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 
 import { MobileBottomNav } from "@/components/mobile-bottom-nav";
+import { LiveSupportChat } from "@/components/live-support-chat";
 
 import "./globals.css";
 import "./frontend-tuning.css";
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body>
         {children}
         <MobileBottomNav />
+        <LiveSupportChat />
       </body>
     </html>
   );
