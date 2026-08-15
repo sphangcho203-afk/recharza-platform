@@ -48,8 +48,11 @@ jobs:
 
       - name: Build Vercel artifact
         run: |
+          env_file="$(find . .vercel -maxdepth 2 -type f \( -name '.env*.local' -o -name '.env.*' \) -print -quit 2>/dev/null || true)"
+          if [ -z "$env_file" ]; then echo "No pulled Vercel environment file found"; exit 1; fi
+          echo "Using pulled Vercel environment: $env_file"
           set -a
-          . .env.preview.local
+          . "$env_file"
           set +a
           vercel build --token="${{ secrets.VERCEL_TOKEN }}"
 
@@ -105,8 +108,11 @@ jobs:
 
       - name: Build Vercel artifact
         run: |
+          env_file="$(find . .vercel -maxdepth 2 -type f \( -name '.env*.local' -o -name '.env.*' \) -print -quit 2>/dev/null || true)"
+          if [ -z "$env_file" ]; then echo "No pulled Vercel environment file found"; exit 1; fi
+          echo "Using pulled Vercel environment: $env_file"
           set -a
-          . .env.production.local
+          . "$env_file"
           set +a
           vercel build --prod --token="${{ secrets.VERCEL_TOKEN }}"
 
