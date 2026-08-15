@@ -219,9 +219,19 @@
 .site-account-link { display: inline-flex; min-height: 2.55rem; align-items: center; gap: .45rem; border: 1px solid rgba(255,255,255,.12); border-radius: .72rem; padding: 0 .72rem; color: #e2e8f0; font-size: .72rem; font-weight: 850; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; }
 .site-account-link:hover { border-color: rgba(103,232,249,.3); background: rgba(103,232,249,.07); color: white; }
 .site-mobile-search { display: none; padding-bottom: .65rem; }
+.site-mobile-direct-menu { display: none; }
+.site-mobile-direct-currency { display: flex; align-items: center; justify-content: space-between; gap: .75rem; border: 1px solid rgba(250,204,21,.28); border-radius: 1rem; padding: .55rem .65rem .55rem .9rem; background: linear-gradient(110deg, rgba(250,204,21,.12), rgba(124,58,237,.09)); }
+.site-mobile-menu-label { display: inline-flex; align-items: center; gap: .65rem; color: #fef3c7; font-size: .78rem; font-weight: 900; letter-spacing: .02em; }
+.site-mobile-menu-label svg { color: #facc15; }
+.site-mobile-direct-currency .inline-flex { min-height: 2.65rem; width: 7.5rem; justify-content: space-between; border-color: rgba(250,204,21,.3); background: rgba(255,255,255,.08); }
+.site-mobile-direct-links { display: grid; gap: .45rem; margin-top: .6rem; }
+.site-mobile-direct-link { display: flex; min-height: 3.2rem; align-items: center; gap: .8rem; border: 1px solid rgba(255,255,255,.07); border-radius: .9rem; padding: 0 .9rem; background: rgba(255,255,255,.035); color: #d7deeb; font-size: .84rem; font-weight: 850; transition: border-color 150ms ease-out, background-color 150ms ease-out, transform 150ms ease-out; }
+.site-mobile-direct-link svg:first-child { color: #c4b5fd; }
+.site-mobile-direct-link svg:last-child { color: #64748b; }
+.site-mobile-direct-link:hover { border-color: rgba(103,232,249,.24); background: rgba(103,232,249,.06); color: white; transform: translateX(2px); }
 @media (min-width: 768px) and (max-width: 1199px) { .site-primary-nav { gap: .1rem; } .site-nav-link { padding-inline: .4rem; font-size: .66rem; } .site-header-search { width: 13rem; } }
 @media (min-width: 768px) { .site-header-main > div:first-child > button { display: none; } }
-@media (max-width: 767px) { .site-header-main { grid-template-columns: minmax(0,1fr) auto; } .site-header-search { display: none; } .site-mobile-search { display: block; } .site-primary-nav { justify-content: center; flex-wrap: wrap; gap: .12rem; padding-block: .35rem; } .site-nav-link { min-height: 1.85rem; padding: .38rem .45rem; font-size: .63rem; } }
+@media (max-width: 767px) { .site-header-main { grid-template-columns: minmax(0,1fr) auto; } .site-header-search { display: none; } .site-mobile-search { display: block; } .site-primary-nav { display: none; } .site-mobile-direct-menu { display: block; padding: .7rem 0 .85rem; } }
 @media (min-width: 640px) { .site-brand-copy { display: block; } }
 @media (max-width: 639px) { .site-header-main { min-height: 4.15rem; gap: .5rem; } .site-account-link { min-height: 2.35rem; padding-inline: .55rem; } }
 

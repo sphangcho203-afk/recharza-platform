@@ -7,7 +7,6 @@ import { StorefrontCategoryNav } from "@/components/storefront-category-nav";
 import { StorefrontSearch } from "@/components/storefront-search";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { CurrencySelector } from "@/components/currency-selector";
-import { MobileNavMenu } from "@/components/mobile-nav-menu";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { getPublishedStorefrontContent, type StorefrontContent } from "@/lib/storefront-content";
 
@@ -32,7 +31,6 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="site-header-main">
           <div className="flex min-w-0 items-center gap-2.5">
-            <MobileNavMenu />
             <Link href="/" className="site-brand-link" aria-label="Recharza home">
               <RecharzaMark compact />
               <span className="site-brand-copy"><b>RECHARZA</b><small>play more, wait less</small></span>
@@ -42,7 +40,6 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
           <div className="site-header-actions">
             <div className="site-header-search"><StorefrontSearch /></div>
             <div className="hidden sm:block"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} /></div>
-            <div className="sm:hidden"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} compact /></div>
             <CartBadge />
             <Link href="/account" className="site-account-link"><StorefrontIcon name="account" className="h-4 w-4" /><span className="hidden md:inline">Account</span></Link>
           </div>
@@ -57,6 +54,19 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
         </nav>
 
         <div className="site-mobile-search"><StorefrontSearch /></div>
+
+        <section className="site-mobile-direct-menu" aria-label="Store menu">
+          <div className="site-mobile-direct-currency"><span className="site-mobile-menu-label"><StorefrontIcon name="globe" className="h-5 w-5" /><span>Currency</span></span><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} compact /></div>
+          <div className="site-mobile-direct-links">
+            <a href="/?category=top-up#games" className="site-mobile-direct-link"><StorefrontIcon name="games" className="h-5 w-5" /><span>Game top-ups</span><StorefrontIcon name="arrow" className="ml-auto h-4 w-4" /></a>
+            <a href="/?category=gift-cards#games" className="site-mobile-direct-link"><StorefrontIcon name="receipt" className="h-5 w-5" /><span>Gift cards</span><StorefrontIcon name="arrow" className="ml-auto h-4 w-4" /></a>
+            <a href="/#games" className="site-mobile-direct-link"><StorefrontIcon name="games" className="h-5 w-5" /><span>All products</span><StorefrontIcon name="arrow" className="ml-auto h-4 w-4" /></a>
+            <a href="/support" className="site-mobile-direct-link"><StorefrontIcon name="support" className="h-5 w-5" /><span>24/7 support</span><StorefrontIcon name="arrow" className="ml-auto h-4 w-4" /></a>
+            <a href="/orders/lookup" className="site-mobile-direct-link"><StorefrontIcon name="track" className="h-5 w-5" /><span>Track an order</span><StorefrontIcon name="arrow" className="ml-auto h-4 w-4" /></a>
+            <a href="/account" className="site-mobile-direct-link"><StorefrontIcon name="account" className="h-5 w-5" /><span>My account</span><StorefrontIcon name="arrow" className="ml-auto h-4 w-4" /></a>
+          </div>
+        </section>
+
         {storefront.navigation.visibleIds.length > 0 ? (
           <Suspense fallback={<div aria-hidden="true" className="h-10 border-t border-white/[0.06]" />}>
             <StorefrontCategoryNav />
