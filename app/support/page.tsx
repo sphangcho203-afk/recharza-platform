@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { LiveSupportChat } from "@/components/live-support-chat";
+import { TelegramGroupLauncher } from "@/components/telegram-group-launcher";
 import { SupportCenter } from "@/components/support-center";
 import { getPublicSupportChannels } from "@/lib/support-config";
 
@@ -45,7 +46,10 @@ export default function SupportPage() {
             <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Chat with Recharza support</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">Ask about games, top-ups, player verification, checkout, delivery, or the safest next step for your order.</p>
             <p className="mt-4 text-xs leading-5 text-slate-600">For order access, never share passwords, OTPs, card details, UPI PINs, or private access tokens.</p>
-            <a href="https://t.me/supprtrz" target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl border border-cyan-300/25 bg-cyan-300/[0.08] px-4 text-sm font-black text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-200/45 hover:bg-cyan-300/[0.14]">Join live support group <span className="ml-2 text-cyan-300" aria-hidden="true">↗</span></a>
+            <div className="mt-5 flex flex-wrap items-center gap-2">
+              <TelegramGroupLauncher className="inline-flex min-h-11 items-center justify-center rounded-xl border border-cyan-300/25 bg-cyan-300/[0.08] px-4 text-sm font-black text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-200/45 hover:bg-cyan-300/[0.14]">Open live support in Telegram</TelegramGroupLauncher>
+              <a href="https://t.me/supprtrz" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/[0.1] px-4 text-xs font-black text-slate-300 transition hover:border-white/20 hover:bg-white/[0.05] hover:text-white">Use Telegram Web <span className="ml-2" aria-hidden="true">↗</span></a>
+            </div>
           </div>
           <LiveSupportChat embedded />
         </div>

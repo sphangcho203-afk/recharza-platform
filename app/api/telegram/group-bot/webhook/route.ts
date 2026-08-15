@@ -1,4 +1,5 @@
 import { timingSafeEqual } from "node:crypto";
+
 import { getPrisma } from "@/lib/prisma";
 import { verifyOrderAccessToken } from "@/lib/order-security";
 import {
@@ -14,14 +15,12 @@ import {
   sendGroupMessage,
   sendPrivateMessage,
   stripGroupBotMention,
-  type GroupSupportIntent,
   type GroupTelegramUpdate,
 } from "@/lib/telegram-group-bot";
 import {
   appendGroupTurn as appendSessionTurn,
   getGroupBotSession,
   saveGroupBotSession,
-  type GroupConversationState,
 } from "@/lib/telegram-group-session";
 
 export const runtime = "nodejs";

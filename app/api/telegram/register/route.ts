@@ -43,7 +43,10 @@ export async function POST(request: Request) {
   }
 
   const incomingUrl = new URL(request.url);
-  const webhookUrl = new URL("/api/telegram/webhook", incomingUrl.origin);
+  const configuredAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
+  const productionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const canonicalOrigin = configuredAppUrl || (productionUrl ? (productionUrl.startsWith("http") ? productionUrl : `https://${productionUrl}`) : new URL(request.url).origin);
+  const webhookUrl = new URL("/api/telegram/webhook", canonicalOrigin);
   const protectionBypass =
     incomingUrl.searchParams.get("x-vercel-protection-bypass")?.trim() ||
     request.headers.get("x-vercel-protection-bypass")?.trim() ||

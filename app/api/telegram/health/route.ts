@@ -39,7 +39,10 @@ export async function GET(request: Request) {
   const token = process.env.TELEGRAM_BOT_TOKEN?.trim() || "";
   const secretConfigured = Boolean(process.env.TELEGRAM_WEBHOOK_SECRET?.trim());
   const workerChatConfigured = Boolean(process.env.TELEGRAM_SUPPORT_CHAT_ID?.trim());
-  const expectedWebhookUrl = new URL("/api/telegram/webhook", request.url).toString();
+  const configuredAppUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
+  const productionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL?.trim();
+  const canonicalOrigin = configuredAppUrl || (productionUrl ? (productionUrl.startsWith("http") ? productionUrl : `https://${productionUrl}`) : new URL(request.url).origin);
+  const expectedWebhookUrl = new URL("/api/telegram/webhook", canonicalOrigin).toString();
 
   if (!token) {
     return Response.json(

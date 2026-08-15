@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { StorefrontIcon } from "@/components/storefront-icon";
+import { TelegramGroupLauncher } from "@/components/telegram-group-launcher";
 
 const links = [
   { href: "/", label: "Home", icon: "games" as const },
@@ -63,7 +64,13 @@ export function MobileNavMenu() {
           </button>
         </div>
         <nav className="mt-3 space-y-1">
-          {links.map((link) => (
+          {links.map((link) => link.external ? (
+            <TelegramGroupLauncher key={link.href} showArrow={false} className="flex min-h-11 items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3 py-2 text-sm font-black text-slate-200 transition hover:border-cyan-300/25 hover:bg-cyan-300/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60" onClick={() => setOpen(false)}>
+              <StorefrontIcon name={link.icon} className="h-5 w-5 text-violet-300" />
+              <span>{link.label}</span>
+              <StorefrontIcon name="arrow" className="ml-auto h-4 w-4 text-slate-500" />
+            </TelegramGroupLauncher>
+          ) : (
             <a key={link.href} href={link.href} onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3 py-2 text-sm font-black text-slate-200 transition hover:border-cyan-300/25 hover:bg-cyan-300/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">
               <StorefrontIcon name={link.icon} className="h-5 w-5 text-violet-300" />
               <span>{link.label}</span>
