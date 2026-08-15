@@ -100,11 +100,13 @@ jobs:
 
       - name: Load pulled Vercel environment
         run: |
-          if [ -f .env.production.local ]; then
-            set -a
-            . .env.production.local
-            set +a
+          if [ ! -f .vercel/.env.production.local ]; then
+            echo "No pulled Vercel production environment file found"
+            exit 1
           fi
+          set -a
+          . .vercel/.env.production.local
+          set +a
 
       - name: Build Vercel artifact
         run: |
@@ -120,4 +122,12 @@ jobs:
         run: vercel deploy --prebuilt --prod --token="${{ secrets.VERCEL_TOKEN }}"
 
       - name: Register canonical Telegram webhooks
-        run: vercel env run -e production --token="${{ secrets.VERCEL_TOKEN }}" -- npm run support:telegram:webhook
+        run: |
+          if [ ! -f .vercel/.env.production.local ]; then
+            echo "No pulled Vercel production environment file found"
+            exit 1
+          fi
+          set -a
+          . .vercel/.env.production.local
+          set +a
+          npm run support:telegram:webhook
