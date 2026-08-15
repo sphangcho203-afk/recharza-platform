@@ -13,6 +13,12 @@ type CurrencySelectorProps = {
 const STORAGE_KEY = "recharza.display-currency";
 const CURRENCY_EVENT = "recharza:currency-change";
 
+function currencySymbol(code: SupportedCurrencyCode, locale: string) {
+  return new Intl.NumberFormat(locale, { style: "currency", currency: code, currencyDisplay: "narrowSymbol" })
+    .formatToParts(0)
+    .find((part) => part.type === "currency")?.value ?? code;
+}
+
 function readStoredCurrency(): SupportedCurrencyCode {
   if (typeof window === "undefined") return "INR";
   const stored = window.localStorage.getItem(STORAGE_KEY)?.toUpperCase();
@@ -78,7 +84,7 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
         aria-expanded={open}
         aria-label={`Display currency: ${selected.code} ${selected.region}`}
       >
-        <span aria-hidden="true" className="relative grid h-7 w-7 shrink-0 place-items-center rounded-full border border-violet-200/25 bg-violet-300/12 text-violet-100"><StorefrontIcon name="globe" className="h-4 w-4" /><span className="absolute -bottom-1 -right-1 grid h-3.5 min-w-3.5 place-items-center rounded-full border border-[#07080e] bg-violet-300 px-0.5 text-[8px] font-black leading-none text-[#21153d]">{selected.code === "INR" ? "₹" : selected.code.slice(0, 1)}</span></span>
+        <span aria-hidden="true" className="grid h-7 min-w-7 shrink-0 place-items-center rounded-full border border-violet-200/25 bg-violet-300/12 px-1.5 text-xs font-black text-violet-100">{currencySymbol(selected.code, selected.locale)}</span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[10px] font-black uppercase tracking-[0.12em] text-slate-300 sm:text-xs">{selected.code}</span>
           <span className="sr-only">{selected.label} · {selected.region}</span>
@@ -115,7 +121,7 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
                 return (
                   <li key={item.code}>
                     <button type="button" onClick={() => choose(item.code)} className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors duration-150 hover:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${active ? "bg-violet-300/10 text-white" : "text-slate-300"}`} aria-pressed={active}>
-                      <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/[0.06] text-xs font-black text-violet-200">{item.code}</span>
+                      <span aria-hidden="true" className="grid h-10 min-w-10 shrink-0 place-items-center rounded-xl border border-violet-200/15 bg-violet-300/[0.08] px-1.5 text-center text-[11px] font-black text-violet-100"><span className="text-sm">{currencySymbol(item.code, item.locale)}</span><span className="text-[8px] tracking-[0.08em] text-violet-200/70">{item.code}</span></span>
                       <span className="min-w-0 flex-1"><span className="block truncate text-sm font-black">{item.region}</span><span className="mt-0.5 block text-xs text-slate-500">Display prices in {item.code}</span></span>
                       {active ? <StorefrontIcon name="shield" className="h-4 w-4 shrink-0 text-violet-300" /> : null}
                     </button>
