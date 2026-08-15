@@ -1,4 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Recharza mark</title>
+  <desc id="desc">A forward-moving R mark formed by an electric orbit and lightning cut.</desc>
   <defs>
     <linearGradient id="orbit" x1="10" y1="52" x2="54" y2="10" gradientUnits="userSpaceOnUse">
       <stop stop-color="#22D3EE"/>
@@ -11,7 +13,6 @@
       <stop offset="1" stop-color="#67E8F9"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="16" fill="#07080F"/>
   <path d="M49.7 14.3A25.5 25.5 0 1 0 52.2 39" fill="none" stroke="url(#orbit)" stroke-width="7.2" stroke-linecap="round"/>
   <path d="M15.5 18.7h17.2c6.3 0 10.2 3.3 10.2 8.7 0 4.3-2.7 7.2-6.9 8.2l9.4 10.4h-9.1l-8.1-9.5h-4.3V46h-8.4V18.7Zm8.4 6.7v5.2h7.4c2.1 0 3.2-.9 3.2-2.6s-1.1-2.6-3.2-2.6h-7.4Z" fill="url(#bolt)"/>
   <path d="m46 13-10 18h8l-7 20 15-23h-8l8-15h-6Z" fill="#FFFFFF"/>

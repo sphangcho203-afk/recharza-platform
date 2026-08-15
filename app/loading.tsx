@@ -1,8 +1,13 @@
+import { RecharzaMark } from "@/components/recharza-mark";
+
 export default function Loading() {
   return (
     <main className="min-h-screen bg-[var(--surface-0)] px-4 py-20 text-white sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-4xl gap-4" aria-label="Loading Recharza">
-        <div className="h-5 w-28 animate-pulse rounded-full bg-violet-300/15" />
+        <div className="flex items-center gap-3">
+          <RecharzaMark compact />
+          <span className="text-xs font-black uppercase tracking-[0.22em] text-violet-200/80">Recharza</span>
+        </div>
         <div className="h-12 max-w-xl animate-pulse rounded-2xl bg-white/[0.07]" />
         <div className="h-5 max-w-2xl animate-pulse rounded-xl bg-white/[0.04]" />
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
