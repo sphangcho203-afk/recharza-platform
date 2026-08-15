@@ -6,8 +6,12 @@ export function StorefrontBackButton({ fallbackHref = "/#games" }: { fallbackHre
   const router = useRouter();
 
   function goBack() {
+    const currentHref = window.location.href;
     if (window.history.length > 1) {
       window.history.back();
+      window.setTimeout(() => {
+        if (window.location.href === currentHref) router.push(fallbackHref);
+      }, 350);
       return;
     }
     router.push(fallbackHref);
