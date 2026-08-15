@@ -109,7 +109,7 @@ export function GameCatalogue({
   return (
     <div className="mt-6 sm:mt-8">
       <div className="relative -mx-1 border-b border-white/[0.08] pb-3 sm:pb-4">
-        <div className="flex gap-2 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav aria-label="Catalogue filters" className="flex gap-2 overflow-x-auto px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
         {filters.map((item) => (
           <Link
@@ -125,7 +125,7 @@ export function GameCatalogue({
             {item.label}
           </Link>
         ))}
-        </div>
+        </nav>
         <span aria-hidden="true" className="pointer-events-none absolute right-0 top-0 h-10 w-10 bg-gradient-to-l from-[#080910] to-transparent sm:hidden" />
       </div>
 
@@ -135,7 +135,7 @@ export function GameCatalogue({
             {normalizedQuery ? "Search results" : filter === "all" ? "Hot-selling top-up games" : filters.find((item) => item.id === filter)?.label}
           </h3>
           <p className="mt-2 text-sm text-text-secondary">
-            {normalizedQuery ? `${filteredGames.length} matching games` : "Choose a game to see live packages and checkout options."}
+            {normalizedQuery ? `${filteredGames.length} matching games` : `${filteredGames.length} game paths available · choose a title to see live packages and checkout options.`}
           </p>
         </div>
         {(normalizedQuery || filter !== "all") ? (

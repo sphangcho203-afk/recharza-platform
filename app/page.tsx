@@ -106,8 +106,8 @@ export default async function Home() {
       <section className="border-b border-white/[0.07] px-4 py-5 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
           <div className="storefront-trust-cell"><span className="storefront-trust-number">8+</span><span><b>Regional markets</b><small>MLBB paths built for the account region</small></span></div>
-          <div className="storefront-trust-cell"><span className="storefront-trust-number">815</span><span><b>Supplier products</b><small>Published catalogue records connected</small></span></div>
-          <div className="storefront-trust-cell"><span className="storefront-trust-number">24/7</span><span><b>Support ready</b><small>Track your order when you need it</small></span></div>
+          <div className="storefront-trust-cell"><span className="storefront-trust-number">{visibleGames.length}</span><span><b>Game paths</b><small>Published titles and regional destinations</small></span></div>
+          <div className="storefront-trust-cell"><span className="storefront-trust-number">4</span><span><b>Clear checkout stages</b><small>Package, player, billing, and payment</small></span></div>
         </div>
       </section>
 

@@ -255,3 +255,41 @@
 @media (max-width: 639px) { .storefront-back-button { min-height: 3rem; padding-inline: 1rem; } }
 @media (prefers-reduced-motion: reduce) { .storefront-back-button { transition: none; } .storefront-back-button:hover { transform: none; } }
 
+
+/* Premium pass: unify elevation, focus, and touch behavior across commerce surfaces. */
+.storefront-page {
+  --premium-ring: rgba(103, 232, 249, .46);
+  --premium-violet: rgba(139, 92, 246, .28);
+}
+.storefront-page ::selection { background: rgba(139, 92, 246, .42); color: #fff; }
+.storefront-page :where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--premium-ring);
+  outline-offset: 3px;
+}
+.storefront-page :where(button, a) { -webkit-tap-highlight-color: transparent; }
+.storefront-trust-cell { transition: background-color 180ms var(--ease-out), transform 180ms var(--ease-out); }
+.storefront-trust-cell:hover { background: linear-gradient(135deg, rgba(124, 58, 237, .12), rgba(34, 211, 238, .045)); transform: translateY(-1px); }
+.storefront-hero-console { backdrop-filter: blur(18px); }
+.storefront-process-card { backdrop-filter: blur(12px); }
+.storefront-popular-item article { box-shadow: 0 12px 38px rgba(0,0,0,.12); }
+.storefront-page input:not([type="checkbox"]),
+.storefront-page select,
+.storefront-page textarea {
+  transition: border-color 160ms var(--ease-out), background-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+.storefront-page input:not([type="checkbox"]):focus,
+.storefront-page select:focus,
+.storefront-page textarea:focus {
+  border-color: rgba(139, 92, 246, .66);
+  background-color: rgba(255,255,255,.055);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, .12);
+  outline: none;
+}
+@media (max-width: 639px) {
+  .storefront-trust-cell { min-height: 4.4rem; padding-inline: .9rem; }
+  .storefront-page .storefront-kicker { max-width: 100%; font-size: .58rem; letter-spacing: .12em; }
+  .storefront-page h1 { text-wrap: balance; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .storefront-trust-cell:hover { transform: none; }
+}
