@@ -41,9 +41,9 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
 
           <nav className="site-primary-nav" aria-label="Primary navigation">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="site-nav-link">
+              <a key={link.href} href={link.href} className="site-nav-link">
                 <StorefrontIcon name={link.icon} className="h-3.5 w-3.5" />{link.label}
-              </Link>
+              </a>
             ))}
           </nav>
 

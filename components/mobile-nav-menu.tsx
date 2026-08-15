@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { StorefrontIcon } from "@/components/storefront-icon";
@@ -69,16 +68,16 @@ export function MobileNavMenu() {
             </div>
             <nav className="mt-5 space-y-1">
               {links.map((link) => (
-                <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className="flex min-h-12 items-center gap-3 rounded-xl px-3 py-3 text-sm font-black text-slate-300 transition hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">
+                <a key={link.href} href={link.href} onClick={() => setOpen(false)} className="flex min-h-12 items-center gap-3 rounded-xl px-3 py-3 text-sm font-black text-slate-300 transition hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">
                   <StorefrontIcon name={link.icon} className="h-4 w-4 text-violet-300" />
                   {link.label}
-                </Link>
+                </a>
               ))}
             </nav>
             <div className="mt-8 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
               <p className="text-xs font-black text-white">Need a hand?</p>
               <p className="mt-1 text-xs leading-5 text-slate-500">Our support team can help with account, payment, and delivery questions.</p>
-              <Link href="/support" onClick={() => setOpen(false)} className="mt-3 inline-flex text-xs font-black text-violet-300 hover:text-violet-200">Open support <span aria-hidden="true" className="ml-1">→</span></Link>
+              <a href="/support" onClick={() => setOpen(false)} className="mt-3 inline-flex text-xs font-black text-violet-300 hover:text-violet-200">Open support <span aria-hidden="true" className="ml-1">→</span></a>
             </div>
           </aside>
         </div>
