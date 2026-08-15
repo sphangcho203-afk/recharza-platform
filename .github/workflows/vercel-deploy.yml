@@ -96,7 +96,10 @@ jobs:
         run: npm install --global vercel@50.1.0
 
       - name: Pull Vercel production environment
-        run: vercel pull --yes --environment=production --token="${{ secrets.VERCEL_TOKEN }}"
+        run: |
+          mkdir -p .vercel
+          vercel pull --yes --environment=production --token="${{ secrets.VERCEL_TOKEN }}"
+          vercel env pull .vercel/.env.production.local --environment=production --token="${{ secrets.VERCEL_TOKEN }}"
 
       - name: Load pulled Vercel environment
         run: |
