@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { StorefrontIcon } from "@/components/storefront-icon";
@@ -48,11 +48,9 @@ function readStoredCurrency(): SupportedCurrencyCode {
 export function CurrencySelector({ ratesFromInrMicros, compact = false }: CurrencySelectorProps) {
   const [currency, setCurrency] = useState<SupportedCurrencyCode>(readStoredCurrency);
   const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
-  const searchId = useId();
-  const titleId = useId();
+  const titleId = "currency-picker-title";
   const selected = supportedCurrencies.find((item) => item.code === currency) ?? supportedCurrencies[0];
   const usdToSelected = useMemo(() => {
     if (currency === "USD") return 1;
@@ -61,18 +59,11 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
     if (!usdRate || !targetRate) return null;
     return targetRate / usdRate;
   }, [currency, ratesFromInrMicros]);
-  const filteredCurrencies = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) return pickerCurrencies;
-    return pickerCurrencies.filter((item) =>
-      `${item.code} ${item.label} ${item.region}`.toLowerCase().includes(normalized),
-    );
-  }, [query]);
+  const filteredCurrencies = useMemo(() => pickerCurrencies, []);
 
   useEffect(() => {
     if (!open) return;
     const previous = document.activeElement as HTMLElement | null;
-    dialogRef.current?.querySelector<HTMLElement>("input")?.focus();
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") setOpen(false);
     }
@@ -87,7 +78,6 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
     setCurrency(next);
     window.localStorage.setItem(STORAGE_KEY, next);
     window.dispatchEvent(new CustomEvent(CURRENCY_EVENT, { detail: next }));
-    setQuery("");
     setOpen(false);
   }
 
@@ -102,16 +92,11 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
           </div>
           <button type="button" onClick={() => setOpen(false)} aria-label="Close currency picker" className="grid h-9 w-9 place-items-center rounded-lg text-slate-400 transition-colors duration-150 hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60"><span aria-hidden="true" className="text-xl leading-none">×</span></button>
         </div>
-        <div className="border-b border-white/[0.08] p-4">
-          <label htmlFor={searchId} className="sr-only">Search currencies</label>
-          <div className="relative"><StorefrontIcon name="search" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" /><input id={searchId} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search country or currency" className="min-h-11 w-full rounded-lg border border-white/[0.1] bg-white/[0.04] pl-10 pr-3 text-sm text-white outline-none transition focus:border-violet-300/50 focus:ring-2 focus:ring-violet-300/20" /></div>
-        </div>
-        <ul className="max-h-[min(62vh,31rem)] overflow-y-auto p-2" aria-label="Currencies">
+        <ul className="max-h-[min(68vh,34rem)] overflow-y-auto p-3" aria-label="Currencies">
           {filteredCurrencies.map((item) => {
             const active = item.code === currency;
             return <li key={item.code}><button type="button" onClick={() => choose(item.code)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors duration-150 hover:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${active ? "bg-violet-300/10 text-white" : "text-slate-300"}`} aria-pressed={active}><span aria-hidden="true" className="grid h-11 min-w-11 shrink-0 place-items-center rounded-xl border border-violet-200/15 bg-violet-300/[0.08] px-1.5 text-center text-violet-100"><span className="text-base font-black">{currencySymbol(item.code, item.locale)}</span><span className="text-[8px] font-black tracking-[0.08em] text-violet-200/70">{item.code}</span></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-black">{item.region}</span><span className="mt-0.5 block text-xs text-slate-500">Display prices in {item.code}</span></span>{active ? <StorefrontIcon name="shield" className="h-4 w-4 shrink-0 text-violet-300" /> : null}</button></li>;
           })}
-          {!filteredCurrencies.length ? <li className="px-3 py-8 text-center text-sm text-slate-500">No currencies match “{query}”.</li> : null}
         </ul>
         <div className="border-t border-white/[0.08] px-5 py-3 text-xs text-slate-600">{usdToSelected ? `Reference rate: 1 USD ≈ ${usdToSelected.toFixed(2)} ${selected.code}` : "Reference rates update when available."}</div>
       </div>
