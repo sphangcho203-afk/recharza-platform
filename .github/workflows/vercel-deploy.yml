@@ -38,6 +38,14 @@ jobs:
       - name: Pull Vercel preview environment
         run: vercel pull --yes --environment=preview --token="${{ secrets.VERCEL_TOKEN }}"
 
+      - name: Load pulled Vercel environment
+        run: |
+          if [ -f .env.preview.local ]; then
+            set -a
+            . .env.preview.local
+            set +a
+          fi
+
       - name: Build Vercel artifact
         run: vercel build --token="${{ secrets.VERCEL_TOKEN }}"
 
@@ -82,6 +90,14 @@ jobs:
 
       - name: Pull Vercel production environment
         run: vercel pull --yes --environment=production --token="${{ secrets.VERCEL_TOKEN }}"
+
+      - name: Load pulled Vercel environment
+        run: |
+          if [ -f .env.production.local ]; then
+            set -a
+            . .env.production.local
+            set +a
+          fi
 
       - name: Build Vercel artifact
         run: vercel build --prod --token="${{ secrets.VERCEL_TOKEN }}"
