@@ -16,8 +16,8 @@ const quickPrompts = [
   "I need help with an order",
 ];
 
-export function LiveSupportChat() {
-  const [open, setOpen] = useState(false);
+export function LiveSupportChat({ embedded = false }: { embedded?: boolean }) {
+  const [open, setOpen] = useState(embedded);
   const [messages, setMessages] = useState<ChatMessage[]>([welcome]);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
@@ -59,11 +59,11 @@ export function LiveSupportChat() {
   }
 
   return (
-    <div className="fixed bottom-5 right-4 z-[70] sm:bottom-6 sm:right-6">
+    <div className={embedded ? "w-full" : "fixed bottom-5 right-4 z-[70] sm:bottom-6 sm:right-6"}>
       {open ? (
         <section
           aria-label="Recharza live support"
-          className="mb-3 flex h-[min(680px,calc(100vh-112px))] w-[min(400px,calc(100vw-32px))] flex-col overflow-hidden rounded-[1.5rem] border border-white/[0.13] bg-[#0b0d15]/95 shadow-[0_24px_90px_rgba(0,0,0,0.48)] backdrop-blur-2xl"
+          className={`${embedded ? "h-[min(620px,calc(100vh-180px))] w-full" : "mb-3 h-[min(680px,calc(100vh-112px))] w-[min(400px,calc(100vw-32px))]"} flex flex-col overflow-hidden rounded-[1.5rem] border border-white/[0.13] bg-[#0b0d15]/95 shadow-[0_24px_90px_rgba(0,0,0,0.48)] backdrop-blur-2xl`}
         >
           <header className="relative overflow-hidden border-b border-white/[0.09] px-5 py-4">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(139,92,246,0.24),transparent_42%),radial-gradient(circle_at_10%_100%,rgba(34,211,238,0.1),transparent_45%)]" />
@@ -79,7 +79,7 @@ export function LiveSupportChat() {
                   <p className="mt-0.5 text-[11px] text-slate-500">Here to guide your top-up</p>
                 </div>
               </div>
-              <button type="button" onClick={() => setOpen(false)} className="grid h-9 w-9 place-items-center rounded-xl text-lg text-slate-500 transition hover:bg-white/[0.07] hover:text-white" aria-label="Close live support">×</button>
+              {!embedded ? <button type="button" onClick={() => setOpen(false)} className="grid h-9 w-9 place-items-center rounded-xl text-lg text-slate-500 transition hover:bg-white/[0.07] hover:text-white" aria-label="Close live support">×</button> : null}
             </div>
           </header>
 
@@ -112,10 +112,10 @@ export function LiveSupportChat() {
           </div>
         </section>
       ) : null}
-      <button type="button" onClick={() => setOpen((current) => !current)} className={`group ml-auto flex min-h-14 items-center gap-3 rounded-2xl border px-4 shadow-[0_16px_40px_rgba(0,0,0,0.3)] transition hover:-translate-y-0.5 ${open ? "border-white/[0.15] bg-[#11131d]" : "border-violet-300/25 bg-violet-500 text-white hover:bg-violet-400"}`} aria-expanded={open} aria-controls="live-support-message">
+      {!embedded ? <button type="button" onClick={() => setOpen((current) => !current)} className={`group ml-auto flex min-h-14 items-center gap-3 rounded-2xl border px-4 shadow-[0_16px_40px_rgba(0,0,0,0.3)] transition hover:-translate-y-0.5 ${open ? "border-white/[0.15] bg-[#11131d]" : "border-violet-300/25 bg-violet-500 text-white hover:bg-violet-400"}`} aria-expanded={open} aria-controls="live-support-message">
         <span className={`grid h-9 w-9 place-items-center rounded-xl ${open ? "bg-white/[0.08] text-violet-200" : "bg-white/15 text-white"}`} aria-hidden="true">✦</span>
         <span className="pr-1 text-left"><span className={`block text-[10px] font-black uppercase tracking-[0.14em] ${open ? "text-violet-200" : "text-violet-100"}`}>Need a hand?</span><span className="block text-sm font-black">Live support</span></span>
-      </button>
+      </button> : null}
     </div>
   );
 }

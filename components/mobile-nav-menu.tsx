@@ -10,7 +10,7 @@ const links = [
   { href: "/?category=top-up#games", label: "Game top-ups", icon: "games" as const },
   { href: "/?category=gift-cards#games", label: "Gift cards", icon: "receipt" as const },
   { href: "/#games", label: "All products", icon: "games" as const },
-  { href: "/support", label: "24/7 support", icon: "support" as const },
+  { href: "/support#live-chat", label: "Help & live chat", icon: "support" as const },
   { href: "/orders/lookup", label: "Track an order", icon: "track" as const },
   { href: "/cart", label: "Cart", icon: "cart" as const },
   { href: "/account", label: "My account", icon: "account" as const },

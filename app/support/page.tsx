@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontIcon } from "@/components/storefront-icon";
+import { LiveSupportChat } from "@/components/live-support-chat";
 import { SupportCenter } from "@/components/support-center";
 import { getPublicSupportChannels } from "@/lib/support-config";
 
@@ -34,6 +35,18 @@ export default function SupportPage() {
               Track order
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section id="live-chat" className="border-b border-white/[0.08] px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+        <div className="mx-auto grid max-w-[1100px] gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start">
+          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-300">Instant help</p>
+            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Chat with Recharza support</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">Ask about games, top-ups, player verification, checkout, delivery, or the safest next step for your order.</p>
+            <p className="mt-4 text-xs leading-5 text-slate-600">For order access, never share passwords, OTPs, card details, UPI PINs, or private access tokens.</p>
+          </div>
+          <LiveSupportChat embedded />
         </div>
       </section>
 
