@@ -176,7 +176,7 @@ export function MobileNavMenu() {
                 const isDisabled = "disabled" in channel && channel.disabled;
                 const className = `flex min-h-[4.5rem] items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3 py-2 text-left transition hover:border-cyan-300/25 hover:bg-cyan-300/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${isDisabled ? "cursor-not-allowed opacity-55" : ""}`;
                 if (isDisabled) return <div key={channel.key} aria-disabled="true" className={className}>{content}</div>;
-                return <a key={channel.key} href={channel.href} target={channel.external ? "_blank" : undefined} rel={channel.external ? "noopener noreferrer" : undefined} onClick={closeMenu} className={className}>{content}</a>;
+                return <a key={channel.key} href={channel.href} onClick={closeMenu} className={className}>{content}</a>;
               })}
             </nav>
           </div>
