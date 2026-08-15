@@ -84,31 +84,29 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
   const picker = open ? (
     <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/70 p-0 backdrop-blur-[3px] sm:items-center sm:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
       <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} className="w-full max-h-[min(88vh,46rem)] overflow-hidden rounded-t-3xl border border-white/[0.12] bg-[#11131d] shadow-[0_24px_80px_rgba(0,0,0,0.65)] sm:max-w-lg sm:rounded-3xl">
-        <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] p-5">
+        <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] px-4 py-3.5">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-300">Display settings</p>
-            <h2 id={titleId} className="mt-1 text-xl font-black text-white">Choose currency</h2>
-            <p className="mt-1 text-sm text-slate-500">Prices update without leaving your current page.</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-300">Display currency</p>
+            <h2 id={titleId} className="mt-0.5 text-lg font-black text-white">Choose currency</h2>
           </div>
-          <button type="button" onClick={() => setOpen(false)} aria-label="Close currency picker" className="grid h-9 w-9 place-items-center rounded-lg text-slate-400 transition-colors duration-150 hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60"><span aria-hidden="true" className="text-xl leading-none">×</span></button>
+          <button type="button" onClick={() => setOpen(false)} aria-label="Close currency picker" className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition-colors duration-150 hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60"><span aria-hidden="true" className="text-lg leading-none">×</span></button>
         </div>
-        <ul className="max-h-[min(68vh,34rem)] overflow-y-auto p-3" aria-label="Currencies">
+        <ul className="max-h-[min(62vh,28rem)] overflow-y-auto p-2" aria-label="Currencies">
           {filteredCurrencies.map((item) => {
             const active = item.code === currency;
-            return <li key={item.code}><button type="button" onClick={() => choose(item.code)} className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors duration-150 hover:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${active ? "bg-violet-300/10 text-white" : "text-slate-300"}`} aria-pressed={active}><span aria-hidden="true" className="grid h-11 min-w-11 shrink-0 place-items-center rounded-xl border border-violet-200/15 bg-violet-300/[0.08] px-1.5 text-center text-violet-100"><span className="text-base font-black">{currencySymbol(item.code, item.locale)}</span><span className="text-[8px] font-black tracking-[0.08em] text-violet-200/70">{item.code}</span></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-black">{item.region}</span><span className="mt-0.5 block text-xs text-slate-500">Display prices in {item.code}</span></span>{active ? <StorefrontIcon name="shield" className="h-4 w-4 shrink-0 text-violet-300" /> : null}</button></li>;
+            return <li key={item.code}><button type="button" onClick={() => choose(item.code)} className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors duration-150 hover:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${active ? "bg-violet-300/10 text-white" : "text-slate-300"}`} aria-pressed={active}><span aria-hidden="true" className="grid h-9 min-w-9 shrink-0 place-items-center rounded-lg border border-violet-200/15 bg-violet-300/[0.08] px-1 text-center text-violet-100"><span className="text-sm font-black leading-none">{currencySymbol(item.code, item.locale)}</span></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold">{item.region}</span><span className="mt-0.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">{item.code}</span></span>{active ? <StorefrontIcon name="shield" className="h-4 w-4 shrink-0 text-violet-300" /> : null}</button></li>;
           })}
         </ul>
-        <div className="border-t border-white/[0.08] px-5 py-3 text-xs text-slate-600">{usdToSelected ? `Reference rate: 1 USD ≈ ${usdToSelected.toFixed(2)} ${selected.code}` : "Reference rates update when available."}</div>
       </div>
     </div>
   ) : null;
 
   return (
     <>
-      <button ref={triggerRef} type="button" onClick={() => setOpen(true)} className={`group inline-flex min-h-10 min-w-0 items-center gap-2 rounded-full border border-violet-300/20 bg-violet-300/[0.06] px-2.5 text-left transition-colors duration-150 ease-out hover:border-violet-300/45 hover:bg-violet-300/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 sm:px-3 ${compact ? "w-[6.25rem]" : "min-w-[11.5rem]"}`} aria-haspopup="dialog" aria-expanded={open} aria-label={`Display currency: ${selected.code} ${selected.region}`}>
+      <button ref={triggerRef} type="button" onClick={() => setOpen(true)} className={`group relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-violet-300/20 bg-violet-300/[0.06] text-left transition-colors duration-150 ease-out hover:border-violet-300/45 hover:bg-violet-300/[0.1] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${compact ? "sm:h-10 sm:w-10" : "sm:h-11 sm:w-11"}`} aria-haspopup="dialog" aria-expanded={open} aria-label={`Display currency: ${selected.code} ${selected.region}`}>
         <span aria-hidden="true" className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-violet-200/25 bg-violet-300/12 text-base font-black text-violet-100">{currencySymbol(selected.code, selected.locale)}</span>
-        <span className="min-w-0 flex-1"><span className="block truncate text-[10px] font-black uppercase tracking-[0.12em] text-slate-300 sm:text-xs">{selected.code}</span><span className="sr-only">{selected.label} · {selected.region}</span></span>
-        <StorefrontIcon name="arrow" className="h-3 w-3 shrink-0 rotate-90 text-violet-200/70 transition-transform group-hover:translate-y-0.5" />
+        <span className="sr-only">{selected.code} · {selected.label} · {selected.region}</span>
+        <StorefrontIcon name="arrow" className="absolute h-3 w-3 translate-x-5 translate-y-3 rotate-90 text-violet-200/70 transition-transform group-hover:translate-y-[0.85rem]" />
       </button>
       {typeof document !== "undefined" && picker ? createPortal(picker, document.body) : null}
     </>
