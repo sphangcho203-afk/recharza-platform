@@ -31,13 +31,22 @@ const imageExtensionPattern = /\.(?:avif|gif|jpe?g|png|webp)(?:$|\?)/i;
 const mobileLegendsMedia = {
   gameIcon:
     "https://play-lh.googleusercontent.com/D8r13ijO9c-0_1N-CP4d63mR1w6YhDuR2mBQUl27ELJAx0sKdaKtM5vCUnSLODKBVzUx7rZ9cW4Ir9jYiufsSQ=w512-h512",
-  diamond:
-    "https://www.joytify.com/static/lapakgaming/images/rebranding/Icon_per_Denom/mobile_legends_1.png",
-  weeklyPass:
-    "https://www.joytify.com/static/product/Weekly%20Diamond%20Pass%20Mobile%20Legends.webp",
+  diamond: "/assets/packs/mobile-legends/diamond.webp",
+  tickets: "/assets/packs/mobile-legends/tickets-stack.webp",
+  weeklyPass: "/assets/packs/mobile-legends/weekly-diamond-pass-offer.webp",
   twilightPass:
     "https://www.joytify.com/static/lapakgaming/images/rebranding/Icon_per_Denom/mobile_legends_twilight.png",
 } as const;
+
+const gameCurrencyMedia: Record<string, string> = {
+  "free-fire": "/assets/packs/free-fire/diamonds-premium.png",
+  "pubg-mobile": "/assets/packs/pubg-mobile/uc-premium.png",
+  bgmi: "/assets/packs/pubg-mobile/uc-premium.png",
+  "genshin-impact": "/assets/packs/genshin-impact/genesis-crystals-premium.png",
+  valorant: "/assets/packs/valorant/points-premium.png",
+  "call-of-duty-mobile": "/assets/packs/call-of-duty-mobile/cp-premium.png",
+  fortnite: "/assets/packs/fortnite/v-bucks-premium.png",
+};
 
 const gameMediaDefaults: Record<string, string[]> = {
   "mobile-legends": [mobileLegendsMedia.gameIcon],
@@ -84,6 +93,8 @@ function asObject(value: unknown) {
 
 export function isTrustedProductMediaUrl(value: unknown) {
   if (typeof value !== "string") return false;
+
+  if (value.startsWith("/assets/") && !value.includes("..")) return true;
 
   try {
     const url = new URL(value.trim());
@@ -172,6 +183,10 @@ function getMobileLegendsCatalogMedia(productName: string) {
     return [mobileLegendsMedia.twilightPass, mobileLegendsMedia.gameIcon];
   }
 
+  if (normalized.includes("ticket") || normalized.includes("pass")) {
+    return [mobileLegendsMedia.tickets, mobileLegendsMedia.gameIcon];
+  }
+
   return [mobileLegendsMedia.diamond, mobileLegendsMedia.gameIcon];
 }
 
@@ -185,7 +200,7 @@ export function resolveProductMedia(input: {
   const catalogSources =
     input.gameSlug === "mobile-legends"
       ? getMobileLegendsCatalogMedia(input.productName)
-      : getGameIconSources(input.gameSlug);
+      : [gameCurrencyMedia[input.gameSlug], ...getGameIconSources(input.gameSlug)].filter(Boolean);
   const sources = Array.from(
     new Set([
       ...(override ? [override.imageUrl] : []),

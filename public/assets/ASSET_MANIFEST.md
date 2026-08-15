@@ -23,3 +23,18 @@ Founder-supplied visual assets prepared for the Recharza storefront.
 ## Rights and brand handling
 
 These files were supplied by the founder. Confirm the applicable use and distribution rights before publishing them in production. Game names, logos, characters, currencies, and artwork belong to their respective publishers. Their presence in Recharza must not imply publisher sponsorship, partnership, or endorsement.
+
+## Package currency artwork
+
+The following Recharza-created package assets are mapped centrally by `lib/catalog/product-media.ts`:
+
+| Game/package type | Normalized path | Identification |
+|---|---|---|
+| Free Fire diamonds | `packs/free-fire/diamonds-premium.png` | Cyan faceted diamond currency icon |
+| PUBG Mobile and BGMI UC | `packs/pubg-mobile/uc-premium.png` | Silver-and-gold UC-style token stack |
+| Genshin Impact Genesis Crystals | `packs/genshin-impact/genesis-crystals-premium.png` | Iridescent star-crystal cluster |
+| VALORANT Points | `packs/valorant/points-premium.png` | Crimson-and-black angular point tokens |
+| Call of Duty: Mobile CP | `packs/call-of-duty-mobile/cp-premium.png` | Graphite-and-amber credit token stack |
+| Fortnite V-Bucks | `packs/fortnite/v-bucks-premium.png` | Silver-and-blue star coin |
+
+These are original Recharza visual assets intended as package-card presentation artwork; publisher names and currency names remain catalogue text and do not imply endorsement.
