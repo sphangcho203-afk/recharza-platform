@@ -230,8 +230,8 @@
 .site-mobile-direct-link svg:last-child { color: #64748b; }
 .site-mobile-direct-link:hover { border-color: rgba(103,232,249,.24); background: rgba(103,232,249,.06); color: white; transform: translateX(2px); }
 @media (min-width: 768px) and (max-width: 1199px) { .site-desktop-nav { gap: .05rem; } .site-nav-link { padding-inline: .42rem; font-size: .66rem; } .site-header-actions { gap: .3rem; } }
-@media (min-width: 768px) { .site-header-main > div:first-child > button { display: none; } }
-@media (max-width: 767px) { .site-header-main { grid-template-columns: minmax(0,1fr) auto; } .site-header-search { display: none; } .site-desktop-nav { display: none; } .site-mobile-search { display: block; } .site-mobile-direct-menu { display: block; padding: .7rem 0 .85rem; } }
+@media (min-width: 1100px) { .site-header-main > div:first-child > button { display: none; } }
+@media (max-width: 1099px) { .site-header-main { grid-template-columns: minmax(0,1fr) auto; } .site-header-search { display: none; } .site-desktop-nav { display: none; } .site-mobile-search { display: block; } .site-mobile-direct-menu { display: block; padding: .7rem 0 .85rem; } }
 @media (min-width: 640px) { .site-brand-copy { display: block; } }
 @media (max-width: 639px) { .site-header-main { min-height: 4.15rem; gap: .5rem; } .site-account-link { min-height: 2.35rem; padding-inline: .55rem; } }
 
