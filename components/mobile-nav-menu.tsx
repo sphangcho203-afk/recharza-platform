@@ -68,8 +68,40 @@ const supportChannels = [
 type SupportChannel = (typeof supportChannels)[number];
 
 function ChannelMark({ channel }: { channel: SupportChannel }) {
-  const mark = channel.icon === "email" ? "@" : channel.icon === "whatsapp" ? "W" : channel.icon === "instagram" ? "◎" : channel.icon === "bot" ? "✦" : "⌁";
-  return <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-violet-300/20 bg-violet-300/10 text-lg font-black text-violet-200">{mark}</span>;
+  const icon = channel.icon;
+  return (
+    <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[0.06] shadow-[0_4px_14px_rgba(0,0,0,0.18)]">
+      {icon === "group" || icon === "bot" ? (
+        <svg viewBox="0 0 24 24" className="h-6 w-6" role="presentation">
+          <circle cx="12" cy="12" r="11" fill="#229ED9" />
+          <path d="m5.4 11.7 12.2-4.72c.57-.2 1.07.14.88.98l-2.08 9.8c-.15.7-.56.87-1.14.55l-3.25-2.4-1.57 1.51c-.17.17-.31.31-.63.31l.23-3.3 6-5.42c.26-.23-.06-.36-.4-.13l-7.42 4.67-3.2-1c-.69-.22-.7-.69.38-1.1Z" fill="white" />
+        </svg>
+      ) : null}
+      {icon === "whatsapp" ? (
+        <svg viewBox="0 0 24 24" className="h-6 w-6" role="presentation">
+          <circle cx="12" cy="12" r="11" fill="#25D366" />
+          <path d="M7.4 17.2 8.1 14a5.9 5.9 0 1 1 2 1.9l-2.7 1.3Z" fill="white" />
+          <path d="M10.1 9.2c.16-.2.3-.2.48-.2h.4c.15 0 .3.06.36.24l.55 1.34c.07.18.04.32-.08.47l-.4.47c-.1.12-.1.23-.02.37.23.42.83 1.27 1.86 1.75.16.08.28.07.38-.05l.5-.6c.1-.13.23-.15.38-.1l1.25.58c.18.08.24.2.2.4-.1.48-.54 1.08-1.04 1.2-.45.1-1.02.04-1.63-.2-.57-.22-1.38-.7-2.23-1.53-.7-.7-1.2-1.46-1.44-2.04-.25-.6-.25-1.25.03-1.63Z" fill="#25D366" />
+        </svg>
+      ) : null}
+      {icon === "email" ? (
+        <svg viewBox="0 0 24 24" className="h-6 w-6" role="presentation">
+          <path d="M3.5 6.5h17v11h-17z" fill="white" />
+          <path d="m4 7 8 6 8-6" fill="none" stroke="#EA4335" strokeWidth="2" />
+          <path d="m4 17 5.2-5M20 17l-5.2-5" fill="none" stroke="#4285F4" strokeWidth="2" />
+          <path d="M4 7v10M20 7v10" stroke="#34A853" strokeWidth="2" />
+        </svg>
+      ) : null}
+      {icon === "instagram" ? (
+        <svg viewBox="0 0 24 24" className="h-6 w-6" role="presentation">
+          <defs><linearGradient id="instagram-support-gradient" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stopColor="#F58529" /><stop offset=".45" stopColor="#DD2A7B" /><stop offset="1" stopColor="#8134AF" /></linearGradient></defs>
+          <rect x="4" y="4" width="16" height="16" rx="4.5" fill="none" stroke="url(#instagram-support-gradient)" strokeWidth="2.2" />
+          <circle cx="12" cy="12" r="3.7" fill="none" stroke="url(#instagram-support-gradient)" strokeWidth="2" />
+          <circle cx="17.3" cy="6.8" r="1.1" fill="#E1306C" />
+        </svg>
+      ) : null}
+    </span>
+  );
 }
 
 export function MobileNavMenu() {
