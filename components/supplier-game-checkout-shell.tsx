@@ -395,7 +395,10 @@ export function SupplierGameCheckoutShell({
   }
 
   return (
-    <form onSubmit={submitCheckout} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_20rem]">
+    <form
+      onSubmit={submitCheckout}
+      className={step === 4 ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_20rem]" : "space-y-5"}
+    >
       <div className="min-w-0 space-y-5">
         <section className="relative overflow-hidden rounded-2xl border border-violet-300/[0.16] bg-[radial-gradient(circle_at_0%_0%,rgba(139,92,246,0.18),transparent_42%),#0d0f18] p-5 sm:p-6">
           <div className="relative">
@@ -678,7 +681,7 @@ export function SupplierGameCheckoutShell({
         ) : null}
       </div>
 
-      <aside className="lg:sticky lg:top-28">
+      {step === 4 ? <aside className="lg:sticky lg:top-28">
         <div className="rounded-xl border border-white/[0.09] bg-[#0d0f16] p-4 shadow-[0_18px_50px_rgba(0,0,0,0.22)] sm:p-5">
           <h2 className="text-base font-black text-white">Order summary</h2>
           <dl className="mt-4 grid gap-3 text-xs">
@@ -714,7 +717,7 @@ export function SupplierGameCheckoutShell({
             <SummaryPoint icon="support" title="Support ready" text="Ticket system linked to order IDs." />
           </div>
         </div>
-      </aside>
+      </aside> : null}
     </form>
   );
 }
