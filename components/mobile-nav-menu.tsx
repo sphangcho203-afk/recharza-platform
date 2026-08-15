@@ -19,7 +19,7 @@ export function MobileNavMenu() {
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    const pageContent = Array.from(document.querySelectorAll<HTMLElement>("main, footer"));
+    const pageContent = Array.from(document.querySelectorAll<HTMLElement>("main > :not(header), footer"));
     pageContent.forEach((element) => {
       if (open) {
         element.setAttribute("aria-hidden", "true");
