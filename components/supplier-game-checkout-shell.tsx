@@ -79,6 +79,8 @@ type IdentityState = {
   serverId: string;
 };
 
+type CheckoutStep = 1 | 2 | 3 | 4 | 5;
+
 const initialIdentity: IdentityState = { playerId: "", riotId: "", serverId: "" };
 const fieldClassName = "mt-2 min-h-12 w-full rounded-lg border border-white/[0.09] bg-[#080a10] px-3.5 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/10";
 
@@ -129,6 +131,7 @@ export function SupplierGameCheckoutShell({
     [gameSlug, marketCode, packages],
   );
   const [packageId, setPackageId] = useState(packages.find((item) => item.marketCode === firstMarketCode)?.id ?? "");
+  const [step, setStep] = useState<CheckoutStep>(1);
   const [identity, setIdentity] = useState<IdentityState>(initialIdentity);
   const [billing, setBilling] = useState<BillingFormState>(() => {
     const defaultAddress = savedAddresses.find((item) => item.isDefault);
@@ -370,6 +373,15 @@ export function SupplierGameCheckoutShell({
     }
   }
 
+  function advanceStep(nextStep: CheckoutStep) {
+    if (nextStep === 3 && !selectedPackage) { setError("Choose a package before continuing."); return; }
+    if (nextStep === 4 && (!identityResult?.valid || !verification?.valid)) { setError("Verify the player destination before continuing."); return; }
+    if (nextStep === 5 && (!billingIsComplete(billing) || !canConvert)) { setError("Complete the billing details before continuing."); return; }
+    setError("");
+    setStep(nextStep);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   const selectedMarketLabel = markets.find((market) => market.code === marketCode)?.label ?? "Selected market";
   const gameLabel = gameSlug === "free-fire" ? "Free Fire MAX" : gameSlug === "valorant" ? "VALORANT" : gameSlug === "pubg-mobile" ? "PUBG Mobile" : gameSlug === "genshin-impact" ? "Genshin Impact" : "Game top-up";
 
@@ -403,7 +415,7 @@ export function SupplierGameCheckoutShell({
             </div>
           </div>
         </section>
-        {markets.length > 1 && gameSlug !== "free-fire" ? (
+        {false && markets.length > 1 && gameSlug !== "free-fire" ? (
           <section className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex min-w-max gap-2">
               {markets.map((market) => (
@@ -424,13 +436,16 @@ export function SupplierGameCheckoutShell({
           </section>
         ) : null}
 
+        <CheckoutProgress step={step} onStepChange={setStep} />
+
+        {step === 3 ? <>
         <section className="rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:p-5">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-base font-black text-white">Order information</h2>
               <p className="mt-1 text-xs text-slate-500">Enter the destination exactly as shown in-game.</p>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.12em] text-violet-300">Step 1</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.12em] text-violet-300">Step 3</span>
           </div>
 
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -515,7 +530,10 @@ export function SupplierGameCheckoutShell({
             </button>
           </div>
         </section>
+        <StepActions current={step} onBack={() => setStep(2)} onNext={() => advanceStep(4)} nextLabel="Continue to billing" />
+        </> : null}
 
+        {step <= 2 ? <>
         <section>
           <div className="flex items-end justify-between gap-3">
             <div>
@@ -593,7 +611,11 @@ export function SupplierGameCheckoutShell({
             })}
           </div>
         </section>
+        {step === 1 ? <StepActions current={step} onNext={() => advanceStep(2)} nextLabel="Review cart" /> : null}
+        {step === 2 ? <CartReview packageName={selectedPackage.name} amount={formatPresentment(selectedPackage.amountInPaise)} onBack={() => setStep(1)} onNext={() => advanceStep(3)} /> : null}
+        </> : null}
 
+        {step === 4 ? <>
         <div id="billing" className="space-y-5">
           {isAuthenticated && savedAddresses.length > 0 ? (
             <SavedAddressPicker
@@ -629,6 +651,8 @@ export function SupplierGameCheckoutShell({
             </label>
           ) : null}
         </div>
+        <StepActions current={step} onBack={() => setStep(3)} onNext={() => advanceStep(5)} nextLabel="Review payment" />
+        </> : null}
 
         {error ? <p className="rounded-lg border border-rose-300/20 bg-rose-300/[0.07] px-4 py-3 text-sm text-rose-100">{error}</p> : null}
         {message ? <p className="rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-4 py-3 text-sm text-cyan-100">{message}</p> : null}
@@ -679,10 +703,10 @@ export function SupplierGameCheckoutShell({
 
           <button
             type="submit"
-            disabled={!canSubmit || isSubmitting || Boolean(order)}
+            disabled={step !== 5 || !canSubmit || isSubmitting || Boolean(order)}
             className="mt-5 min-h-12 w-full rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
           >
-            {isSubmitting ? "Creating order…" : order ? "Order created" : canSubmit ? "Continue to payment" : verification?.valid ? "Complete details" : "Verify account first"}
+                        {isSubmitting ? "Creating order…" : order ? "Order created" : step === 5 && canSubmit ? "Pay securely" : step < 5 ? "Continue" : "Verify account first"}
           </button>
 
           {!billingIsComplete(billing) ? (
@@ -712,4 +736,47 @@ function SummaryPoint({ icon, title, text }: { icon: Parameters<typeof Storefron
       </div>
     </div>
   );
+}
+
+type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4 | 5) => void };
+type StepActionsProps = { current: number; onBack?: () => void; onNext: () => void; nextLabel: string };
+type CartReviewProps = { packageName: string; amount: string; onBack: () => void; onNext: () => void };
+
+function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
+  const labels = ["Package", "Cart", "Player", "Billing", "Payment"];
+  return (
+    <nav aria-label="Checkout progress" className="mb-5 rounded-2xl border border-white/[0.08] bg-[#0d0f16] p-3">
+      <ol className="grid grid-cols-5 gap-1">
+        {labels.map((label, index) => {
+          const number = index + 1;
+          const active = number === step;
+          const complete = number < step;
+          return <li key={label}>
+            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-600"}`}>
+              <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-black">{complete ? "✓" : number}</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
+            </button>
+          </li>;
+        })}
+      </ol>
+    </nav>
+  );
+}
+
+function StepActions({ current, onBack, onNext, nextLabel }: StepActionsProps) {
+  return <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+    {current > 1 ? <button type="button" onClick={onBack} className="min-h-11 rounded-xl border border-white/[0.1] px-4 text-sm font-black text-slate-300 transition hover:border-white/[0.2] hover:text-white">Back</button> : <span />}
+    {current < 5 ? <button type="button" onClick={onNext} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
+  </div>;
+}
+
+function CartReview({ packageName, amount, onBack, onNext }: CartReviewProps) {
+  return <section className="rounded-2xl border border-violet-300/[0.16] bg-violet-500/[0.06] p-5">
+    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-300">Step 2 · Cart review</p>
+    <h2 className="mt-2 text-xl font-black text-white">Your selected top-up</h2>
+    <div className="mt-4 flex items-center justify-between gap-4 rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4">
+      <span className="text-sm font-bold text-slate-200">{packageName}</span><span className="text-base font-black text-violet-300">{amount}</span>
+    </div>
+    <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between"><button type="button" onClick={onBack} className="min-h-11 rounded-xl border border-white/[0.1] px-4 text-sm font-black text-slate-300">Back to packages</button><button type="button" onClick={onNext} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white hover:bg-violet-400">Continue to player info</button></div>
+  </section>;
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import { CountryPicker } from "@/components/country-picker";
+import { getBillingStates } from "@/lib/commerce/location-data";
 import {
   getDefaultCurrencyForCountry,
   supportedCurrencies,
-  type BillingCountryCode,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
 
@@ -17,7 +17,7 @@ export type BillingFormState = {
   city: string;
   state: string;
   postalCode: string;
-  countryCode: BillingCountryCode;
+  countryCode: string;
   presentmentCurrency: SupportedCurrencyCode;
 };
 
@@ -50,6 +50,8 @@ export function BillingAddressFields({
   stepNumber?: string;
   stepLabel?: string;
 }) {
+  const states = getBillingStates(value.countryCode);
+
   function update<Key extends keyof BillingFormState>(
     key: Key,
     nextValue: BillingFormState[Key],
@@ -147,13 +149,15 @@ export function BillingAddressFields({
               Country
               <CountryPicker
                 value={value.countryCode}
-                onChange={(countryCode) =>
+                                  onChange={(countryCode) =>
                   onChange({
                     ...value,
                     countryCode,
+                    state: getBillingStates(countryCode)[0]?.name ?? "N/A",
                     presentmentCurrency: getDefaultCurrencyForCountry(countryCode),
                   })
                 }
+
               />
             </label>
             <label className="text-sm font-semibold text-slate-200">
@@ -221,14 +225,18 @@ export function BillingAddressFields({
             </label>
             <label className="text-sm font-semibold text-slate-200">
               State or province
-              <input
+              <select
                 required
                 autoComplete="address-level1"
-                maxLength={100}
                 value={value.state}
-                onChange={(event) => update("state", event.target.value.slice(0, 100))}
+                onChange={(event) => update("state", event.target.value)}
                 className={inputClassName}
-              />
+              >
+                {states.length ? <option value="">Choose a state or province</option> : <option value="N/A">Not applicable</option>}
+                {states.map((state) => (
+                  <option key={`${state.countryCode}-${state.isoCode}`} value={state.name}>{state.name}</option>
+                ))}
+              </select>
             </label>
           </div>
           <label className="text-sm font-semibold text-slate-200">

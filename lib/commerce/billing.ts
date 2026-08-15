@@ -1,8 +1,8 @@
+import { getBillingCountry } from "@/lib/commerce/location-data";
+
 import {
   getDefaultCurrencyForCountry,
-  parseBillingCountry,
   parseSupportedCurrency,
-  type BillingCountryCode,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
 
@@ -15,7 +15,7 @@ export type BillingAddress = {
   city: string;
   state: string;
   postalCode: string;
-  countryCode: BillingCountryCode;
+  countryCode: string;
 };
 
 export type BillingSelection = {
@@ -36,9 +36,9 @@ export function validateBillingSelection(value: unknown):
   }
 
   const data = value as Record<string, unknown>;
-  const country = parseBillingCountry(data.countryCode);
+  const country = getBillingCountry(typeof data.countryCode === "string" ? data.countryCode : "");
   if (!country) {
-    return { ok: false, message: "Choose a supported billing country." };
+    return { ok: false, message: "Choose a valid billing country." };
   }
 
   const fullName = clean(data.fullName, 100);
@@ -63,7 +63,7 @@ export function validateBillingSelection(value: unknown):
   if (postalCode.length < 3) return { ok: false, message: "Enter the billing postal code." };
 
   const requestedCurrency = parseSupportedCurrency(data.presentmentCurrency);
-  const presentmentCurrency = requestedCurrency ?? getDefaultCurrencyForCountry(country.code);
+  const presentmentCurrency = requestedCurrency ?? getDefaultCurrencyForCountry(country.isoCode);
 
   return {
     ok: true,
@@ -78,7 +78,7 @@ export function validateBillingSelection(value: unknown):
         city,
         state,
         postalCode,
-        countryCode: country.code,
+        countryCode: country.isoCode,
       },
     },
   };

@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import { RecharzaMark } from "@/components/recharza-mark";
 import { CartBadge } from "@/components/cart-badge";
 import { StorefrontCategoryNav } from "@/components/storefront-category-nav";
-import { StorefrontSearch } from "@/components/storefront-search";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { CurrencySelector } from "@/components/currency-selector";
 import { MobileNavMenu } from "@/components/mobile-nav-menu";
@@ -40,7 +39,6 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
           </div>
 
           <div className="site-header-actions">
-            <div className="site-header-search"><StorefrontSearch /></div>
             <div className="hidden sm:block"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} /></div>
             <div className="sm:hidden"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} compact /></div>
             <CartBadge />
@@ -55,9 +53,6 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
             </a>
           ))}
         </nav>
-
-        <div className="site-mobile-search"><StorefrontSearch /></div>
-
 
         {storefront.navigation.visibleIds.length > 0 ? (
           <Suspense fallback={<div aria-hidden="true" className="h-10 border-t border-white/[0.06]" />}>
