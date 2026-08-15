@@ -46,7 +46,7 @@ type CreatedOrder = {
   tracking: { path: string; accessToken: string };
 };
 
-type CheckoutStep = 1 | 2 | 3 | 4;
+type CheckoutStep = 1 | 2 | 3 | 4 | 5;
 
 type CheckoutResponse = {
   ok: boolean;
@@ -305,6 +305,7 @@ export function MobileLegendsCheckoutShell({
       sessionStorage.setItem(`recharza-order:${result.order.id}`, result.order.tracking.accessToken);
       setOrder(result.order);
       setDuplicate(Boolean(result.duplicate));
+      setStep(5);
       setCheckoutMessage(result.paymentSession?.message ?? "Order saved. Continue to payment below.");
 
       if (isAuthenticated && saveNewAddress && selectedAddressId === null) {
@@ -326,6 +327,7 @@ export function MobileLegendsCheckoutShell({
     if (nextStep === 2 && !selectedPackage) { setCheckoutError("Choose a package before continuing."); return; }
     if (nextStep === 3 && verification.status !== "success") { setCheckoutError("Verify the player destination before continuing."); return; }
     if (nextStep === 4 && (!billingComplete || !canConvert)) { setCheckoutError("Complete the billing details before continuing."); return; }
+    if (nextStep === 5 && (!canCreateOrder || order)) { setCheckoutError("Review the verified player and billing details before payment."); return; }
     setCheckoutError("");
     setStep(nextStep);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -336,7 +338,7 @@ export function MobileLegendsCheckoutShell({
   }
 
   return (
-    <form onSubmit={submitCheckout} className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_20rem]">
+    <form onSubmit={submitCheckout} className="grid gap-5">
       <div className="min-w-0 space-y-5">
         <CheckoutProgress step={step} onStepChange={setStep} />
 
@@ -519,13 +521,32 @@ export function MobileLegendsCheckoutShell({
             </label>
           ) : null}
         </div>
-        <StepActions current={step} onBack={() => setStep(2)} onNext={() => advanceStep(4)} nextLabel="Review payment" />
+        <StepActions current={step} onBack={() => setStep(2)} onNext={() => advanceStep(4)} nextLabel="Review order" />
+        </> : null}
+
+        {step === 4 ? <>
+        <section className="rounded-xl border border-violet-300/20 bg-[#0d0f16] p-4 sm:p-5">
+          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-300">Review before payment</p>
+          <h2 className="mt-1 text-xl font-black text-white">Confirm your top-up</h2>
+          <p className="mt-1 text-sm text-slate-500">Check the verified player, package, market, and billing details before creating the order.</p>
+          <dl className="mt-5 grid gap-4 rounded-xl border border-white/[0.08] bg-black/20 p-4 text-sm sm:grid-cols-2">
+            <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-black text-white">{selectedPackage.name}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-black text-white">{market.flag} {market.label}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">IGN / player</dt><dd className="mt-1 font-black text-white">{verification.nickname || playerId}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-black text-white">{billing.presentmentCurrency}</dd></div>
+            <div className="border-t border-white/[0.08] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-black text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+          </dl>
+          <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+            <button type="button" onClick={() => setStep(3)} className="min-h-11 rounded-xl border border-white/[0.1] px-4 text-sm font-black text-slate-300 transition hover:border-white/[0.2] hover:text-white">Back to billing</button>
+            <button type="submit" disabled={isSubmitting || !canCreateOrder || Boolean(order)} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45">{isSubmitting ? "Creating protected order…" : "Continue to payment"}</button>
+          </div>
+        </section>
         </> : null}
 
         {checkoutError ? <p aria-live="assertive" className="rounded-lg border border-rose-400/20 bg-rose-400/[0.07] px-4 py-3 text-sm text-rose-200">{checkoutError}</p> : null}
         {checkoutMessage && !order ? <p className="rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-4 py-3 text-sm text-cyan-100">{checkoutMessage}</p> : null}
 
-        {order ? (
+        {step === 5 && order ? (
           <section className="rounded-xl border border-emerald-400/20 bg-[#0c1110] p-4 sm:p-5">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
               <div>
@@ -563,80 +584,25 @@ export function MobileLegendsCheckoutShell({
           </section>
         ) : null}
       </div>
-
-      <aside className="lg:sticky lg:top-28">
-        <div className="rounded-xl border border-white/[0.09] bg-[#0d0f16] p-4 shadow-[0_18px_50px_rgba(0,0,0,0.22)] sm:p-5">
-          <h2 className="text-base font-black text-white">Order summary</h2>
-          <dl className="mt-4 grid gap-3 text-xs">
-            <div className="flex items-start justify-between gap-4">
-              <dt className="text-slate-500">Product</dt>
-              <dd className="max-w-[11rem] text-right font-bold text-slate-200">{selectedPackage.name}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-slate-500">Market</dt>
-              <dd className="font-bold text-slate-200">{market.flag} {market.label}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-slate-500">Player</dt>
-              <dd className="max-w-[11rem] truncate font-bold text-slate-200">{verification.nickname || playerId || "Not verified"}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4 border-t border-white/[0.08] pt-3">
-              <dt className="font-black text-slate-300">Total</dt>
-              <dd className="text-xl font-black text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd>
-            </div>
-          </dl>
-
-          {billing.presentmentCurrency !== "INR" ? <p className="mt-1 text-right text-[10px] text-slate-600">Settlement {formatInr(selectedPackage.amountInPaise)}</p> : null}
-
-          <button
-            type="submit"
-            disabled={step !== 4 || isSubmitting || !canCreateOrder || Boolean(order)}
-            className="mt-5 min-h-12 w-full rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
-          >
-                        {isSubmitting ? "Creating order…" : order ? "Order created" : step === 4 && canCreateOrder ? "Pay securely" : step < 4 ? "Continue" : "Complete details"}
-          </button>
-
-          {!playerComplete ? <p className="mt-3 text-center text-[11px] text-slate-600">Verify the player destination first.</p> : !billingComplete ? <a href="#billing" className="mt-3 block text-center text-[11px] font-black text-slate-500 hover:text-white">Complete billing details</a> : null}
-
-          <div className="mt-5 grid gap-3 border-t border-white/[0.08] pt-4">
-            <SummaryPoint icon="shield" title="Secure checkout" text="Server-side order and payment verification." />
-            <SummaryPoint icon="track" title="Private tracking" text="Recoverable order status after creation." />
-            <SummaryPoint icon="support" title="Support ready" text="Ticket system linked to order IDs." />
-          </div>
-        </div>
-      </aside>
     </form>
   );
 }
 
-function SummaryPoint({ icon, title, text }: { icon: Parameters<typeof StorefrontIcon>[0]["name"]; title: string; text: string }) {
-  return (
-    <div className="flex gap-2.5">
-      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/[0.035] text-slate-400">
-        <StorefrontIcon name={icon} className="h-4 w-4" />
-      </span>
-      <div>
-        <p className="text-[11px] font-black text-slate-300">{title}</p>
-        <p className="mt-0.5 text-[10px] leading-4 text-slate-600">{text}</p>
-      </div>
-    </div>
-  );
-}
 
-type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4) => void };
+type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4 | 5) => void };
 type StepActionsProps = { current: number; onBack?: () => void; onNext: () => void; nextLabel: string };
 
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
-  const labels = ["Package", "Player", "Billing", "Payment"];
+  const labels = ["Package", "Player", "Billing", "Review", "Payment"];
   return (
     <nav aria-label="Checkout progress" className="mb-5 rounded-2xl border border-white/[0.08] bg-[#0d0f16] p-3">
-      <ol className="grid grid-cols-4 gap-1">
+      <ol className="grid grid-cols-5 gap-1">
         {labels.map((label, index) => {
           const number = index + 1;
           const active = number === step;
           const complete = number < step;
           return <li key={label}>
-            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4) : undefined} disabled={!complete && !active} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-600"}`}>
+            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-600"}`}>
               <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-black">{complete ? "✓" : number}</span>
               <span className="text-[9px] font-black uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
             </button>
@@ -650,6 +616,6 @@ function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
 function StepActions({ current, onBack, onNext, nextLabel }: StepActionsProps) {
   return <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
     {current > 1 ? <button type="button" onClick={onBack} className="min-h-11 rounded-xl border border-white/[0.1] px-4 text-sm font-black text-slate-300 transition hover:border-white/[0.2] hover:text-white">Back</button> : <span />}
-    {current < 4 ? <button type="button" onClick={onNext} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
+    {current < 5 ? <button type="button" onClick={onNext} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
   </div>;
 }
