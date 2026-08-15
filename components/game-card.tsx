@@ -68,12 +68,6 @@ export function GameCard({
       }`}
     >
       <div className="relative aspect-square overflow-hidden rounded-lg border border-border bg-surface-sunken">
-        <div className="pointer-events-none absolute inset-x-2 top-2 z-10 flex items-center justify-between gap-2">
-          <span className={`rounded-full border px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] backdrop-blur-md ${interactive ? "border-emerald-300/25 bg-emerald-300/10 text-emerald-100" : "border-white/10 bg-black/35 text-slate-300"}`}>
-            {interactive ? "Ready to top up" : label}
-          </span>
-          {isRegional ? <span className="rounded-full border border-white/15 bg-black/35 px-2 py-1 text-sm leading-none backdrop-blur-md" aria-hidden="true">{game.region?.flag}</span> : null}
-        </div>
         <StorefrontArtwork
           artworkKey={game.artworkKey}
           sources={preferredArtworkSources(game)}
@@ -92,7 +86,6 @@ export function GameCard({
       <div className="grid min-w-0 gap-2">
         <div className="flex min-w-0 items-center justify-between gap-2">
           <h3 className="min-w-0 truncate text-sm font-semibold leading-5 text-text-primary sm:text-base">{title}</h3>
-          {isRegional ? <span className="shrink-0 text-[10px] font-black uppercase tracking-[0.1em] text-slate-500">{game.region?.label ?? "Regional"}</span> : null}
         </div>
         <p className="truncate text-xs font-medium text-text-muted">{category}</p>
         {price ? <p className="truncate text-xs text-text-secondary">From <span className="font-semibold text-primary">{price}</span></p> : null}
