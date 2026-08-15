@@ -79,7 +79,7 @@ type IdentityState = {
   serverId: string;
 };
 
-type CheckoutStep = 1 | 2 | 3 | 4;
+type CheckoutStep = 1 | 2 | 3 | 4 | 5;
 
 const initialIdentity: IdentityState = { playerId: "", riotId: "", serverId: "" };
 const fieldClassName = "mt-2 min-h-12 w-full rounded-lg border border-white/[0.09] bg-[#080a10] px-3.5 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/10";
@@ -356,6 +356,7 @@ export function SupplierGameCheckoutShell({
 
       sessionStorage.setItem(`recharza-order:${result.order.id}`, result.order.tracking.accessToken);
       setOrder(result.order);
+      setStep(5);
       setMessage(result.paymentSession?.message ?? "Order saved. Complete payment in the secure checkout below.");
 
       if (isAuthenticated && saveNewAddress && selectedAddressId === null) {
@@ -397,7 +398,7 @@ export function SupplierGameCheckoutShell({
   return (
     <form
       onSubmit={submitCheckout}
-      className={step === 4 ? "grid gap-5 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-start xl:grid-cols-[minmax(0,1fr)_20rem]" : "space-y-5"}
+      className="space-y-5"
     >
       <div className="min-w-0 space-y-5">
         <section className="relative overflow-hidden rounded-2xl border border-violet-300/[0.16] bg-[radial-gradient(circle_at_0%_0%,rgba(139,92,246,0.18),transparent_42%),#0d0f18] p-5 sm:p-6">
@@ -649,13 +650,37 @@ export function SupplierGameCheckoutShell({
             </label>
           ) : null}
         </div>
-        <StepActions current={step} onBack={() => setStep(2)} onNext={() => advanceStep(4)} nextLabel="Review payment" />
+        <StepActions current={step} onBack={() => setStep(2)} onNext={() => advanceStep(4)} nextLabel="Review order" />
+        </> : null}
+
+        {step === 4 ? <>
+        <section className="rounded-2xl border border-violet-300/20 bg-[radial-gradient(circle_at_0%_0%,rgba(139,92,246,0.16),transparent_42%),#0d0f16] p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-300">Step 4 · Final review</p>
+              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Review your order</h2>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Confirm the player destination, package, market, currency, and total before continuing to secure payment.</p>
+            </div>
+            <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-200">Ready for payment</span>
+          </div>
+          <dl className="mt-6 grid gap-4 rounded-xl border border-white/[0.08] bg-black/20 p-4 text-sm sm:grid-cols-2">
+            <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-black text-white">{selectedPackage.name}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-black text-white">{selectedPackage.marketLabel}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">IGN / player</dt><dd className="mt-1 font-black text-white">{verification?.nickname ?? (identity.riotId || identity.playerId)}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-black text-white">{billing.presentmentCurrency}</dd></div>
+            <div className="border-t border-white/[0.08] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-black text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+          </dl>
+          <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+            <button type="button" onClick={() => setStep(3)} className="min-h-11 rounded-xl border border-white/[0.1] px-4 text-sm font-black text-slate-300 transition hover:border-white/[0.2] hover:text-white">Back to billing</button>
+            <button type="submit" disabled={!canSubmit || isSubmitting || Boolean(order)} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 disabled:cursor-not-allowed disabled:opacity-45">{isSubmitting ? "Preparing payment…" : "Continue to payment"}</button>
+          </div>
+        </section>
         </> : null}
 
         {error ? <p className="rounded-lg border border-rose-300/20 bg-rose-300/[0.07] px-4 py-3 text-sm text-rose-100">{error}</p> : null}
         {message ? <p className="rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-4 py-3 text-sm text-cyan-100">{message}</p> : null}
 
-        {order ? (
+        {step === 5 && order ? (
           <section className="rounded-xl border border-emerald-300/20 bg-[#0c1110] p-4 sm:p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -680,76 +705,25 @@ export function SupplierGameCheckoutShell({
           </section>
         ) : null}
       </div>
-
-      {step === 4 ? <aside className="lg:sticky lg:top-28">
-        <div className="rounded-xl border border-white/[0.09] bg-[#0d0f16] p-4 shadow-[0_18px_50px_rgba(0,0,0,0.22)] sm:p-5">
-          <h2 className="text-base font-black text-white">Order summary</h2>
-          <dl className="mt-4 grid gap-3 text-xs">
-            <div className="flex items-start justify-between gap-4">
-              <dt className="text-slate-500">Product</dt>
-              <dd className="max-w-[11rem] text-right font-bold text-slate-200">{selectedPackage.name}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <dt className="text-slate-500">Market</dt>
-              <dd className="font-bold text-slate-200">{selectedPackage.marketLabel}</dd>
-            </div>
-            <div className="flex items-center justify-between gap-4 border-t border-white/[0.08] pt-3">
-              <dt className="font-black text-slate-300">Total</dt>
-              <dd className="text-xl font-black text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd>
-            </div>
-          </dl>
-
-          <button
-            type="submit"
-            disabled={step !== 4 || !canSubmit || isSubmitting || Boolean(order)}
-            className="mt-5 min-h-12 w-full rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
-          >
-                        {isSubmitting ? "Creating order…" : order ? "Order created" : step === 4 && canSubmit ? "Pay securely" : step < 4 ? "Continue" : "Verify account first"}
-          </button>
-
-          {!billingIsComplete(billing) ? (
-            <a href="#billing" className="mt-3 block text-center text-[11px] font-black text-slate-500 hover:text-white">Complete billing details</a>
-          ) : null}
-
-          <div className="mt-5 grid gap-3 border-t border-white/[0.08] pt-4">
-            <SummaryPoint icon="shield" title="Secure checkout" text="Server-side order and payment verification." />
-            <SummaryPoint icon="track" title="Private tracking" text="Recoverable order status after creation." />
-            <SummaryPoint icon="support" title="Support ready" text="Ticket system linked to order IDs." />
-          </div>
-        </div>
-      </aside> : null}
     </form>
   );
 }
 
-function SummaryPoint({ icon, title, text }: { icon: Parameters<typeof StorefrontIcon>[0]["name"]; title: string; text: string }) {
-  return (
-    <div className="flex gap-2.5">
-      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-white/[0.035] text-slate-400">
-        <StorefrontIcon name={icon} className="h-4 w-4" />
-      </span>
-      <div>
-        <p className="text-[11px] font-black text-slate-300">{title}</p>
-        <p className="mt-0.5 text-[10px] leading-4 text-slate-600">{text}</p>
-      </div>
-    </div>
-  );
-}
 
-type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4) => void };
+type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4 | 5) => void };
 type StepActionsProps = { current: number; onBack?: () => void; onNext: () => void; nextLabel: string };
 
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
-  const labels = ["Package", "Player", "Billing", "Payment"];
+  const labels = ["Package", "Player", "Billing", "Review", "Payment"];
   return (
     <nav aria-label="Checkout progress" className="mb-5 rounded-2xl border border-white/[0.08] bg-[#0d0f16] p-3">
-      <ol className="grid grid-cols-4 gap-1">
+      <ol className="grid grid-cols-5 gap-1">
         {labels.map((label, index) => {
           const number = index + 1;
           const active = number === step;
           const complete = number < step;
           return <li key={label}>
-            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4) : undefined} disabled={!complete && !active} aria-current={active ? "step" : undefined} aria-label={`${label} step${active ? ", current step" : complete ? ", completed" : ", locked"}`} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-600"}`}>
+            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} aria-current={active ? "step" : undefined} aria-label={`${label} step${active ? ", current step" : complete ? ", completed" : ", locked"}`} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-600"}`}>
               <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-black">{complete ? "✓" : number}</span>
               <span className="text-[9px] font-black uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
             </button>
