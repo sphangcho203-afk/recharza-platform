@@ -15,8 +15,10 @@ function geminiKey() {
   return process.env.GEMINI_API_KEY?.trim() || process.env.GOOGLE_GEMINI_API_KEY?.trim() || null;
 }
 
-function modelName() {
-  return process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
+function modelCandidates() {
+  const configured = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
+  const candidates = [configured, DEFAULT_MODEL];
+  return [...new Set(candidates.filter(Boolean))];
 }
 
 function cleanReply(value: string) {
@@ -40,54 +42,64 @@ export async function getGeminiSupportReply(input: {
   const scope = input.isPrivate
     ? "This is a private Telegram chat. You may discuss support steps, but never echo or store access tokens in your response."
     : "This is a public Telegram group. Keep account-specific information private and move order or payment support to the private chat.";
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelName())}:generateContent`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: SUPPORT_AGENT_ROLE }] },
-        contents: [
+  const requestBody = {
+    systemInstruction: { parts: [{ text: SUPPORT_AGENT_ROLE }] },
+    contents: [
+      {
+        role: "user",
+        parts: [
           {
-            role: "user",
-            parts: [
-              {
-                text: [
-                  scope,
-                  `Customer name: ${(input.userName || "Customer").slice(0, 80)}`,
-                  `Detected intent: ${input.intent || "GENERAL"}`,
-                  "Recent conversation:",
-                  history,
-                  `Current customer message: ${userMessage}`,
-                  "Reply directly to the current message using the conversation context.",
-                ].join("\n"),
-              },
-            ],
+            text: [
+              scope,
+              `Customer name: ${(input.userName || "Customer").slice(0, 80)}`,
+              `Detected intent: ${input.intent || "GENERAL"}`,
+              "Recent conversation:",
+              history,
+              `Current customer message: ${userMessage}`,
+              "Reply directly to the current message using the conversation context.",
+            ].join("\n"),
           },
         ],
-        generationConfig: {
-          temperature: 0.55,
-          maxOutputTokens: 350,
-        },
-      }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(12_000),
+      },
+    ],
+    generationConfig: {
+      temperature: 0.55,
+      maxOutputTokens: 350,
     },
-  );
-  const payload = (await response.json().catch(() => null)) as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-    error?: { message?: string };
-  } | null;
-  if (!response.ok) {
-    throw new Error(payload?.error?.message || `Gemini returned HTTP ${response.status}.`);
+  };
+
+  let lastError: Error | null = null;
+  for (const model of modelCandidates()) {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
+        body: JSON.stringify(requestBody),
+        cache: "no-store",
+        signal: AbortSignal.timeout(12_000),
+      },
+    );
+    const payload = (await response.json().catch(() => null)) as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+      error?: { message?: string };
+    } | null;
+    if (response.ok) {
+      const reply = payload?.candidates?.[0]?.content?.parts
+        ?.map((part) => part.text || "")
+        .join(" ");
+      return reply ? cleanReply(reply) : null;
+    }
+
+    lastError = new Error(payload?.error?.message || `Gemini returned HTTP ${response.status}.`);
+    const canTryFallback = model !== DEFAULT_MODEL && [400, 404].includes(response.status);
+    if (!canTryFallback) throw lastError;
   }
-  const reply = payload?.candidates?.[0]?.content?.parts
-    ?.map((part) => part.text || "")
-    .join(" ");
-  return reply ? cleanReply(reply) : null;
+
+  throw lastError || new Error("Gemini did not return a usable response.");
 }
 
 export const geminiSupportAgentRole = SUPPORT_AGENT_ROLE;
