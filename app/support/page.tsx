@@ -45,6 +45,7 @@ export default function SupportPage() {
             <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Chat with Recharza support</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">Ask about games, top-ups, player verification, checkout, delivery, or the safest next step for your order.</p>
             <p className="mt-4 text-xs leading-5 text-slate-600">For order access, never share passwords, OTPs, card details, UPI PINs, or private access tokens.</p>
+            <a href="https://t.me/supprtrz" target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl border border-cyan-300/25 bg-cyan-300/[0.08] px-4 text-sm font-black text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-200/45 hover:bg-cyan-300/[0.14]">Join live support group <span className="ml-2 text-cyan-300" aria-hidden="true">↗</span></a>
           </div>
           <LiveSupportChat embedded />
         </div>
