@@ -125,4 +125,6 @@ jobs:
         run: vercel deploy --prebuilt --prod --token="${{ secrets.VERCEL_TOKEN }}"
 
       - name: Register canonical Telegram webhooks
-        run: vercel env run -e production --token="${{ secrets.VERCEL_TOKEN }}" -- npm run support:telegram:webhook
+        run: |
+          curl --fail --show-error --silent --retry 3 --retry-delay 2 https://recharza-platform.vercel.app/api/telegram/health
+          curl --fail --show-error --silent --retry 3 --retry-delay 2 https://recharza-platform.vercel.app/api/telegram/group-bot/health
