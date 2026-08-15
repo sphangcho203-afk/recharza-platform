@@ -2,22 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { CurrencySelector } from "@/components/currency-selector";
 import { StorefrontIcon } from "@/components/storefront-icon";
-import type { SupportedCurrencyCode } from "@/lib/commerce/currencies";
 
 const links = [
+  { href: "/", label: "Home", icon: "games" as const },
   { href: "/?category=top-up#games", label: "Game top-ups", icon: "games" as const },
   { href: "/?category=gift-cards#games", label: "Gift cards", icon: "receipt" as const },
   { href: "/#games", label: "All products", icon: "games" as const },
   { href: "/support", label: "24/7 support", icon: "support" as const },
   { href: "/orders/lookup", label: "Track an order", icon: "track" as const },
+  { href: "/cart", label: "Cart", icon: "cart" as const },
   { href: "/account", label: "My account", icon: "account" as const },
 ];
 
-type MobileNavMenuProps = { ratesFromInrMicros: Partial<Record<SupportedCurrencyCode, number>> };
-
-export function MobileNavMenu({ ratesFromInrMicros }: MobileNavMenuProps) {
+export function MobileNavMenu() {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -59,8 +57,8 @@ export function MobileNavMenu({ ratesFromInrMicros }: MobileNavMenuProps) {
       </button>
       {open ? (
         <div className="fixed inset-0 z-[100] isolate bg-black/65 backdrop-blur-[2px]" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
-          <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby="mobile-navigation-title" className="relative h-full w-[min(22rem,88vw)] overflow-y-auto border-r border-white/[0.12] bg-[#0e1018] opacity-100 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.7)]">
-            <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-5">
+          <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby="mobile-navigation-title" className="relative h-full w-[min(22rem,88vw)] overflow-hidden border-r border-white/[0.12] bg-[#0e1018] opacity-100 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.7)]">
+            <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-3">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-300">Recharza</p>
                 <h2 id="mobile-navigation-title" className="mt-1 text-xl font-black text-white">Store navigation</h2>
@@ -69,26 +67,15 @@ export function MobileNavMenu({ ratesFromInrMicros }: MobileNavMenuProps) {
                 <span aria-hidden="true" className="text-xl leading-none">×</span>
               </button>
             </div>
-            <div className="mt-5 rounded-2xl border border-yellow-300/20 bg-gradient-to-r from-yellow-300/10 to-violet-300/10 p-3">
-              <div className="flex items-center justify-between gap-3">
-                <span className="inline-flex items-center gap-2 text-sm font-black text-yellow-100"><StorefrontIcon name="globe" className="h-5 w-5 text-yellow-300" />Currency</span>
-                <CurrencySelector ratesFromInrMicros={ratesFromInrMicros} compact />
-              </div>
-            </div>
-            <nav className="mt-3 space-y-2">
+            <nav className="mt-3 space-y-1">
               {links.map((link) => (
-                <a key={link.href} href={link.href} onClick={() => setOpen(false)} className="flex min-h-14 items-center gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.035] px-4 py-3 text-sm font-black text-slate-200 transition hover:border-cyan-300/25 hover:bg-cyan-300/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">
+                <a key={link.href} href={link.href} onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3 py-2 text-sm font-black text-slate-200 transition hover:border-cyan-300/25 hover:bg-cyan-300/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">
                   <StorefrontIcon name={link.icon} className="h-5 w-5 text-violet-300" />
                   <span>{link.label}</span>
                   <StorefrontIcon name="arrow" className="ml-auto h-4 w-4 text-slate-500" />
                 </a>
               ))}
             </nav>
-            <div className="mt-8 rounded-xl border border-white/[0.08] bg-white/[0.03] p-4">
-              <p className="text-xs font-black text-white">Need a hand?</p>
-              <p className="mt-1 text-xs leading-5 text-slate-500">Our support team can help with account, payment, and delivery questions.</p>
-              <a href="/support" onClick={() => setOpen(false)} className="mt-3 inline-flex text-xs font-black text-violet-300 hover:text-violet-200">Open support <span aria-hidden="true" className="ml-1">→</span></a>
-            </div>
           </aside>
         </div>
       ) : null}

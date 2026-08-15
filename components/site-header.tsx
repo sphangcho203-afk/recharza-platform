@@ -32,7 +32,7 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="site-header-main">
           <div className="flex min-w-0 items-center gap-2.5">
-            <MobileNavMenu ratesFromInrMicros={rates.ratesFromInrMicros} />
+            <MobileNavMenu />
             <Link href="/" className="site-brand-link" aria-label="Recharza home">
               <RecharzaMark compact />
               <span className="site-brand-copy"><b>RECHARZA</b><small>play more, wait less</small></span>
@@ -42,6 +42,7 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
           <div className="site-header-actions">
             <div className="site-header-search"><StorefrontSearch /></div>
             <div className="hidden sm:block"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} /></div>
+            <div className="sm:hidden"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} compact /></div>
             <CartBadge />
             <Link href="/account" className="site-account-link"><StorefrontIcon name="account" className="h-4 w-4" /><span className="hidden md:inline">Account</span></Link>
           </div>
