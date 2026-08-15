@@ -46,7 +46,7 @@ type CreatedOrder = {
   tracking: { path: string; accessToken: string };
 };
 
-type CheckoutStep = 1 | 2 | 3 | 4 | 5;
+type CheckoutStep = 1 | 2 | 3 | 4;
 
 type CheckoutResponse = {
   ok: boolean;
@@ -325,7 +325,7 @@ export function MobileLegendsCheckoutShell({
   function advanceStep(nextStep: CheckoutStep) {
     if (nextStep === 2 && !selectedPackage) { setCheckoutError("Choose a package before continuing."); return; }
     if (nextStep === 3 && verification.status !== "success") { setCheckoutError("Verify the player destination before continuing."); return; }
-    if (nextStep === 5 && (!billingComplete || !canConvert)) { setCheckoutError("Complete the billing details before continuing."); return; }
+    if (nextStep === 4 && (!billingComplete || !canConvert)) { setCheckoutError("Complete the billing details before continuing."); return; }
     setCheckoutError("");
     setStep(nextStep);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -340,7 +340,7 @@ export function MobileLegendsCheckoutShell({
       <div className="min-w-0 space-y-5">
         <CheckoutProgress step={step} onStepChange={setStep} />
 
-        {step === 3 ? <>
+        {step === 2 ? <>
         <section className="rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:p-5">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -411,10 +411,10 @@ export function MobileLegendsCheckoutShell({
             </p>
           ) : null}
         </section>
-        <StepActions current={step} onBack={() => setStep(2)} onNext={() => advanceStep(4)} nextLabel="Continue to billing" />
+        <StepActions current={step} onBack={() => setStep(1)} onNext={() => advanceStep(3)} nextLabel="Continue to billing" />
         </> : null}
 
-        {step <= 2 ? <>
+        {step === 1 ? <>
         <section>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -422,10 +422,6 @@ export function MobileLegendsCheckoutShell({
               <p className="mt-1 text-xs text-slate-500">{packages.length} offers · {market.flag} {market.label}</p>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/cart" className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 text-[11px] font-black text-slate-300 transition hover:border-white/[0.16] hover:text-white">
-                <StorefrontIcon name="cart" className="h-3.5 w-3.5" />
-                My cart
-              </Link>
             </div>
           </div>
 
@@ -484,11 +480,10 @@ export function MobileLegendsCheckoutShell({
           </div>
           {visiblePackages.length === 0 ? <p className="mt-3 rounded-lg border border-dashed border-white/[0.1] p-8 text-center text-sm text-slate-500">No packages are currently available.</p> : null}
         </section>
-        {step === 1 ? <StepActions current={step} onNext={() => advanceStep(2)} nextLabel="Review cart" /> : null}
-        {step === 2 ? <CartReview packageName={selectedPackage.name} amount={formatPresentment(selectedPackage.amountInPaise)} onBack={() => setStep(1)} onNext={() => advanceStep(3)} /> : null}
+        {step === 1 ? <StepActions current={step} onNext={() => advanceStep(2)} nextLabel="Continue to player info" /> : null}
         </> : null}
 
-        {step === 4 ? <>
+        {step === 3 ? <>
         <div id="billing" className="space-y-5">
           {isAuthenticated && savedAddresses.length > 0 ? (
             <SavedAddressPicker
@@ -524,7 +519,7 @@ export function MobileLegendsCheckoutShell({
             </label>
           ) : null}
         </div>
-        <StepActions current={step} onBack={() => setStep(3)} onNext={() => advanceStep(5)} nextLabel="Review payment" />
+        <StepActions current={step} onBack={() => setStep(2)} onNext={() => advanceStep(4)} nextLabel="Review payment" />
         </> : null}
 
         {checkoutError ? <p aria-live="assertive" className="rounded-lg border border-rose-400/20 bg-rose-400/[0.07] px-4 py-3 text-sm text-rose-200">{checkoutError}</p> : null}
@@ -595,10 +590,10 @@ export function MobileLegendsCheckoutShell({
 
           <button
             type="submit"
-            disabled={step !== 5 || isSubmitting || !canCreateOrder || Boolean(order)}
+            disabled={step !== 4 || isSubmitting || !canCreateOrder || Boolean(order)}
             className="mt-5 min-h-12 w-full rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
           >
-                        {isSubmitting ? "Creating order…" : order ? "Order created" : step === 5 && canCreateOrder ? "Pay securely" : step < 5 ? "Continue" : "Complete details"}
+                        {isSubmitting ? "Creating order…" : order ? "Order created" : step === 4 && canCreateOrder ? "Pay securely" : step < 4 ? "Continue" : "Complete details"}
           </button>
 
           {!playerComplete ? <p className="mt-3 text-center text-[11px] text-slate-600">Verify the player destination first.</p> : !billingComplete ? <a href="#billing" className="mt-3 block text-center text-[11px] font-black text-slate-500 hover:text-white">Complete billing details</a> : null}
@@ -628,21 +623,20 @@ function SummaryPoint({ icon, title, text }: { icon: Parameters<typeof Storefron
   );
 }
 
-type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4 | 5) => void };
+type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4) => void };
 type StepActionsProps = { current: number; onBack?: () => void; onNext: () => void; nextLabel: string };
-type CartReviewProps = { packageName: string; amount: string; onBack: () => void; onNext: () => void };
 
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
-  const labels = ["Package", "Cart", "Player", "Billing", "Payment"];
+  const labels = ["Package", "Player", "Billing", "Payment"];
   return (
     <nav aria-label="Checkout progress" className="mb-5 rounded-2xl border border-white/[0.08] bg-[#0d0f16] p-3">
-      <ol className="grid grid-cols-5 gap-1">
+      <ol className="grid grid-cols-4 gap-1">
         {labels.map((label, index) => {
           const number = index + 1;
           const active = number === step;
           const complete = number < step;
           return <li key={label}>
-            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-600"}`}>
+            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4) : undefined} disabled={!complete && !active} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-600"}`}>
               <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-black">{complete ? "✓" : number}</span>
               <span className="text-[9px] font-black uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
             </button>
@@ -656,17 +650,6 @@ function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
 function StepActions({ current, onBack, onNext, nextLabel }: StepActionsProps) {
   return <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
     {current > 1 ? <button type="button" onClick={onBack} className="min-h-11 rounded-xl border border-white/[0.1] px-4 text-sm font-black text-slate-300 transition hover:border-white/[0.2] hover:text-white">Back</button> : <span />}
-    {current < 5 ? <button type="button" onClick={onNext} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
+    {current < 4 ? <button type="button" onClick={onNext} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
   </div>;
-}
-
-function CartReview({ packageName, amount, onBack, onNext }: CartReviewProps) {
-  return <section className="rounded-2xl border border-violet-300/[0.16] bg-violet-500/[0.06] p-5">
-    <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-300">Step 2 · Cart review</p>
-    <h2 className="mt-2 text-xl font-black text-white">Your selected top-up</h2>
-    <div className="mt-4 flex items-center justify-between gap-4 rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4">
-      <span className="text-sm font-bold text-slate-200">{packageName}</span><span className="text-base font-black text-violet-300">{amount}</span>
-    </div>
-    <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between"><button type="button" onClick={onBack} className="min-h-11 rounded-xl border border-white/[0.1] px-4 text-sm font-black text-slate-300">Back to packages</button><button type="button" onClick={onNext} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white hover:bg-violet-400">Continue to player info</button></div>
-  </section>;
 }

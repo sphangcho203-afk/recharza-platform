@@ -322,7 +322,7 @@ export function CartWorkspace({
               <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
                 <p className="font-black text-slate-300">Your cart is empty.</p>
                 <p className="mt-2 text-sm text-slate-500">
-                  Choose a package above or return to the Mobile Legends store.
+                  Choose a package from any game in the store to get started.
                 </p>
               </div>
             ) : null}

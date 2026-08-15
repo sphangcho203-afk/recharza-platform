@@ -214,12 +214,6 @@ export function CartPage() {
             >
               Browse Games
             </Link>
-            <Link
-              href="/games/mobile-legends"
-              className="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/[0.1] px-6 text-sm font-black text-white transition hover:border-white/[0.2] hover:bg-white/[0.04]"
-            >
-              Mobile Legends top-ups
-            </Link>
           </div>
         </div>
       ) : null}
