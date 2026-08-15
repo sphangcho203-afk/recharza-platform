@@ -20,6 +20,8 @@ export type GroupTelegramUpdate = {
   message?: GroupTelegramMessage;
 };
 
+export type GroupSupportIntent = "GENERAL" | "ORDER_STATUS" | "ORDER_SUPPORT";
+
 function botToken() {
   return process.env.TELEGRAM_GROUP_BOT_TOKEN?.trim() || null;
 }
@@ -94,51 +96,76 @@ export function groupUserLabel(user?: GroupTelegramUser) {
   return name || (user.username ? `@${user.username}` : "there");
 }
 
-function deterministicSupportReply(message: string) {
+export function extractOrderId(text: string) {
+  return text.match(/\bRZ-[A-Z0-9]{6,24}\b/i)?.[0]?.toUpperCase() || null;
+}
+
+export function detectSupportIntent(text: string, rememberedOrderId?: string | null): GroupSupportIntent {
+  const normalized = text.toLowerCase();
+  const asksStatus = /\b(status|track|tracking|where|delivered|delivery|pending|complete|completed|failed|success|successful|still waiting|when will|arrived)\b/.test(normalized);
+  const asksOrderHelp = /\b(order|payment|paid|charged|refund|receipt|transaction|top.?up|recharge|not received|missing)\b/.test(normalized);
+  if (asksStatus || (rememberedOrderId && /\bmy\b|\bit\b|\bthat\b|\bthis\b/.test(normalized))) return "ORDER_STATUS";
+  if (asksOrderHelp || extractOrderId(text)) return "ORDER_SUPPORT";
+  return "GENERAL";
+}
+
+function deterministicSupportReply(message: string, intent: GroupSupportIntent, isPrivate: boolean) {
   const text = message.toLowerCase();
-  if (/price|cost|rate|currency|usd|inr|try|brl|php/.test(text)) {
-    return "I can help you find the right game and region. Open the Recharza store to see the current local-currency price before checkout.";
+  if (intent === "ORDER_STATUS") {
+    return isPrivate
+      ? "I understand you want to check the order status. Send the Order ID from your confirmation; if you have already sent it, send the private access token next."
+      : "I can help check that order. I’ll move this to private support so your order details and access token stay protected.";
   }
-  if (/game|support|available|top.?up|recharge/.test(text)) {
-    return "Recharza supports popular game top-ups across regional catalogues, including Mobile Legends, Free Fire, PUBG Mobile, VALORANT, and Genshin Impact. Tell me the game and region you need.";
+  if (intent === "ORDER_SUPPORT") {
+    return isPrivate
+      ? "I understand this is about a specific order or payment. Send the Order ID from your confirmation and I’ll guide you through the next safe step."
+      : "I understand this is about an order or payment. I’ll continue privately so no order details or payment information are exposed here.";
+  }
+  if (/price|cost|rate|currency|usd|inr|try|brl|php/.test(text)) {
+    return "Prices depend on the game, region, package, and selected currency. Tell me the game and region, and I’ll point you to the correct catalogue before checkout.";
+  }
+  if (/game|available|support|top.?up|recharge/.test(text)) {
+    return "Recharza offers regional top-ups for Mobile Legends, Free Fire, PUBG Mobile, VALORANT, and Genshin Impact. Which game and region are you trying to top up?";
   }
   if (/how|where|buy|purchase|checkout|pay|payment/.test(text)) {
-    return "Choose your game and region, enter the required player details, select a package, and complete checkout. For payment or order-specific help, message me privately.";
+    return "Choose a game and region, enter the required player details, select a package, and complete checkout. If payment was already made, tell me that privately with your Order ID.";
   }
-  return "I can help with game availability, regions, packages, checkout, and general top-up questions. Mention me with your question; for order or payment help, continue privately.";
+  return isPrivate
+    ? "I’m following you. Tell me whether you need help choosing a game, verifying a player ID, completing checkout, or checking an order."
+    : "I can help with games, regions, player-ID verification, packages, checkout, and order support. Tell me what you are trying to do, and I’ll guide you from there.";
+}
+
+export function formatConversationHistory(turns: Array<{ role: "user" | "assistant"; text: string }>) {
+  if (!turns.length) return "No earlier conversation.";
+  return turns.map((turn) => `${turn.role === "user" ? "Customer" : "Recharza Support"}: ${turn.text}`).join("\n");
 }
 
 export async function getGroupBotReply(input: {
   message: string;
   user?: GroupTelegramUser;
+  conversationHistory?: string;
+  intent?: GroupSupportIntent;
+  isPrivate?: boolean;
 }) {
   const cleanMessage = stripGroupBotMention(input.message);
-  const prompt = [
-    "This is a public Recharza Telegram live-support group. Reply to the user’s message in a helpful, concise way.",
-    "Do not reveal order details, access tokens, emails, phone numbers, payment data, or database information in the group.",
-    "If the message contains an order ID or asks for account-specific help, tell the user to continue privately. Do not invent order data.",
-    "Never claim that you changed an order, issued a refund, confirmed payment, or contacted a human unless the message context explicitly proves it.",
-    "Answer general questions about Recharza game top-ups, regions, verification, payments, and delivery using cautious language. If uncertain, recommend private support.",
-    "Keep the reply warm, natural, and under 700 characters.",
-    `User: ${groupUserLabel(input.user)}`,
-    `Message: ${cleanMessage}`,
-  ].join("\n");
-
+  const intent = input.intent || detectSupportIntent(cleanMessage);
   try {
-    const reply = await getGeminiSupportReply({ userMessage: prompt, userName: groupUserLabel(input.user) });
+    const reply = await getGeminiSupportReply({
+      userMessage: cleanMessage,
+      userName: groupUserLabel(input.user),
+      conversationHistory: input.conversationHistory,
+      intent,
+      isPrivate: input.isPrivate,
+    });
     if (reply) return escapeHtml(reply);
   } catch (error) {
     console.error("Gemini group support fallback", error instanceof Error ? error.message : "unknown error");
   }
-  return escapeHtml(deterministicSupportReply(cleanMessage));
+  return escapeHtml(deterministicSupportReply(cleanMessage, intent, Boolean(input.isPrivate)));
 }
 
 export function groupPrivacyNotice() {
-  return "For privacy, I’ll continue this order or payment conversation privately. Please use the private chat button below and send your order ID there. Never post access tokens, OTPs, card details, or UPI PINs in this group.";
-}
-
-export function extractOrderId(text: string) {
-  return text.match(/\bRZ-[A-Z0-9]{6,24}\b/i)?.[0]?.toUpperCase() || null;
+  return "For privacy, I’ll continue this order or payment conversation privately. Never post access tokens, OTPs, card details, or UPI PINs in this group.";
 }
 
 export function privateBotLink(orderId?: string | null) {
