@@ -24,7 +24,13 @@ export function CartOrderSummary({
       className="lg:sticky lg:top-28"
     >
       <div className="rounded-xl border border-white/[0.09] bg-[#0d0f16] p-4 shadow-[0_18px_50px_rgba(0,0,0,0.22)] sm:p-5">
-        <h2 className="text-base font-black text-white">Order summary</h2>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-300">Secure checkout</p>
+            <h2 className="mt-1 text-base font-black text-white">Order summary</h2>
+          </div>
+          <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-2 py-1 text-[10px] font-black text-emerald-200">Protected</span>
+        </div>
 
         <dl className="mt-4 grid gap-3 text-xs">
           <div className="flex items-center justify-between gap-4">
@@ -50,20 +56,22 @@ export function CartOrderSummary({
           <Link
             href={checkoutHref(firstItem)}
             aria-disabled={busy}
-            className={`mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 ${
+            className={`mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-violet-500 px-5 text-sm font-black text-white shadow-[0_12px_30px_rgba(124,58,237,0.24)] transition hover:-translate-y-0.5 hover:bg-violet-400 ${
               busy ? "pointer-events-none opacity-45" : ""
             }`}
           >
             <StorefrontIcon name="shield" className="h-4 w-4" />
-            Proceed to Checkout
+            {cart.items.length > 1 ? "Checkout first item" : "Continue to checkout"}
           </Link>
         ) : null}
 
         {cart.items.length > 1 ? (
-          <p className="mt-3 text-center text-[11px] leading-5 text-slate-600">
-            Each item is checked out one at a time with its own secure order.
-          </p>
-        ) : null}
+          <div className="mt-3 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.05] px-3 py-2.5 text-[11px] leading-5 text-cyan-100/70">
+            <strong className="text-cyan-100">One secure checkout at a time.</strong> We’ll keep the other items in your cart while you finish this one.
+          </div>
+        ) : (
+          <p className="mt-3 text-center text-[11px] leading-5 text-slate-600">Your total is confirmed before payment.</p>
+        )}
 
         <Link
           href="/#games"

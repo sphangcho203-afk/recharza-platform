@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { SavedAddressesPanel } from "@/components/saved-addresses-panel";
+import { StorefrontIcon } from "@/components/storefront-icon";
 import { formatInr } from "@/lib/mobile-legends";
 
 type Customer = {
@@ -250,20 +251,23 @@ export function CustomerDashboard() {
           </div>
         </div>
 
-        <nav className="grid gap-2 p-4 sm:grid-cols-4 sm:p-5" aria-label="Account tools">
+        <nav className="grid gap-2 border-t border-white/10 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4" aria-label="Account tools">
           {[
-            ["Cart", "/cart", "Packages and players"],
-            ["New top-up", "/games/mobile-legends", "Start an order"],
-            ["Security", "/forgot-password", "Reset password"],
-            ["Support", "/support", "Get assistance"],
-          ].map(([label, href, note]) => (
+            ["Cart", "/cart", "Review packages and players", "cart"],
+            ["Start a top-up", "/#games", "Choose a game and market", "game"],
+            ["Track an order", "/orders/lookup", "Open a receipt or status", "track"],
+            ["Get support", "/support", "Chat or create a request", "support"],
+          ].map(([label, href, note, icon]) => (
             <Link
               key={label}
               href={href}
-              className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 transition hover:border-violet-400/25 hover:bg-violet-400/[0.08]"
+              className="group rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:-translate-y-0.5 hover:border-violet-400/30 hover:bg-violet-400/[0.08]"
             >
-              <strong className="block text-sm text-white">{label}</strong>
-              <span className="mt-1 block text-xs text-slate-500">{note}</span>
+              <span className="grid h-9 w-9 place-items-center rounded-xl border border-violet-300/20 bg-violet-400/10 text-violet-200 transition group-hover:bg-violet-400/20">
+                <StorefrontIcon name={icon as Parameters<typeof StorefrontIcon>[0]["name"]} className="h-4 w-4" />
+              </span>
+              <strong className="mt-3 block text-sm text-white">{label}</strong>
+              <span className="mt-1 block text-xs leading-5 text-slate-500">{note}</span>
             </Link>
           ))}
         </nav>
@@ -362,10 +366,10 @@ export function CustomerDashboard() {
                   Your completed and active purchases will appear here.
                 </p>
                 <Link
-                  href="/games/mobile-legends"
+                  href="/#games"
                   className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-white px-4 py-3 text-xs font-black text-slate-950"
                 >
-                  Start a top-up
+                  Browse games
                 </Link>
               </div>
             ) : null}

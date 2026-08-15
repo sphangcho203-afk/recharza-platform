@@ -104,34 +104,43 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
   return (
     <div className="space-y-8">
       <section>
-        <div className="flex flex-col gap-4 border-b border-white/[0.08] pb-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">Choose the issue</h2>
-            <p className="mt-1.5 text-sm text-slate-500">We route the ticket to the right support workflow automatically.</p>
-          </div>
-          <div className="flex gap-2" aria-label="Direct support channels">
-            {channels.map((channel) => {
-              const icon = channelIcons[channel.id];
-              const className = "grid h-10 w-10 place-items-center rounded-lg border border-white/[0.09] bg-[#0d0f16] text-slate-400 transition hover:border-white/[0.18] hover:text-white";
-              return channel.href && channel.available ? (
-                <a
-                  key={channel.id}
-                  href={channel.href}
-                  target={channel.id === "email" ? undefined : "_blank"}
-                  rel={channel.id === "email" ? undefined : "noreferrer"}
-                  aria-label={channel.label}
-                  title={channel.label}
-                  className={className}
-                >
-                  <SupportChannelIcon name={icon} className="h-5 w-5" />
-                </a>
-              ) : (
-                <span key={channel.id} aria-label={`${channel.label} unavailable`} title={channel.label} className={`${className} opacity-35`}>
+        <div className="border-b border-white/[0.08] pb-5">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-300">Choose your route</p>
+          <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">What do you need help with?</h2>
+          <p className="mt-1.5 max-w-2xl text-sm leading-6 text-slate-500">Pick an issue to create a trackable request, or contact the channel that works best for you.</p>
+        </div>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4" aria-label="Direct support channels">
+          {channels.map((channel) => {
+            const icon = channelIcons[channel.id];
+            const available = Boolean(channel.href && channel.available);
+            const content = (
+              <>
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/[0.1] bg-white/[0.05] text-slate-200">
                   <SupportChannelIcon name={icon} className="h-5 w-5" />
                 </span>
-              );
-            })}
-          </div>
+                <span className="min-w-0 flex-1">
+                  <strong className="block text-sm font-black text-white">{channel.label}</strong>
+                  <span className="mt-0.5 block text-[11px] text-slate-500">{available ? "Open direct channel" : "Currently unavailable"}</span>
+                </span>
+                {available ? <span aria-hidden="true" className="text-slate-500">↗</span> : null}
+              </>
+            );
+            return available ? (
+              <a
+                key={channel.id}
+                href={channel.href ?? undefined}
+                target={channel.id === "email" ? undefined : "_blank"}
+                rel={channel.id === "email" ? undefined : "noreferrer"}
+                className="group flex min-h-[4.5rem] items-center gap-3 rounded-2xl border border-white/[0.08] bg-[#0d0f16] px-3.5 py-3 transition hover:-translate-y-0.5 hover:border-violet-400/30 hover:bg-violet-400/[0.07]"
+              >
+                {content}
+              </a>
+            ) : (
+              <div key={channel.id} aria-disabled="true" className="flex min-h-[4.5rem] items-center gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-3 opacity-50">
+                {content}
+              </div>
+            );
+          })}
         </div>
 
         <div className="mt-4 grid grid-cols-2 gap-2.5 md:grid-cols-3 lg:grid-cols-4">
