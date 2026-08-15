@@ -31,10 +31,10 @@ const imageExtensionPattern = /\.(?:avif|gif|jpe?g|png|webp)(?:$|\?)/i;
 const mobileLegendsMedia = {
   gameIcon:
     "https://play-lh.googleusercontent.com/D8r13ijO9c-0_1N-CP4d63mR1w6YhDuR2mBQUl27ELJAx0sKdaKtM5vCUnSLODKBVzUx7rZ9cW4Ir9jYiufsSQ=w512-h512",
-  diamond: "/assets/packs/mobile-legends/diamond-premium.png",
+  diamond: "/assets/packs/mobile-legends/diamond.webp",
   tickets: "/assets/packs/mobile-legends/tickets-stack.webp",
-  weeklyPass: "/assets/packs/mobile-legends/weekly-pass-premium.png",
-  twilightPass: "/assets/packs/mobile-legends/twilight-pass-premium.png",
+  weeklyPass: "/assets/packs/mobile-legends/weekly-pass-official.webp",
+  twilightPass: "/assets/packs/mobile-legends/twilight-pass-official.webp",
 } as const;
 
 const gameCurrencyMedia: Record<string, string> = {
@@ -194,19 +194,19 @@ function getGameSpecificItemMedia(gameSlug: string, productName: string) {
 
   if (gameSlug === "free-fire") {
     if (normalized.includes("membership") || normalized.includes("pass")) {
-      return "/assets/packs/free-fire/membership-premium.png";
+      return "/assets/packs/free-fire/membership-official.webp";
     }
   }
 
   if (gameSlug === "pubg-mobile" || gameSlug === "bgmi") {
     if (normalized.includes("pass") || normalized.includes("prime")) {
-      return "/assets/packs/pubg-mobile/elite-pass-premium.png";
+      return "/assets/packs/pubg-mobile/royale-pass-official.webp";
     }
   }
 
   if (gameSlug === "genshin-impact") {
     if (normalized.includes("welkin") || normalized.includes("moon") || normalized.includes("pass")) {
-      return "/assets/packs/genshin-impact/welkin-moon-premium.png";
+      return "/assets/packs/genshin-impact/welkin-moon-official.webp";
     }
   }
 
