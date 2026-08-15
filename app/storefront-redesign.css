@@ -211,16 +211,17 @@
 .site-brand-copy b, .site-brand-copy small { display: block; }
 .site-brand-copy b { font-size: .74rem; letter-spacing: .13em; }
 .site-brand-copy small { margin-top: .28rem; color: #69758a; font-size: .56rem; font-weight: 700; letter-spacing: .04em; }
-.site-primary-nav { display: flex; min-width: 0; align-items: center; justify-content: flex-start; gap: .35rem; overflow-x: auto; overscroll-behavior-inline: contain; border-top: 1px solid rgba(255,255,255,.07); padding: .45rem 0; scrollbar-width: none; } .site-primary-nav::-webkit-scrollbar { display: none; }
-.site-nav-link { display: inline-flex; align-items: center; gap: .42rem; border-radius: .65rem; padding: .55rem .62rem; color: #8994a8; font-size: .7rem; font-weight: 800; white-space: nowrap; transition: color 150ms ease-out, background-color 150ms ease-out; }
-.site-nav-link:hover { background: rgba(255,255,255,.055); color: #f8fafc; }
+.site-primary-nav { display: flex; min-width: 0; align-items: center; justify-content: center; gap: .25rem; overflow: visible; border-top: 1px solid rgba(255,255,255,.07); padding: .4rem 0; }
+.site-nav-link { display: inline-flex; min-height: 2rem; align-items: center; gap: .42rem; border-radius: .65rem; padding: .45rem .55rem; color: #8994a8; font-size: .7rem; font-weight: 800; white-space: nowrap; transition: color 150ms ease-out, background-color 150ms ease-out, transform 150ms ease-out; }
+.site-nav-link:hover { background: rgba(255,255,255,.055); color: #f8fafc; transform: translateY(-1px); }
 .site-header-actions { display: flex; align-items: center; justify-content: flex-end; gap: .45rem; }
 .site-header-search { width: min(18rem, 23vw); }
 .site-account-link { display: inline-flex; min-height: 2.55rem; align-items: center; gap: .45rem; border: 1px solid rgba(255,255,255,.12); border-radius: .72rem; padding: 0 .72rem; color: #e2e8f0; font-size: .72rem; font-weight: 850; transition: background-color 150ms ease-out, border-color 150ms ease-out, color 150ms ease-out; }
 .site-account-link:hover { border-color: rgba(103,232,249,.3); background: rgba(103,232,249,.07); color: white; }
 .site-mobile-search { display: none; padding-bottom: .65rem; }
-@media (min-width: 1024px) and (max-width: 1199px) { .site-primary-nav { gap: .1rem; } .site-nav-link { padding-inline: .45rem; font-size: .66rem; } .site-header-search { width: 13rem; } }
-@media (max-width: 1023px) { .site-header-main { grid-template-columns: minmax(0,1fr) auto; } .site-header-search { display: none; } .site-mobile-search { display: block; } .site-primary-nav { justify-content: flex-start; } }
+@media (min-width: 768px) and (max-width: 1199px) { .site-primary-nav { gap: .1rem; } .site-nav-link { padding-inline: .4rem; font-size: .66rem; } .site-header-search { width: 13rem; } }
+@media (min-width: 768px) { .site-header-main > div:first-child > button { display: none; } }
+@media (max-width: 767px) { .site-header-main { grid-template-columns: minmax(0,1fr) auto; } .site-header-search { display: none; } .site-mobile-search { display: block; } .site-primary-nav { justify-content: center; flex-wrap: wrap; gap: .12rem; padding-block: .35rem; } .site-nav-link { min-height: 1.85rem; padding: .38rem .45rem; font-size: .63rem; } }
 @media (min-width: 640px) { .site-brand-copy { display: block; } }
 @media (max-width: 639px) { .site-header-main { min-height: 4.15rem; gap: .5rem; } .site-account-link { min-height: 2.35rem; padding-inline: .55rem; } }
 

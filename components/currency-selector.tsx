@@ -78,12 +78,12 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
         aria-expanded={open}
         aria-label={`Display currency: ${selected.code} ${selected.region}`}
       >
-        <span aria-hidden="true" className="grid h-6 min-w-8 shrink-0 place-items-center rounded-md bg-violet-300/15 px-1.5 text-[10px] font-black tracking-[0.04em] text-violet-100">{selected.code}</span>
+        <span aria-hidden="true" className="relative grid h-7 w-7 shrink-0 place-items-center rounded-full border border-violet-200/25 bg-violet-300/12 text-violet-100"><StorefrontIcon name="globe" className="h-4 w-4" /><span className="absolute -bottom-1 -right-1 grid h-3.5 min-w-3.5 place-items-center rounded-full border border-[#07080e] bg-violet-300 px-0.5 text-[8px] font-black leading-none text-[#21153d]">{selected.code === "INR" ? "₹" : selected.code.slice(0, 1)}</span></span>
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[10px] font-black uppercase tracking-[0.12em] text-slate-300 sm:text-xs">Currency</span>
+          <span className="block truncate text-[10px] font-black uppercase tracking-[0.12em] text-slate-300 sm:text-xs">{selected.code}</span>
           <span className="sr-only">{selected.label} · {selected.region}</span>
         </span>
-        <StorefrontIcon name="arrow" className="h-3 w-3 shrink-0 rotate-90 text-violet-200/70" />
+        <StorefrontIcon name="arrow" className="h-3 w-3 shrink-0 rotate-90 text-violet-200/70 transition-transform group-hover:translate-y-0.5" />
       </button>
 
       {open ? (
