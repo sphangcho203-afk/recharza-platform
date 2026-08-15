@@ -70,6 +70,10 @@ export async function sendGroupMessage(chatId: string, text: string, extra: Reco
   });
 }
 
+export async function sendPrivateMessage(userId: number, text: string, extra: Record<string, unknown> = {}) {
+  return sendGroupMessage(String(userId), text, extra);
+}
+
 export function messageMentionsGroupBot(message: GroupTelegramMessage) {
   const text = message.text || "";
   const username = getGroupBotUsername();
@@ -90,25 +94,56 @@ export function groupUserLabel(user?: GroupTelegramUser) {
   return name || (user.username ? `@${user.username}` : "there");
 }
 
+function deterministicSupportReply(message: string) {
+  const text = message.toLowerCase();
+  if (/price|cost|rate|currency|usd|inr|try|brl|php/.test(text)) {
+    return "I can help you find the right game and region. Open the Recharza store to see the current local-currency price before checkout.";
+  }
+  if (/game|support|available|top.?up|recharge/.test(text)) {
+    return "Recharza supports popular game top-ups across regional catalogues, including Mobile Legends, Free Fire, PUBG Mobile, VALORANT, and Genshin Impact. Tell me the game and region you need.";
+  }
+  if (/how|where|buy|purchase|checkout|pay|payment/.test(text)) {
+    return "Choose your game and region, enter the required player details, select a package, and complete checkout. For payment or order-specific help, message me privately.";
+  }
+  return "I can help with game availability, regions, packages, checkout, and general top-up questions. Mention me with your question; for order or payment help, continue privately.";
+}
+
 export async function getGroupBotReply(input: {
   message: string;
   user?: GroupTelegramUser;
 }) {
+  const cleanMessage = stripGroupBotMention(input.message);
   const prompt = [
     "This is a public Recharza Telegram live-support group. Reply to the user’s message in a helpful, concise way.",
     "Do not reveal order details, access tokens, emails, phone numbers, payment data, or database information in the group.",
-    "If the message contains an order ID or asks for account-specific help, tell the user to start a private chat with the support bot and provide the order ID plus private access token there.",
+    "If the message contains an order ID or asks for account-specific help, tell the user to continue privately. Do not invent order data.",
     "Never claim that you changed an order, issued a refund, confirmed payment, or contacted a human unless the message context explicitly proves it.",
-    "Answer general questions about Recharza game top-ups, regions, verification, payments, and delivery using cautious language. If uncertain, ask them to use /support privately.",
+    "Answer general questions about Recharza game top-ups, regions, verification, payments, and delivery using cautious language. If uncertain, recommend private support.",
+    "Keep the reply warm, natural, and under 700 characters.",
     `User: ${groupUserLabel(input.user)}`,
-    `Message: ${stripGroupBotMention(input.message)}`,
+    `Message: ${cleanMessage}`,
   ].join("\n");
 
-  const reply = await getGeminiSupportReply({ userMessage: prompt, userName: groupUserLabel(input.user) });
-  if (!reply) return null;
-  return escapeHtml(reply);
+  try {
+    const reply = await getGeminiSupportReply({ userMessage: prompt, userName: groupUserLabel(input.user) });
+    if (reply) return escapeHtml(reply);
+  } catch (error) {
+    console.error("Gemini group support fallback", error instanceof Error ? error.message : "unknown error");
+  }
+  return escapeHtml(deterministicSupportReply(cleanMessage));
 }
 
 export function groupPrivacyNotice() {
-  return "For privacy, I can’t show order or payment details in this group. Please start a private chat with me and send your order ID plus the private access token from your confirmation.";
+  return "For privacy, I’ll continue this order or payment conversation privately. Please use the private chat button below and send your order ID there. Never post access tokens, OTPs, card details, or UPI PINs in this group.";
+}
+
+export function extractOrderId(text: string) {
+  return text.match(/\bRZ-[A-Z0-9]{6,24}\b/i)?.[0]?.toUpperCase() || null;
+}
+
+export function privateBotLink(orderId?: string | null) {
+  const username = getGroupBotUsername();
+  if (!username) return null;
+  const payload = orderId ? `order_${orderId}` : "support";
+  return `https://t.me/${username}?start=${encodeURIComponent(payload)}`;
 }
