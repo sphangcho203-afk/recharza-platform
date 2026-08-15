@@ -286,54 +286,66 @@ export function RazorpayTestCheckout({
   const busy = ["creating", "open", "verifying"].includes(state);
 
   return (
-    <section className="mt-6 rounded-3xl border border-violet-400/20 bg-violet-400/10 p-5">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-        <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-200">
-            Secure payment
-          </p>
-          <h3 className="mt-2 text-xl font-black text-white">
-            Complete this order
-          </h3>
-          <p className="mt-2 text-sm leading-6 text-violet-100/75">
-            {packageName} · {formatInr(amountInPaise)}. Payment confirmation and
-            order status are recorded by the Recharza server.
-          </p>
+    <section className="mt-6 mb-20 overflow-hidden rounded-[1.5rem] border border-violet-300/20 bg-[radial-gradient(circle_at_100%_0%,rgba(139,92,246,0.18),transparent_42%),#11121c] shadow-[0_18px_60px_rgba(0,0,0,0.28)] sm:mb-4">
+      <div className="border-b border-white/[0.08] px-5 py-5 sm:px-6">
+        <div className="flex items-start gap-3">
+          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-violet-300/25 bg-violet-400/10 text-sm font-black text-violet-200">RZ</span>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-violet-200">Secure payment</p>
+              <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-200">Protected</span>
+            </div>
+            <h3 className="mt-2 text-2xl font-black tracking-[-0.03em] text-white">Complete your order</h3>
+            <p className="mt-1.5 text-sm leading-6 text-slate-400">Your payment opens in a secure checkout and stays linked to this Recharza order.</p>
+          </div>
         </div>
-        <span className="w-fit rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-xs font-black uppercase tracking-wider text-emerald-100">
-          Protected checkout
-        </span>
       </div>
 
-      <button
-        type="button"
-        disabled={busy || state === "success"}
-        onClick={() => void openCheckout()}
-        className="mt-5 w-full rounded-2xl bg-white px-5 py-3.5 text-sm font-black text-slate-950 transition hover:bg-violet-100 disabled:cursor-wait disabled:opacity-60"
-      >
-        {state === "creating"
-          ? "Preparing payment..."
-          : state === "verifying"
-            ? "Verifying payment..."
-            : state === "open"
-              ? "Checkout open"
-              : state === "success"
-                ? "Payment completed"
-                : "Pay securely"}
-      </button>
+      <div className="px-5 py-5 sm:px-6">
+        <div className="flex items-end justify-between gap-4 rounded-xl border border-white/[0.08] bg-black/20 px-4 py-3.5">
+          <div className="min-w-0">
+            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Selected package</p>
+            <p className="mt-1 truncate text-sm font-bold text-slate-200">{packageName}</p>
+          </div>
+          <p className="shrink-0 text-xl font-black text-violet-200">{formatInr(amountInPaise)}</p>
+        </div>
 
-      <p
-        aria-live="polite"
-        className={`mt-3 rounded-2xl border px-4 py-3 text-sm leading-6 ${
-          state === "error"
-            ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
-            : state === "success"
-              ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
-              : "border-white/10 bg-black/15 text-violet-100/75"
-        }`}
-      >
-        {message}
-      </p>
+        <button
+          type="button"
+          disabled={busy || state === "success"}
+          onClick={() => void openCheckout()}
+          className="mt-4 flex min-h-14 w-full items-center justify-center rounded-xl bg-violet-500 px-5 text-base font-black text-white shadow-[0_10px_25px_rgba(139,92,246,0.24)] transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200/70 active:scale-[0.99] disabled:cursor-wait disabled:opacity-60"
+        >
+          {state === "creating"
+            ? "Preparing secure payment…"
+            : state === "verifying"
+              ? "Verifying payment…"
+              : state === "open"
+                ? "Checkout open"
+                : state === "success"
+                  ? "Payment completed"
+                  : "Pay securely"}
+        </button>
+
+        <div className="mt-4 grid gap-2 text-xs text-slate-500 sm:grid-cols-3">
+          <span className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-center">Encrypted checkout</span>
+          <span className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-center">Server verified</span>
+          <span className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-center">Order recoverable</span>
+        </div>
+
+        <p
+          aria-live="polite"
+          className={`mt-4 rounded-xl border px-4 py-3 text-sm leading-6 ${
+            state === "error"
+              ? "border-rose-400/20 bg-rose-400/[0.08] text-rose-200"
+              : state === "success"
+                ? "border-emerald-400/20 bg-emerald-400/[0.08] text-emerald-200"
+                : "border-white/[0.08] bg-black/15 text-slate-400"
+          }`}
+        >
+          {message}
+        </p>
+      </div>
     </section>
   );
 }
