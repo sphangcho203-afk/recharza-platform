@@ -7,7 +7,6 @@ import { StorefrontCategoryNav } from "@/components/storefront-category-nav";
 import { StorefrontSearch } from "@/components/storefront-search";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { CurrencySelector } from "@/components/currency-selector";
-import { MobileNavMenu } from "@/components/mobile-nav-menu";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { getPublishedStorefrontContent, type StorefrontContent } from "@/lib/storefront-content";
 
@@ -32,20 +31,11 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="site-header-main">
           <div className="flex min-w-0 items-center gap-2.5">
-            <MobileNavMenu />
             <Link href="/" className="site-brand-link" aria-label="Recharza home">
               <RecharzaMark compact />
               <span className="site-brand-copy"><b>RECHARZA</b><small>play more, wait less</small></span>
             </Link>
           </div>
-
-          <nav className="site-primary-nav" aria-label="Primary navigation">
-            {navLinks.map((link) => (
-              <a key={link.href} href={link.href} className="site-nav-link">
-                <StorefrontIcon name={link.icon} className="h-3.5 w-3.5" />{link.label}
-              </a>
-            ))}
-          </nav>
 
           <div className="site-header-actions">
             <div className="site-header-search"><StorefrontSearch /></div>
@@ -55,6 +45,14 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
             <Link href="/account" className="site-account-link"><StorefrontIcon name="account" className="h-4 w-4" /><span className="hidden md:inline">Account</span></Link>
           </div>
         </div>
+
+        <nav className="site-primary-nav" aria-label="Primary navigation">
+          {navLinks.map((link) => (
+            <a key={link.href} href={link.href} className="site-nav-link">
+              <StorefrontIcon name={link.icon} className="h-3.5 w-3.5" />{link.label}
+            </a>
+          ))}
+        </nav>
 
         <div className="site-mobile-search"><StorefrontSearch /></div>
         {storefront.navigation.visibleIds.length > 0 ? (
