@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { GameCatalogue } from "@/components/game-catalogue";
 import { GameCard } from "@/components/game-card";
 import { SiteFooter } from "@/components/site-footer";
+import { StorefrontAccountPrompt } from "@/components/storefront-account-prompt";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import type { Game } from "@/lib/games";
@@ -125,7 +126,7 @@ export default async function Home() {
         <div className="mx-auto max-w-[1240px]"><div className="max-w-2xl"><div className="storefront-section-label">How Recharza works</div><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">Clear steps. Fewer checkout surprises.</h2><p className="mt-3 text-sm leading-6 text-slate-400">The flow is designed around the player destination first, because a correct package is only useful when it reaches the right account.</p></div><div className="mt-8 grid gap-3 md:grid-cols-3">{processItems.map((item) => <article key={item.step} className="storefront-process-card"><div className="flex items-start justify-between"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-white/[0.055] text-cyan-200 ring-1 ring-white/[0.08]"><StorefrontIcon name={item.icon} className="h-5 w-5" /></span><span className="font-mono text-xs font-bold text-slate-600">{item.step}</span></div><h3 className="mt-6 text-base font-semibold text-white">{item.title}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{item.text}</p></article>)}</div></div>
       </section>
 
-      <section id="offers" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-12 sm:px-6 lg:px-8"><div className="storefront-support-panel"><div><div className="storefront-section-label">Ready when you are</div><h2 className="mt-3 max-w-xl font-heading text-2xl font-semibold tracking-tight text-white sm:text-3xl">A cleaner way to keep every top-up in one place.</h2><p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Open an account to keep order history together, or go straight to support if you already have a question.</p></div><div className="flex shrink-0 flex-col gap-2 sm:flex-row"><Link href="/account" className="storefront-primary-cta">Open account <StorefrontIcon name="arrow" className="h-4 w-4" /></Link><Link href="/support" className="storefront-secondary-cta">Contact support</Link></div></div></section>
+      <StorefrontAccountPrompt />
 
       <SiteFooter />
     </main>
