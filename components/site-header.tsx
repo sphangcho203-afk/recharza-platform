@@ -38,6 +38,15 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
             </Link>
           </div>
 
+          <nav className="site-desktop-nav" aria-label="Primary navigation">
+            {navLinks.map((link) => (
+              <Link key={link.href} href={link.href} className="site-nav-link">
+                <StorefrontIcon name={link.icon} className="h-3.5 w-3.5" />
+                <span>{link.label}</span>
+              </Link>
+            ))}
+          </nav>
+
           <div className="site-header-actions">
             <div className="hidden sm:block"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} /></div>
             <div className="sm:hidden"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} compact /></div>
@@ -45,14 +54,6 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
             <Link href="/account" className="site-account-link"><StorefrontIcon name="account" className="h-4 w-4" /><span className="hidden md:inline">Account</span></Link>
           </div>
         </div>
-
-        <nav className="site-primary-nav" aria-label="Primary navigation">
-          {navLinks.map((link) => (
-            <a key={link.href} href={link.href} className="site-nav-link">
-              <StorefrontIcon name={link.icon} className="h-3.5 w-3.5" />{link.label}
-            </a>
-          ))}
-        </nav>
 
         {storefront.navigation.visibleIds.length > 0 ? (
           <Suspense fallback={<div aria-hidden="true" className="h-10 border-t border-white/[0.06]" />}>
