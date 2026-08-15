@@ -7,6 +7,7 @@ import { StorefrontCategoryNav } from "@/components/storefront-category-nav";
 import { StorefrontSearch } from "@/components/storefront-search";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { CurrencySelector } from "@/components/currency-selector";
+import { MobileNavMenu } from "@/components/mobile-nav-menu";
 import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { getPublishedStorefrontContent, type StorefrontContent } from "@/lib/storefront-content";
 
@@ -31,6 +32,7 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="site-header-main">
           <div className="flex min-w-0 items-center gap-2.5">
+            <MobileNavMenu />
             <Link href="/" className="site-brand-link" aria-label="Recharza home">
               <RecharzaMark compact />
               <span className="site-brand-copy"><b>RECHARZA</b><small>play more, wait less</small></span>
