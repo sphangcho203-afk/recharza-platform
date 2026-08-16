@@ -227,6 +227,21 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
   const internalDestination = customer.role === "admin" ? "/admin" : "/staff";
   return (
     <div className="grid gap-6">
+      {showOrders ? (
+        <section className="rounded-3xl border border-violet-300/15 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.16),transparent_48%),#0f0f19] p-5 shadow-2xl shadow-black/25 sm:p-7">
+          <Link href="/account" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2 text-sm font-bold text-slate-300 transition hover:border-violet-300/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70">
+            <span aria-hidden="true">←</span> Back to account
+          </Link>
+          <p className="mt-7 text-xs font-black uppercase tracking-[0.18em] text-violet-300">Order history</p>
+          <h2 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">Your purchases</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Every purchase has its own tracking link, payment state, player destination, and delivery timeline. This is your complete account-owned order workspace.</p>
+          <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold text-slate-400">
+            <span className="rounded-lg border border-white/10 bg-black/20 px-3 py-2">{orders.length} total orders</span>
+            <span className="rounded-lg border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-amber-100">{activeOrders} active</span>
+          </div>
+        </section>
+      ) : null}
+      {!showOrders ? (
       <section className="overflow-hidden rounded-3xl border border-white/10 bg-[#0f0f19] shadow-2xl shadow-black/25">
         <div className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.15),transparent_50%),rgba(255,255,255,0.025)] p-5 sm:p-6">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
@@ -283,6 +298,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
           ))}
         </nav>
       </section>
+      ) : null}
 
       {!showOrders ? (
         <>
