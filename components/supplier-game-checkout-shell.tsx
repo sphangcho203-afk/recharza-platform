@@ -393,24 +393,17 @@ export function SupplierGameCheckoutShell({
       className="space-y-5"
     >
       <div className="min-w-0 space-y-5">
-        <section className="relative overflow-hidden rounded-2xl border border-violet-300/[0.16] bg-[radial-gradient(circle_at_0%_0%,rgba(139,92,246,0.18),transparent_42%),#0d0f18] p-5 sm:p-6">
-          <div className="relative">
-            <Link href="/#games" className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-slate-500 transition hover:text-white">
-              <StorefrontIcon name="arrow" className="h-3 w-3 rotate-180" /> Browse games <span className="text-slate-700">/</span> {gameLabel}
-            </Link>
-            <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-200"><span className="h-1.5 w-1.5 rounded-full bg-emerald-300" /> Verified checkout</span>
-                  <span className="rounded-full border border-violet-300/20 bg-violet-300/[0.08] px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-violet-200">{selectedMarketLabel}</span>
-                </div>
-                <h1 className="mt-3 text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">Build your top-up</h1>
-                <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Choose a package, verify the player destination, and review the final amount in your selected display currency before payment.</p>
-              </div>
-              <div className="rounded-xl border border-white/[0.1] bg-white/[0.04] px-3 py-2 text-right"><div className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Protected flow</div><div className="mt-1 text-xs font-bold text-emerald-200">ID check · clear pricing</div></div>
-            </div>
+        <header className="flex items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
+          <Link href="/#games" className="inline-flex shrink-0 items-center gap-1.5 text-xs font-bold text-slate-400 transition hover:text-white">
+            <StorefrontIcon name="arrow" className="h-3.5 w-3.5 rotate-180" />
+            <span className="hidden sm:inline">Back to games</span>
+            <span className="sm:hidden">Back</span>
+          </Link>
+          <div className="min-w-0 text-right">
+            <h1 className="truncate text-base font-black tracking-[-0.02em] text-white sm:text-lg">{gameLabel}</h1>
+            <p className="truncate text-[11px] font-medium text-slate-500">{selectedMarketLabel}</p>
           </div>
-        </section>
+        </header>
         {false && markets.length > 1 && gameSlug !== "free-fire" ? (
           <section className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <div className="flex min-w-max gap-2">
