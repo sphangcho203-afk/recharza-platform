@@ -82,8 +82,8 @@ if (emailProviderRedacted) {
   warnings.push(
     "EMAIL_DELIVERY_PROVIDER is redacted by Vercel CLI; provider selection cannot be validated by vercel env run.",
   );
-} else if (!["gmail", "resend"].includes(emailDeliveryProvider)) {
-  errors.push("EMAIL_DELIVERY_PROVIDER must be gmail or resend.");
+} else if (!["gmail", "gmail-smtp", "resend"].includes(emailDeliveryProvider)) {
+  errors.push("EMAIL_DELIVERY_PROVIDER must be gmail, gmail-smtp, or resend.");
 }
 
 const gmailClientId = value("GOOGLE_MAIL_CLIENT_ID") || value("GOOGLE_CLIENT_ID");
@@ -97,6 +97,14 @@ const gmailMailRedacted =
 const gmailMailReady = Boolean(
   gmailClientId && gmailClientSecret && gmailRefreshToken,
 );
+const smtpHost = value("GOOGLE_MAIL_SMTP_HOST") || value("GMAIL_SMTP_HOST") || "smtp.gmail.com";
+const smtpPort = value("GOOGLE_MAIL_SMTP_PORT") || value("GMAIL_SMTP_PORT") || "465";
+const smtpUser = value("GOOGLE_MAIL_SMTP_USER") || value("GMAIL_SMTP_USER") || "recharza1@gmail.com";
+const smtpPassword = value("GOOGLE_MAIL_SMTP_PASSWORD") || value("GMAIL_SMTP_PASSWORD");
+const smtpPasswordRedacted =
+  isVercelRedacted("GOOGLE_MAIL_SMTP_PASSWORD") || isVercelRedacted("GMAIL_SMTP_PASSWORD");
+const smtpMailReady = Boolean(smtpHost && /^\d+$/.test(smtpPort) && smtpUser && smtpPassword);
+const smtpMailRedacted = smtpPasswordRedacted;
 const resendMailValues = [value("RESEND_API_KEY"), value("RESEND_FROM_EMAIL")];
 const resendMailConfiguredCount = resendMailValues.filter(Boolean).length;
 const resendMailReady = resendMailConfiguredCount === resendMailValues.length;
@@ -109,6 +117,11 @@ if (gmailClientId && !isVercelRedacted("GOOGLE_MAIL_CLIENT_ID") && !isVercelReda
 if (resendMailConfiguredCount > 0 && !resendMailReady) {
   errors.push("RESEND_API_KEY and RESEND_FROM_EMAIL must be configured together.");
 }
+if (emailDeliveryProvider === "gmail-smtp" && !smtpMailReady && !smtpMailRedacted) {
+  errors.push(
+    "EMAIL_DELIVERY_PROVIDER=gmail-smtp requires a Gmail SMTP password plus a valid SMTP host, port, and user.",
+  );
+}
 if (emailDeliveryProvider === "gmail" && !gmailMailReady && !gmailMailRedacted) {
   errors.push(
     "EMAIL_DELIVERY_PROVIDER=gmail requires GOOGLE_MAIL_REFRESH_TOKEN plus a Google OAuth client ID and secret. GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET may be reused when they belong to the same OAuth client.",
@@ -117,6 +130,11 @@ if (emailDeliveryProvider === "gmail" && !gmailMailReady && !gmailMailRedacted) 
 if (emailDeliveryProvider === "resend" && !resendMailReady) {
   errors.push(
     "EMAIL_DELIVERY_PROVIDER=resend requires RESEND_API_KEY and RESEND_FROM_EMAIL.",
+  );
+}
+if (smtpMailRedacted && emailDeliveryProvider === "gmail-smtp") {
+  warnings.push(
+    "Gmail SMTP password is redacted by Vercel CLI; credential completeness cannot be validated by vercel env run.",
   );
 }
 if (gmailMailRedacted && emailDeliveryProvider === "gmail") {
@@ -146,6 +164,11 @@ if (hosted) {
   if (emailDeliveryProvider === "gmail" && !gmailMailReady && !gmailMailRedacted) {
     errors.push(
       "Hosted Recharza email is set to Gmail, but the Gmail OAuth transport is incomplete.",
+    );
+  }
+  if (emailDeliveryProvider === "gmail-smtp" && !smtpMailReady && !smtpMailRedacted) {
+    errors.push(
+      "Hosted Recharza email is set to Gmail SMTP, but the SMTP transport is incomplete.",
     );
   }
   if (emailDeliveryProvider === "resend" && !resendMailReady) {

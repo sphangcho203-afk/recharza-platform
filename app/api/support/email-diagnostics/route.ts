@@ -21,6 +21,12 @@ function addressDomain(value: string) {
   return match.split("@")[1]?.trim().toLowerCase() || null;
 }
 
+function resultLabel(provider: string) {
+  if (provider === "gmail-smtp") return "Gmail SMTP";
+  if (provider === "gmail") return "Gmail API";
+  return "Resend";
+}
+
 function normalizeDiagnosticRecipient(value: string | null) {
   if (!value) return null;
   const normalized = value.trim().toLowerCase();
@@ -40,7 +46,7 @@ function renderDiagnosticHtml() {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Recharza Gmail delivery test</title>
+  <title>Recharza email delivery test</title>
 </head>
 <body style="margin:0;padding:0;background:#06060a;color:#f8fafc;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">A protected Recharza Gmail API delivery test reached this inbox.</div>
@@ -58,19 +64,19 @@ function renderDiagnosticHtml() {
                 </td>
               </tr></table>
             </td>
-            <td align="right" style="color:#64748b;font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;">Gmail API test</td>
+            <td align="right" style="color:#64748b;font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;">Protected delivery test</td>
           </tr></table>
         </td></tr>
         <tr><td style="padding:32px 22px;background:radial-gradient(circle at top left,#312e81 0,#171724 48%,#101018 100%);">
           <div style="display:inline-block;padding:7px 10px;border-radius:999px;border:1px solid #164e63;background:#0d2430;color:#67e8f9;font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;">External delivery confirmed</div>
           <h1 style="margin:16px 0 0;color:#fff;font-size:28px;line-height:1.12;letter-spacing:-.04em;">Recharza reached your inbox.</h1>
-          <p style="margin:14px 0 0;color:#cbd5e1;font-size:14px;line-height:1.75;">This message was sent through the same Gmail API transport used by Recharza account, security, order, payment, and top-up notifications.</p>
+          <p style="margin:14px 0 0;color:#cbd5e1;font-size:14px;line-height:1.75;">This message was sent through the same protected email transport used by Recharza account, security, order, payment, and top-up notifications.</p>
         </td></tr>
         <tr><td style="padding:22px;">
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;background:#0b1715;border:1px solid #1f3a35;border-radius:12px;">
             <tr><td style="padding:14px;color:#91cfc1;font-size:11px;line-height:1.7;">
               <strong style="display:block;margin-bottom:3px;color:#d1fae5;">What this proves</strong>
-              OAuth authentication, Gmail API send, MIME/HTML rendering, sender configuration, and delivery to an external mailbox all completed for this test.
+              Transport authentication, MIME/HTML rendering, sender configuration, and delivery to an external mailbox all completed for this test.
             </td></tr>
           </table>
           <p style="margin:20px 0 0;color:#697184;font-size:11px;line-height:1.7;">This is a protected diagnostic message and contains no customer or payment data.</p>
@@ -133,6 +139,15 @@ export async function POST(request: Request) {
       usingSharedGoogleClient: configuration.gmail.usingSharedGoogleClient,
       missing: configuration.gmail.missing,
     },
+    smtp: {
+      host: configuration.smtp.host,
+      port: configuration.smtp.port,
+      user: configuration.smtp.user,
+      password: configuration.smtp.password,
+      from: addressDomain(configuration.smtp.from),
+      configured: configuration.smtp.configured,
+      missing: configuration.smtp.missing,
+    },
     resend: {
       apiKey: configuration.resend.apiKey,
       from: configuration.resend.from,
@@ -149,7 +164,9 @@ export async function POST(request: Request) {
         message:
           configuration.requestedProvider === "gmail"
             ? "Recharza requires Gmail delivery, but the Gmail OAuth transport is incomplete."
-            : "Recharza email delivery configuration is incomplete.",
+            : configuration.requestedProvider === "gmail-smtp"
+              ? "Recharza requires Gmail SMTP delivery, but the SMTP transport is incomplete."
+              : "Recharza email delivery configuration is incomplete.",
       },
       { status: 503 },
     );
@@ -158,10 +175,10 @@ export async function POST(request: Request) {
   try {
     const result = await sendSystemEmail({
       to,
-      subject: "Recharza Gmail external delivery test",
+      subject: `Recharza ${resultLabel(configuration.requestedProvider)} external delivery test`,
       html: renderDiagnosticHtml(),
       text:
-        "RECHARZA — Gmail API external delivery test\n\nRecharza reached this inbox through the same Gmail API transport used for account, security, order, payment, and top-up notifications.\n\nThis protected diagnostic contains no customer or payment data.",
+        `RECHARZA — ${resultLabel(configuration.requestedProvider)} external delivery test\n\nRecharza reached this inbox through the same ${resultLabel(configuration.requestedProvider)} transport used for account, security, order, payment, and top-up notifications.\n\nThis protected diagnostic contains no customer or payment data.`,
       idempotencyKey: `gmail-external-diagnostic-${Date.now()}`,
     });
 
@@ -172,13 +189,15 @@ export async function POST(request: Request) {
       senderDomain:
         result.provider === "gmail"
           ? addressDomain(configuration.gmail.from)
-          : process.env.RESEND_FROM_EMAIL
-            ? addressDomain(process.env.RESEND_FROM_EMAIL)
-            : null,
+          : result.provider === "gmail-smtp"
+            ? addressDomain(configuration.smtp.from)
+            : process.env.RESEND_FROM_EMAIL
+              ? addressDomain(process.env.RESEND_FROM_EMAIL)
+              : null,
       recipientDomain: addressDomain(to),
       recipientSource,
       providerMessageId: result.messageId,
-      message: `External diagnostic accepted by ${result.provider === "gmail" ? "Gmail API" : "Resend"}.`,
+      message: `External diagnostic accepted by ${resultLabel(result.provider)}.`,
     });
   } catch (error) {
     return Response.json(

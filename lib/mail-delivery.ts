@@ -1,6 +1,6 @@
 import "server-only";
 
-const DEFAULT_GMAIL_FROM = "recherzatopup@gmail.com";
+const DEFAULT_GMAIL_FROM = "recharza1@gmail.com";
 
 type MailProvider = "gmail" | "gmail-smtp" | "resend";
 
@@ -66,7 +66,7 @@ function smtpPort() {
 }
 
 function smtpUser() {
-  return value("GOOGLE_MAIL_SMTP_USER") || value("GMAIL_SMTP_USER") || value("NEXT_PUBLIC_SUPPORT_EMAIL") || DEFAULT_GMAIL_FROM;
+  return value("GOOGLE_MAIL_SMTP_USER") || value("GMAIL_SMTP_USER") || DEFAULT_GMAIL_FROM;
 }
 
 function smtpPassword() {
@@ -76,7 +76,7 @@ function smtpPassword() {
 function gmailSender() {
   const configured =
     value("GOOGLE_MAIL_FROM") ||
-    value("NEXT_PUBLIC_SUPPORT_EMAIL") ||
+    (selectedProvider() === "gmail-smtp" ? smtpUser() : value("NEXT_PUBLIC_SUPPORT_EMAIL")) ||
     DEFAULT_GMAIL_FROM;
   if (configured.includes("<") && configured.includes(">")) {
     return cleanHeader(configured);

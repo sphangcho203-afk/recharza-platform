@@ -185,9 +185,13 @@ export function evaluateDeploymentReadiness(): DeploymentReadiness {
           ? mailConfiguration.gmail.configured
             ? "Gmail API OAuth is the active Recharza account and order email transport."
             : `Gmail is required but incomplete: ${mailConfiguration.gmail.missing.join(", ") || "configuration missing"}.`
-          : mailConfiguration.resend.configured
-            ? "Resend is explicitly selected as the Recharza transactional email transport."
-            : "Resend is selected but its delivery configuration is incomplete.",
+          : mailConfiguration.requestedProvider === "gmail-smtp"
+            ? mailConfiguration.smtp.configured
+              ? "Gmail SMTP is the active Recharza account and order email transport."
+              : `Gmail SMTP is required but incomplete: ${mailConfiguration.smtp.missing.join(", ") || "configuration missing"}.`
+            : mailConfiguration.resend.configured
+              ? "Resend is explicitly selected as the Recharza transactional email transport."
+              : "Resend is selected but its delivery configuration is incomplete.",
     },
     {
       id: "razorpay-test",
