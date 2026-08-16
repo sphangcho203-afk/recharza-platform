@@ -1,82 +1,114 @@
-/* Electric Recharza mark: contained live energy, never layout-shifting. */
+/* Recharza electric line treatment: transparent, restrained, and intermittent. */
 .recharza-mark-shell {
   position: relative;
   isolation: isolate;
   overflow: visible;
 }
-.recharza-mark-shell::before,
-.recharza-mark-shell::after {
-  position: absolute;
-  inset: 10%;
-  z-index: -1;
-  border-radius: 38%;
-  content: "";
-  pointer-events: none;
-}
-.recharza-mark-shell::before {
-  background: conic-gradient(from 210deg, rgba(34,211,238,0), rgba(103,232,249,.72), rgba(139,92,246,.55), rgba(34,211,238,0));
-  filter: blur(11px);
-  opacity: .42;
-  animation: recharza-electric-aura 3.6s ease-in-out infinite;
-}
-.recharza-mark-shell::after {
-  border: 1px solid rgba(103,232,249,.38);
-  opacity: .2;
-  transform: scale(.86) rotate(-7deg);
-  animation: recharza-electric-ring 2.9s ease-in-out infinite;
-}
+
 .recharza-electric-mark {
   position: relative;
   z-index: 1;
-  filter: drop-shadow(0 0 7px rgba(34,211,238,.35)) drop-shadow(0 0 13px rgba(124,58,237,.18));
+  display: block;
   transform-origin: center;
-  animation: recharza-electric-pulse 3.2s ease-in-out infinite;
-  transition: filter 220ms ease, transform 220ms ease;
-}
-.site-brand-link:hover .recharza-electric-mark,
-.site-brand-link:focus-visible .recharza-electric-mark {
-  filter: drop-shadow(0 0 9px rgba(103,232,249,.82)) drop-shadow(0 0 21px rgba(124,58,237,.42));
-  transform: translateY(-1px) scale(1.045);
-}
-@keyframes recharza-electric-pulse {
-  0%, 100% { filter: drop-shadow(0 0 7px rgba(34,211,238,.35)) drop-shadow(0 0 13px rgba(124,58,237,.18)); }
-  46% { filter: drop-shadow(0 0 11px rgba(103,232,249,.65)) drop-shadow(0 0 22px rgba(124,58,237,.28)); }
-  52% { filter: drop-shadow(0 0 17px rgba(255,255,255,.68)) drop-shadow(0 0 27px rgba(34,211,238,.4)); }
-  58% { filter: drop-shadow(0 0 8px rgba(34,211,238,.42)) drop-shadow(0 0 15px rgba(124,58,237,.2)); }
-}
-@keyframes recharza-electric-aura {
-  0%, 100% { opacity: .24; transform: scale(.86) rotate(-8deg); }
-  50% { opacity: .62; transform: scale(1.1) rotate(9deg); }
-}
-@keyframes recharza-electric-ring {
-  0%, 100% { opacity: .12; transform: scale(.84) rotate(-8deg); }
-  45% { opacity: .42; transform: scale(1.05) rotate(5deg); }
-  55% { opacity: .2; transform: scale(.92) rotate(13deg); }
+  filter: none;
+  transition: transform 220ms ease;
 }
 
-/* Hero electric energy: slow atmospheric movement behind the storefront message. */
+.recharza-mark-line-effects,
+.recharza-mark-line-effects::before,
+.recharza-mark-line-effects::after {
+  position: absolute;
+  z-index: 2;
+  display: block;
+  pointer-events: none;
+  content: "";
+  opacity: 0;
+}
+
+/* Short circuit-like strokes fire at separate moments rather than glowing continuously. */
+.recharza-mark-line-effects {
+  inset: -5px -7px;
+  overflow: visible;
+  background:
+    linear-gradient(118deg, transparent 0 18%, rgba(103, 232, 249, .95) 18.4% 19%, transparent 19.4% 100%),
+    linear-gradient(296deg, transparent 0 63%, rgba(167, 139, 250, .95) 63.4% 64%, transparent 64.4% 100%);
+  background-repeat: no-repeat;
+  animation: recharza-line-flash 8.6s steps(1, end) infinite;
+}
+
+.recharza-mark-line-effects::before {
+  top: 11%;
+  left: -3px;
+  width: 18px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(103, 232, 249, .95), transparent);
+  transform: rotate(-17deg);
+  animation: recharza-line-flicker-a 8.6s steps(1, end) infinite;
+}
+
+.recharza-mark-line-effects::after {
+  right: -4px;
+  bottom: 17%;
+  width: 20px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(167, 139, 250, .95), transparent);
+  transform: rotate(-34deg);
+  animation: recharza-line-flicker-b 8.6s steps(1, end) infinite;
+}
+
+.site-brand-link:hover .recharza-electric-mark,
+.site-brand-link:focus-visible .recharza-electric-mark {
+  transform: translateY(-1px) scale(1.045);
+}
+
+.site-brand-link:hover .recharza-mark-line-effects,
+.site-brand-link:focus-visible .recharza-mark-line-effects {
+  opacity: .9;
+  animation-duration: 3.4s;
+}
+
+@keyframes recharza-line-flash {
+  0%, 26%, 29%, 57%, 61%, 89%, 100% { opacity: 0; }
+  27%, 28%, 58%, 60%, 90%, 92% { opacity: .74; }
+}
+
+@keyframes recharza-line-flicker-a {
+  0%, 35%, 38%, 76%, 79%, 100% { opacity: 0; transform: translateX(-2px) rotate(-17deg); }
+  36%, 37%, 77%, 78% { opacity: .95; transform: translateX(1px) rotate(-17deg); }
+}
+
+@keyframes recharza-line-flicker-b {
+  0%, 47%, 50%, 82%, 85%, 100% { opacity: 0; transform: translateX(2px) rotate(-34deg); }
+  48%, 49%, 83%, 84% { opacity: .9; transform: translateX(-1px) rotate(-34deg); }
+}
+
+/* Keep the hero atmosphere slow and architectural; the logo itself stays quiet between flashes. */
 .storefront-hero-shell::before {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: radial-gradient(circle at 72% 34%, rgba(34,211,238,.1), transparent 19%), linear-gradient(114deg, transparent 0 58%, rgba(103,232,249,.1) 58.2%, transparent 58.7% 67%, rgba(139,92,246,.08) 67.3%, transparent 67.8%);
+  background: linear-gradient(114deg, transparent 0 58%, rgba(103, 232, 249, .08) 58.2%, transparent 58.7% 67%, rgba(139, 92, 246, .06) 67.3%, transparent 67.8%);
   content: "";
   pointer-events: none;
   mix-blend-mode: screen;
-  opacity: .5;
-  animation: recharza-electric-sweep 13s ease-in-out infinite alternate;
+  opacity: .34;
+  animation: recharza-electric-sweep 16s ease-in-out infinite alternate;
 }
+
 @keyframes recharza-electric-sweep {
-  0% { transform: translate3d(-3%, 1%, 0) scale(1); opacity: .24; }
-  48% { transform: translate3d(2%, -1%, 0) scale(1.03); opacity: .54; }
-  100% { transform: translate3d(5%, 2%, 0) scale(1.06); opacity: .32; }
+  0% { transform: translate3d(-3%, 1%, 0) scale(1); opacity: .18; }
+  48% { transform: translate3d(2%, -1%, 0) scale(1.03); opacity: .38; }
+  100% { transform: translate3d(5%, 2%, 0) scale(1.06); opacity: .22; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell::before,
-  .recharza-mark-shell::after,
-  .recharza-electric-mark,
+  .recharza-mark-line-effects,
+  .recharza-mark-line-effects::before,
+  .recharza-mark-line-effects::after,
   .storefront-hero-shell::before { animation: none !important; }
-  .recharza-electric-mark { filter: drop-shadow(0 0 7px rgba(34,211,238,.35)); }
-  .storefront-hero-shell::before { opacity: .22; }
+  .recharza-mark-line-effects,
+  .recharza-mark-line-effects::before,
+  .recharza-mark-line-effects::after { opacity: 0 !important; }
+  .recharza-electric-mark { transform: none !important; }
+  .storefront-hero-shell::before { opacity: .16; }
 }
