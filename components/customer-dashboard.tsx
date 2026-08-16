@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { SavedAddressesPanel } from "@/components/saved-addresses-panel";
+import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { StorefrontIcon } from "@/components/storefront-icon";
+import { games } from "@/lib/games";
 import { formatInr } from "@/lib/mobile-legends";
 
 type Customer = {
@@ -79,6 +81,16 @@ async function fetchSnapshot(): Promise<Snapshot> {
         : ordersResult.message ?? "Order history could not be loaded.",
     error: !ordersResponse.ok || !ordersResult.ok,
   };
+}
+
+function artworkSourcesForGame(gameSlug: string) {
+  const game = games.find((entry) => entry.slug === gameSlug) ?? games.find((entry) => entry.slug === gameSlug.split("-").slice(0, -1).join("-"));
+  if (!game) return [];
+  return Array.from(new Set([...game.artworkSources.filter((source) => source.startsWith("/")), ...game.artworkSources]));
+}
+
+function gameTitle(gameSlug: string) {
+  return games.find((entry) => entry.slug === gameSlug)?.title ?? gameSlug.replaceAll("-", " ").replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 function statusClassName(status: string) {
@@ -213,6 +225,7 @@ export function CustomerDashboard() {
   }
 
   const internalDestination = customer.role === "admin" ? "/admin" : "/staff";
+  const featuredGames = games.filter((game) => game.available && game.href).slice(0, 6);
 
   return (
     <div className="grid gap-6">
@@ -251,26 +264,50 @@ export function CustomerDashboard() {
           </div>
         </div>
 
-        <nav className="grid gap-2 border-t border-white/10 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4" aria-label="Account tools">
+        <nav className="grid gap-3 border-t border-white/10 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4" aria-label="Account tools">
           {[
             ["Cart", "/cart", "Review packages and players", "cart"],
-            ["Start a top-up", "/#games", "Choose a game and market", "game"],
+            ["Start a top-up", "/#games", "Choose a game and market", "games"],
             ["Track an order", "/orders/lookup", "Open a receipt or status", "track"],
             ["Get support", "/support", "Chat or create a request", "support"],
           ].map(([label, href, note, icon]) => (
             <Link
               key={label}
               href={href}
-              className="group rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:-translate-y-0.5 hover:border-violet-400/30 hover:bg-violet-400/[0.08]"
+              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:-translate-y-0.5 hover:border-violet-400/40 hover:bg-violet-400/[0.08]"
             >
-              <span className="grid h-9 w-9 place-items-center rounded-xl border border-violet-300/20 bg-violet-400/10 text-violet-200 transition group-hover:bg-violet-400/20">
+              <span className="grid h-11 w-11 place-items-center rounded-2xl border border-violet-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(167,139,250,0.34),rgba(124,58,237,0.12))] text-violet-100 shadow-inner shadow-violet-300/10 transition group-hover:bg-violet-400/20">
                 <StorefrontIcon name={icon as Parameters<typeof StorefrontIcon>[0]["name"]} className="h-4 w-4" />
               </span>
-              <strong className="mt-3 block text-sm text-white">{label}</strong>
+              <strong className="mt-4 block text-sm font-bold text-white">{label}</strong>
               <span className="mt-1 block text-xs leading-5 text-slate-500">{note}</span>
             </Link>
           ))}
         </nav>
+      </section>
+
+      <section className="overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.12),transparent_42%),#0f0f19] p-5 shadow-2xl shadow-black/20 sm:p-6" aria-labelledby="topup-hub-title">
+        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">Recharza game hub</p>
+            <h2 id="topup-hub-title" className="mt-2 text-2xl font-black text-white">Start a top-up</h2>
+            <p className="mt-1 max-w-xl text-sm leading-6 text-slate-400">Choose a game and go straight to its verified package catalogue.</p>
+          </div>
+          <Link href="/#games" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-violet-500 px-4 py-3 text-xs font-black text-white shadow-lg shadow-violet-950/30 transition hover:bg-violet-400">
+            Browse all games <StorefrontIcon name="arrow" className="h-4 w-4" />
+          </Link>
+        </div>
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {featuredGames.map((game) => (
+            <Link key={game.slug} href={game.href ?? "/#games"} className="group overflow-hidden rounded-2xl border border-white/10 bg-black/25 shadow-[0_12px_30px_rgba(0,0,0,0.16)] transition hover:-translate-y-1 hover:border-violet-300/50 hover:shadow-[0_18px_36px_rgba(76,29,149,0.2)]">
+              <StorefrontArtwork artworkKey={game.artworkKey} sources={artworkSourcesForGame(game.slug)} alt={game.artworkAlt} fallbackLabel={game.title.slice(0, 2)} className="aspect-[1.15] w-full object-cover transition duration-500 group-hover:scale-105" fallbackClassName="aspect-[1.15] w-full" objectPosition={game.artworkPosition} />
+              <div className="p-3">
+                <p className="truncate text-xs font-black text-white">{game.title}</p>
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">Top up</p>
+              </div>
+            </Link>
+          ))}
+        </div>
       </section>
 
       <section className="grid gap-3 sm:grid-cols-3" aria-label="Account summary">
@@ -326,9 +363,13 @@ export function CustomerDashboard() {
                     <p className="break-all text-xs font-black uppercase tracking-[0.12em] text-violet-300">
                       {order.id}
                     </p>
-                    <h3 className="mt-2 text-xl font-black text-white">
-                      {order.package.name}
-                    </h3>
+                    <div className="mt-3 flex items-center gap-3">
+                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-12 w-12 shrink-0 rounded-xl object-cover" fallbackClassName="h-12 w-12 shrink-0 rounded-xl" />
+                      <div className="min-w-0">
+                        <h3 className="truncate text-xl font-black text-white">{order.package.name}</h3>
+                        <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{gameTitle(order.gameSlug)}</p>
+                      </div>
+                    </div>
                     <p className="mt-1 text-sm text-slate-400">
                       {order.market
                         ? `${order.market.flag} ${order.market.label} · `
@@ -390,9 +431,12 @@ export function CustomerDashboard() {
                 className="rounded-xl border border-white/10 bg-black/20 p-4"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <strong className="truncate text-sm text-white">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-11 w-11 shrink-0 rounded-xl object-cover" fallbackClassName="h-11 w-11 shrink-0 rounded-xl" />
+                    <strong className="truncate text-sm text-white">
                     {order.player.nickname || "Mobile Legends player"}
-                  </strong>
+                    </strong>
+                  </div>
                   <span className="shrink-0 text-sm">
                     {order.market?.flag ?? "🌐"}
                   </span>
