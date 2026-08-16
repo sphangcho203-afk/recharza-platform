@@ -16,7 +16,7 @@ const links = [
   { href: "/account", label: "My account", icon: "account" as const },
 ];
 
-const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "recherza.store@gmail.com";
+const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "recherzatopup@gmail.com";
 const telegramBotUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || "recherzaSupportbot";
 const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_SUPPORT_NUMBER?.replace(/\D/g, "") || "";
 const instagramUsername = process.env.NEXT_PUBLIC_INSTAGRAM_USERNAME || "recharza";
@@ -52,15 +52,15 @@ const supportChannels = [
     label: "Gmail support",
     description: `Email ${supportEmail} for account or order help.`,
     icon: "email",
-    href: `mailto:${supportEmail}`,
-    external: false,
+    href: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(supportEmail)}&su=${encodeURIComponent("Recharza support request")}`,
+    external: true,
   },
   {
     key: "instagram",
     label: "Instagram support",
     description: `Follow @${instagramUsername} for updates and announcements.`,
     icon: "instagram",
-    href: `https://instagram.com/${instagramUsername}`,
+    href: `https://www.instagram.com/${encodeURIComponent(instagramUsername)}/`,
     external: true,
   },
 ] as const;
@@ -176,7 +176,7 @@ export function MobileNavMenu() {
                 const isDisabled = "disabled" in channel && channel.disabled;
                 const className = `flex min-h-[4.5rem] items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.035] px-3 py-2 text-left transition hover:border-cyan-300/25 hover:bg-cyan-300/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${isDisabled ? "cursor-not-allowed opacity-55" : ""}`;
                 if (isDisabled) return <div key={channel.key} aria-disabled="true" className={className}>{content}</div>;
-                return <a key={channel.key} href={channel.href} onClick={closeMenu} className={className}>{content}</a>;
+                return <a key={channel.key} href={channel.href} target={channel.external ? "_blank" : undefined} rel={channel.external ? "noopener noreferrer" : undefined} onClick={() => { setSupportOpen(false); setOpen(false); }} className={className}>{content}</a>;
               })}
             </nav>
           </div>

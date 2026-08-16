@@ -1,81 +1,54 @@
 import type { SVGProps } from "react";
 
-export type SupportChannelIconName =
-  | "telegram"
-  | "whatsapp"
-  | "instagram"
-  | "email";
+export type SupportChannelIconName = "telegram" | "whatsapp" | "instagram" | "email";
 
 export function SupportChannelIcon({
   name,
   className = "h-5 w-5",
   ...props
 }: SVGProps<SVGSVGElement> & { name: SupportChannelIconName }) {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      className={className}
-      fill="none"
-      {...props}
-    >
-      {name === "telegram" ? (
-        <path
-          fill="currentColor"
-          d="M21.6 3.45 18.5 20.1c-.23 1.18-.84 1.47-1.7.92l-4.73-3.49-2.28 2.2c-.25.25-.46.46-.95.46l.34-4.82 8.77-7.92c.38-.34-.08-.53-.59-.19L6.52 14.09l-4.67-1.46c-1.02-.32-1.04-1.02.21-1.51L20.32 4.1c.85-.31 1.59.2 1.28 1.35Z"
-        />
-      ) : null}
+  const gradientId = `support-${name}-gradient`;
 
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className={className} {...props}>
+      {name === "telegram" ? (
+        <>
+          <circle cx="12" cy="12" r="11" fill="#229ED9" />
+          <path fill="#fff" d="m5.3 11.7 12.4-4.8c.57-.2 1.06.14.88.98l-2.1 9.84c-.15.7-.56.87-1.14.55l-3.28-2.42-1.58 1.52c-.17.17-.31.31-.63.31l.23-3.32 6.08-5.46c.26-.23-.06-.36-.4-.13l-7.5 4.72-3.23-1.01c-.7-.22-.7-.69.27-1.08Z" />
+        </>
+      ) : null}
       {name === "whatsapp" ? (
         <>
-          <path
-            fill="currentColor"
-            d="M12.04 2a9.77 9.77 0 0 0-8.43 14.7L2.2 22l5.42-1.38A9.83 9.83 0 1 0 12.04 2Zm0 17.88a8 8 0 0 1-4.08-1.12l-.29-.17-3.22.82.86-3.14-.19-.32A8.08 8.08 0 1 1 12.04 19.88Z"
-          />
-          <path
-            fill="currentColor"
-            d="M16.46 13.98c-.24-.12-1.44-.71-1.67-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.78.95-.14.16-.28.18-.52.06-.24-.12-1.02-.38-1.94-1.2a7.28 7.28 0 0 1-1.34-1.67c-.14-.24-.02-.37.1-.49.11-.1.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.55-1.33-.76-1.82-.2-.48-.4-.41-.55-.42h-.47c-.16 0-.42.06-.65.3-.22.24-.85.83-.85 2.03 0 1.2.87 2.36.99 2.52.12.16 1.72 2.62 4.16 3.68.58.25 1.04.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"
-          />
+          <circle cx="12" cy="12" r="11" fill="#25D366" />
+          <path fill="#fff" d="M7.27 17.28 8 14.02a5.9 5.9 0 1 1 2 1.9l-2.73 1.36Z" />
+          <path fill="#25D366" d="M10.08 9.2c.16-.2.3-.2.48-.2h.4c.15 0 .3.06.36.24l.55 1.34c.07.18.04.32-.08.47l-.4.47c-.1.12-.1.23-.02.37.23.42.83 1.27 1.86 1.75.16.08.28.07.38-.05l.5-.6c.1-.13.23-.15.38-.1l1.25.58c.18.08.24.2.2.4-.1.48-.54 1.08-1.04 1.2-.45.1-1.02.04-1.63-.2-.57-.22-1.38-.7-2.23-1.53-.7-.7-1.2-1.46-1.44-2.04-.25-.6-.25-1.25.03-1.63Z" />
         </>
       ) : null}
-
       {name === "instagram" ? (
         <>
-          <rect
-            x="3"
-            y="3"
-            width="18"
-            height="18"
-            rx="5"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
-          <circle cx="17.4" cy="6.8" r="1.15" fill="currentColor" />
+          <defs>
+            <linearGradient id={gradientId} x1="0" y1="1" x2="1" y2="0">
+              <stop offset="0" stopColor="#F58529" />
+              <stop offset="0.45" stopColor="#DD2A7B" />
+              <stop offset="1" stopColor="#8134AF" />
+            </linearGradient>
+          </defs>
+          <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke={`url(#${gradientId})`} strokeWidth="2.1" />
+          <circle cx="12" cy="12" r="4.1" fill="none" stroke={`url(#${gradientId})`} strokeWidth="2" />
+          <circle cx="17.35" cy="6.75" r="1.2" fill="#E1306C" />
         </>
       ) : null}
-
       {name === "email" ? (
         <>
-          <rect
-            x="2.5"
-            y="4.5"
-            width="19"
-            height="15"
-            rx="2.5"
-            stroke="currentColor"
-            strokeWidth="1.8"
-          />
-          <path
-            d="m4 7 8 6 8-6"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path d="M3.5 18 9 12.9M20.5 18 15 12.9" stroke="currentColor" strokeWidth="1.4" />
+          <rect x="2.5" y="4.5" width="19" height="15" rx="2.5" fill="#fff" />
+          <path d="m3.5 6 8.5 6.4L20.5 6" fill="none" stroke="#EA4335" strokeWidth="1.8" />
+          <path d="m3.5 18 6-5.2M20.5 18l-6-5.2" fill="none" stroke="#4285F4" strokeWidth="1.6" />
+          <path d="M3.5 6v12" stroke="#34A853" strokeWidth="1.6" />
+          <path d="M20.5 6v12" stroke="#FBBC04" strokeWidth="1.6" />
         </>
       ) : null}
     </svg>
   );
 }
+
+export type { SVGProps };

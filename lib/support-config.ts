@@ -78,7 +78,7 @@ export function getPublicSupportChannels(): PublicSupportChannel[] {
       id: "email",
       label: "Gmail",
       detail: email,
-      href: `mailto:${email}?subject=${encodeURIComponent("Recharza support request")}`,
+      href: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent("Recharza support request")}`,
       available: true,
     },
   ];
