@@ -38,7 +38,6 @@ const indicativePackageRows: IndicativePackageRow[] = [
   ["mlbb-56-indicative", "51 + 5 Diamonds", 10_000, "indicative-51-plus-5"],
   ["mlbb-70-indicative", "70 Diamonds", 15_000, "indicative-70"],
   ["mlbb-86-indicative", "78 + 8 Diamonds", 14_000, "indicative-78-plus-8"],
-  ["mlbb-weekly-elite-indicative", "Weekly Elite Pack", 10_000, "indicative-weekly-elite"],
   ["mlbb-weekly-pass-indicative", "Weekly Diamond Pass", 17_500, "indicative-weekly-pass", true],
   ["mlbb-112-indicative", "102 + 10 Diamonds", 19_000, "indicative-102-plus-10"],
   ["mlbb-140-indicative", "140 Diamonds", 28_000, "indicative-140"],

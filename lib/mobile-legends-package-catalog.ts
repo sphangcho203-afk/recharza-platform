@@ -10,7 +10,6 @@ const preferredPackagePatterns = [
   /70 diamonds/i,
   /78.*8/i,
   /86 diamonds/i,
-  /weekly elite pack/i,
   /weekly diamond pass|weekly pass|^weekly$/i,
   /102\s*\+\s*10 diamonds/i,
   /140 diamonds/i,

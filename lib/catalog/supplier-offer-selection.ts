@@ -14,6 +14,12 @@ function normalizeName(value: string) {
     .replace(/\s+/g, " ");
 }
 
+export function isSuppressedSupplierOffer(input: { name: string; offerId?: string | null }) {
+  const normalizedName = normalizeName(input.name);
+  const normalizedOfferId = normalizeName(input.offerId ?? "");
+  return normalizedName === "weekly elite pack" || normalizedOfferId === "weekly elite pack";
+}
+
 /**
  * Returns a stable semantic family only for recurring membership products.
  * Diamond/UC/VP quantities remain separate because they represent different

@@ -4,7 +4,10 @@ import {
   isCuratedFazerCardsProductAvailableForMobileLegendsMarket,
 } from "@/lib/catalog/curated-fazercards";
 import { resolveProductMedia } from "@/lib/catalog/product-media";
-import { selectBestSupplierOffers } from "@/lib/catalog/supplier-offer-selection";
+import {
+  isSuppressedSupplierOffer,
+  selectBestSupplierOffers,
+} from "@/lib/catalog/supplier-offer-selection";
 import {
   fallbackMobileLegendsPackages,
   getFallbackMobileLegendsPackage,
@@ -154,9 +157,13 @@ export async function getMobileLegendsPackages(
           )
         : products;
 
-      if (marketProducts.length > 0) {
+      const visibleProducts = marketProducts.filter((product) =>
+        !isSuppressedSupplierOffer({ name: product.name, offerId: product.offerId }),
+      );
+
+      if (visibleProducts.length > 0) {
         return prioritizeMobileLegendsPackages(
-          selectBestSupplierOffers(marketProducts).map((product) =>
+          selectBestSupplierOffers(visibleProducts).map((product) =>
             mapSupplierProduct(product),
           ),
           targetMobileLegendsPackageCount,
@@ -187,6 +194,13 @@ export async function getMobileLegendsPackageForCheckout(packageId: string) {
       },
       select: supplierProductSelect,
     });
+
+    if (
+      product &&
+      isSuppressedSupplierOffer({ name: product.name, offerId: product.offerId })
+    ) {
+      return null;
+    }
 
     if (product) return mapSupplierProduct(product);
     return getFallbackMobileLegendsPackage(normalizedPackageId);

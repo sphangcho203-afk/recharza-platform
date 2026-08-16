@@ -1,7 +1,10 @@
 import "server-only";
 
 import { resolveProductMedia, type ProductMedia } from "@/lib/catalog/product-media";
-import { selectBestSupplierOffers } from "@/lib/catalog/supplier-offer-selection";
+import {
+  isSuppressedSupplierOffer,
+  selectBestSupplierOffers,
+} from "@/lib/catalog/supplier-offer-selection";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
@@ -142,7 +145,11 @@ export async function getPublishedGamePackages(gameSlug: SupplierCheckoutGameSlu
       select: supplierProductSelect,
     });
 
-    return selectBestSupplierOffers(products)
+    return selectBestSupplierOffers(
+      products.filter((product) =>
+        !isSuppressedSupplierOffer({ name: product.name, offerId: product.offerId }),
+      ),
+    )
       .map((product) => mapSupplierProduct(product))
       .filter((product): product is StorefrontGamePackage => Boolean(product));
   } catch (error) {
@@ -167,6 +174,13 @@ export async function getPublishedGamePackageForCheckout(gameSlug: SupplierCheck
       },
       select: supplierProductSelect,
     });
+
+    if (
+      product &&
+      isSuppressedSupplierOffer({ name: product.name, offerId: product.offerId })
+    ) {
+      return null;
+    }
 
     return product ? mapSupplierProduct(product) : null;
   } catch (error) {

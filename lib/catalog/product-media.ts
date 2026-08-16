@@ -34,7 +34,6 @@ const mobileLegendsMedia = {
   diamond: "/assets/packs/mobile-legends/diamond.webp",
   tickets: "/assets/packs/mobile-legends/tickets-stack.webp",
   weeklyPass: "/assets/packs/mobile-legends/weekly-pass-official.webp",
-  weeklyElitePack: "/assets/packs/mobile-legends/weekly-elite-pack-official.webp",
   monthlyElitePack: "/assets/packs/mobile-legends/monthly-elite-pack-official.webp",
   twilightPass: "/assets/packs/mobile-legends/twilight-pass-official.webp",
 } as const;
@@ -188,9 +187,6 @@ function getMobileLegendsCatalogMedia(productName: string) {
     return [mobileLegendsMedia.monthlyElitePack, mobileLegendsMedia.gameIcon];
   }
 
-  if (normalized.includes("weekly elite pack")) {
-    return [mobileLegendsMedia.weeklyElitePack, mobileLegendsMedia.gameIcon];
-  }
 
   if (normalized.includes("ticket")) {
     return [mobileLegendsMedia.tickets, mobileLegendsMedia.gameIcon];
