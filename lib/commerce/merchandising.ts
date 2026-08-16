@@ -20,7 +20,7 @@ export function splitBonusQuantity(name: string): { base: string; bonus: string 
   const match = name.match(/^(.*?\d+)\s*\+\s*(\d+)(\s+.*)?$/);
   if (!match) return { base: name, bonus: null };
   return {
-    base: `${match[1]} +`,
-    bonus: `${match[2]}${match[3] ?? ""}`,
+    base: `${match[1].trim()}`,
+    bonus: `+ ${match[2]}${match[3] ?? ""}`,
   };
 }

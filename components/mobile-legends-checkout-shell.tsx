@@ -17,6 +17,7 @@ import {
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
 import { formatDisplayMinor } from "@/lib/commerce/display-currency";
+import { getMerchandisingBadge, splitBonusQuantity } from "@/lib/commerce/merchandising";
 import { toBillingFormState } from "@/lib/commerce/saved-address-form";
 import type { SavedAddressView } from "@/lib/commerce/saved-addresses";
 import type { CartSnapshot } from "@/lib/cart-snapshot";
@@ -420,10 +421,17 @@ export function MobileLegendsCheckoutShell({
           <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4">
             {visiblePackages.map((item) => {
               const selected = item.id === selectedPackage.id;
+              const badge = getMerchandisingBadge(item);
+              const quantity = splitBonusQuantity(item.name);
+              const badgeClass = badge?.tone === "rose"
+                ? "border-rose-300/30 bg-rose-400/[0.16] text-rose-100 shadow-[0_8px_24px_rgba(244,63,94,0.18)]"
+                : badge?.tone === "emerald"
+                  ? "border-emerald-300/30 bg-emerald-400/[0.14] text-emerald-100 shadow-[0_8px_24px_rgba(16,185,129,0.16)]"
+                  : "border-violet-300/30 bg-violet-400/[0.16] text-violet-100 shadow-[0_8px_24px_rgba(139,92,246,0.18)]";
               return (
                 <div
                   key={item.id}
-                  className={`group overflow-hidden rounded-xl border text-left transition ${
+                    className={`group overflow-hidden rounded-[1.1rem] border text-left transition duration-200 ${
                     selected
                       ? "border-violet-400/55 bg-violet-500/[0.08] shadow-[0_0_0_1px_rgba(139,92,246,0.15)]"
                       : "border-white/[0.08] bg-[#0d0f16] hover:border-white/[0.17]"
@@ -439,6 +447,16 @@ export function MobileLegendsCheckoutShell({
                     className="block w-full text-left"
                   >
                     <span className="relative block aspect-[16/9] overflow-hidden bg-[#141821]">
+                      <span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-slate-950/75 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-slate-300 shadow-[0_8px_24px_rgba(0,0,0,0.22)] backdrop-blur-md">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(110,231,183,0.85)]" aria-hidden="true" />
+                        Official item
+                      </span>
+                      {badge ? (
+                        <span className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.13em] backdrop-blur-md ${badgeClass}`}>
+                          <span aria-hidden="true">{badge.tone === "rose" ? "✦" : badge.tone === "emerald" ? "◆" : "↗"}</span>
+                          {badge.label}
+                        </span>
+                      ) : null}
                       <StorefrontArtwork
                         sources={item.media.sources}
                         alt={item.media.alt}
@@ -449,13 +467,13 @@ export function MobileLegendsCheckoutShell({
                         fallbackClassName="absolute inset-0 h-full w-full"
                       />
                     </span>
-                    <span className="block p-3">
-                      <strong className="line-clamp-2 min-h-10 text-xs leading-5 text-white sm:text-[13px]">{item.name}</strong>
-                      <span className="mt-1.5 block text-base font-black text-violet-300">{formatPresentment(item.amountInPaise)}</span>
-                      <span className="mt-1 block text-[10px] text-slate-600">{item.source === "fazercards-live" ? "Live offer" : "Preview offer"}</span>
+                    <span className="block p-3 sm:p-4">
+                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-[-0.01em] text-white sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-black text-emerald-300 drop-shadow-[0_0_12px_rgba(110,231,183,0.24)]">{quantity.bonus}</span></> : item.name}</strong>
+                      <span className="mt-3 block text-lg font-black tracking-[-0.025em] text-violet-200">{formatPresentment(item.amountInPaise)}</span>
+                      <span className="mt-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-slate-600">{item.source === "fazercards-live" ? "Live delivery" : "Ready to deliver"}</span>
                     </span>
                   </button>
-                  <div className="px-3 pb-3">
+                  <div className="px-3 pb-3 sm:px-4 sm:pb-4">
                     <AddToCartButton
                       gameSlug="mobile-legends"
                       marketCode={market.code}

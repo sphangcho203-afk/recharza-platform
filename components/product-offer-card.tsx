@@ -22,10 +22,10 @@ export function ProductOfferCard({
   const badge = getMerchandisingBadge(item);
   const quantity = splitBonusQuantity(item.name);
   const badgeClass = badge?.tone === "rose"
-    ? "border-rose-300/25 bg-rose-400/20 text-rose-100"
+    ? "border-rose-300/30 bg-rose-400/[0.16] text-rose-100 shadow-[0_8px_24px_rgba(244,63,94,0.18)]"
     : badge?.tone === "emerald"
-      ? "border-emerald-300/25 bg-emerald-400/20 text-emerald-100"
-      : "border-violet-300/25 bg-violet-400/20 text-violet-100";
+      ? "border-emerald-300/30 bg-emerald-400/[0.14] text-emerald-100 shadow-[0_8px_24px_rgba(16,185,129,0.16)]"
+      : "border-violet-300/30 bg-violet-400/[0.16] text-violet-100 shadow-[0_8px_24px_rgba(139,92,246,0.18)]";
 
   return (
     <button
@@ -49,19 +49,21 @@ export function ProductOfferCard({
           fallbackClassName="h-full w-full"
         />
         <span className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#0d0d16] to-transparent" />
-        <span className="absolute left-2.5 top-2.5 rounded-full border border-white/15 bg-black/70 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/85 backdrop-blur-md">
-          {item.media.source === "supplier" ? "Supplier media" : "Product media"}
+        <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-slate-950/75 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-slate-300 shadow-[0_8px_24px_rgba(0,0,0,0.22)] backdrop-blur-md">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(110,231,183,0.85)]" aria-hidden="true" />
+          {item.media.source === "supplier" ? "Live offer" : "Official item"}
         </span>
         {badge ? (
-          <span className={`absolute right-2.5 top-2.5 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] backdrop-blur-md ${badgeClass}`}>
+          <span className={`absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.13em] backdrop-blur-md ${badgeClass}`}>
+            <span aria-hidden="true">{badge.tone === "rose" ? "✦" : badge.tone === "emerald" ? "◆" : "↗"}</span>
             {badge.label}
           </span>
         ) : null}
       </span>
 
       <span className="relative flex min-h-[9.5rem] flex-col p-4">
-        <span className="line-clamp-2 min-h-10 text-sm font-black leading-5 text-white">
-          {quantity.bonus ? <>{quantity.base} <span className="text-emerald-300">{quantity.bonus}</span></> : item.name}
+        <span className="line-clamp-2 min-h-10 text-[15px] font-bold leading-5 tracking-[-0.015em] text-white">
+          {quantity.bonus ? <><span>{quantity.base}</span> <span className="font-black text-emerald-300 drop-shadow-[0_0_12px_rgba(110,231,183,0.24)]">{quantity.bonus}</span></> : item.name}
         </span>
         <span className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-500">
           {item.deliveryLabel}
