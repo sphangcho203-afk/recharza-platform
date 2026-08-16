@@ -8,9 +8,23 @@ import { convertInrMinorToDisplayMinor, formatDisplayMinor, type DisplayRateMap,
 const STORAGE_KEY = "recharza.display-currency";
 const CURRENCY_EVENT = "recharza:currency-change";
 
-const fallbackRates: DisplayRateMap = Object.fromEntries(
-  supportedCurrencies.map((item) => [item.code, item.code === "INR" ? ONE_INR_MICROS : 0]),
-) as DisplayRateMap;
+const fallbackRates: DisplayRateMap = {
+  INR: ONE_INR_MICROS,
+  USD: 10480,
+  EUR: 9070,
+  GBP: 7760,
+  PHP: 643190,
+  IDR: 186880000,
+  BRL: 54350,
+  CAD: 14580,
+  MXN: 178360,
+  AED: 38490,
+  SAR: 39300,
+  TRY: 501230,
+  SGD: 13410,
+  MYR: 42820,
+  THB: 30480,
+};
 
 function readCurrency() {
   if (typeof window === "undefined") return "INR" as SupportedCurrencyCode;
