@@ -579,14 +579,14 @@ export function SupplierGameCheckoutShell({
                     aria-pressed={selected}
                     className="block w-full text-left"
                   >
-                    <span className="relative block aspect-square overflow-hidden bg-[#141821]">
+                    <span className="relative block aspect-[16/9] overflow-hidden bg-[#141821]">
                       <ResilientImage
                         sources={item.media.sources}
                         alt={item.media.alt}
                         fallbackLabel={item.name.slice(0, 2).toUpperCase()}
                         fill
                         sizes="(max-width: 640px) 45vw, 190px"
-                        className="object-contain p-3 transition duration-300 group-hover:scale-[1.035]"
+                        className="object-contain p-4 sm:p-5 transition duration-300 group-hover:scale-[1.035]"
                         fallbackClassName="absolute inset-0 h-full w-full"
                       />
                     </span>

@@ -450,12 +450,12 @@ export function MobileLegendsCheckoutShell({
                     aria-pressed={selected}
                     className="block w-full text-left"
                   >
-                    <span className="relative block aspect-[4/3] overflow-hidden bg-[#141821]">
+                    <span className="relative block aspect-[16/9] overflow-hidden bg-[#141821]">
                       <StorefrontArtwork
                         sources={item.media.sources}
                         alt={item.media.alt}
                         fallbackLabel={item.name.slice(0, 2).toUpperCase()}
-                        className="h-full w-full"
+                        className="h-full w-full p-4 sm:p-5"
                         objectFit="contain"
                         sizes="(max-width: 640px) 45vw, 190px"
                         fallbackClassName="absolute inset-0 h-full w-full"
