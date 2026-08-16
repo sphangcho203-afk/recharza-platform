@@ -70,7 +70,7 @@ export default async function Home() {
         </div>
       ) : null}
 
-      <section className="storefront-hero-shell relative overflow-hidden border-b border-white/[0.07] px-4 pb-10 pt-8 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16">
+      <section className="storefront-hero-shell relative overflow-hidden border-b border-white/[0.07] px-4 pb-8 pt-7 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16">
         <div className="storefront-hero-glow storefront-hero-glow-left" aria-hidden="true" />
         <div className="storefront-hero-glow storefront-hero-glow-right" aria-hidden="true" />
         <div className="relative mx-auto grid max-w-[1240px] items-end gap-10 lg:grid-cols-[minmax(0,1fr)_23rem] lg:gap-16">
@@ -82,10 +82,10 @@ export default async function Home() {
               <Link href="#games" className="storefront-primary-cta"><StorefrontIcon name="games" className="h-4 w-4" /> Browse games <StorefrontIcon name="arrow" className="h-4 w-4" /></Link>
               <Link href="/orders/lookup" className="storefront-secondary-cta"><StorefrontIcon name="track" className="h-4 w-4" /> Track an order</Link>
             </div>
-            <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs font-semibold text-slate-400">
+            <div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-3 text-xs font-semibold text-slate-400 sm:flex sm:flex-wrap sm:items-center sm:gap-x-5 sm:gap-y-3">
               <span className="inline-flex items-center gap-2"><StorefrontIcon name="shield" className="h-4 w-4 text-emerald-300" /> Identity check before pay</span>
               <span className="inline-flex items-center gap-2"><StorefrontIcon name="receipt" className="h-4 w-4 text-cyan-300" /> Regional pricing</span>
-              <span className="inline-flex items-center gap-2"><StorefrontIcon name="support" className="h-4 w-4 text-violet-300" /> Human support</span>
+              <span className="col-span-2 inline-flex items-center gap-2 sm:col-span-1"><StorefrontIcon name="support" className="h-4 w-4 text-violet-300" /> Human support</span>
             </div>
           </div>
 
@@ -101,7 +101,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-white/[0.07] px-4 py-5 sm:px-6 lg:px-8">
+      <section className="border-b border-white/[0.07] px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
         <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
           <div className="storefront-trust-cell"><span className="storefront-trust-number">8+</span><span><b>Regional markets</b><small>MLBB paths built for the account region</small></span></div>
           <div className="storefront-trust-cell"><span className="storefront-trust-number">{visibleGames.length}</span><span><b>Game paths</b><small>Published titles and regional destinations</small></span></div>
