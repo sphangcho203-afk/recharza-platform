@@ -273,6 +273,7 @@ model Order {
   id                      String      @id @default(cuid())
   publicId                String      @unique
   idempotencyKey          String      @unique
+  checkoutBatchId         String?
   accessTokenHash         String
   status                  OrderStatus @default(CREATED)
   gameSlug                String
@@ -316,6 +317,7 @@ model Order {
   updatedAt               DateTime    @updatedAt
 
   @@index([customerId, createdAt])
+  @@index([checkoutBatchId, createdAt])
   @@index([playerId, zoneId, createdAt])
   @@index([status, createdAt])
   @@index([supplierProductId])

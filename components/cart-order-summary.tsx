@@ -4,10 +4,7 @@ import Link from "next/link";
 
 import { DisplayPrice } from "@/components/display-price";
 import { StorefrontIcon } from "@/components/storefront-icon";
-import {
-  checkoutHref,
-  type CartSnapshot,
-} from "@/lib/cart-snapshot";
+import type { CartSnapshot } from "@/lib/cart-snapshot";
 
 export function CartOrderSummary({
   cart,
@@ -16,8 +13,6 @@ export function CartOrderSummary({
   cart: CartSnapshot;
   busy: boolean;
 }) {
-  const firstItem = cart.items[0];
-
   return (
     <aside
       aria-label="Order summary"
@@ -52,26 +47,20 @@ export function CartOrderSummary({
           are applied at cart time.
         </p>
 
-        {firstItem ? (
-          <Link
-            href={checkoutHref(firstItem)}
-            aria-disabled={busy}
-            className={`mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-violet-500 px-5 text-sm font-black text-white shadow-[0_12px_30px_rgba(124,58,237,0.24)] transition hover:-translate-y-0.5 hover:bg-violet-400 ${
-              busy ? "pointer-events-none opacity-45" : ""
-            }`}
-          >
-            <StorefrontIcon name="shield" className="h-4 w-4" />
-            {cart.items.length > 1 ? "Checkout first item" : "Continue to checkout"}
-          </Link>
-        ) : null}
+        <Link
+          href="/cart/checkout"
+          aria-disabled={busy}
+          className={`mt-5 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-violet-500 px-5 text-sm font-black text-white shadow-[0_12px_30px_rgba(124,58,237,0.24)] transition hover:-translate-y-0.5 hover:bg-violet-400 ${
+            busy ? "pointer-events-none opacity-45" : ""
+          }`}
+        >
+          <StorefrontIcon name="shield" className="h-4 w-4" />
+          Checkout all items
+        </Link>
 
-        {cart.items.length > 1 ? (
-          <div className="mt-3 rounded-xl border border-cyan-300/15 bg-cyan-300/[0.05] px-3 py-2.5 text-[11px] leading-5 text-cyan-100/70">
-            <strong className="text-cyan-100">One secure checkout at a time.</strong> We’ll keep the other items in your cart while you finish this one.
-          </div>
-        ) : (
-          <p className="mt-3 text-center text-[11px] leading-5 text-slate-600">Your total is confirmed before payment.</p>
-        )}
+        <p className="mt-3 text-center text-[11px] leading-5 text-slate-600">
+          We’ll verify every game account, then collect billing and payment once.
+        </p>
 
         <Link
           href="/#games"

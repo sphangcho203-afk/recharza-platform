@@ -187,8 +187,12 @@ export async function POST(request: Request) {
       return Response.json({ ok: true, reconciled: false });
     }
 
+    const batchOrders = order.checkoutBatchId
+      ? await prisma.order.findMany({ where: { checkoutBatchId: order.checkoutBatchId }, select: { id: true, amountInPaise: true, status: true } })
+      : [{ id: order.id, amountInPaise: order.amountInPaise, status: order.status }];
+    const batchAmountInPaise = batchOrders.reduce((total, item) => total + item.amountInPaise, 0);
     const currencyMatches = event.currency?.toUpperCase() === order.currency.toUpperCase();
-    const amountMatches = event.amountInPaise === order.amountInPaise;
+    const amountMatches = event.amountInPaise === batchAmountInPaise;
 
     if (!currencyMatches || !amountMatches) {
       await prisma.paymentWebhook.update({
@@ -206,6 +210,13 @@ export async function POST(request: Request) {
     const targetStatus = resolveTargetStatus(event.eventType, order.status);
 
     await prisma.$transaction([
+      prisma.order.updateMany({
+        where: order.checkoutBatchId ? { checkoutBatchId: order.checkoutBatchId } : { id: order.id },
+        data: {
+          status: targetStatus,
+          paymentProvider: "razorpay",
+        },
+      }),
       prisma.order.update({
         where: { id: order.id },
         data: {
@@ -280,13 +291,14 @@ export async function POST(request: Request) {
       }
     }
 
-    let fulfilment = null;
+    let fulfilment: unknown = null;
     if (targetStatus === "PAID") {
       try {
-        fulfilment = await ensureOrderFulfilment({
-          orderId: order.id,
-          source: "payment-webhook",
-        });
+        const fulfilmentResults = [];
+        for (const batchOrder of batchOrders) {
+          fulfilmentResults.push(await ensureOrderFulfilment({ orderId: batchOrder.id, source: "payment-webhook" }));
+        }
+        fulfilment = { ok: fulfilmentResults.every((result) => result.ok), items: fulfilmentResults };
       } catch (error) {
         console.error("Post-payment fulfilment orchestration failed", error);
         fulfilment = { ok: false, state: "orchestration-error" };

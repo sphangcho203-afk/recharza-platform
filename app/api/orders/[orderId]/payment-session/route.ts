@@ -111,6 +111,14 @@ export async function POST(
       );
     }
 
+    const batchOrders = order.checkoutBatchId
+      ? await prisma.order.findMany({ where: { checkoutBatchId: order.checkoutBatchId }, select: { amountInPaise: true, packageName: true } })
+      : [{ amountInPaise: order.amountInPaise, packageName: order.packageName }];
+    const batchAmountInPaise = batchOrders.reduce((total, item) => total + item.amountInPaise, 0);
+    const batchPackageName = batchOrders.length > 1
+      ? `Recharza cart · ${batchOrders.length} game deliveries`
+      : order.packageName;
+
     if (!verifyOrderAccessToken(accessToken, order.accessTokenHash)) {
       return Response.json(
         { ok: false, message: "The order access token is invalid." },
@@ -131,6 +139,8 @@ export async function POST(
     if (order.paymentProvider === "razorpay-test" && order.paymentSessionId) {
       return Response.json(createSessionResponse({
         ...order,
+        amountInPaise: batchAmountInPaise,
+        packageName: batchPackageName,
         paymentSessionId: order.paymentSessionId,
       }), { headers: rateHeaders });
     }
@@ -188,7 +198,7 @@ export async function POST(
     try {
       const providerOrder = await createRazorpayTestOrder({
         recharzaOrderId: order.publicId,
-        amountInPaise: order.amountInPaise,
+        amountInPaise: batchAmountInPaise,
         currency: "INR",
         customerEmail: order.customer.email,
       });
@@ -217,6 +227,8 @@ export async function POST(
 
       return Response.json(createSessionResponse({
         ...updated,
+        amountInPaise: batchAmountInPaise,
+        packageName: batchPackageName,
         paymentSessionId: providerOrder.id,
       }), { status: 201, headers: rateHeaders });
     } catch (error) {

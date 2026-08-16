@@ -1,13 +1,10 @@
 "use client";
 
-import Link from "next/link";
-
 import { DisplayPrice } from "@/components/display-price";
 import { ResilientImage } from "@/components/resilient-image";
 import { resolveProductMedia } from "@/lib/catalog/product-media";
 import {
   CART_MAX_QUANTITY,
-  checkoutHref,
   type CartItemView,
 } from "@/lib/cart-snapshot";
 import { mobileLegendsMarkets } from "@/lib/mobile-legends-market";
@@ -34,6 +31,13 @@ function itemContextLabel(item: CartItemView) {
 
 export function lineTotalInPaise(item: CartItemView) {
   return item.package.amountInPaise * Math.max(1, item.quantity);
+}
+
+function deliveredAmountLabel(packageName: string) {
+  const match = packageName.match(/([\d,]+(?:\s*\+\s*[\d,]+)?)\s*(diamonds?|uc|vp|points?|crystals?|genesis crystals?)/i);
+  if (match) return `${match[1]} ${match[2]}`;
+  if (/pass|membership|prime|monthly|weekly/i.test(packageName)) return packageName;
+  return "Package delivery";
 }
 
 export type CartItemRowProps = {
@@ -86,6 +90,10 @@ export function CartItemRow({
               <p className="mt-1 text-xs font-bold text-slate-400">
                 <DisplayPrice amountInrMinor={item.package.amountInPaise} />{" "}
                 <span className="font-medium text-slate-600">each</span>
+              </p>
+              <p className="mt-2 text-[11px] font-bold text-emerald-300">
+                Delivers {deliveredAmountLabel(item.package.name)}
+                {item.quantity > 1 ? ` · ${item.quantity} packages` : ""}
               </p>
             </div>
             <button
@@ -177,12 +185,6 @@ export function CartItemRow({
                   <DisplayPrice amountInrMinor={lineTotalInPaise(item)} />
                 </strong>
               </p>
-              <Link
-                href={checkoutHref(item)}
-                className="inline-flex min-h-9 items-center rounded-lg bg-violet-500 px-3.5 text-[11px] font-black text-white shadow-[0_10px_24px_rgba(124,58,237,0.22)] transition hover:bg-violet-400"
-              >
-                Checkout
-              </Link>
             </div>
           </div>
         </div>
