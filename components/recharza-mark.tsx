@@ -7,9 +7,9 @@ type RecharzaMarkProps = {
 export function RecharzaMark({ compact = false }: RecharzaMarkProps) {
   return (
     <span className="recharza-mark-shell inline-flex min-w-0 items-center" aria-label="Recharza">
-      <span className="recharza-mark-line-effects" aria-hidden="true" />
+      <span className="recharza-mark-glow" aria-hidden="true" />
       <Image
-        src="/assets/brand/recharza-line-electric-mark.png"
+        src="/assets/brand/recharza-electric-mark.png"
         alt="Recharza"
         width={64}
         height={64}
