@@ -2,14 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 
+import { RecharzaMark } from "@/components/recharza-mark";
+
 type GoogleOAuthPanelProps = {
   returnTo: string;
   authError?: string;
 };
 
 const errorMessages: Record<string, string> = {
-  google_cancelled: "Google sign-in was cancelled.",
-  google_state: "The Google sign-in request expired or could not be verified. Please try again.",
+  google_cancelled: "Google sign-in was cancelled. You can try again or use email.",
+  google_state: "The Google sign-in request expired. Start again to continue securely.",
   google_response: "Google did not return a valid sign-in response. Please try again.",
   google_account: "Google could not provide a verified email address for this account.",
   google_restricted: "Sign-in is restricted for this Recharza account. Contact support.",
@@ -40,21 +42,33 @@ export function GoogleOAuthPanel({ returnTo, authError }: GoogleOAuthPanelProps)
   if (!visible) return null;
 
   return (
-    <section className="rounded-xl border border-white/[0.08] bg-[#0b0d13] p-4 sm:p-5">
+    <section className="rounded-lg border border-white/[0.1] bg-white/[0.035] p-4 shadow-elevation-1 sm:p-5" aria-labelledby="google-login-heading">
+      <div className="flex items-center gap-3">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/[0.1] bg-[#0b0d13]">
+          <RecharzaMark compact />
+        </span>
+        <div className="min-w-0">
+          <h2 id="google-login-heading" className="text-sm font-semibold text-white">Fast, secure sign-in</h2>
+          <p className="mt-0.5 text-xs leading-5 text-slate-500">Use your Google account to continue to Recharza.</p>
+        </div>
+      </div>
+
       <a
         href={href}
-        className="flex min-h-11 w-full items-center justify-center gap-3 rounded-lg bg-white px-5 text-sm font-black text-slate-950 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-violet-400/50"
+        className="mt-4 flex min-h-12 w-full items-center justify-center gap-3 rounded-lg border border-white/[0.12] bg-white px-5 text-sm font-semibold text-slate-950 transition duration-150 ease-out hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#11131b] active:scale-[0.99]"
       >
-        <span aria-hidden="true" className="grid h-6 w-6 place-items-center rounded-full border border-slate-300 bg-white text-sm font-black text-blue-600">G</span>
+        <span aria-hidden="true" className="grid h-6 w-6 place-items-center rounded-full border border-slate-300 bg-white text-sm font-bold text-blue-600">G</span>
         Continue with Google
       </a>
-      <div className="my-3 flex items-center gap-3" aria-hidden="true">
-        <span className="h-px flex-1 bg-white/[0.08]" />
-        <span className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-600">or use email</span>
-        <span className="h-px flex-1 bg-white/[0.08]" />
+
+      <div className="my-4 flex items-center gap-3" aria-hidden="true">
+        <span className="h-px flex-1 bg-white/[0.1]" />
+        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-600">or use email</span>
+        <span className="h-px flex-1 bg-white/[0.1]" />
       </div>
+
       {message ? (
-        <p aria-live="assertive" className="rounded-lg border border-rose-400/20 bg-rose-400/[0.08] px-3 py-2.5 text-sm text-rose-200">{message}</p>
+        <p role="alert" className="rounded-lg border border-rose-400/25 bg-rose-400/[0.08] px-3 py-2.5 text-sm leading-5 text-rose-100">{message}</p>
       ) : null}
     </section>
   );
