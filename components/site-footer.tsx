@@ -26,6 +26,14 @@ const channelIcons: Record<string, SupportChannelIconName> = {
   email: "email",
 };
 
+const paymentMarks = [
+  { label: "UPI", src: "/assets/payments/upi.svg", className: "h-5 w-auto max-w-[48px]" },
+  { label: "Visa", src: "/assets/payments/visa.svg", className: "h-4 w-auto max-w-[42px]" },
+  { label: "Mastercard", src: "/assets/payments/mastercard.svg", className: "h-5 w-auto max-w-[42px]" },
+  { label: "Razorpay", src: "/assets/payments/razorpay.svg", className: "h-5 w-auto max-w-[70px]" },
+  { label: "Paytm wallet", src: "/assets/payments/paytm.svg", className: "h-5 w-auto max-w-[54px]" },
+];
+
 export async function SiteFooter() {
   const [channels, storefront] = await Promise.all([
     Promise.resolve(getPublicSupportChannels()),
@@ -70,9 +78,11 @@ export async function SiteFooter() {
 
           <div>
             <h2 className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">Payments</h2>
-            <div className="mt-3 flex flex-wrap gap-2 text-[10px] font-black text-slate-500">
-              {["UPI", "Cards", "Razorpay", "Wallets"].map((item) => (
-                <span key={item} className="rounded-md border border-white/[0.08] bg-white/[0.025] px-2.5 py-2">{item}</span>
+            <div className="mt-3 flex flex-wrap items-center gap-2.5" aria-label="Accepted payment methods">
+              {paymentMarks.map((mark) => (
+                <span key={mark.label} title={mark.label} className="grid h-10 min-w-11 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035] px-2.5 shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
+                  <img src={mark.src} alt={mark.label} className={`${mark.className} object-contain brightness-0 invert opacity-80`} />
+                </span>
               ))}
             </div>
             <p className="mt-4 text-xs leading-5 text-slate-600">Payment availability depends on the active checkout configuration and market.</p>
