@@ -107,7 +107,7 @@ function statusClassName(status: string) {
   return "border-violet-400/20 bg-violet-400/10 text-violet-100";
 }
 
-export function CustomerDashboard() {
+export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean }) {
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [loading, setLoading] = useState(true);
@@ -225,8 +225,6 @@ export function CustomerDashboard() {
   }
 
   const internalDestination = customer.role === "admin" ? "/admin" : "/staff";
-  const featuredGames = games.filter((game) => game.available && game.href).slice(0, 6);
-
   return (
     <div className="grid gap-6">
       <section className="overflow-hidden rounded-3xl border border-white/10 bg-[#0f0f19] shadow-2xl shadow-black/25">
@@ -268,7 +266,7 @@ export function CustomerDashboard() {
           {[
             ["Cart", "/cart", "Review packages and players", "cart"],
             ["Start a top-up", "/#games", "Choose a game and market", "games"],
-            ["Track an order", "/orders/lookup", "Open a receipt or status", "track"],
+            ["Orders", "/account/orders", "View your complete order history", "track"],
             ["Get support", "/support", "Chat or create a request", "support"],
           ].map(([label, href, note, icon]) => (
             <Link
@@ -286,52 +284,32 @@ export function CustomerDashboard() {
         </nav>
       </section>
 
-      <section className="overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.12),transparent_42%),#0f0f19] p-5 shadow-2xl shadow-black/20 sm:p-6" aria-labelledby="topup-hub-title">
-        <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">Recharza game hub</p>
-            <h2 id="topup-hub-title" className="mt-2 text-2xl font-black text-white">Start a top-up</h2>
-            <p className="mt-1 max-w-xl text-sm leading-6 text-slate-400">Choose a game and go straight to its verified package catalogue.</p>
-          </div>
-          <Link href="/#games" className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-violet-500 px-4 py-3 text-xs font-black text-white shadow-lg shadow-violet-950/30 transition hover:bg-violet-400">
-            Browse all games <StorefrontIcon name="arrow" className="h-4 w-4" />
-          </Link>
-        </div>
-        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {featuredGames.map((game) => (
-            <Link key={game.slug} href={game.href ?? "/#games"} className="group overflow-hidden rounded-2xl border border-white/10 bg-black/25 shadow-[0_12px_30px_rgba(0,0,0,0.16)] transition hover:-translate-y-1 hover:border-violet-300/50 hover:shadow-[0_18px_36px_rgba(76,29,149,0.2)]">
-              <StorefrontArtwork artworkKey={game.artworkKey} sources={artworkSourcesForGame(game.slug)} alt={game.artworkAlt} fallbackLabel={game.title.slice(0, 2)} className="aspect-[1.15] w-full object-cover transition duration-500 group-hover:scale-105" fallbackClassName="aspect-[1.15] w-full" objectPosition={game.artworkPosition} />
-              <div className="p-3">
-                <p className="truncate text-xs font-black text-white">{game.title}</p>
-                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">Top up</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      {!showOrders ? (
+        <>
+          <section className="grid gap-3 sm:grid-cols-3" aria-label="Account summary">
+            {[
+              ["Total orders", String(orders.length), "All account-owned orders"],
+              ["Active orders", String(activeOrders), "Still moving through the flow"],
+              ["Saved players", String(savedPlayers.length), "Derived from order history"],
+            ].map(([label, value, note]) => (
+              <article key={label} className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
+                <p className="text-xs font-black uppercase tracking-[0.13em] text-slate-500">{label}</p>
+                <p className="mt-3 text-3xl font-black text-white">{value}</p>
+                <p className="mt-2 text-xs text-slate-600">{note}</p>
+              </article>
+            ))}
+          </section>
+          <section className="rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6" aria-labelledby="account-next-step">
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">Account overview</p>
+            <h2 id="account-next-step" className="mt-2 text-2xl font-black text-white">What would you like to do?</h2>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Use the account tools above to review your cart, open your order history, or contact support. Games stay in the storefront where they belong.</p>
+          </section>
+          <SavedAddressesPanel />
+        </>
+      ) : null}
 
-      <section className="grid gap-3 sm:grid-cols-3" aria-label="Account summary">
-        {[
-          ["Total orders", String(orders.length), "All account-owned orders"],
-          ["Active orders", String(activeOrders), "Still moving through the flow"],
-          ["Saved players", String(savedPlayers.length), "Derived from order history"],
-        ].map(([label, value, note]) => (
-          <article
-            key={label}
-            className="rounded-2xl border border-white/10 bg-white/[0.035] p-5"
-          >
-            <p className="text-xs font-black uppercase tracking-[0.13em] text-slate-500">
-              {label}
-            </p>
-            <p className="mt-3 text-3xl font-black text-white">{value}</p>
-            <p className="mt-2 text-xs text-slate-600">{note}</p>
-          </article>
-        ))}
-      </section>
-
-      <SavedAddressesPanel />
-
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
+      {showOrders ? (
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)]">
         <section className="min-w-0">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
@@ -454,8 +432,8 @@ export function CustomerDashboard() {
             ) : null}
           </div>
         </aside>
-      </div>
-
+              </div>
+      ) : null}
       <p
         className={`rounded-xl border px-4 py-3 text-sm ${
           error

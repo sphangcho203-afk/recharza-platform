@@ -29,9 +29,9 @@ const items: Array<{
   },
   {
     label: "Orders",
-    href: "/orders/lookup",
+    href: "/account/orders",
     icon: "track",
-    matches: (path) => path.startsWith("/orders"),
+    matches: (path) => path.startsWith("/account/orders"),
   },
   {
     label: "Support",

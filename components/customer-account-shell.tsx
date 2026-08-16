@@ -20,7 +20,7 @@ type SignupSuccess = {
 const inputClassName =
   "mt-2 min-h-12 w-full rounded-lg border border-white/[0.12] bg-[#080a10] px-3.5 text-sm text-white outline-none transition duration-150 placeholder:text-slate-600 focus:border-violet-300/70 focus:ring-2 focus:ring-violet-300/15 disabled:cursor-not-allowed disabled:opacity-50";
 
-export function CustomerAccountShell() {
+export function CustomerAccountShell({ showOrders = false }: { showOrders?: boolean }) {
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [mode, setMode] = useState<AuthMode>("login");
@@ -131,7 +131,7 @@ export function CustomerAccountShell() {
     return <div className="min-h-[30rem] animate-pulse rounded-lg border border-white/[0.1] bg-[#0b0d13]" aria-label="Loading account" />;
   }
 
-  if (authenticated && !signupSuccess) return <CustomerDashboard />;
+  if (authenticated && !signupSuccess) return <CustomerDashboard showOrders={showOrders} />;
 
   if (signupSuccess) {
     return (
