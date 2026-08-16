@@ -155,8 +155,10 @@
 
 /* Recharza 2026 storefront direction: player-first, market-aware, editorial utility. */
 .storefront-alert { min-height: 2.5rem; }
-.storefront-hero-shell { background: radial-gradient(circle at 18% 38%, rgba(124, 58, 237, .16), transparent 27rem), radial-gradient(circle at 78% 28%, rgba(34, 211, 238, .09), transparent 24rem), linear-gradient(135deg, #070810 0%, #090b15 46%, #07080f 100%); }
-.storefront-hero-glow { position: absolute; width: 22rem; height: 22rem; border-radius: 999px; pointer-events: none; filter: blur(2px); opacity: .22; }
+.storefront-hero-shell { isolation: isolate; background: linear-gradient(135deg, #070810 0%, #090b15 46%, #07080f 100%); }
+.storefront-hero-art { position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(90deg, rgba(7, 8, 16, .96) 0%, rgba(7, 8, 16, .82) 34%, rgba(7, 8, 16, .42) 62%, rgba(7, 8, 16, .68) 100%), linear-gradient(180deg, rgba(7, 8, 16, .16) 0%, rgba(7, 8, 16, .34) 100%), url('/assets/recharza-brand-hero.png'); background-position: center; background-size: cover; background-repeat: no-repeat; opacity: .96; }
+.storefront-hero-art::after { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 46%, rgba(7, 8, 16, .74) 100%); content: ""; }
+.storefront-hero-glow { position: absolute; z-index: 1; width: 22rem; height: 22rem; border-radius: 999px; pointer-events: none; filter: blur(2px); opacity: .22; }
 .storefront-hero-glow-left { left: -11rem; top: 8rem; background: rgba(124, 58, 237, .36); }
 .storefront-hero-glow-right { right: -12rem; bottom: -9rem; background: rgba(34, 211, 238, .26); }
 .storefront-kicker { display: inline-flex; align-items: center; gap: .6rem; border: 1px solid rgba(103, 232, 249, .17); border-radius: 999px; padding: .45rem .75rem; background: rgba(34, 211, 238, .06); color: rgba(165, 243, 252, .84); font-size: .64rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
@@ -200,7 +202,7 @@
 @keyframes storefront-sheen { 0% { background-position: 180% 0; } 100% { background-position: -20% 0; } }
 @media (min-width: 640px) { .storefront-popular-rail { grid-template-columns: repeat(3, minmax(0,1fr)); } .storefront-support-panel { padding: 2rem; } }
 @media (min-width: 1024px) { .storefront-popular-rail { grid-template-columns: repeat(5, minmax(0,1fr)); } }
-@media (max-width: 639px) { .storefront-support-panel { align-items: stretch; flex-direction: column; } .storefront-primary-cta, .storefront-secondary-cta { width: 100%; } }
+@media (max-width: 639px) { .storefront-support-panel { align-items: stretch; flex-direction: column; } .storefront-primary-cta, .storefront-secondary-cta { width: 100%; } .storefront-hero-art { background-position: 68% center; background-size: auto 100%; opacity: .78; } .storefront-hero-art::after { background: linear-gradient(180deg, rgba(7, 8, 16, .16) 0%, rgba(7, 8, 16, .84) 86%); } }
 @media (prefers-reduced-motion: reduce) { .storefront-loading-card { animation: none; } .storefront-primary-cta:hover, .storefront-secondary-cta:hover, .storefront-process-card:hover { transform: none; } }
 
 

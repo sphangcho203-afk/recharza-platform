@@ -71,9 +71,10 @@ export default async function Home() {
       ) : null}
 
       <section className="storefront-hero-shell relative overflow-hidden border-b border-white/[0.07] px-4 pb-8 pt-7 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16">
+        <div className="storefront-hero-art" aria-hidden="true" />
         <div className="storefront-hero-glow storefront-hero-glow-left" aria-hidden="true" />
         <div className="storefront-hero-glow storefront-hero-glow-right" aria-hidden="true" />
-        <div className="relative mx-auto grid max-w-[1240px] items-end gap-10 lg:grid-cols-[minmax(0,1fr)_23rem] lg:gap-16">
+        <div className="relative z-10 mx-auto grid max-w-[1240px] items-end gap-10 lg:grid-cols-[minmax(0,1fr)_23rem] lg:gap-16">
           <div className="max-w-3xl">
             <div className="storefront-kicker"><span className="storefront-kicker-dot" /> The player-first top-up store</div>
             <h1 className="mt-5 max-w-4xl font-heading text-4xl font-semibold leading-[0.98] tracking-[-0.07em] text-white sm:text-6xl lg:text-7xl">Your games.<br /><span className="storefront-gradient-text">Your market.</span><br />Your next move.</h1>
