@@ -35,7 +35,7 @@ const mobileLegendsMedia = {
   tickets: "/assets/packs/mobile-legends/tickets-stack.webp",
   weeklyPass: "/assets/packs/mobile-legends/weekly-pass-official.webp",
   monthlyElitePack: "/assets/packs/mobile-legends/monthly-elite-pack-official.webp",
-  twilightPass: "/assets/packs/mobile-legends/twilight-pass-official.webp",
+  twilightPass: "/assets/packs/mobile-legends/twilight-pass-user.webp",
 } as const;
 
 const gameCurrencyMedia: Record<string, string> = {
