@@ -286,11 +286,26 @@
   outline: none;
 }
 @media (max-width: 639px) {
+  .storefront-hero-shell { padding-bottom: 2.5rem; }
+  .storefront-hero-console { margin-top: .25rem; }
+  .storefront-trust-section { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+  .storefront-trust-section > div { border-radius: 1rem; }
+  .storefront-trust-cell { min-height: 4.5rem; padding: .85rem .9rem; }
+  .storefront-catalogue-section { padding-top: 2.5rem; padding-bottom: 3rem; }
+  .storefront-catalogue-section > div:first-child { gap: .75rem; }
+  .storefront-catalogue-section .storefront-inline-link { align-self: flex-start; padding-top: .25rem; }
+  .storefront-catalogue-section #all-games { margin-top: 2.25rem; }
+  .storefront-process-section { padding-top: 2.75rem; padding-bottom: 3rem; }
+  .storefront-process-section > div > div:first-child { max-width: 34rem; }
+  .storefront-process-section .mt-8 { margin-top: 1.5rem; }
+  .storefront-process-card { min-height: 0; padding: 1rem; }
+  .storefront-process-card + .storefront-process-card { margin-top: .75rem; }
+  .storefront-support-panel { margin-bottom: .5rem; }
   .site-header { box-shadow: 0 10px 28px rgba(0,0,0,.18); }
   .site-header-main { min-height: 4rem; }
   .site-header-actions { gap: .3rem; }
   .site-brand-link { gap: .55rem; }
-  .storefront-trust-cell { min-height: 4rem; gap: .65rem; padding: .8rem .75rem; }
+  .storefront-trust-cell { min-height: 4.5rem; gap: .65rem; padding: .85rem .9rem; }
   .storefront-trust-cell b { font-size: .7rem; line-height: 1.2; }
   .storefront-trust-cell small { margin-top: .16rem; font-size: .62rem; line-height: 1.35; }
   .storefront-trust-number { font-size: 1.05rem; }
@@ -300,7 +315,7 @@
   .storefront-page .storefront-secondary-cta { min-height: 3.25rem; border-radius: .8rem; }
   .storefront-page .storefront-process-card { min-height: 0; padding: 1rem; }
   .storefront-page .storefront-process-card h3 { margin-top: 1rem; }
-  .storefront-page .storefront-process-card p { line-height: 1.45; }
+  .storefront-page .storefront-process-card p { max-width: 28rem; line-height: 1.45; }
 }
 @media (prefers-reduced-motion: reduce) {
   .storefront-trust-cell:hover { transform: none; }

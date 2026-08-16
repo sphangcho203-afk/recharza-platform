@@ -101,7 +101,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="border-b border-white/[0.07] px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
+      <section className="storefront-trust-section border-b border-white/[0.07] px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
         <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
           <div className="storefront-trust-cell"><span className="storefront-trust-number">8+</span><span><b>Regional markets</b><small>MLBB paths built for the account region</small></span></div>
           <div className="storefront-trust-cell"><span className="storefront-trust-number">{visibleGames.length}</span><span><b>Game paths</b><small>Published titles and regional destinations</small></span></div>
@@ -109,7 +109,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section id="games" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+      <section id="games" className="storefront-catalogue-section mx-auto max-w-[1240px] scroll-mt-32 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div><div className="storefront-section-label">The catalogue</div><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">Top up what you play.</h2><p className="mt-3 max-w-xl text-sm leading-6 text-slate-400">Every card takes you to the exact market and package flow for that game. No hidden regional guesswork.</p></div>
           <Link href="/support" className="storefront-inline-link">Need help choosing? <StorefrontIcon name="arrow" className="h-3.5 w-3.5" /></Link>
@@ -120,7 +120,7 @@ export default async function Home() {
         <div id="all-games" className="mt-12 scroll-mt-32"><Suspense fallback={<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /></div>}><GameCatalogue games={visibleGames} showRegionalMarkets={storefront.catalogue.showRegionalMarkets} showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges} showPricingSnapshots={storefront.privateFlags.showPricingSnapshots} /></Suspense></div>
       </section>
 
-      <section id="how-it-works" className="border-y border-white/[0.07] bg-[#090b12] px-4 py-12 sm:px-6 lg:px-8">
+      <section id="how-it-works" className="storefront-process-section border-y border-white/[0.07] bg-[#090b12] px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1240px]"><div className="max-w-2xl"><div className="storefront-section-label">How Recharza works</div><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">Clear steps. Fewer checkout surprises.</h2><p className="mt-3 text-sm leading-6 text-slate-400">The flow is designed around the player destination first, because a correct package is only useful when it reaches the right account.</p></div><div className="mt-8 grid gap-3 md:grid-cols-3">{processItems.map((item) => <article key={item.step} className="storefront-process-card"><div className="flex items-start justify-between"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-white/[0.055] text-cyan-200 ring-1 ring-white/[0.08]"><StorefrontIcon name={item.icon} className="h-5 w-5" /></span><span className="font-mono text-xs font-bold text-slate-600">{item.step}</span></div><h3 className="mt-6 text-base font-semibold text-white">{item.title}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{item.text}</p></article>)}</div></div>
       </section>
 

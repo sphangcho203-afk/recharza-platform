@@ -67,7 +67,7 @@ export function MobileBottomNav() {
     <>
       <div
         aria-hidden="true"
-        className="h-[calc(4rem+env(safe-area-inset-bottom))] lg:hidden"
+        className="h-[calc(5.25rem+env(safe-area-inset-bottom))] lg:hidden"
       />
       <nav
         aria-label="Mobile customer navigation"
