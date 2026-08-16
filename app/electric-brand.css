@@ -1,67 +1,77 @@
-/* Recharza premium logo treatment: embedded in the dark storefront surface, with a slow internal pulse. */
+/* Recharza storefront brand treatment: embedded, restrained, and logo-local. */
 .recharza-mark-shell {
   position: relative;
-  isolation: isolate;
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
   overflow: visible;
-  border-radius: 999px;
+  isolation: isolate;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .recharza-electric-mark {
   position: relative;
   z-index: 2;
   display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform: translateZ(0);
   transform-origin: center;
-  filter: saturate(.98) contrast(1.02);
+  background: transparent;
+  filter: saturate(.96) contrast(1.04) drop-shadow(0 0 0 rgba(103, 232, 249, 0));
   transition: transform 420ms cubic-bezier(.22, 1, .36, 1), filter 420ms ease;
 }
 
+/* A soft light field sits behind the mark and breathes slowly; it never becomes a separate badge. */
 .recharza-mark-glow {
   position: absolute;
   z-index: 1;
-  inset: 7%;
-  border-radius: 42% 58% 52% 48%;
+  inset: 18%;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse at 38% 34%, rgba(72, 214, 255, .32), transparent 48%),
-    radial-gradient(ellipse at 66% 70%, rgba(139, 92, 246, .24), transparent 52%);
-  filter: blur(12px);
-  opacity: .12;
-  transform: scale(.86);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(67, 214, 255, .22) 0%, rgba(92, 112, 255, .10) 38%, transparent 74%);
+  filter: blur(9px);
+  opacity: .16;
+  transform: scale(.78);
   transform-origin: center;
-  animation: recharza-logo-glow-breathe 8.8s cubic-bezier(.4, 0, .2, 1) infinite;
+  animation: recharza-logo-glow-breathe 9.6s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+
+@keyframes recharza-logo-glow-breathe {
+  0%, 58%, 100% {
+    opacity: .12;
+    transform: scale(.78);
+    filter: blur(9px);
+  }
+  70% {
+    opacity: .28;
+    transform: scale(1.06);
+    filter: blur(7px);
+  }
+  78% {
+    opacity: .2;
+    transform: scale(.94);
+    filter: blur(8px);
+  }
 }
 
 .site-brand-link:hover .recharza-electric-mark,
 .site-brand-link:focus-visible .recharza-electric-mark {
   transform: translateY(-1px) scale(1.035);
-  filter: saturate(1.08) contrast(1.05);
+  filter: saturate(1.08) contrast(1.06) drop-shadow(0 0 8px rgba(103, 232, 249, .22));
 }
 
 .site-brand-link:hover .recharza-mark-glow,
 .site-brand-link:focus-visible .recharza-mark-glow {
-  animation-duration: 5.2s;
+  opacity: .24;
 }
 
-@keyframes recharza-logo-glow-breathe {
-  0%, 55%, 100% {
-    opacity: .1;
-    transform: scale(.86);
-    filter: blur(12px);
-  }
-  68% {
-    opacity: .28;
-    transform: scale(1.02);
-    filter: blur(10px);
-  }
-  78% {
-    opacity: .2;
-    transform: scale(.96);
-    filter: blur(11px);
-  }
-}
-
-/* Keep the hero atmosphere slow and architectural; it never draws attention away from the mark. */
+/* Keep the hero atmosphere architectural and aligned with the store background. */
 .storefront-hero-shell::before {
   position: absolute;
   inset: 0;
@@ -80,590 +90,35 @@
   100% { transform: translate3d(3%, 1%, 0) scale(1.04); opacity: .18; }
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (max-width: 640px) {
+  .recharza-mark-shell { width: 2.15rem; height: 2.15rem; }
+  .recharza-mark-glow { inset: 20%; filter: blur(8px); }
+}
+
+@media (prefers-reduced-motion: reduce), (prefers-reduced-data: reduce) {
   .recharza-mark-glow,
   .storefront-hero-shell::before { animation: none !important; }
-  .recharza-mark-glow { opacity: .12 !important; transform: scale(.9) !important; filter: blur(12px) !important; }
-  .recharza-electric-mark { transform: none !important; }
+  .recharza-mark-glow { opacity: .14 !important; transform: scale(.82) !important; filter: blur(9px) !important; }
+  .recharza-electric-mark { transform: none !important; transition: none; }
 }
 
-@media (max-width: 640px) {
-  .recharza-mark-glow { inset: 9%; filter: blur(9px); }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .recharza-mark-glow { opacity: .06; }
-}
-
-@supports not (filter: blur(12px)) {
-  .recharza-mark-glow { filter: none; opacity: .08; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .storefront-hero-shell::before { opacity: .12; }
-}
-
-@media (forced-colors: active) {
+@media (prefers-reduced-transparency: reduce), (forced-colors: active), print {
   .recharza-mark-glow { display: none; }
+  .recharza-electric-mark { filter: none; }
 }
 
 @media (hover: none) {
-  .site-brand-link:hover .recharza-electric-mark { transform: none; }
+  .site-brand-link:hover .recharza-electric-mark { transform: none; filter: saturate(.96) contrast(1.04); }
 }
 
 @media (prefers-contrast: more) {
-  .recharza-electric-mark { filter: contrast(1.12) saturate(1.04); }
-}
-
-@media (max-width: 400px) {
-  .recharza-mark-glow { inset: 12%; }
-}
-
-@media (min-width: 1280px) {
-  .recharza-mark-glow { filter: blur(14px); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { animation: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-mark-glow,
-  .storefront-hero-shell::before { animation: none !important; }
-}
-
-@media print {
-  .recharza-mark-glow,
-  .storefront-hero-shell::before { display: none; }
+  .recharza-electric-mark { filter: saturate(1) contrast(1.12); }
 }
 
 @media (prefers-color-scheme: light) {
-  .recharza-mark-glow { opacity: .08; }
+  .recharza-mark-glow { opacity: .10; }
 }
 
 @media (prefers-color-scheme: dark) {
-  .recharza-mark-glow { opacity: .12; }
-}
-
-@media (min-resolution: 2dppx) {
-  .recharza-electric-mark { image-rendering: auto; }
-}
-
-@media (orientation: portrait) {
-  .recharza-mark-shell { transform: translateZ(0); }
-}
-
-@media (orientation: landscape) {
-  .recharza-mark-shell { transform: translateZ(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { transform: none; }
-}
-
-@media (max-width: 640px) and (prefers-reduced-motion: no-preference) {
-  .recharza-mark-glow { animation-duration: 10.5s; }
-}
-
-@media (min-width: 641px) and (prefers-reduced-motion: no-preference) {
-  .recharza-mark-glow { animation-duration: 8.8s; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { opacity: .08 !important; }
-}
-
-@media (forced-colors: active) {
-  .recharza-electric-mark { filter: none; }
-}
-
-@media (prefers-contrast: more) {
-  .recharza-mark-glow { opacity: .1; }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .recharza-mark-glow { filter: none; }
-}
-
-@media (max-width: 640px) {
-  .recharza-electric-mark { transform: translateZ(0); }
-}
-
-@media (min-width: 641px) {
-  .recharza-electric-mark { transform: translateZ(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-electric-mark { transition: none; }
-}
-
-@media (hover: hover) {
-  .site-brand-link:hover .recharza-mark-glow { opacity: .22; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-brand-link:hover .recharza-mark-glow,
-  .site-brand-link:focus-visible .recharza-mark-glow { opacity: .12; }
-}
-
-@media (max-width: 640px) {
-  .site-brand-link:hover .recharza-mark-glow { opacity: .16; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-brand-link:hover .recharza-electric-mark,
-  .site-brand-link:focus-visible .recharza-electric-mark { filter: none; }
-}
-
-@media (forced-colors: active) {
-  .site-brand-link:hover .recharza-electric-mark,
-  .site-brand-link:focus-visible .recharza-electric-mark { transform: none; }
-}
-
-@media print {
-  .recharza-electric-mark { filter: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-mark-glow { display: none; }
-}
-
-@media (prefers-color-scheme: light) {
-  .storefront-hero-shell::before { opacity: .14; }
-}
-
-@media (prefers-color-scheme: dark) {
-  .storefront-hero-shell::before { opacity: .28; }
-}
-
-@media (max-width: 640px) {
-  .storefront-hero-shell::before { opacity: .2; }
-}
-
-@media (min-width: 1280px) {
-  .storefront-hero-shell::before { opacity: .3; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .storefront-hero-shell::before { animation: none !important; }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .storefront-hero-shell::before { opacity: .08; }
-}
-
-@media (forced-colors: active) {
-  .storefront-hero-shell::before { display: none; }
-}
-
-@media print {
-  .storefront-hero-shell::before { display: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .storefront-hero-shell::before { display: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .storefront-hero-shell::before { opacity: .1; }
-}
-
-@media (hover: none) {
-  .site-brand-link:active .recharza-mark-glow { opacity: .2; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-brand-link:active .recharza-mark-glow { opacity: .12; }
-}
-
-@media (min-width: 1024px) {
-  .recharza-mark-shell { transform: translateZ(0); }
-}
-
-@media (max-width: 1023px) {
-  .recharza-mark-shell { transform: translateZ(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { transform: none; }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .recharza-mark-shell { isolation: auto; }
-}
-
-@media (forced-colors: active) {
-  .recharza-mark-shell { isolation: auto; }
-}
-
-@media print {
-  .recharza-mark-shell { isolation: auto; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-mark-shell { isolation: auto; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { overflow: hidden; }
-}
-
-@media (hover: hover) {
-  .site-brand-link:hover .recharza-electric-mark { will-change: transform, filter; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-brand-link:hover .recharza-electric-mark { will-change: auto; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-mark-glow { will-change: opacity, transform, filter; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { will-change: auto; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-mark-shell { backface-visibility: hidden; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { backface-visibility: visible; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-electric-mark { backface-visibility: hidden; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-electric-mark { backface-visibility: visible; }
-}
-
-@media (max-width: 640px) {
-  .recharza-mark-shell { min-height: 2rem; }
-}
-
-@media (min-width: 641px) {
-  .recharza-mark-shell { min-height: 2.5rem; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { min-height: auto; }
-}
-
-@media (prefers-contrast: more) {
-  .recharza-electric-mark { outline: 1px solid transparent; }
-}
-
-@media (forced-colors: active) {
-  .recharza-electric-mark { outline: 1px solid CanvasText; }
-}
-
-@media print {
-  .recharza-electric-mark { outline: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-electric-mark { outline: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-electric-mark { outline: none; }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .recharza-mark-glow { background: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { background: none; }
-}
-
-@media (forced-colors: active) {
-  .recharza-mark-glow { background: none; }
-}
-
-@media print {
-  .recharza-mark-glow { background: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-mark-glow { background: none; }
-}
-
-@media (prefers-color-scheme: light) {
-  .recharza-electric-mark { filter: saturate(.94) contrast(1.02); }
-}
-
-@media (prefers-color-scheme: dark) {
-  .recharza-electric-mark { filter: saturate(1) contrast(1.02); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-electric-mark { filter: none; }
-}
-
-@media (forced-colors: active) {
-  .recharza-electric-mark { filter: none; }
-}
-
-@media print {
-  .recharza-electric-mark { filter: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-electric-mark { filter: none; }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .recharza-electric-mark { filter: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { animation: none; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-mark-glow { animation-timing-function: cubic-bezier(.4, 0, .2, 1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { animation-timing-function: linear; }
-}
-
-@media (max-width: 640px) {
-  .recharza-mark-glow { transform-origin: center center; }
-}
-
-@media (min-width: 641px) {
-  .recharza-mark-glow { transform-origin: center center; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { transform-origin: center center; }
-}
-
-@media (hover: hover) {
-  .site-brand-link:hover .recharza-mark-glow { transform: scale(.94); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .site-brand-link:hover .recharza-mark-glow { transform: scale(.9); }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-mark-shell { contain: layout paint; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { contain: layout; }
-}
-
-@media (forced-colors: active) {
-  .recharza-mark-shell { contain: none; }
-}
-
-@media print {
-  .recharza-mark-shell { contain: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-mark-shell { contain: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { contain: none; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-electric-mark { contain: paint; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-electric-mark { contain: none; }
-}
-
-@media (forced-colors: active) {
-  .recharza-electric-mark { contain: none; }
-}
-
-@media print {
-  .recharza-electric-mark { contain: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-electric-mark { contain: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-electric-mark { contain: none; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-mark-glow { contain: paint; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { contain: none; }
-}
-
-@media print {
-  .recharza-mark-glow { contain: none; }
-}
-
-@media (forced-colors: active) {
-  .recharza-mark-glow { contain: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-mark-glow { contain: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { contain: none; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-mark-glow { pointer-events: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { pointer-events: none; }
-}
-
-@media (forced-colors: active) {
-  .recharza-mark-glow { pointer-events: none; }
-}
-
-@media print {
-  .recharza-mark-glow { pointer-events: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-mark-glow { pointer-events: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { pointer-events: none; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-mark-glow { user-select: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { user-select: none; }
-}
-
-@media (forced-colors: active) {
-  .recharza-mark-glow { user-select: none; }
-}
-
-@media print {
-  .recharza-mark-glow { user-select: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-mark-glow { user-select: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-glow { user-select: none; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-mark-shell { user-select: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { user-select: none; }
-}
-
-@media (forced-colors: active) {
-  .recharza-mark-shell { user-select: none; }
-}
-
-@media print {
-  .recharza-mark-shell { user-select: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-mark-shell { user-select: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { user-select: none; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-electric-mark { user-select: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-electric-mark { user-select: none; }
-}
-
-@media (forced-colors: active) {
-  .recharza-electric-mark { user-select: none; }
-}
-
-@media print {
-  .recharza-electric-mark { user-select: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-electric-mark { user-select: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-electric-mark { user-select: none; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-mark-shell { pointer-events: auto; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { pointer-events: auto; }
-}
-
-@media (forced-colors: active) {
-  .recharza-mark-shell { pointer-events: auto; }
-}
-
-@media print {
-  .recharza-mark-shell { pointer-events: auto; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-mark-shell { pointer-events: auto; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-mark-shell { pointer-events: auto; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .recharza-electric-mark { pointer-events: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-electric-mark { pointer-events: none; }
-}
-
-@media (forced-colors: active) {
-  .recharza-electric-mark { pointer-events: none; }
-}
-
-@media print {
-  .recharza-electric-mark { pointer-events: none; }
-}
-
-@media (prefers-reduced-data: reduce) {
-  .recharza-electric-mark { pointer-events: none; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .recharza-electric-mark { pointer-events: none; }
+  .recharza-mark-glow { opacity: .16; }
 }
