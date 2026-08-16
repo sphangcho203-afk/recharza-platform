@@ -1,6 +1,7 @@
 import "server-only";
 
 import { resolveProductMedia, type ProductMedia } from "@/lib/catalog/product-media";
+import { selectBestSupplierOffers } from "@/lib/catalog/supplier-offer-selection";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
 
@@ -40,6 +41,7 @@ type SupplierProductView = {
   name: string;
   region: string | null;
   retailPriceInPaise: number;
+  landedCostInPaise: number;
   expectedMarginInPaise: number;
   fields: unknown;
   raw: unknown;
@@ -53,6 +55,7 @@ const supplierProductSelect = {
   name: true,
   region: true,
   retailPriceInPaise: true,
+  landedCostInPaise: true,
   expectedMarginInPaise: true,
   fields: true,
   raw: true,
@@ -139,7 +142,7 @@ export async function getPublishedGamePackages(gameSlug: SupplierCheckoutGameSlu
       select: supplierProductSelect,
     });
 
-    return products
+    return selectBestSupplierOffers(products)
       .map((product) => mapSupplierProduct(product))
       .filter((product): product is StorefrontGamePackage => Boolean(product));
   } catch (error) {

@@ -237,15 +237,15 @@ export function resolveProductMedia(input: {
   const sources = Array.from(
     new Set([
       ...(override ? [override.imageUrl] : []),
-      ...supplierSources,
       ...catalogSources,
+      ...supplierSources,
     ]),
   ).filter(isTrustedProductMediaUrl);
 
   return {
     sources,
     alt: override?.imageAlt ?? `${input.productName} product artwork`,
-    source: supplierSources.length > 0 ? "supplier" : "catalog",
+    source: catalogSources.length > 0 ? "catalog" : "supplier",
   };
 }
 

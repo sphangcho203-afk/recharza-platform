@@ -4,6 +4,7 @@ import {
   isCuratedFazerCardsProductAvailableForMobileLegendsMarket,
 } from "@/lib/catalog/curated-fazercards";
 import { resolveProductMedia } from "@/lib/catalog/product-media";
+import { selectBestSupplierOffers } from "@/lib/catalog/supplier-offer-selection";
 import {
   fallbackMobileLegendsPackages,
   getFallbackMobileLegendsPackage,
@@ -30,11 +31,13 @@ export type StorefrontPricingSnapshot = {
 
 type SupplierProductView = {
   id: string;
+  gameSlug: string;
   offerId: string;
   categoryId: string;
   name: string;
   region: string | null;
   retailPriceInPaise: number;
+  landedCostInPaise: number;
   expectedMarginInPaise: number;
   raw: unknown;
 };
@@ -104,11 +107,13 @@ function mapSupplierProduct(product: SupplierProductView): MobileLegendsPackage 
 
 const supplierProductSelect = {
   id: true,
+  gameSlug: true,
   offerId: true,
   categoryId: true,
   name: true,
   region: true,
   retailPriceInPaise: true,
+  landedCostInPaise: true,
   expectedMarginInPaise: true,
   raw: true,
 } as const;
@@ -151,7 +156,9 @@ export async function getMobileLegendsPackages(
 
       if (marketProducts.length > 0) {
         return prioritizeMobileLegendsPackages(
-          marketProducts.map((product) => mapSupplierProduct(product)),
+          selectBestSupplierOffers(marketProducts).map((product) =>
+            mapSupplierProduct(product),
+          ),
           targetMobileLegendsPackageCount,
         );
       }
