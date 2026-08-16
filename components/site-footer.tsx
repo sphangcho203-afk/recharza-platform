@@ -83,21 +83,17 @@ export async function SiteFooter() {
           <section aria-labelledby="footer-legal-heading" className="mt-8 border-t border-white/[0.07] pt-5">
             <h2 id="footer-legal-heading" className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">Legal</h2>
             <nav aria-label="Legal policies" className="mt-3 max-w-md">
-              <ol className="grid gap-1.5">
-                {publishedPolicies.map((policy, index) => (
-                  <li key={policy.key}>
-                    <Link
-                      href={`/policies/${policy.key}`}
-                      className="group flex min-h-9 items-center gap-3 rounded-lg px-2 py-1.5 text-sm font-semibold text-slate-500 transition hover:bg-white/[0.035] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07080c]"
-                    >
-                      <span aria-hidden="true" className="grid h-6 w-6 shrink-0 place-items-center rounded-md border border-white/[0.08] bg-white/[0.025] text-[11px] font-black tabular-nums text-slate-600 transition group-hover:border-cyan-300/30 group-hover:bg-cyan-300/[0.08] group-hover:text-cyan-200">
-                        {index + 1}
-                      </span>
-                      <span>{policy.title}</span>
-                    </Link>
-                  </li>
+              <div className="grid gap-1.5">
+                {publishedPolicies.map((policy) => (
+                  <Link
+                    key={policy.key}
+                    href={`/policies/${policy.key}`}
+                    className="group flex min-h-9 items-center rounded-lg px-2 py-1.5 text-sm font-semibold text-slate-500 transition hover:bg-white/[0.035] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07080c]"
+                  >
+                    {policy.title}
+                  </Link>
                 ))}
-              </ol>
+              </div>
             </nav>
           </section>
         ) : null}
