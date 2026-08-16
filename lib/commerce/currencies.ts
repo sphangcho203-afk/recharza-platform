@@ -17,7 +17,6 @@ export const supportedCurrencies = [
 ] as const;
 
 export type SupportedCurrencyCode = (typeof supportedCurrencies)[number]["code"];
-
 export const supportedCurrencyCodes = supportedCurrencies.map((item) => item.code) as SupportedCurrencyCode[];
 
 export const billingCountries = [
@@ -59,23 +58,40 @@ export function getDefaultCurrencyForCountry(value: unknown): SupportedCurrencyC
   return parseBillingCountry(value)?.currency ?? "USD";
 }
 
+/** Fixed market mapping only; this never performs FX conversion. */
+export function getCurrencyForMarketCode(value: unknown): SupportedCurrencyCode {
+  if (typeof value !== "string") return "INR";
+  const normalized = value
+    .trim()
+    .toLowerCase()
+    .replace(/[()_·-]+/g, " ")
+    .replace(/\s+/g, " ");
+  const entries: Array<[string, SupportedCurrencyCode]> = [
+    ["united states", "USD"], ["usa", "USD"], ["us", "USD"],
+    ["united kingdom", "GBP"], ["uk", "GBP"],
+    ["united arab emirates", "AED"], ["uae", "AED"], ["emirates", "AED"],
+    ["saudi arabia", "SAR"], ["saudi", "SAR"], ["sa", "SAR"],
+    ["philippines", "PHP"], ["philippine", "PHP"], ["ph", "PHP"],
+    ["indonesia", "IDR"], ["id", "IDR"],
+    ["singapore", "SGD"], ["sg", "SGD"],
+    ["malaysia", "MYR"], ["my", "MYR"],
+    ["thailand", "THB"], ["th", "THB"],
+    ["brazil", "BRL"], ["br", "BRL"],
+    ["canada", "CAD"], ["ca", "CAD"],
+    ["mexico", "MXN"], ["mx", "MXN"],
+    ["turkey", "TRY"], ["türkiye", "TRY"], ["tr", "TRY"],
+    ["india", "INR"], ["in", "INR"],
+    ["europe", "EUR"], ["germany", "EUR"], ["france", "EUR"], ["spain", "EUR"], ["italy", "EUR"], ["eu", "EUR"],
+  ];
+  const tokens = normalized.split(" ").filter(Boolean);
+  return entries.find(([token]) => normalized === token || (token.length <= 3 && tokens.includes(token)) || (token.length > 3 && normalized.includes(token)))?.[1] ?? "INR";
+}
+
 export function getCurrencyDefinition(code: SupportedCurrencyCode) {
   return supportedCurrencies.find((currency) => currency.code === code)!;
 }
 
-export function convertInrPaiseToCurrencyMinor(
-  amountInPaise: number,
-  currency: SupportedCurrencyCode,
-  rateFromInrMicros: number,
-) {
-  const definition = getCurrencyDefinition(currency);
-  const targetScale = 10 ** definition.minorDigits;
-  const numerator = amountInPaise * rateFromInrMicros * targetScale;
-  const denominator = 100 * 1_000_000;
-  return Math.max(1, Math.round(numerator / denominator));
-}
-
-export function formatCurrencyMinor(amountMinor: number, code: SupportedCurrencyCode) {
+export function formatCurrencyMinor(amountMinor: number, code: SupportedCurrencyCode): string {
   const definition = getCurrencyDefinition(code);
   return new Intl.NumberFormat(definition.locale, {
     style: "currency",

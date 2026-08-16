@@ -1,8 +1,5 @@
 import type { BillingFormState } from "@/components/billing-address-fields";
-import {
-  getDefaultCurrencyForCountry,
-  type BillingCountryCode,
-} from "@/lib/commerce/currencies";
+import type { SupportedCurrencyCode, BillingCountryCode } from "@/lib/commerce/currencies";
 
 type BillingAddressSource = {
   fullName: string;
@@ -18,7 +15,7 @@ type BillingAddressSource = {
 
 export function toBillingFormState(
   address: BillingAddressSource,
-  fxMode: "live" | "inr-only",
+  fixedCurrency: SupportedCurrencyCode,
 ): BillingFormState {
   return {
     fullName: address.fullName,
@@ -30,7 +27,6 @@ export function toBillingFormState(
     state: address.state,
     postalCode: address.postalCode,
     countryCode: address.countryCode as BillingCountryCode,
-    presentmentCurrency:
-      fxMode === "live" ? getDefaultCurrencyForCountry(address.countryCode) : "INR",
+    presentmentCurrency: fixedCurrency,
   };
 }

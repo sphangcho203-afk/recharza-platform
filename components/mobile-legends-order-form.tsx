@@ -10,7 +10,6 @@ import {
 } from "@/components/billing-address-fields";
 import { ProductOfferCard } from "@/components/product-offer-card";
 import {
-  convertInrPaiseToCurrencyMinor,
   formatCurrencyMinor,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
@@ -27,14 +26,6 @@ type AccountState =
   | { status: "loading"; email: null }
   | { status: "guest"; email: null }
   | { status: "authenticated"; email: string };
-
-type FxSnapshot = {
-  base: "INR";
-  mode: "live" | "inr-only";
-  source: string;
-  quotedAt: string;
-  ratesFromInrMicros: Record<SupportedCurrencyCode, number>;
-};
 
 type CreatedOrder = {
   id: string;
@@ -83,11 +74,9 @@ function createIdempotencyKey() {
 export function MobileLegendsOrderForm({
   packages,
   market,
-  fxSnapshot,
 }: {
   packages: MobileLegendsPackage[];
   market: MobileLegendsMarket;
-  fxSnapshot: FxSnapshot;
 }) {
   const firstPackage = packages.find((item) => item.featured) ?? packages[0];
   const [packageId, setPackageId] = useState(firstPackage?.id ?? "");
@@ -95,8 +84,7 @@ export function MobileLegendsOrderForm({
   const [zoneId, setZoneId] = useState("");
   const [billing, setBilling] = useState<BillingFormState>(() => ({
     ...initialBillingForm,
-    presentmentCurrency:
-      fxSnapshot.mode === "live" ? market.defaultCurrency : "INR",
+    presentmentCurrency: market.defaultCurrency,
   }));
   const [account, setAccount] = useState<AccountState>({ status: "loading", email: null });
   const [verification, setVerification] = useState<VerificationState>(initialVerification);
@@ -112,19 +100,12 @@ export function MobileLegendsOrderForm({
     [packageId, packages],
   );
   const usesLiveSupplierPricing = packages.some((item) => item.source === "fazercards-live");
-  const selectedRate = fxSnapshot.ratesFromInrMicros[billing.presentmentCurrency] ?? 0;
-  const canConvert = billing.presentmentCurrency === "INR" || selectedRate > 0;
+  const marketCurrency = market.defaultCurrency;
+  const marketCurrencyMatches = billing.presentmentCurrency === marketCurrency;
 
   function formatPresentment(amountInPaise: number) {
-    if (billing.presentmentCurrency === "INR" || !selectedRate) return formatInr(amountInPaise);
-    return formatCurrencyMinor(
-      convertInrPaiseToCurrencyMinor(
-        amountInPaise,
-        billing.presentmentCurrency,
-        selectedRate,
-      ),
-      billing.presentmentCurrency,
-    );
+    if (marketCurrency === "INR") return formatInr(amountInPaise);
+    return formatCurrencyMinor(amountInPaise, marketCurrency);
   }
 
   useEffect(() => {
@@ -212,8 +193,8 @@ export function MobileLegendsOrderForm({
       setOrderError("Choose an available package before creating the order.");
       return;
     }
-    if (!canConvert) {
-      setOrderError("The selected currency quote is unavailable. Choose INR or refresh the page.");
+    if (!marketCurrencyMatches) {
+      setOrderError("This market uses a fixed price in its local currency. Return to the package step and continue with the market currency.");
       return;
     }
 
@@ -240,8 +221,8 @@ export function MobileLegendsOrderForm({
           marketCode: market.code,
           billing: {
             ...billing,
-            presentmentCurrency:
-              fxSnapshot.mode === "live" ? billing.presentmentCurrency : "INR",
+                          presentmentCurrency: marketCurrency,
+
           },
         }),
       });
@@ -381,7 +362,7 @@ export function MobileLegendsOrderForm({
           </div>
         </section>
 
-        <BillingAddressFields value={billing} onChange={setBilling} fxMode={fxSnapshot.mode} />
+        <BillingAddressFields value={billing} onChange={(next) => setBilling({ ...next, presentmentCurrency: marketCurrency })} fixedCurrency={marketCurrency} />
       </div>
 
       <section className="overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(17,17,29,0.98),rgba(8,8,16,0.98))] shadow-2xl shadow-black/30">
@@ -396,23 +377,20 @@ export function MobileLegendsOrderForm({
               <span className="rounded-full border border-white/10 bg-white/5 px-3 py-2">Display {billing.presentmentCurrency}</span>
             </div>
             <p className="mt-4 text-sm leading-6 text-slate-500">
-              The server rechecks the supplier offer, market, INR amount, currency quote and billing fields before saving anything.
+              The server rechecks the supplier offer, market, fixed market currency and billing fields before saving anything.
             </p>
           </div>
           <div className="min-w-56 rounded-2xl border border-white/10 bg-black/25 p-4 text-right">
             <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Displayed total</p>
             <p className="mt-1 text-3xl font-black text-white">{formatPresentment(selectedPackage.amountInPaise)}</p>
-            {billing.presentmentCurrency !== "INR" ? (
-              <p className="mt-1 text-xs text-slate-500">Settlement {formatInr(selectedPackage.amountInPaise)}</p>
-            ) : null}
-            <p className="mt-2 text-[10px] text-slate-600">FX snapshot {new Date(fxSnapshot.quotedAt).toLocaleDateString()}</p>
+            <p className="mt-1 text-xs text-emerald-300">Fixed market price · {market.defaultCurrency}</p>
           </div>
         </div>
 
         <div className="border-t border-white/10 p-4 sm:p-6">
           <button
             type="submit"
-            disabled={isCreatingOrder || verification.status !== "success" || account.status !== "authenticated" || !canConvert}
+            disabled={isCreatingOrder || verification.status !== "success" || account.status !== "authenticated" || !marketCurrencyMatches}
             className="min-h-13 w-full rounded-xl bg-violet-500 px-5 py-3.5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
           >
             {isCreatingOrder ? "Creating protected order..." : `Create ${market.label} order`}

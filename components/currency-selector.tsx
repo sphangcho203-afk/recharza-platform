@@ -9,7 +9,6 @@ import { supportedCurrencies, type SupportedCurrencyCode } from "@/lib/commerce/
 const pickerCurrencies = supportedCurrencies.filter((item) => !["CAD", "MXN"].includes(item.code));
 
 type CurrencySelectorProps = {
-  ratesFromInrMicros: Partial<Record<SupportedCurrencyCode, number>>;
   compact?: boolean;
 };
 
@@ -45,20 +44,13 @@ function readStoredCurrency(): SupportedCurrencyCode {
     : "INR";
 }
 
-export function CurrencySelector({ ratesFromInrMicros, compact = false }: CurrencySelectorProps) {
+export function CurrencySelector({ compact = false }: CurrencySelectorProps) {
   const [currency, setCurrency] = useState<SupportedCurrencyCode>(readStoredCurrency);
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const titleId = "currency-picker-title";
   const selected = supportedCurrencies.find((item) => item.code === currency) ?? supportedCurrencies[0];
-  const usdToSelected = useMemo(() => {
-    if (currency === "USD") return 1;
-    const usdRate = ratesFromInrMicros.USD;
-    const targetRate = ratesFromInrMicros[currency];
-    if (!usdRate || !targetRate) return null;
-    return targetRate / usdRate;
-  }, [currency, ratesFromInrMicros]);
   const filteredCurrencies = useMemo(() => pickerCurrencies, []);
 
   useEffect(() => {
@@ -111,10 +103,4 @@ export function CurrencySelector({ ratesFromInrMicros, compact = false }: Curren
       {typeof document !== "undefined" && picker ? createPortal(picker, document.body) : null}
     </>
   );
-}
-
-export function getCurrencySnapshotForClient(
-  ratesFromInrMicros: Record<SupportedCurrencyCode, number>,
-) {
-  return ratesFromInrMicros;
 }

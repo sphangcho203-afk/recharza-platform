@@ -2,21 +2,14 @@ import Link from "next/link";
 
 import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { StorefrontIcon } from "@/components/storefront-icon";
-import {
-  convertInrPaiseToCurrencyMinor,
-  formatCurrencyMinor,
-  type SupportedCurrencyCode,
-} from "@/lib/commerce/currencies";
+import { formatCurrencyMinor } from "@/lib/commerce/currencies";
 import type { Game } from "@/lib/games";
-import { formatInr } from "@/lib/mobile-legends";
 
 type GameCardProps = {
   game: Game;
   priority?: boolean;
   showDevelopmentBadges?: boolean;
   showPricingSnapshots?: boolean;
-  displayCurrency?: SupportedCurrencyCode;
-  ratesFromInrMicros?: Partial<Record<SupportedCurrencyCode, number>>;
 };
 
 function actionLabel(game: Game, showDevelopmentBadges: boolean) {
@@ -41,19 +34,12 @@ export function GameCard({
   priority = false,
   showDevelopmentBadges = true,
   showPricingSnapshots = true,
-  displayCurrency = "INR",
-  ratesFromInrMicros,
 }: GameCardProps) {
   const interactive = Boolean(game.available && game.href);
   const label = actionLabel(game, showDevelopmentBadges);
-  const displayRate = ratesFromInrMicros?.[displayCurrency];
+  const marketCurrency = game.region?.defaultCurrency ?? "INR";
   const price = showPricingSnapshots && game.startingPriceInPaise
-    ? displayRate
-      ? formatCurrencyMinor(
-          convertInrPaiseToCurrencyMinor(game.startingPriceInPaise, displayCurrency, displayRate),
-          displayCurrency,
-        )
-      : formatInr(game.startingPriceInPaise)
+    ? formatCurrencyMinor(game.startingPriceInPaise, marketCurrency)
     : null;
   const isRegional = game.kind === "mobile-legends-region";
   const title = isRegional ? game.region?.label ?? game.title : game.title;

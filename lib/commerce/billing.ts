@@ -1,10 +1,6 @@
 import { getBillingCountry } from "@/lib/commerce/location-data";
 
-import {
-  getDefaultCurrencyForCountry,
-  parseSupportedCurrency,
-  type SupportedCurrencyCode,
-} from "@/lib/commerce/currencies";
+import { parseSupportedCurrency, type SupportedCurrencyCode } from "@/lib/commerce/currencies";
 
 export type BillingAddress = {
   fullName: string;
@@ -62,8 +58,7 @@ export function validateBillingSelection(value: unknown):
   if (state.length < 2) return { ok: false, message: "Enter the billing state or province." };
   if (postalCode.length < 3) return { ok: false, message: "Enter the billing postal code." };
 
-  const requestedCurrency = parseSupportedCurrency(data.presentmentCurrency);
-  const presentmentCurrency = requestedCurrency ?? getDefaultCurrencyForCountry(country.isoCode);
+  const presentmentCurrency = parseSupportedCurrency(data.presentmentCurrency) ?? "INR";
 
   return {
     ok: true,

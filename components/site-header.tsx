@@ -7,7 +7,6 @@ import { StorefrontCategoryNav } from "@/components/storefront-category-nav";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { CurrencySelector } from "@/components/currency-selector";
 import { MobileNavMenu } from "@/components/mobile-nav-menu";
-import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { getPublishedStorefrontContent, type StorefrontContent } from "@/lib/storefront-content";
 
 type SiteHeaderProps = { content?: Pick<StorefrontContent, "navigation"> };
@@ -21,10 +20,7 @@ const navLinks = [
 ];
 
 export async function SiteHeader({ content }: SiteHeaderProps = {}) {
-  const [storefront, rates] = await Promise.all([
-    content ? Promise.resolve(content) : getPublishedStorefrontContent(),
-    getCurrencyRateSnapshot(),
-  ]);
+  const storefront = content ?? await getPublishedStorefrontContent();
 
   return (
     <header className="site-header sticky top-0 z-50 border-b border-white/[0.08] bg-[#07080e]/90 backdrop-blur-2xl">
@@ -48,8 +44,8 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
           </nav>
 
           <div className="site-header-actions">
-            <div className="hidden sm:block"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} /></div>
-            <div className="sm:hidden"><CurrencySelector ratesFromInrMicros={rates.ratesFromInrMicros} compact /></div>
+            <div className="hidden sm:block"><CurrencySelector /></div>
+            <div className="sm:hidden"><CurrencySelector compact /></div>
             <CartBadge />
             <Link href="/account" className="site-account-link"><StorefrontIcon name="account" className="h-4 w-4" /><span className="hidden md:inline">Account</span></Link>
           </div>

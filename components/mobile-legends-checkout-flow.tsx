@@ -16,20 +16,11 @@ import {
 import { ProductOfferCard } from "@/components/product-offer-card";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 import {
-  convertInrPaiseToCurrencyMinor,
   formatCurrencyMinor,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
 import { formatInr, type MobileLegendsPackage } from "@/lib/mobile-legends";
 import type { MobileLegendsMarket } from "@/lib/mobile-legends-market";
-
-type FxSnapshot = {
-  base: "INR";
-  mode: "live" | "inr-only";
-  source: string;
-  quotedAt: string;
-  ratesFromInrMicros: Record<SupportedCurrencyCode, number>;
-};
 
 type VerificationState = {
   status: "idle" | "loading" | "success" | "error";
@@ -134,11 +125,9 @@ function stageTone(state: "complete" | "active" | "waiting") {
 export function MobileLegendsCheckoutFlow({
   packages,
   market,
-  fxSnapshot,
 }: {
   packages: MobileLegendsPackage[];
   market: MobileLegendsMarket;
-  fxSnapshot: FxSnapshot;
 }) {
   const firstPackage = packages.find((item) => item.featured) ?? packages[0];
   const [packageId, setPackageId] = useState(firstPackage?.id ?? "");
@@ -147,8 +136,7 @@ export function MobileLegendsCheckoutFlow({
   const [zoneId, setZoneId] = useState("");
   const [billing, setBilling] = useState<BillingFormState>(() => ({
     ...initialBillingForm,
-    presentmentCurrency:
-      fxSnapshot.mode === "live" ? market.defaultCurrency : "INR",
+    presentmentCurrency: market.defaultCurrency,
   }));
   const [verification, setVerification] =
     useState<VerificationState>(initialVerification);
@@ -175,14 +163,12 @@ export function MobileLegendsCheckoutFlow({
     );
   }, [packageQuery, packages]);
 
-  const selectedRate =
-    fxSnapshot.ratesFromInrMicros[billing.presentmentCurrency] ?? 0;
-  const canConvert =
-    billing.presentmentCurrency === "INR" || selectedRate > 0;
+  const marketCurrency = market.defaultCurrency;
+  const marketCurrencyMatches = billing.presentmentCurrency === marketCurrency;
   const billingComplete = billingIsComplete(billing);
   const playerComplete = verification.status === "success";
   const canCreateOrder = Boolean(
-    selectedPackage && playerComplete && billingComplete && canConvert,
+    selectedPackage && playerComplete && billingComplete && marketCurrencyMatches,
   );
 
   const stages: Array<"complete" | "active" | "waiting"> = [
@@ -197,18 +183,8 @@ export function MobileLegendsCheckoutFlow({
   ];
 
   function formatPresentment(amountInPaise: number) {
-    if (billing.presentmentCurrency === "INR" || !selectedRate) {
-      return formatInr(amountInPaise);
-    }
-
-    return formatCurrencyMinor(
-      convertInrPaiseToCurrencyMinor(
-        amountInPaise,
-        billing.presentmentCurrency,
-        selectedRate,
-      ),
-      billing.presentmentCurrency,
-    );
+    if (marketCurrency === "INR") return formatInr(amountInPaise);
+    return formatCurrencyMinor(amountInPaise, marketCurrency);
   }
 
   function resetCreatedOrder() {
@@ -299,9 +275,9 @@ export function MobileLegendsCheckoutFlow({
       return;
     }
 
-    if (!canConvert) {
+    if (!marketCurrencyMatches) {
       setCheckoutError(
-        "The selected display currency is unavailable. Choose INR or refresh.",
+        "This market uses a fixed price in its local currency. Return to the package step and continue with the market currency.",
       );
       return;
     }
@@ -330,10 +306,7 @@ export function MobileLegendsCheckoutFlow({
           marketCode: market.code,
           billing: {
             ...billing,
-            presentmentCurrency:
-              fxSnapshot.mode === "live"
-                ? billing.presentmentCurrency
-                : "INR",
+            presentmentCurrency: marketCurrency,
           },
         }),
       });
@@ -585,7 +558,7 @@ export function MobileLegendsCheckoutFlow({
           setBilling(nextBilling);
           resetCreatedOrder();
         }}
-        fxMode={fxSnapshot.mode}
+        fixedCurrency={marketCurrency}
       />
 
       <section className="overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(17,17,29,0.98),rgba(8,8,16,0.98))] shadow-2xl shadow-black/30">

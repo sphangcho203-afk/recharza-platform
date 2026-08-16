@@ -12,7 +12,6 @@ import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { SavedAddressPicker } from "@/components/saved-address-picker";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import {
-  convertInrPaiseToCurrencyMinor,
   formatCurrencyMinor,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
@@ -21,14 +20,6 @@ import type { SavedAddressView } from "@/lib/commerce/saved-addresses";
 import type { CartSnapshot } from "@/lib/cart-snapshot";
 import { formatInr, type MobileLegendsPackage } from "@/lib/mobile-legends";
 import type { MobileLegendsMarket } from "@/lib/mobile-legends-market";
-
-type FxSnapshot = {
-  base: "INR";
-  mode: "live" | "inr-only";
-  source: string;
-  quotedAt: string;
-  ratesFromInrMicros: Record<SupportedCurrencyCode, number>;
-};
 
 type VerificationState = {
   status: "idle" | "loading" | "success" | "error";
@@ -89,29 +80,28 @@ function billingIsComplete(billing: BillingFormState) {
 export function MobileLegendsCheckoutShell({
   packages,
   market,
-  fxSnapshot,
   savedAddresses = [],
   isAuthenticated = false,
   initialCartItemId = null,
 }: {
   packages: MobileLegendsPackage[];
   market: MobileLegendsMarket;
-  fxSnapshot: FxSnapshot;
   savedAddresses?: SavedAddressView[];
   isAuthenticated?: boolean;
   initialCartItemId?: string | null;
 }) {
   const firstPackage = packages.find((item) => item.featured) ?? packages[0];
+  const marketCurrency = market.defaultCurrency;
   const [packageId, setPackageId] = useState(firstPackage?.id ?? "");
   const [step, setStep] = useState<CheckoutStep>(1);
   const [playerId, setPlayerId] = useState("");
   const [zoneId, setZoneId] = useState("");
   const [billing, setBilling] = useState<BillingFormState>(() => {
     const defaultAddress = savedAddresses.find((item) => item.isDefault);
-    if (defaultAddress) return toBillingFormState(defaultAddress, fxSnapshot.mode);
+    if (defaultAddress) return toBillingFormState(defaultAddress, market.defaultCurrency);
     return {
       ...initialBillingForm,
-      presentmentCurrency: fxSnapshot.mode === "live" ? market.defaultCurrency : "INR",
+      presentmentCurrency: market.defaultCurrency,
     };
   });
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
@@ -163,18 +153,14 @@ export function MobileLegendsCheckoutShell({
   );
   const visiblePackages = packages;
 
-  const selectedRate = fxSnapshot.ratesFromInrMicros[billing.presentmentCurrency] ?? 0;
-  const canConvert = billing.presentmentCurrency === "INR" || selectedRate > 0;
+  const canConvert = billing.presentmentCurrency === marketCurrency;
   const billingComplete = billingIsComplete(billing);
   const playerComplete = verification.status === "success";
   const canCreateOrder = Boolean(selectedPackage && playerComplete && billingComplete && canConvert);
 
   function formatPresentment(amountInPaise: number) {
-    if (billing.presentmentCurrency === "INR" || !selectedRate) return formatInr(amountInPaise);
-    return formatCurrencyMinor(
-      convertInrPaiseToCurrencyMinor(amountInPaise, billing.presentmentCurrency, selectedRate),
-      billing.presentmentCurrency,
-    );
+    if (marketCurrency === "INR") return formatInr(amountInPaise);
+    return formatCurrencyMinor(amountInPaise, marketCurrency);
   }
 
   function resetCreatedOrder() {
@@ -194,7 +180,7 @@ export function MobileLegendsCheckoutShell({
     }
     setSelectedAddressId(address.id);
     setSaveNewAddress(false);
-    setBilling(toBillingFormState(address, fxSnapshot.mode));
+    setBilling(toBillingFormState(address, market.defaultCurrency));
     resetCreatedOrder();
   }
 
@@ -293,7 +279,7 @@ export function MobileLegendsCheckoutShell({
           marketCode: market.code,
           billing: {
             ...billing,
-            presentmentCurrency: fxSnapshot.mode === "live" ? billing.presentmentCurrency : "INR",
+            presentmentCurrency: marketCurrency,
           },
         }),
       });
@@ -500,10 +486,10 @@ export function MobileLegendsCheckoutShell({
           <BillingAddressFields
             value={billing}
             onChange={(nextBilling) => {
-              setBilling(nextBilling);
+              setBilling({ ...nextBilling, presentmentCurrency: marketCurrency });
               resetCreatedOrder();
             }}
-            fxMode={fxSnapshot.mode}
+            fixedCurrency={marketCurrency}
             stepNumber="03"
             stepLabel="Billing and currency"
           />

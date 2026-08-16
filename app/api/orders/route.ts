@@ -2,8 +2,6 @@ import { randomUUID } from "node:crypto";
 
 import { getRequestSession } from "@/lib/auth";
 import { validateBillingSelection } from "@/lib/commerce/billing";
-import { convertInrPaiseToCurrencyMinor } from "@/lib/commerce/currencies";
-import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import {
   isPackageAvailableForMarket,
   parseMobileLegendsMarket,
@@ -135,7 +133,7 @@ function createOrderResponse(
       message:
         order.presentmentCurrency === "INR"
           ? "The verified order is saved. Open secure tracking to continue with Razorpay Test Mode when configured."
-          : `The order is saved with a ${order.presentmentCurrency} display snapshot. Payment remains protected in INR until an approved multi-currency gateway is configured.`,
+          : `The order is saved with the fixed ${order.presentmentCurrency} market price. Payment will continue through the configured settlement gateway.`,
     },
   };
 }
@@ -279,28 +277,20 @@ export async function POST(request: Request) {
       );
     }
 
-    const fxSnapshot = await getCurrencyRateSnapshot();
-    const presentmentCurrency = billingResult.selection.presentmentCurrency;
-    const fxRateFromInrMicros = fxSnapshot.ratesFromInrMicros[presentmentCurrency] ?? 0;
-
-    if (!fxRateFromInrMicros) {
+    const presentmentCurrency = selectedMarket.defaultCurrency;
+    if (billingResult.selection.presentmentCurrency !== presentmentCurrency) {
       return Response.json(
         {
           ok: false,
-          code: "FX_UNAVAILABLE",
-          message: "The selected currency quote is temporarily unavailable. Choose INR or retry later.",
+          code: "MARKET_CURRENCY_MISMATCH",
+          message: `This market is priced in ${presentmentCurrency}. Return to the package step and continue with the market currency.`,
         },
-        { status: 503, headers: rateHeaders },
+        { status: 409, headers: rateHeaders },
       );
     }
-
-    const presentmentAmountMinor = convertInrPaiseToCurrencyMinor(
-      selectedPackage.amountInPaise,
-      presentmentCurrency,
-      fxRateFromInrMicros,
-    );
-    const parsedFxQuotedAt = new Date(fxSnapshot.quotedAt);
-    const fxQuotedAt = Number.isNaN(parsedFxQuotedAt.getTime()) ? new Date() : parsedFxQuotedAt;
+    const presentmentAmountMinor = selectedPackage.amountInPaise;
+    const fxRateFromInrMicros = null;
+    const fxQuotedAt = null;
 
     const player = validateMobileLegendsPlayer(data.playerId, data.zoneId);
     if (!player.valid) {
@@ -413,8 +403,8 @@ export async function POST(request: Request) {
                 presentmentCurrency,
                 presentmentAmountMinor,
                 fxRateFromInrMicros,
-                fxQuotedAt: fxQuotedAt.toISOString(),
-                fxMode: fxSnapshot.mode,
+                fxQuotedAt: null,
+                fxMode: "fixed-market",
                 billingCountryCode: billing.countryCode,
                 verificationMode,
                 supplierValidationConfirmed,

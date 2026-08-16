@@ -8,7 +8,6 @@ import { SiteHeader } from "@/components/site-header";
 import { StorefrontBackButton } from "@/components/storefront-back-button";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { SupplierGameCheckoutShell } from "@/components/supplier-game-checkout-shell";
-import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { getGameCheckoutDefinition } from "@/lib/commerce/game-checkout";
 import { listSavedAddresses } from "@/lib/commerce/saved-addresses";
 import { mainGames } from "@/lib/games";
@@ -41,7 +40,6 @@ export default async function GameCheckoutPage({
 
   if (isSupplierCheckoutGameSlug(gameSlug)) {
     let packages: Awaited<ReturnType<typeof getPublishedGamePackages>> = [];
-    let fxSnapshot: Awaited<ReturnType<typeof getCurrencyRateSnapshot>>;
     let media: Awaited<ReturnType<typeof getPublicMediaPlacements>>;
     let session: Awaited<ReturnType<typeof getServerSession>> = null;
 
@@ -51,34 +49,6 @@ export default async function GameCheckoutPage({
       console.error(`Live ${gameSlug} catalogue unavailable during page render`, error);
     }
 
-    try {
-      fxSnapshot = await getCurrencyRateSnapshot();
-    } catch (error) {
-      console.error(`FX snapshot unavailable during ${gameSlug} page render`, error);
-      fxSnapshot = {
-        base: "INR",
-        mode: "inr-only",
-        source: "fallback",
-        quotedAt: new Date().toISOString(),
-        ratesFromInrMicros: {
-          INR: 1_000_000,
-          USD: 0,
-          EUR: 0,
-          GBP: 0,
-          PHP: 0,
-          IDR: 0,
-          BRL: 0,
-          CAD: 0,
-          MXN: 0,
-          AED: 0,
-          SAR: 0,
-          TRY: 0,
-          SGD: 0,
-          MYR: 0,
-          THB: 0,
-        },
-      };
-    }
 
     try {
       media = await getPublicMediaPlacements();
@@ -166,7 +136,6 @@ export default async function GameCheckoutPage({
           <SupplierGameCheckoutShell
             gameSlug={gameSlug}
             packages={packages}
-            fxSnapshot={fxSnapshot}
             savedAddresses={savedAddresses}
             isAuthenticated={isAuthenticated}
             initialCartItemId={cartItem?.trim() ? cartItem : null}

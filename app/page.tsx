@@ -10,7 +10,6 @@ import { StorefrontIcon } from "@/components/storefront-icon";
 import type { Game } from "@/lib/games";
 import { games } from "@/lib/games";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
-import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { getStorefrontPricingSnapshot } from "@/lib/storefront-catalog";
 import { getPublishedStorefrontContent } from "@/lib/storefront-content";
 
@@ -25,11 +24,10 @@ const processItems = [
 const popularSlugs = new Set(["mobile-legends-india", "free-fire", "pubg-mobile", "valorant", "genshin-impact"]);
 
 export default async function Home() {
-  const [pricing, storefront, mediaPlacements, fxSnapshot] = await Promise.all([
+  const [pricing, storefront, mediaPlacements] = await Promise.all([
     getStorefrontPricingSnapshot(),
     getPublishedStorefrontContent(),
     getPublicMediaPlacements(),
-    getCurrencyRateSnapshot(),
   ]);
 
   const enrichedGames: Game[] = games.map((game) => {
@@ -117,9 +115,9 @@ export default async function Home() {
           <Link href="/support" className="storefront-inline-link">Need help choosing? <StorefrontIcon name="arrow" className="h-3.5 w-3.5" /></Link>
         </div>
 
-        {popularGames.length > 0 ? <div className="mt-8"><div className="mb-3 flex items-center justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Start here</p><h3 className="mt-1 text-lg font-semibold text-white">Popular right now</h3></div><Link href="#all-games" className="text-xs font-bold text-cyan-200 transition hover:text-white">See full catalogue</Link></div><div className="storefront-popular-rail">{popularGames.map((game, index) => <div key={game.slug} className="storefront-popular-item"><GameCard game={game} priority={index < 2} showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges} showPricingSnapshots={storefront.privateFlags.showPricingSnapshots} displayCurrency="INR" ratesFromInrMicros={fxSnapshot.ratesFromInrMicros} /></div>)}</div></div> : null}
+        {popularGames.length > 0 ? <div className="mt-8"><div className="mb-3 flex items-center justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">Start here</p><h3 className="mt-1 text-lg font-semibold text-white">Popular right now</h3></div><Link href="#all-games" className="text-xs font-bold text-cyan-200 transition hover:text-white">See full catalogue</Link></div><div className="storefront-popular-rail">{popularGames.map((game, index) => <div key={game.slug} className="storefront-popular-item"><GameCard game={game} priority={index < 2} showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges} showPricingSnapshots={storefront.privateFlags.showPricingSnapshots} /></div>)}</div></div> : null}
 
-        <div id="all-games" className="mt-12 scroll-mt-32"><Suspense fallback={<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /></div>}><GameCatalogue games={visibleGames} showRegionalMarkets={storefront.catalogue.showRegionalMarkets} showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges} showPricingSnapshots={storefront.privateFlags.showPricingSnapshots} ratesFromInrMicros={fxSnapshot.ratesFromInrMicros} /></Suspense></div>
+        <div id="all-games" className="mt-12 scroll-mt-32"><Suspense fallback={<div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /><div className="storefront-loading-card" /></div>}><GameCatalogue games={visibleGames} showRegionalMarkets={storefront.catalogue.showRegionalMarkets} showDevelopmentBadges={storefront.privateFlags.showDevelopmentBadges} showPricingSnapshots={storefront.privateFlags.showPricingSnapshots} /></Suspense></div>
       </section>
 
       <section id="how-it-works" className="border-y border-white/[0.07] bg-[#090b12] px-4 py-12 sm:px-6 lg:px-8">

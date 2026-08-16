@@ -7,6 +7,7 @@ import {
 } from "@/lib/catalog/supplier-offer-selection";
 import { getPrisma } from "@/lib/prisma";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
+import { getCurrencyForMarketCode, type SupportedCurrencyCode } from "@/lib/commerce/currencies";
 
 export const supplierCheckoutGameSlugs = [
   "mobile-legends",
@@ -26,6 +27,7 @@ export type StorefrontGamePackage = {
   amountInPaise: number;
   marketCode: string;
   marketLabel: string;
+  marketCurrency: SupportedCurrencyCode;
   region: string | null;
   fields: unknown;
   source: "fazercards-live";
@@ -108,6 +110,7 @@ function mapSupplierProduct(product: SupplierProductView): StorefrontGamePackage
     amountInPaise: product.retailPriceInPaise,
     marketCode: product.categoryId,
     marketLabel,
+    marketCurrency: getCurrencyForMarketCode(product.categoryId),
     region: product.region,
     fields: product.fields,
     source: "fazercards-live",

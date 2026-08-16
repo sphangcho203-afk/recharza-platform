@@ -2,6 +2,7 @@
 
 import { ResilientImage } from "@/components/resilient-image";
 import type { MobileLegendsPackage } from "@/lib/mobile-legends";
+import { getMerchandisingBadge, splitBonusQuantity } from "@/lib/commerce/merchandising";
 
 type ProductOfferCardProps = {
   item: MobileLegendsPackage;
@@ -18,6 +19,14 @@ export function ProductOfferCard({
   settlementPrice,
   onSelect,
 }: ProductOfferCardProps) {
+  const badge = getMerchandisingBadge(item);
+  const quantity = splitBonusQuantity(item.name);
+  const badgeClass = badge?.tone === "rose"
+    ? "border-rose-300/25 bg-rose-400/20 text-rose-100"
+    : badge?.tone === "emerald"
+      ? "border-emerald-300/25 bg-emerald-400/20 text-emerald-100"
+      : "border-violet-300/25 bg-violet-400/20 text-violet-100";
+
   return (
     <button
       type="button"
@@ -43,16 +52,16 @@ export function ProductOfferCard({
         <span className="absolute left-2.5 top-2.5 rounded-full border border-white/15 bg-black/70 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-white/85 backdrop-blur-md">
           {item.media.source === "supplier" ? "Supplier media" : "Product media"}
         </span>
-        {item.featured ? (
-          <span className="absolute right-2.5 top-2.5 rounded-full border border-violet-300/25 bg-violet-400/20 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-violet-100 backdrop-blur-md">
-            Popular
+        {badge ? (
+          <span className={`absolute right-2.5 top-2.5 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] backdrop-blur-md ${badgeClass}`}>
+            {badge.label}
           </span>
         ) : null}
       </span>
 
       <span className="relative flex min-h-[9.5rem] flex-col p-4">
         <span className="line-clamp-2 min-h-10 text-sm font-black leading-5 text-white">
-          {item.name}
+          {quantity.bonus ? <>{quantity.base} <span className="text-emerald-300">{quantity.bonus}</span></> : item.name}
         </span>
         <span className="mt-1 line-clamp-2 text-[11px] leading-4 text-slate-500">
           {item.deliveryLabel}

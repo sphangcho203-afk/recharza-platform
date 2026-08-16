@@ -8,7 +8,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontBackButton } from "@/components/storefront-back-button";
 import { StorefrontIcon } from "@/components/storefront-icon";
-import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
 import { listSavedAddresses } from "@/lib/commerce/saved-addresses";
 import { games } from "@/lib/games";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
@@ -47,9 +46,8 @@ export default async function MobileLegendsMarketPage({
   const regionalGame =
     games.find((game) => game.slug === `mobile-legends-${selectedMarket.code}`) ??
     games.find((game) => game.slug === "mobile-legends")!;
-  const [packages, fxSnapshot, media] = await Promise.all([
+  const [packages, media] = await Promise.all([
     getMobileLegendsPackages(selectedMarket.code),
-    getCurrencyRateSnapshot(),
     getPublicMediaPlacements(),
   ]);
   const session = await getServerSession();
@@ -122,7 +120,7 @@ export default async function MobileLegendsMarketPage({
                   <span>{selectedMarket.flag} {selectedMarket.label}</span>
                   <span>{packages.length} offers</span>
                   <span>{selectedMarket.defaultCurrency}</span>
-                  <span className={livePricing ? "text-emerald-300" : "text-amber-300"}>{livePricing ? "Live pricing" : "Protected preview"}</span>
+                  <span className="text-emerald-300">Fixed market pricing</span>
                   <span className="inline-flex items-center gap-1 text-cyan-300"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
                 </div>
               </div>
@@ -146,13 +144,12 @@ export default async function MobileLegendsMarketPage({
       <section className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
         <div className="mb-4 flex flex-col gap-2 rounded-lg border border-white/[0.08] bg-[#0d0f16] px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <span><strong className="text-slate-300">{selectedMarket.flag} {selectedMarket.label}:</strong> {selectedMarket.note}</span>
-          <span className={fxSnapshot.mode === "live" ? "font-black text-cyan-300" : "font-black text-amber-300"}>{fxSnapshot.mode === "live" ? "Live currency conversion" : "INR-only fallback"}</span>
+          <span className="font-black text-emerald-300">Prices shown in {selectedMarket.defaultCurrency}</span>
         </div>
 
         <MobileLegendsCheckoutShell
           packages={packages}
           market={selectedMarket}
-          fxSnapshot={fxSnapshot}
           savedAddresses={savedAddresses}
           isAuthenticated={isAuthenticated}
           initialCartItemId={cartItem?.trim() ? cartItem : null}

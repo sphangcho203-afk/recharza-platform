@@ -2,11 +2,7 @@
 
 import { CountryPicker } from "@/components/country-picker";
 import { getBillingStates } from "@/lib/commerce/location-data";
-import {
-  getDefaultCurrencyForCountry,
-  supportedCurrencies,
-  type SupportedCurrencyCode,
-} from "@/lib/commerce/currencies";
+import type { SupportedCurrencyCode } from "@/lib/commerce/currencies";
 
 export type BillingFormState = {
   fullName: string;
@@ -40,13 +36,13 @@ const inputClassName =
 export function BillingAddressFields({
   value,
   onChange,
-  fxMode,
+  fixedCurrency = "INR",
   stepNumber = "03",
   stepLabel = "Payment details",
 }: {
   value: BillingFormState;
   onChange: (value: BillingFormState) => void;
-  fxMode: "live" | "inr-only";
+  fixedCurrency?: SupportedCurrencyCode;
   stepNumber?: string;
   stepLabel?: string;
 }) {
@@ -75,7 +71,7 @@ export function BillingAddressFields({
             Billing and payment identity
           </h2>
           <p className="mt-3 text-sm leading-6 text-slate-400">
-            Used for payment processing, receipts, regional currency display, and support verification.
+            Used for payment processing, receipts, and support verification. The selected game market controls the storefront currency.
           </p>
           <div className="mt-5 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-3 text-xs leading-5 text-slate-500">
             Billing details never change the selected game-account market.
@@ -91,12 +87,10 @@ export function BillingAddressFields({
           </div>
           <span
             className={`shrink-0 rounded-full border px-3 py-1 text-[11px] font-black ${
-              fxMode === "live"
-                ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200"
-                : "border-amber-300/20 bg-amber-300/10 text-amber-100"
+              "border-cyan-300/20 bg-cyan-300/10 text-cyan-100"
             }`}
           >
-            {fxMode === "live" ? "Live FX" : "INR only"}
+            {fixedCurrency} market pricing
           </span>
         </div>
       </div>
@@ -154,33 +148,17 @@ export function BillingAddressFields({
                     ...value,
                     countryCode,
                     state: getBillingStates(countryCode)[0]?.name ?? "N/A",
-                    presentmentCurrency: getDefaultCurrencyForCountry(countryCode),
+                    presentmentCurrency: fixedCurrency,
                   })
                 }
 
               />
             </label>
-            <label className="text-sm font-semibold text-slate-200">
-              Display currency
-              <select
-                required
-                value={value.presentmentCurrency}
-                disabled={fxMode !== "live"}
-                onChange={(event) =>
-                  update(
-                    "presentmentCurrency",
-                    event.target.value as SupportedCurrencyCode,
-                  )
-                }
-                className={`${inputClassName} disabled:cursor-not-allowed disabled:opacity-55`}
-              >
-                {supportedCurrencies.map((currency) => (
-                  <option key={currency.code} value={currency.code}>
-                    {currency.code} · {currency.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div className="rounded-xl border border-cyan-300/15 bg-cyan-300/[0.06] px-4 py-3 text-sm text-cyan-100">
+              <span className="block text-[10px] font-black uppercase tracking-[0.16em] text-cyan-300">Market currency</span>
+              <span className="mt-1 block text-base font-black text-white">{fixedCurrency}</span>
+              <span className="mt-1 block text-xs leading-5 text-cyan-100/60">Prices are fixed by the selected game market. Billing country does not change them.</span>
+            </div>
           </div>
         </fieldset>
 

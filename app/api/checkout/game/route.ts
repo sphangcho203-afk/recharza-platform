@@ -1,8 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import { validateBillingSelection } from "@/lib/commerce/billing";
-import { convertInrPaiseToCurrencyMinor } from "@/lib/commerce/currencies";
-import { getCurrencyRateSnapshot } from "@/lib/commerce/fx-rates";
+import { getCurrencyForMarketCode } from "@/lib/commerce/currencies";
 import { validateSupplierCheckoutIdentity } from "@/lib/commerce/game-identity";
 import { sendOrderCreatedLifecycleEmail } from "@/lib/lifecycle-email";
 import {
@@ -355,31 +354,20 @@ export async function POST(request: Request) {
       verificationMode = liveIdentity.verificationMode;
     }
 
-    const fxSnapshot = await getCurrencyRateSnapshot();
-    const presentmentCurrency = billingResult.selection.presentmentCurrency;
-    const fxRateFromInrMicros =
-      fxSnapshot.ratesFromInrMicros[presentmentCurrency] ?? 0;
-    if (!fxRateFromInrMicros) {
+    const presentmentCurrency = selectedPackage.marketCurrency ?? getCurrencyForMarketCode(selectedPackage.marketCode);
+    if (billingResult.selection.presentmentCurrency !== presentmentCurrency) {
       return Response.json(
         {
           ok: false,
-          code: "FX_UNAVAILABLE",
-          message:
-            "The selected display currency is temporarily unavailable. Choose INR or retry later.",
+          code: "MARKET_CURRENCY_MISMATCH",
+          message: "The checkout currency must match the selected game market.",
         },
-        { status: 503, headers: rateHeaders },
+        { status: 409, headers: rateHeaders },
       );
     }
-
-    const presentmentAmountMinor = convertInrPaiseToCurrencyMinor(
-      selectedPackage.amountInPaise,
-      presentmentCurrency,
-      fxRateFromInrMicros,
-    );
-    const parsedFxQuotedAt = new Date(fxSnapshot.quotedAt);
-    const fxQuotedAt = Number.isNaN(parsedFxQuotedAt.getTime())
-      ? new Date()
-      : parsedFxQuotedAt;
+    const presentmentAmountMinor = selectedPackage.amountInPaise;
+    const fxRateFromInrMicros = null;
+    const fxQuotedAt = null;
 
     const customer = await prisma.customer.upsert({
       where: { email: billingEmail },
@@ -470,8 +458,8 @@ export async function POST(request: Request) {
                 presentmentCurrency,
                 presentmentAmountMinor,
                 fxRateFromInrMicros,
-                fxQuotedAt: fxQuotedAt.toISOString(),
-                fxMode: fxSnapshot.mode,
+                fxQuotedAt: null,
+                pricingMode: "fixed-market-currency",
                 billingCountryCode: billing.countryCode,
                 verificationMode,
                 verifiedNickname,

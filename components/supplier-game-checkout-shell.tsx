@@ -12,11 +12,11 @@ import { ResilientImage } from "@/components/resilient-image";
 import { SavedAddressPicker } from "@/components/saved-address-picker";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import {
-  convertInrPaiseToCurrencyMinor,
   formatCurrencyMinor,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
 import { getSupplierSelectOptions, validateSupplierCheckoutIdentity } from "@/lib/commerce/game-identity";
+import { getMerchandisingBadge, splitBonusQuantity } from "@/lib/commerce/merchandising";
 import { toBillingFormState } from "@/lib/commerce/saved-address-form";
 import type { SavedAddressView } from "@/lib/commerce/saved-addresses";
 import type { CartSnapshot } from "@/lib/cart-snapshot";
@@ -31,6 +31,7 @@ type CheckoutPackage = {
   amountInPaise: number;
   marketCode: string;
   marketLabel: string;
+  marketCurrency: SupportedCurrencyCode;
   region: string | null;
   fields: unknown;
   media: {
@@ -38,14 +39,6 @@ type CheckoutPackage = {
     alt: string;
     source: string;
   };
-};
-
-type FxSnapshot = {
-  base: "INR";
-  mode: "live" | "inr-only";
-  source: string;
-  quotedAt: string;
-  ratesFromInrMicros: Record<SupportedCurrencyCode, number>;
 };
 
 type CreatedOrder = {
@@ -107,14 +100,12 @@ function billingIsComplete(billing: BillingFormState) {
 export function SupplierGameCheckoutShell({
   gameSlug,
   packages,
-  fxSnapshot,
   savedAddresses = [],
   isAuthenticated = false,
   initialCartItemId = null,
 }: {
   gameSlug: SupplierCheckoutGameSlug;
   packages: CheckoutPackage[];
-  fxSnapshot: FxSnapshot;
   savedAddresses?: SavedAddressView[];
   isAuthenticated?: boolean;
   initialCartItemId?: string | null;
@@ -126,6 +117,7 @@ export function SupplierGameCheckoutShell({
   }, [packages]);
 
   const firstMarketCode = markets[0]?.code ?? "";
+  const initialMarketCurrency = packages.find((item) => item.marketCode === firstMarketCode)?.marketCurrency ?? "INR";
   const [marketCode, setMarketCode] = useState(firstMarketCode);
   const marketPackages = useMemo(
     () => (gameSlug === "free-fire" ? packages : packages.filter((item) => item.marketCode === marketCode)),
@@ -136,8 +128,8 @@ export function SupplierGameCheckoutShell({
   const [identity, setIdentity] = useState<IdentityState>(initialIdentity);
   const [billing, setBilling] = useState<BillingFormState>(() => {
     const defaultAddress = savedAddresses.find((item) => item.isDefault);
-    if (defaultAddress) return toBillingFormState(defaultAddress, fxSnapshot.mode);
-    return initialBillingForm;
+    if (defaultAddress) return toBillingFormState(defaultAddress, initialMarketCurrency);
+    return { ...initialBillingForm, presentmentCurrency: initialMarketCurrency };
   });
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(
     () => savedAddresses.find((item) => item.isDefault)?.id ?? null,
@@ -191,8 +183,8 @@ export function SupplierGameCheckoutShell({
   const selectedPackage = packages.find((item) => item.id === packageId) ?? marketPackages[0];
   const serverOptions = getSupplierSelectOptions(selectedPackage?.fields, /server/);
   const identityResult = selectedPackage ? validateSupplierCheckoutIdentity(gameSlug, identity, selectedPackage.fields) : null;
-  const selectedRate = fxSnapshot.ratesFromInrMicros[billing.presentmentCurrency] ?? 0;
-  const canConvert = billing.presentmentCurrency === "INR" || selectedRate > 0;
+  const marketCurrency = selectedPackage?.marketCurrency ?? initialMarketCurrency;
+  const canConvert = billing.presentmentCurrency === marketCurrency;
   const canSubmit = Boolean(
     selectedPackage &&
       identityResult?.valid &&
@@ -268,7 +260,7 @@ export function SupplierGameCheckoutShell({
     }
     setSelectedAddressId(address.id);
     setSaveNewAddress(false);
-    setBilling(toBillingFormState(address, fxSnapshot.mode));
+    setBilling(toBillingFormState(address, marketCurrency));
     resetOrder();
   }
 
@@ -306,11 +298,8 @@ export function SupplierGameCheckoutShell({
   }
 
   function formatPresentment(amountInPaise: number) {
-    if (billing.presentmentCurrency === "INR" || !selectedRate) return formatInr(amountInPaise);
-    return formatCurrencyMinor(
-      convertInrPaiseToCurrencyMinor(amountInPaise, billing.presentmentCurrency, selectedRate),
-      billing.presentmentCurrency,
-    );
+    if (marketCurrency === "INR") return formatInr(amountInPaise);
+    return formatCurrencyMinor(amountInPaise, marketCurrency);
   }
 
   async function submitCheckout(event: FormEvent<HTMLFormElement>) {
@@ -344,7 +333,7 @@ export function SupplierGameCheckoutShell({
           identity,
           billing: {
             ...billing,
-            presentmentCurrency: fxSnapshot.mode === "live" ? billing.presentmentCurrency : "INR",
+            presentmentCurrency: marketCurrency,
           },
         }),
       });
@@ -559,6 +548,13 @@ export function SupplierGameCheckoutShell({
           <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
             {marketPackages.map((item) => {
               const selected = item.id === selectedPackage.id;
+              const badge = getMerchandisingBadge(item);
+              const quantity = splitBonusQuantity(item.name);
+              const badgeClass = badge?.tone === "rose"
+                ? "border-rose-300/25 bg-rose-400/20 text-rose-100"
+                : badge?.tone === "emerald"
+                  ? "border-emerald-300/25 bg-emerald-400/20 text-emerald-100"
+                  : "border-violet-300/25 bg-violet-400/20 text-violet-100";
               return (
                 <div
                   key={item.id}
@@ -580,6 +576,7 @@ export function SupplierGameCheckoutShell({
                     className="block w-full text-left"
                   >
                     <span className="relative block aspect-[16/9] overflow-hidden bg-[#141821]">
+                      {badge ? <span className={`absolute right-2 top-2 z-10 rounded-full border px-2 py-1 text-[9px] font-black uppercase tracking-[0.1em] ${badgeClass}`}>{badge.label}</span> : null}
                       <ResilientImage
                         sources={item.media.sources}
                         alt={item.media.alt}
@@ -591,7 +588,7 @@ export function SupplierGameCheckoutShell({
                       />
                     </span>
                     <span className="block p-2.5 sm:p-3">
-                      <strong className="line-clamp-2 min-h-9 text-xs leading-4 text-white sm:text-[13px] sm:leading-5">{item.name}</strong>
+                      <strong className="line-clamp-2 min-h-9 text-xs leading-4 text-white sm:text-[13px] sm:leading-5">{quantity.bonus ? <>{quantity.base} <span className="text-emerald-300">{quantity.bonus}</span></> : item.name}</strong>
                       {gameSlug === "free-fire" && item.marketLabel ? (
                         <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{item.marketLabel}</span>
                       ) : null}
@@ -631,7 +628,7 @@ export function SupplierGameCheckoutShell({
               setBilling(nextBilling);
               resetOrder();
             }}
-            fxMode={fxSnapshot.mode}
+            fixedCurrency={marketCurrency}
             stepNumber="03"
             stepLabel="Billing and currency"
           />
