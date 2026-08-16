@@ -63,18 +63,27 @@ function supportQuickActions(intent: "GENERAL" | "ORDER_STATUS" | "ORDER_SUPPORT
     ? intent === "ORDER_STATUS" || intent === "ORDER_SUPPORT"
       ? [[
           { text: "🔎 Check an order", callback_data: "support:order" },
-          { text: "🧑‍💻 Human help", callback_data: "support:human" },
-        ], [{ text: "🛍️ Open the store", url: "https://recharza-platform.vercel.app/" }]]
+          { text: "🧑‍💻 Talk to support", callback_data: "support:human" },
+        ], [{ text: "🛍️ Open Recharza", url: "https://recharza-platform.vercel.app/" }]]
       : [[
-          { text: "🎮 Choose a game", callback_data: "support:games" },
+          { text: "🎮 Find my game", callback_data: "support:games" },
           { text: "🧾 Order help", callback_data: "support:order" },
-        ], [{ text: "🛍️ Open the store", url: "https://recharza-platform.vercel.app/" }]]
-    : [[{ text: "🛍️ Open the store", url: "https://recharza-platform.vercel.app/" }]];
+        ], [{ text: "🛍️ Open Recharza", url: "https://recharza-platform.vercel.app/" }]]
+    : [[{ text: "🛍️ Open Recharza", url: "https://recharza-platform.vercel.app/" }]];
   return { inline_keyboard: rows };
 }
 
-function friendlySupportMessage(reply: string) {
-  return `<b>✨ Recharza Support</b>\n\n${reply}\n\n<i>I’m here with you—tell me what you’d like to do next.</i>`;
+function friendlySupportMessage(
+  reply: string,
+  intent: "GENERAL" | "ORDER_STATUS" | "ORDER_SUPPORT",
+  isPrivate: boolean,
+  isFirstReply: boolean,
+) {
+  const cue = intent === "ORDER_STATUS" ? "🔎" : intent === "ORDER_SUPPORT" ? "🧾" : "✨";
+  const footer = isPrivate
+    ? "💬 You can keep replying here—I’ll remember the context."
+    : "🔒 For order or payment details, I’ll keep things private and guide you in DM.";
+  return `${isFirstReply ? `<b>${cue} Recharza Support</b>\n\n` : ""}${reply}\n\n<i>${footer}</i>`;
 }
 
 function statusLabel(status: string) {
@@ -214,7 +223,7 @@ async function processGroupUpdate(update: GroupTelegramUpdate) {
       const reply = `<b>✅ Order update</b>\n\nOrder <code>${safe(result.order.publicId)}</code> is <b>${safe(statusLabel(result.order.status))}</b>.\n🎮 Game: ${safe(result.order.gameSlug)}\n📦 Package: ${safe(result.order.packageName)}\n🕒 Last updated: ${safe(result.order.updatedAt.toISOString())}\n\nIf this does not match what you expected, tell me what happened and I’ll guide you through the next step.`;
       nextState = appendSessionTurn(nextState, { role: "assistant", text: `Order status checked: ${result.order.status}` }, { pendingIntent: "GENERAL" });
       await saveGroupBotSession({ chatId, telegramUserId: userId, state: nextState });
-      await sendPrivateMessage(message.from.id, friendlySupportMessage(reply), { reply_markup: supportQuickActions("ORDER_STATUS", true) });
+      await sendPrivateMessage(message.from.id, friendlySupportMessage(reply, "ORDER_STATUS", true, false), { reply_markup: supportQuickActions("ORDER_STATUS", true) });
       return;
     } catch (error) {
       console.error("Group bot order lookup failed", error instanceof Error ? error.message : "unknown error");
@@ -238,7 +247,7 @@ async function processGroupUpdate(update: GroupTelegramUpdate) {
   );
   const finalState = appendSessionTurn(nextState, { role: "assistant", text: reply });
   await saveGroupBotSession({ chatId, telegramUserId: userId, state: finalState });
-  const formattedReply = friendlySupportMessage(reply);
+  const formattedReply = friendlySupportMessage(reply, intent, !group, currentState.turns.length === 0);
   await (group
     ? sendGroupMessage(chatId, formattedReply, { reply_markup: supportQuickActions(intent, false) })
     : sendPrivateMessage(message.from.id, formattedReply, { reply_markup: supportQuickActions(intent, true) }));

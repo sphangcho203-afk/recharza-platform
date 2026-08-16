@@ -143,8 +143,8 @@ async function showSupportMenu(chatId: string) {
       "<b>👋 Recharza Support</b>",
       "<code>● SUPPORT ONLINE</code>",
       "",
-      "I’m ready to help. What best describes the issue you’re facing?",
-      "We’ll sort it out together in four quick steps—no command syntax needed.",
+      "I’m ready to help. What happened? Pick the closest option and I’ll guide you from there.",
+      "We’ll sort it out together in four quick steps—just reply naturally and I’ll keep up.",
       "",
       "<i>For your safety, never send passwords, OTPs, UPI PINs, card PINs, or remote-access codes.</i>",
     ].join("\n"),
@@ -172,7 +172,7 @@ async function askForTitle(chatId: string, category: SupportCategory) {
       "<b>🧭 Step 1 of 4 · Issue type</b>",
       `<code>${escapeHtml(supportCategoryLabel(category).toUpperCase())}</code>`,
       "",
-      "Give this issue a short title.",
+      "Give this issue a short title so I can keep the request organized.",
       "",
       "Example: <i>Payment completed but order stayed unpaid</i>",
     ].join("\n"),
@@ -193,12 +193,12 @@ async function askForOrder(chatId: string) {
       "<b>🔗 Step 2 of 4 · Order link</b>",
       "<code>ORDER LINK</code>",
       "",
-      "Send the Recharza order ID connected to this issue.",
-      "If there is no order, use the button below.",
+      "Do you have a Recharza order ID for this issue? Send it here and I’ll attach it securely.",
+      "No order? That’s completely fine—use the button below and we’ll continue.",
     ].join("\n"),
     {
       reply_markup: {
-        inline_keyboard: [[{ text: "NO ORDER // CONTINUE", callback_data: "draft:no-order" }]],
+        inline_keyboard: [[{ text: "➡️ Continue without an order", callback_data: "draft:no-order" }]],
       },
     },
   );
@@ -211,8 +211,8 @@ async function askForDescription(chatId: string) {
       "<b>📝 Step 3 of 4 · What happened?</b>",
       "<code>DETAILS</code>",
       "",
-      "Describe exactly what happened.",
-      "Include what you expected, what actually happened, and any useful error message.",
+      "Tell me what happened in your own words.",
+      "What did you expect, what happened instead, and did you see an error message? The more context you share, the faster I can help.",
       "",
       "<i>Do not include passwords, OTPs, PINs, full card numbers, or login codes.</i>",
     ].join("\n"),
@@ -239,7 +239,7 @@ async function showDraftReview(chatId: string, session: SupportBotSession) {
       "",
       `<b>Report</b>\n${escapeHtml(session.description || "Not entered")}`,
       "",
-      "Everything look right? Send this to Recharza Support when you’re ready.",
+      "Does everything look right? Send it when you’re ready and the support team will take it from there.",
     ].join("\n"),
     {
       reply_markup: {
@@ -324,7 +324,7 @@ async function handleDraftMessage(message: TelegramMessage) {
   if (session.step === "TITLE") {
     const subject = cleanLine(message.text, 120);
     if (subject.length < 5) {
-      await sendTelegramCustomerMessage(chatId, "Title too short. Use at least 5 characters.");
+      await sendTelegramCustomerMessage(chatId, "That title is a little short 🙂 Please use at least 5 characters so I know what to focus on.");
       await askForTitle(chatId, session.category);
       return true;
     }
@@ -346,7 +346,7 @@ async function handleDraftMessage(message: TelegramMessage) {
     if (!/^RZ-[A-Z0-9]{6,24}$/.test(value)) {
       await sendTelegramCustomerMessage(
         chatId,
-        "That doesn’t look like a Recharza order ID. Send an ID such as <code>RZ-XXXXXXXXXXXX</code>, or tap <b>NO ORDER</b>.",
+        "Hmm, that doesn’t look like a Recharza order ID yet. Please send something like <code>RZ-XXXXXXXXXXXX</code>, or tap <b>Continue without an order</b>.",
       );
       await askForOrder(chatId);
       return true;
@@ -364,7 +364,7 @@ async function handleDraftMessage(message: TelegramMessage) {
     if (description.length < 20) {
       await sendTelegramCustomerMessage(
         chatId,
-        "Add a little more detail so support can understand the issue — at least 20 characters.",
+        "Could you add a little more detail? A sentence or two will help the support team understand what went wrong 🙂",
       );
       await askForDescription(chatId);
       return true;
@@ -380,7 +380,7 @@ async function handleDraftMessage(message: TelegramMessage) {
   if (session.step === "REVIEW") {
     await sendTelegramCustomerMessage(
       chatId,
-      "Your draft is ready. Use <b>SUBMIT</b>, <b>EDIT</b>, or <b>CANCEL</b> on the review card above.",
+      "Your support request is ready above. Tap <b>Send to support</b> when it looks right, or choose <b>Edit</b> if you want to change anything.",
     );
     return true;
   }
