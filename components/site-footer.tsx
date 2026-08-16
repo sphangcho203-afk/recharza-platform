@@ -81,7 +81,7 @@ export async function SiteFooter() {
             <div className="mt-3 flex flex-wrap items-center gap-2.5" aria-label="Accepted payment methods">
               {paymentMarks.map((mark) => (
                 <span key={mark.label} title={mark.label} className="grid h-10 min-w-11 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035] px-2.5 shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
-                  <img src={mark.src} alt={mark.label} className={`${mark.className} object-contain brightness-0 invert opacity-80`} />
+                  <img src={mark.src} alt={mark.label} className={`${mark.className} object-contain opacity-95`} />
                 </span>
               ))}
             </div>
