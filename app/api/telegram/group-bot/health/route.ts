@@ -27,7 +27,7 @@ async function telegramSetWebhook(token: string, url: string, secret: string) {
     body: JSON.stringify({
       url,
       secret_token: secret,
-      allowed_updates: ["message"],
+      allowed_updates: ["message", "callback_query"],
       drop_pending_updates: false,
     }),
     cache: "no-store",

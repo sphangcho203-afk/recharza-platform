@@ -15,9 +15,17 @@ export type GroupTelegramMessage = {
   entities?: Array<{ type: string; offset: number; length: number; user?: GroupTelegramUser }>;
 };
 
+export type GroupTelegramCallbackQuery = {
+  id: string;
+  from: GroupTelegramUser;
+  data?: string;
+  message?: GroupTelegramMessage;
+};
+
 export type GroupTelegramUpdate = {
   update_id?: number;
   message?: GroupTelegramMessage;
+  callback_query?: GroupTelegramCallbackQuery;
 };
 
 export type GroupSupportIntent = "GENERAL" | "ORDER_STATUS" | "ORDER_SUPPORT";
@@ -74,6 +82,14 @@ export async function sendGroupMessage(chatId: string, text: string, extra: Reco
 
 export async function sendPrivateMessage(userId: number, text: string, extra: Record<string, unknown> = {}) {
   return sendGroupMessage(String(userId), text, extra);
+}
+
+export async function answerGroupCallback(callbackQueryId: string, text?: string) {
+  return telegramRequest<boolean>("answerCallbackQuery", {
+    callback_query_id: callbackQueryId,
+    text,
+    show_alert: false,
+  });
 }
 
 export function messageMentionsGroupBot(message: GroupTelegramMessage) {

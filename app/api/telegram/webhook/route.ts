@@ -140,13 +140,13 @@ async function showSupportMenu(chatId: string) {
   await sendTelegramCustomerMessage(
     chatId,
     [
-      "<b>RECHARZA // SUPPORT GRID</b>",
-      "<code>NODE STATUS  •  ONLINE</code>",
+      "<b>👋 Recharza Support</b>",
+      "<code>● SUPPORT ONLINE</code>",
       "",
-      "Select the incident channel closest to your problem.",
-      "We’ll build the ticket step-by-step — no command syntax required.",
+      "I’m ready to help. What best describes the issue you’re facing?",
+      "We’ll sort it out together in four quick steps—no command syntax needed.",
       "",
-      "<i>Never send passwords, OTPs, UPI PINs, card PINs, or remote-access codes.</i>",
+      "<i>For your safety, never send passwords, OTPs, UPI PINs, card PINs, or remote-access codes.</i>",
     ].join("\n"),
     { reply_markup: categoryKeyboard() },
   );
@@ -169,7 +169,7 @@ async function askForTitle(chatId: string, category: SupportCategory) {
   await sendTelegramCustomerMessage(
     chatId,
     [
-      "<b>INCIDENT // 01 OF 04</b>",
+      "<b>🧭 Step 1 of 4 · Issue type</b>",
       `<code>${escapeHtml(supportCategoryLabel(category).toUpperCase())}</code>`,
       "",
       "Give this issue a short title.",
@@ -190,7 +190,7 @@ async function askForOrder(chatId: string) {
   await sendTelegramCustomerMessage(
     chatId,
     [
-      "<b>INCIDENT // 02 OF 04</b>",
+      "<b>🔗 Step 2 of 4 · Order link</b>",
       "<code>ORDER LINK</code>",
       "",
       "Send the Recharza order ID connected to this issue.",
@@ -208,7 +208,7 @@ async function askForDescription(chatId: string) {
   await sendTelegramCustomerMessage(
     chatId,
     [
-      "<b>INCIDENT // 03 OF 04</b>",
+      "<b>📝 Step 3 of 4 · What happened?</b>",
       "<code>DETAILS</code>",
       "",
       "Describe exactly what happened.",
@@ -230,8 +230,8 @@ async function showDraftReview(chatId: string, session: SupportBotSession) {
   await sendTelegramCustomerMessage(
     chatId,
     [
-      "<b>INCIDENT // 04 OF 04</b>",
-      "<code>REVIEW BEFORE TRANSMISSION</code>",
+      "<b>✅ Step 4 of 4 · Review</b>",
+      "<code>READY TO SEND</code>",
       "",
       `<b>Category</b>  ${escapeHtml(supportCategoryLabel(session.category))}`,
       `<b>Title</b>  ${escapeHtml(session.subject || "Not entered")}`,
@@ -239,13 +239,13 @@ async function showDraftReview(chatId: string, session: SupportBotSession) {
       "",
       `<b>Report</b>\n${escapeHtml(session.description || "Not entered")}`,
       "",
-      "Transmit this ticket to Recharza Support?",
+      "Everything look right? Send this to Recharza Support when you’re ready.",
     ].join("\n"),
     {
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "⚡ SUBMIT", callback_data: "draft:submit" },
+            { text: "🚀 SEND TO SUPPORT", callback_data: "draft:submit" },
             { text: "✏️ EDIT", callback_data: "draft:edit" },
           ],
           [{ text: "✕ CANCEL", callback_data: "draft:cancel" }],
@@ -428,18 +428,18 @@ async function submitDraft(callback: TelegramCallbackQuery, session: SupportBotS
   await sendTelegramCustomerMessage(
     chatId,
     [
-      "<b>TRANSMISSION COMPLETE</b>",
-      "<code>RECHARZA SUPPORT GRID</code>",
+      "<b>🎉 Request sent</b>",
+      "<code>RECHARZA SUPPORT</code>",
       "",
       `Ticket  <code>${ticket.publicId}</code>`,
       `Category  ${escapeHtml(supportCategoryLabel(session.category))}`,
       "Status  <b>OPEN</b>",
       "",
-      "Keep the ticket ID. Staff replies can arrive in this chat.",
+      "Keep the ticket ID—our support team can reply right here. I’m glad you reached out.",
     ].join("\n"),
     {
       reply_markup: {
-        inline_keyboard: [[{ text: "＋ NEW REQUEST", callback_data: "draft:new" }]],
+        inline_keyboard: [[{ text: "➕ New request", callback_data: "draft:new" }]],
       },
     },
   );

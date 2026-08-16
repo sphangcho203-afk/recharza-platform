@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import { getPrisma } from "@/lib/prisma";
 import { verifyOrderAccessToken } from "@/lib/order-security";
 import {
+  answerGroupCallback,
   detectSupportIntent,
   extractOrderId,
   formatConversationHistory,
@@ -57,6 +58,25 @@ function safe(value: string) {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
+function supportQuickActions(intent: "GENERAL" | "ORDER_STATUS" | "ORDER_SUPPORT", isPrivate: boolean) {
+  const rows = isPrivate
+    ? intent === "ORDER_STATUS" || intent === "ORDER_SUPPORT"
+      ? [[
+          { text: "🔎 Check an order", callback_data: "support:order" },
+          { text: "🧑‍💻 Human help", callback_data: "support:human" },
+        ], [{ text: "🛍️ Open the store", url: "https://recharza-platform.vercel.app/" }]]
+      : [[
+          { text: "🎮 Choose a game", callback_data: "support:games" },
+          { text: "🧾 Order help", callback_data: "support:order" },
+        ], [{ text: "🛍️ Open the store", url: "https://recharza-platform.vercel.app/" }]]
+    : [[{ text: "🛍️ Open the store", url: "https://recharza-platform.vercel.app/" }]];
+  return { inline_keyboard: rows };
+}
+
+function friendlySupportMessage(reply: string) {
+  return `<b>✨ Recharza Support</b>\n\n${reply}\n\n<i>I’m here with you—tell me what you’d like to do next.</i>`;
+}
+
 function statusLabel(status: string) {
   return status.toLowerCase().replaceAll("_", " ").replace(/\b\w/g, (character) => character.toUpperCase());
 }
@@ -80,7 +100,29 @@ async function lookupOrderStatus(orderId: string, accessToken: string) {
   return { kind: "ok" as const, order };
 }
 
+async function handleGroupCallback(update: GroupTelegramUpdate) {
+  const callback = update.callback_query;
+  if (!callback) return false;
+  await answerGroupCallback(callback.id, "Got it — opening the next step").catch(() => undefined);
+  const userId = callback.from.id;
+  const action = callback.data || "";
+  if (action === "support:order") {
+    await sendPrivateMessage(userId, "<b>🔎 Order help</b>\n\nSend your Recharza Order ID, for example <code>RZ-ABC123</code>. I’ll keep the details private and guide you from there.", { reply_markup: supportQuickActions("ORDER_STATUS", true) });
+    return true;
+  }
+  if (action === "support:games") {
+    await sendPrivateMessage(userId, "<b>🎮 Choose your game</b>\n\nOpen the store to select the game, region, player details, and package in the guided checkout.", { reply_markup: supportQuickActions("GENERAL", true) });
+    return true;
+  }
+  if (action === "support:human") {
+    await sendPrivateMessage(userId, "<b>🧑‍💻 Human support</b>\n\nTell me what happened in your own words. I’ll collect only the details support needs—never send passwords, OTPs, card details, or UPI PINs.", { reply_markup: supportQuickActions("ORDER_SUPPORT", true) });
+    return true;
+  }
+  return true;
+}
+
 async function processGroupUpdate(update: GroupTelegramUpdate) {
+  if (await handleGroupCallback(update)) return;
   const message = update.message;
   if (!message?.text || !message.from) return;
 
@@ -105,7 +147,8 @@ async function processGroupUpdate(update: GroupTelegramUpdate) {
   if (isStartOrHelp(text)) {
     await sendGroupMessage(
       chatId,
-      `<b>RECHARZA SUPPORT</b>\n\n${group ? `Mention @${username || "the bot"} for general store help.` : "Send your question here directly; mentions are not required in private chat."}\n\nI remember the recent conversation, so you can ask follow-up questions naturally. For order or payment help, continue privately. Never send access tokens, OTPs, card details, or UPI PINs in a group.`,
+      `<b>👋 Recharza Support</b>\n\n${group ? `Mention @${username || "the bot"} whenever you need me.` : "You can message me directly—no command needed."}\n\nAsk naturally about games, packages, verification, checkout, payments, or an order. I’ll keep the conversation moving with you.\n\n<i>For your safety, never send access tokens, OTPs, card details, or UPI PINs in a group.</i>`,
+      { reply_markup: supportQuickActions("GENERAL", !group) },
     );
     return;
   }
@@ -149,12 +192,12 @@ async function processGroupUpdate(update: GroupTelegramUpdate) {
 
     if (!orderId) {
       await saveGroupBotSession({ chatId, telegramUserId: userId, state: nextState });
-      await sendPrivateMessage(message.from.id, "<b>ORDER STATUS</b>\n\nI can check that for you. Please send the Order ID from your confirmation, for example <code>RZ-ABC123</code>.");
+      await sendPrivateMessage(message.from.id, "<b>🔎 Order status</b>\n\nI can check that for you. Please send the Order ID from your confirmation, for example <code>RZ-ABC123</code>.", { reply_markup: supportQuickActions("ORDER_STATUS", true) });
       return;
     }
     if (!accessToken) {
       await saveGroupBotSession({ chatId, telegramUserId: userId, state: nextState });
-      await sendPrivateMessage(message.from.id, `<b>ORDER STATUS</b>\n\nI found order <code>${safe(orderId)}</code>. Please send the private access token from that order’s confirmation. I will use it only to verify this status and will not repeat it.`);
+      await sendPrivateMessage(message.from.id, `<b>🔐 Secure order check</b>\n\nI found order <code>${safe(orderId)}</code>. Please send the private access token from that order’s confirmation. I will use it only to verify this status and will not repeat it.`, { reply_markup: supportQuickActions("ORDER_STATUS", true) });
       return;
     }
 
@@ -168,10 +211,10 @@ async function processGroupUpdate(update: GroupTelegramUpdate) {
         await sendPrivateMessage(message.from.id, "The access token did not match that Order ID. Please copy the private token from the same order confirmation and try again.");
         return;
       }
-      const reply = `<b>ORDER STATUS</b>\n\nOrder <code>${safe(result.order.publicId)}</code> is <b>${safe(statusLabel(result.order.status))}</b>.\nGame: ${safe(result.order.gameSlug)}\nPackage: ${safe(result.order.packageName)}\nLast updated: ${safe(result.order.updatedAt.toISOString())}\n\nIf this status does not match what you expected, tell me what happened and I’ll guide you through the next support step.`;
+      const reply = `<b>✅ Order update</b>\n\nOrder <code>${safe(result.order.publicId)}</code> is <b>${safe(statusLabel(result.order.status))}</b>.\n🎮 Game: ${safe(result.order.gameSlug)}\n📦 Package: ${safe(result.order.packageName)}\n🕒 Last updated: ${safe(result.order.updatedAt.toISOString())}\n\nIf this does not match what you expected, tell me what happened and I’ll guide you through the next step.`;
       nextState = appendSessionTurn(nextState, { role: "assistant", text: `Order status checked: ${result.order.status}` }, { pendingIntent: "GENERAL" });
       await saveGroupBotSession({ chatId, telegramUserId: userId, state: nextState });
-      await sendPrivateMessage(message.from.id, reply);
+      await sendPrivateMessage(message.from.id, friendlySupportMessage(reply), { reply_markup: supportQuickActions("ORDER_STATUS", true) });
       return;
     } catch (error) {
       console.error("Group bot order lookup failed", error instanceof Error ? error.message : "unknown error");
@@ -195,9 +238,10 @@ async function processGroupUpdate(update: GroupTelegramUpdate) {
   );
   const finalState = appendSessionTurn(nextState, { role: "assistant", text: reply });
   await saveGroupBotSession({ chatId, telegramUserId: userId, state: finalState });
+  const formattedReply = friendlySupportMessage(reply);
   await (group
-    ? sendGroupMessage(chatId, `<b>RECHARZA SUPPORT</b>\n\n${reply}`)
-    : sendPrivateMessage(message.from.id, `<b>RECHARZA SUPPORT</b>\n\n${reply}`));
+    ? sendGroupMessage(chatId, formattedReply, { reply_markup: supportQuickActions(intent, false) })
+    : sendPrivateMessage(message.from.id, formattedReply, { reply_markup: supportQuickActions(intent, true) }));
 }
 
 export async function POST(request: Request) {
