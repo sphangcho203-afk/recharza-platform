@@ -5,6 +5,7 @@ import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState 
 
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
+import { PrivateOrderTokenCard } from "@/components/private-order-token-card";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 import { ResilientImage } from "@/components/resilient-image";
 import { StorefrontArtwork } from "@/components/storefront-artwork";
@@ -560,6 +561,8 @@ export function MobileLegendsCheckoutShell({
               </div>
               <span className="w-fit rounded-md border border-emerald-300/20 bg-emerald-300/[0.07] px-2 py-1 text-[10px] font-black text-emerald-200">{order.ownership.accountLinked ? "Linked account" : "Guest checkout"}</span>
             </div>
+
+            <PrivateOrderTokenCard token={order.tracking.accessToken} />
 
             {paymentVerified ? (
               <div className="mt-4 rounded-lg border border-emerald-300/20 bg-emerald-300/[0.08] p-3 text-sm font-bold text-emerald-50">Payment response verified. Fulfilment status remains available through secure tracking.</div>

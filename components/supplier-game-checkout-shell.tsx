@@ -6,6 +6,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
+import { PrivateOrderTokenCard } from "@/components/private-order-token-card";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 import { ResilientImage } from "@/components/resilient-image";
 import { SavedAddressPicker } from "@/components/saved-address-picker";
@@ -693,6 +694,7 @@ export function SupplierGameCheckoutShell({
               </div>
               <Link href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`} className="text-xs font-black text-emerald-300 underline">Open tracking</Link>
             </div>
+            <PrivateOrderTokenCard token={order.tracking.accessToken} />
             <RazorpayTestCheckout
               orderId={order.id}
               orderStatus={order.status}
