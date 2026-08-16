@@ -52,7 +52,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
 
         <div className="mx-auto mt-8 grid max-w-5xl gap-4 lg:mt-10">
           <GoogleOAuthPanel returnTo={returnTo} authError={rawAuthError} />
-          <CustomerAccountShell />
+          <CustomerAccountShell returnTo={returnTo} />
         </div>
       </section>
       <SiteFooter />

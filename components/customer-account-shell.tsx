@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 
 import { CustomerDashboard } from "@/components/customer-dashboard";
@@ -20,7 +21,8 @@ type SignupSuccess = {
 const inputClassName =
   "mt-2 min-h-12 w-full rounded-lg border border-white/[0.12] bg-[#080a10] px-3.5 text-sm text-white outline-none transition duration-150 placeholder:text-slate-600 focus:border-violet-300/70 focus:ring-2 focus:ring-violet-300/15 disabled:cursor-not-allowed disabled:opacity-50";
 
-export function CustomerAccountShell({ showOrders = false }: { showOrders?: boolean }) {
+export function CustomerAccountShell({ showOrders = false, returnTo = "/account" }: { showOrders?: boolean; returnTo?: string }) {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
   const [mode, setMode] = useState<AuthMode>("login");
@@ -58,6 +60,12 @@ export function CustomerAccountShell({ showOrders = false }: { showOrders?: bool
     };
   }, []);
 
+  useEffect(() => {
+    if (!loading && authenticated && !signupSuccess && !showOrders && returnTo !== "/account") {
+      router.replace(returnTo);
+    }
+  }, [authenticated, loading, returnTo, router, showOrders, signupSuccess]);
+
   function switchMode(nextMode: AuthMode) {
     setMode(nextMode);
     setError(false);
@@ -82,6 +90,7 @@ export function CustomerAccountShell({ showOrders = false }: { showOrders?: bool
         return;
       }
       setAuthenticated(true);
+      if (returnTo !== "/account") router.replace(returnTo);
     } catch {
       setError(true);
       setMessage("The sign-in service could not be reached. Try again in a moment.");
@@ -174,11 +183,11 @@ export function CustomerAccountShell({ showOrders = false }: { showOrders?: bool
           <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/10 blur-3xl" aria-hidden="true" />
           <div className="relative">
             <RecharzaMark />
-            <p className="mt-7 text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">Your top-up workspace</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white">Everything tied to one account.</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-400">Keep checkout, orders, receipts, and support together wherever you play.</p>
+            <p className="mt-7 text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">{showOrders ? "Secure order history" : "Your top-up workspace"}</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white">{showOrders ? "Sign in to view your purchases." : "Everything tied to one account."}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-400">{showOrders ? "Only the signed-in customer can access order history, player destinations, and delivery status." : "Keep checkout, orders, receipts, and support together wherever you play."}</p>
             <div className="mt-8 grid gap-5">
-              <Benefit icon="track" title="Order history" text="Review purchases and recover receipts in one place." />
+              {showOrders ? <Benefit icon="track" title="Private purchase timeline" text="Review your purchases and delivery status after sign-in." /> : <Benefit icon="track" title="Order history" text="Review purchases and recover receipts in one place." />}
               <Benefit icon="shield" title="Protected access" text="Secure sessions and recovery controls for your account." />
               <Benefit icon="support" title="Connected support" text="Keep support linked to the right order when you need help." />
             </div>
@@ -217,9 +226,9 @@ export function CustomerAccountShell({ showOrders = false }: { showOrders?: bool
           </div>
 
           <div className="mt-7">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">{mode === "login" ? "Welcome back" : "Start with Recharza"}</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">{mode === "login" ? "Pick up where you left off." : "Create your account."}</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">{mode === "login" ? "Sign in to checkout, track orders, and keep support connected." : "One account for checkout, tracking, receipts, and support."}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">{showOrders ? "Order history access" : mode === "login" ? "Welcome back" : "Start with Recharza"}</p>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">{showOrders ? "Open your purchases." : mode === "login" ? "Pick up where you left off." : "Create your account."}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-400">{showOrders ? "Sign in to see your account-owned orders. Guest orders remain available through secure order lookup." : mode === "login" ? "Sign in to checkout, track orders, and keep support connected." : "One account for checkout, tracking, receipts, and support."}</p>
           </div>
 
           {mode === "login" ? (
