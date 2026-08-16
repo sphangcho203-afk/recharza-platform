@@ -56,7 +56,8 @@ export async function GET(request: Request) {
     const webhookSecret = process.env.TELEGRAM_GROUP_BOT_WEBHOOK_SECRET?.trim() || "";
     let repaired = false;
     let repairError: string | null = null;
-    if (actualUrl !== expectedUrl && webhookSecret) {
+    const needsRepair = actualUrl !== expectedUrl || !webhook.allowed_updates?.includes("callback_query");
+    if (needsRepair && webhookSecret) {
       try {
         await telegramSetWebhook(token, expectedUrl, webhookSecret);
         repaired = true;
@@ -72,7 +73,7 @@ export async function GET(request: Request) {
         expectedUrl,
         actualUrl: repaired ? expectedUrl : actualUrl || null,
         matchesDeployment: actualUrl === expectedUrl || repaired,
-        repairAttempted: actualUrl !== expectedUrl && Boolean(webhookSecret),
+        repairAttempted: needsRepair && Boolean(webhookSecret),
         repairError,
         pendingUpdates: webhook.pending_update_count ?? 0,
         lastErrorDate: webhook.last_error_date ?? null,
