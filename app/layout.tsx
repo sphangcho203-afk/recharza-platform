@@ -5,6 +5,7 @@ import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import "./globals.css";
 import "./frontend-tuning.css";
 import "./storefront-redesign.css";
+import "./electric-brand.css";
 
 export const metadata: Metadata = {
   applicationName: "Recharza",
