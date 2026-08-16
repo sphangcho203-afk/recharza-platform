@@ -1,7 +1,7 @@
 import { getMailDeliveryConfiguration, sendSystemEmail } from "@/lib/mail-delivery";
 
 type MagicLinkDeliveryResult =
-  | { mode: "gmail" | "resend"; messageId: string }
+  | { mode: "gmail" | "gmail-smtp" | "resend"; messageId: string }
   | { mode: "development-preview"; previewUrl: string };
 
 function escapeHtml(value: string) {

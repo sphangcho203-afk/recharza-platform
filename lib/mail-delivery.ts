@@ -2,7 +2,7 @@ import "server-only";
 
 const DEFAULT_GMAIL_FROM = "recherzatopup@gmail.com";
 
-type MailProvider = "gmail" | "resend";
+type MailProvider = "gmail" | "gmail-smtp" | "resend";
 
 export type SystemEmailInput = {
   to: string;
@@ -40,7 +40,9 @@ function base64Url(value: string) {
 
 function selectedProvider(): MailProvider {
   const configured = value("EMAIL_DELIVERY_PROVIDER").toLowerCase();
-  return configured === "resend" ? "resend" : "gmail";
+  if (configured === "resend") return "resend";
+  if (configured === "gmail-smtp" || configured === "smtp") return "gmail-smtp";
+  return "gmail";
 }
 
 function gmailClientId() {
@@ -53,6 +55,22 @@ function gmailClientSecret() {
 
 function gmailRefreshToken() {
   return value("GOOGLE_MAIL_REFRESH_TOKEN");
+}
+
+function smtpHost() {
+  return value("GOOGLE_MAIL_SMTP_HOST") || value("GMAIL_SMTP_HOST") || "smtp.gmail.com";
+}
+
+function smtpPort() {
+  return Number(value("GOOGLE_MAIL_SMTP_PORT") || value("GMAIL_SMTP_PORT") || "465");
+}
+
+function smtpUser() {
+  return value("GOOGLE_MAIL_SMTP_USER") || value("GMAIL_SMTP_USER") || value("NEXT_PUBLIC_SUPPORT_EMAIL") || DEFAULT_GMAIL_FROM;
+}
+
+function smtpPassword() {
+  return value("GOOGLE_MAIL_SMTP_PASSWORD") || value("GMAIL_SMTP_PASSWORD");
 }
 
 function gmailSender() {
@@ -72,6 +90,19 @@ function gmailConfigured() {
 
 function resendConfigured() {
   return Boolean(value("RESEND_API_KEY") && value("RESEND_FROM_EMAIL"));
+}
+
+function gmailSmtpConfigured() {
+  return Boolean(smtpHost() && smtpPort() && smtpUser() && smtpPassword());
+}
+
+function gmailSmtpMissingFields() {
+  const missing: string[] = [];
+  if (!smtpHost()) missing.push("GOOGLE_MAIL_SMTP_HOST");
+  if (!smtpPort()) missing.push("GOOGLE_MAIL_SMTP_PORT");
+  if (!smtpUser()) missing.push("GOOGLE_MAIL_SMTP_USER");
+  if (!smtpPassword()) missing.push("GOOGLE_MAIL_SMTP_PASSWORD");
+  return missing;
 }
 
 function gmailMissingFields() {
@@ -104,6 +135,16 @@ export function getMailDeliveryConfiguration() {
     configured: resendConfigured(),
   };
 
+  const smtp = {
+    host: smtpHost(),
+    port: smtpPort(),
+    user: Boolean(smtpUser()),
+    password: Boolean(smtpPassword()),
+    from: gmailSender(),
+    configured: gmailSmtpConfigured(),
+    missing: gmailSmtpMissingFields(),
+  };
+
   return {
     requestedProvider,
     provider:
@@ -111,10 +152,15 @@ export function getMailDeliveryConfiguration() {
         ? gmail.configured
           ? ("gmail" as const)
           : null
-        : resend.configured
-          ? ("resend" as const)
-          : null,
+        : requestedProvider === "gmail-smtp"
+          ? smtp.configured
+            ? ("gmail-smtp" as const)
+            : null
+          : resend.configured
+            ? ("resend" as const)
+            : null,
     gmail,
+    smtp,
     resend,
   };
 }
@@ -231,6 +277,38 @@ async function sendWithGmail(
   return { provider: "gmail", messageId: payload.id };
 }
 
+async function sendWithGmailSmtp(
+  input: SystemEmailInput,
+): Promise<SystemEmailResult> {
+  const nodemailer = (await import("nodemailer")).default;
+  const user = smtpUser();
+  const password = smtpPassword();
+  if (!user || !password) {
+    throw new Error(`Gmail SMTP delivery is incomplete: ${gmailSmtpMissingFields().join(", ")}.`);
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: smtpHost(),
+    port: smtpPort(),
+    secure: smtpPort() === 465,
+    auth: { user, pass: password },
+  });
+
+  const sent = await transporter.sendMail({
+    from: gmailSender(),
+    to: input.to,
+    subject: input.subject,
+    html: input.html,
+    text: input.text,
+    replyTo: input.replyTo,
+    headers: input.idempotencyKey
+      ? { "X-Recharza-Idempotency-Key": cleanHeader(input.idempotencyKey).slice(0, 200) }
+      : undefined,
+  });
+
+  return { provider: "gmail-smtp", messageId: sent.messageId };
+}
+
 async function sendWithResend(
   input: SystemEmailInput,
 ): Promise<SystemEmailResult> {
@@ -290,6 +368,15 @@ export async function sendSystemEmail(
       );
     }
     return sendWithGmail(input);
+  }
+
+  if (configuration.requestedProvider === "gmail-smtp") {
+    if (!configuration.smtp.configured) {
+      throw new Error(
+        `Gmail SMTP is the configured Recharza mail transport but app-password delivery is incomplete: ${configuration.smtp.missing.join(", ") || "unknown Gmail SMTP configuration error"}.`,
+      );
+    }
+    return sendWithGmailSmtp(input);
   }
 
   if (!configuration.resend.configured) {
