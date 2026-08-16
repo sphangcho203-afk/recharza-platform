@@ -24,8 +24,8 @@ export type GroupBotSession = {
   expiresAt: Date;
 };
 
-function dbChatId(chatId: string) {
-  return `${SESSION_PREFIX}${chatId}`;
+function dbChatId(chatId: string, telegramUserId?: string) {
+  return `${SESSION_PREFIX}${chatId}${telegramUserId ? `:${telegramUserId}` : ""}`;
 }
 
 function expiry() {
@@ -75,7 +75,7 @@ export async function getGroupBotSession(chatId: string, telegramUserId: string)
   >`
     SELECT "chatId", "telegramUserId", "description", "expiresAt"
     FROM "SupportBotSession"
-    WHERE "chatId" = ${dbChatId(chatId)}
+    WHERE "chatId" = ${dbChatId(chatId, telegramUserId)}
       AND "telegramUserId" = ${telegramUserId}
       AND "category" = ${SESSION_CATEGORY}
       AND "expiresAt" > ${new Date()}
@@ -108,7 +108,7 @@ export async function saveGroupBotSession(input: {
       "chatId", "telegramUserId", "category", "step", "subject",
       "orderPublicId", "description", "createdAt", "updatedAt", "expiresAt"
     ) VALUES (
-      ${dbChatId(input.chatId)}, ${input.telegramUserId}, ${SESSION_CATEGORY}, 'CONTEXT', NULL,
+      ${dbChatId(input.chatId, input.telegramUserId)}, ${input.telegramUserId}, ${SESSION_CATEGORY}, 'CONTEXT', NULL,
       ${state.orderId}, ${serialized}, ${now}, ${now}, ${expiry()}
     )
     ON CONFLICT ("chatId") DO UPDATE SET
@@ -126,7 +126,7 @@ export async function saveGroupBotSession(input: {
 export async function clearGroupBotSession(chatId: string, telegramUserId: string) {
   await getPrisma().$executeRaw`
     DELETE FROM "SupportBotSession"
-    WHERE "chatId" = ${dbChatId(chatId)} AND "telegramUserId" = ${telegramUserId}
+    WHERE "chatId" = ${dbChatId(chatId, telegramUserId)} AND "telegramUserId" = ${telegramUserId}
   `;
 }
 

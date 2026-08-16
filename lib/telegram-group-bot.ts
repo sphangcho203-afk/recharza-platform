@@ -110,29 +110,51 @@ export function detectSupportIntent(text: string, rememberedOrderId?: string | n
 }
 
 function deterministicSupportReply(message: string, intent: GroupSupportIntent, isPrivate: boolean) {
-  const text = message.toLowerCase();
+  const text = message.toLowerCase().trim();
+  const variants = (items: string[]) => items[Math.abs([...text].reduce((sum, char) => sum + char.charCodeAt(0), 0)) % items.length];
+  if (/^(hi|hello|hey|yo|good morning|good evening)\b/.test(text)) {
+    return variants([
+      "Hey! I’m Recharza Support. What would you like to sort out today?",
+      "Hello! I’m here to help with a game top-up, player verification, checkout, or an existing order.",
+      "Hi there—tell me what you’re trying to do and I’ll guide you through the right next step.",
+    ]);
+  }
+  if (/\b(link|url|website|site|store|shop)\b/.test(text)) {
+    return "Here is the Recharza store: https://recharza-platform.vercel.app/ — choose your game, region, package, and continue through the guided checkout.";
+  }
   if (intent === "ORDER_STATUS") {
     return isPrivate
-      ? "I understand you want to check the order status. Send the Order ID from your confirmation; if you have already sent it, send the private access token next."
-      : "I can help check that order. I’ll move this to private support so your order details and access token stay protected.";
+      ? "I can check that. Please send the Order ID from your confirmation; if you already sent it, the next thing I need is the private access token."
+      : "I can help with that, but order details must stay private. I’ve moved the next step to your private chat—please continue there with the Order ID only first.";
   }
   if (intent === "ORDER_SUPPORT") {
     return isPrivate
-      ? "I understand this is about a specific order or payment. Send the Order ID from your confirmation and I’ll guide you through the next safe step."
-      : "I understand this is about an order or payment. I’ll continue privately so no order details or payment information are exposed here.";
+      ? "I can help investigate the payment or delivery issue. Send the Order ID and briefly tell me what went wrong; don’t send OTPs, card details, or UPI PINs."
+      : "I can help with the order or payment issue. Let’s continue privately so no order, payment, or access information is exposed in the group.";
   }
-  if (/price|cost|rate|currency|usd|inr|try|brl|php/.test(text)) {
-    return "Prices depend on the game, region, package, and selected currency. Tell me the game and region, and I’ll point you to the correct catalogue before checkout.";
+  if (/\b(verify|validation|username|ign|player.?id|uid|zone|server|riot)\b/.test(text)) {
+    return "For player verification, open the correct game and region, enter the requested player ID details, and tap Verify. If the name does not appear, tell me the game, region, and the exact error—never send a password or OTP.";
   }
-  if (/game|available|support|top.?up|recharge/.test(text)) {
-    return "Recharza offers regional top-ups for Mobile Legends, Free Fire, PUBG Mobile, VALORANT, and Genshin Impact. Which game and region are you trying to top up?";
+  if (/\b(price|cost|rate|currency|usd|inr|try|brl|php|sar|aed|conversion)\b/.test(text)) {
+    return "Prices are shown in the currency selected at the top of the store. Tell me the game, region, and package you want, and I’ll help you find the right option.";
   }
-  if (/how|where|buy|purchase|checkout|pay|payment/.test(text)) {
-    return "Choose a game and region, enter the required player details, select a package, and complete checkout. If payment was already made, tell me that privately with your Order ID.";
+  if (/\b(game|available|top.?up|recharge|diamond|uc|crystal|points|membership|pass|pack)\b/.test(text)) {
+    return "Recharza supports regional top-ups for Mobile Legends, Free Fire, PUBG Mobile, VALORANT, Genshin Impact, and other listed games. Tell me the game and region, and I’ll point you to the correct packages.";
   }
-  return isPrivate
-    ? "I’m following you. Tell me whether you need help choosing a game, verifying a player ID, completing checkout, or checking an order."
-    : "I can help with games, regions, player-ID verification, packages, checkout, and order support. Tell me what you are trying to do, and I’ll guide you from there.";
+  if (/\b(how|where|buy|purchase|checkout|pay|payment|cart)\b/.test(text)) {
+    return "Choose a game and region, select a package, verify the player details, enter billing information, review the order, and then continue to secure payment. I can guide you through any step.";
+  }
+  return variants(isPrivate
+    ? [
+        "I can help with the store, game packages, player verification, checkout, payments, or order status. What are you trying to do right now?",
+        "Tell me the exact problem in your own words and I’ll narrow it down—game, region, player ID, package, payment, or order.",
+        "I’m with you. What happened, and which game or order is it related to?",
+      ]
+    : [
+        "I can help with general store questions. For order or payment details, I’ll move the conversation to private support.",
+        "Tell me what you need help with—game selection, packages, verification, checkout, or payment—and I’ll point you in the right direction.",
+        "I’m here for Recharza store support. What are you trying to complete?",
+      ]);
 }
 
 export function formatConversationHistory(turns: Array<{ role: "user" | "assistant"; text: string }>) {
