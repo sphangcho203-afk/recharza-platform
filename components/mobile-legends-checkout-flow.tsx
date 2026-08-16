@@ -13,12 +13,14 @@ import {
   initialBillingForm,
   type BillingFormState,
 } from "@/components/billing-address-fields";
+import { DisplayPrice, useDisplayCurrency } from "@/components/display-price";
 import { ProductOfferCard } from "@/components/product-offer-card";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 import {
   formatCurrencyMinor,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
+import { formatDisplayMinor } from "@/lib/commerce/display-currency";
 import { formatInr, type MobileLegendsPackage } from "@/lib/mobile-legends";
 import type { MobileLegendsMarket } from "@/lib/mobile-legends-market";
 
@@ -164,6 +166,7 @@ export function MobileLegendsCheckoutFlow({
   }, [packageQuery, packages]);
 
   const marketCurrency = market.defaultCurrency;
+  const { currency: displayCurrency, rates: displayRates } = useDisplayCurrency();
   const marketCurrencyMatches = billing.presentmentCurrency === marketCurrency;
   const billingComplete = billingIsComplete(billing);
   const playerComplete = verification.status === "success";
@@ -183,8 +186,7 @@ export function MobileLegendsCheckoutFlow({
   ];
 
   function formatPresentment(amountInPaise: number) {
-    if (marketCurrency === "INR") return formatInr(amountInPaise);
-    return formatCurrencyMinor(amountInPaise, marketCurrency);
+    return formatDisplayMinor(amountInPaise, displayCurrency, displayRates);
   }
 
   function resetCreatedOrder() {

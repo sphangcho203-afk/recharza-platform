@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 
+import { DisplayPrice } from "@/components/display-price";
 import { ResilientImage } from "@/components/resilient-image";
 import { resolveProductMedia } from "@/lib/catalog/product-media";
 import {
@@ -9,7 +10,6 @@ import {
   checkoutHref,
   type CartItemView,
 } from "@/lib/cart-snapshot";
-import { formatInr } from "@/lib/mobile-legends";
 import { mobileLegendsMarkets } from "@/lib/mobile-legends-market";
 
 const supplierGameTitles: Record<string, string> = {
@@ -84,7 +84,7 @@ export function CartItemRow({
                 {item.package.name}
               </h3>
               <p className="mt-1 text-xs font-bold text-slate-400">
-                {formatInr(item.package.amountInPaise)}{" "}
+                <DisplayPrice amountInrMinor={item.package.amountInPaise} />{" "}
                 <span className="font-medium text-slate-600">each</span>
               </p>
             </div>
@@ -174,7 +174,7 @@ export function CartItemRow({
                   aria-live="polite"
                   className="block text-base font-black text-white"
                 >
-                  {formatInr(lineTotalInPaise(item))}
+                  <DisplayPrice amountInrMinor={lineTotalInPaise(item)} />
                 </strong>
               </p>
               <Link

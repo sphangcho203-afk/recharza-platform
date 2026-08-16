@@ -4,6 +4,7 @@ import Link from "next/link";
 import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import { AddToCartButton } from "@/components/add-to-cart-button";
+import { useDisplayCurrency } from "@/components/display-price";
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
 import { PrivateOrderTokenCard } from "@/components/private-order-token-card";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
@@ -15,6 +16,7 @@ import {
   formatCurrencyMinor,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
+import { formatDisplayMinor } from "@/lib/commerce/display-currency";
 import { toBillingFormState } from "@/lib/commerce/saved-address-form";
 import type { SavedAddressView } from "@/lib/commerce/saved-addresses";
 import type { CartSnapshot } from "@/lib/cart-snapshot";
@@ -92,6 +94,7 @@ export function MobileLegendsCheckoutShell({
 }) {
   const firstPackage = packages.find((item) => item.featured) ?? packages[0];
   const marketCurrency = market.defaultCurrency;
+  const { currency: displayCurrency, rates: displayRates } = useDisplayCurrency();
   const [packageId, setPackageId] = useState(firstPackage?.id ?? "");
   const [step, setStep] = useState<CheckoutStep>(1);
   const [playerId, setPlayerId] = useState("");
@@ -159,8 +162,7 @@ export function MobileLegendsCheckoutShell({
   const canCreateOrder = Boolean(selectedPackage && playerComplete && billingComplete && canConvert);
 
   function formatPresentment(amountInPaise: number) {
-    if (marketCurrency === "INR") return formatInr(amountInPaise);
-    return formatCurrencyMinor(amountInPaise, marketCurrency);
+    return formatDisplayMinor(amountInPaise, displayCurrency, displayRates);
   }
 
   function resetCreatedOrder() {

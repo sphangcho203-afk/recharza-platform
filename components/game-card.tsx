@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { StorefrontIcon } from "@/components/storefront-icon";
-import { formatCurrencyMinor } from "@/lib/commerce/currencies";
+import { DisplayPrice } from "@/components/display-price";
 import type { Game } from "@/lib/games";
 
 type GameCardProps = {
@@ -37,10 +37,7 @@ export function GameCard({
 }: GameCardProps) {
   const interactive = Boolean(game.available && game.href);
   const label = actionLabel(game, showDevelopmentBadges);
-  const marketCurrency = game.region?.defaultCurrency ?? "INR";
-  const price = showPricingSnapshots && game.startingPriceInPaise
-    ? formatCurrencyMinor(game.startingPriceInPaise, marketCurrency)
-    : null;
+  const price = showPricingSnapshots && game.startingPriceInPaise ? game.startingPriceInPaise : null;
   const isRegional = game.kind === "mobile-legends-region";
   const title = isRegional ? game.region?.label ?? game.title : game.title;
   const category = isRegional ? "Mobile Legends" : game.category;
@@ -74,7 +71,7 @@ export function GameCard({
           <h3 className="min-w-0 truncate text-sm font-semibold leading-5 text-text-primary sm:text-base">{title}</h3>
         </div>
         <p className="truncate text-xs font-medium text-text-muted">{category}</p>
-        {price ? <p className="truncate text-xs text-text-secondary">From <span className="font-semibold text-primary">{price}</span></p> : null}
+        {price ? <p className="truncate text-xs text-text-secondary">From <DisplayPrice amountInrMinor={price} className="font-semibold text-primary" /></p> : null}
       </div>
 
       <div className="flex items-center justify-between gap-2 border-t border-border pt-2">

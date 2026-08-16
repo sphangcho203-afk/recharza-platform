@@ -4,6 +4,7 @@ import Link from "next/link";
 import { type FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import { AddToCartButton } from "@/components/add-to-cart-button";
+import { useDisplayCurrency } from "@/components/display-price";
 
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
 import { PrivateOrderTokenCard } from "@/components/private-order-token-card";
@@ -15,6 +16,7 @@ import {
   formatCurrencyMinor,
   type SupportedCurrencyCode,
 } from "@/lib/commerce/currencies";
+import { formatDisplayMinor } from "@/lib/commerce/display-currency";
 import { getSupplierSelectOptions, validateSupplierCheckoutIdentity } from "@/lib/commerce/game-identity";
 import { getMerchandisingBadge, splitBonusQuantity } from "@/lib/commerce/merchandising";
 import { toBillingFormState } from "@/lib/commerce/saved-address-form";
@@ -184,6 +186,7 @@ export function SupplierGameCheckoutShell({
   const serverOptions = getSupplierSelectOptions(selectedPackage?.fields, /server/);
   const identityResult = selectedPackage ? validateSupplierCheckoutIdentity(gameSlug, identity, selectedPackage.fields) : null;
   const marketCurrency = selectedPackage?.marketCurrency ?? initialMarketCurrency;
+  const { currency: displayCurrency, rates: displayRates } = useDisplayCurrency();
   const canConvert = billing.presentmentCurrency === marketCurrency;
   const canSubmit = Boolean(
     selectedPackage &&
@@ -298,8 +301,7 @@ export function SupplierGameCheckoutShell({
   }
 
   function formatPresentment(amountInPaise: number) {
-    if (marketCurrency === "INR") return formatInr(amountInPaise);
-    return formatCurrencyMinor(amountInPaise, marketCurrency);
+    return formatDisplayMinor(amountInPaise, displayCurrency, displayRates);
   }
 
   async function submitCheckout(event: FormEvent<HTMLFormElement>) {

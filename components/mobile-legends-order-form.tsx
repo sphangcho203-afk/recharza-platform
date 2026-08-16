@@ -8,11 +8,10 @@ import {
   initialBillingForm,
   type BillingFormState,
 } from "@/components/billing-address-fields";
+import { DisplayPrice, useDisplayCurrency } from "@/components/display-price";
 import { ProductOfferCard } from "@/components/product-offer-card";
-import {
-  formatCurrencyMinor,
-  type SupportedCurrencyCode,
-} from "@/lib/commerce/currencies";
+import { formatCurrencyMinor, type SupportedCurrencyCode } from "@/lib/commerce/currencies";
+import { formatDisplayMinor } from "@/lib/commerce/display-currency";
 import { formatInr, type MobileLegendsPackage } from "@/lib/mobile-legends";
 import type { MobileLegendsMarket } from "@/lib/mobile-legends-market";
 
@@ -102,10 +101,10 @@ export function MobileLegendsOrderForm({
   const usesLiveSupplierPricing = packages.some((item) => item.source === "fazercards-live");
   const marketCurrency = market.defaultCurrency;
   const marketCurrencyMatches = billing.presentmentCurrency === marketCurrency;
+  const { currency: displayCurrency, rates: displayRates } = useDisplayCurrency();
 
   function formatPresentment(amountInPaise: number) {
-    if (marketCurrency === "INR") return formatInr(amountInPaise);
-    return formatCurrencyMinor(amountInPaise, marketCurrency);
+    return formatDisplayMinor(amountInPaise, displayCurrency, displayRates);
   }
 
   useEffect(() => {

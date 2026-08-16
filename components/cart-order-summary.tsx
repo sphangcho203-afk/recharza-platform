@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 
+import { DisplayPrice } from "@/components/display-price";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import {
   checkoutHref,
   type CartSnapshot,
 } from "@/lib/cart-snapshot";
-import { formatInr } from "@/lib/mobile-legends";
 
 export function CartOrderSummary({
   cart,
@@ -36,13 +36,13 @@ export function CartOrderSummary({
           <div className="flex items-center justify-between gap-4">
             <dt className="text-slate-500">Items ({cart.itemCount})</dt>
             <dd className="font-bold text-slate-200">
-              {formatInr(cart.totalInPaise)}
+              <DisplayPrice amountInrMinor={cart.totalInPaise} />
             </dd>
           </div>
           <div className="flex items-center justify-between gap-4 border-t border-white/[0.08] pt-3">
             <dt className="font-black text-slate-300">Subtotal</dt>
             <dd className="text-xl font-black text-violet-300">
-              {formatInr(cart.totalInPaise)}
+              <DisplayPrice amountInrMinor={cart.totalInPaise} />
             </dd>
           </div>
         </dl>
