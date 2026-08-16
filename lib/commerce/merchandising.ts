@@ -8,19 +8,23 @@ export function getMerchandisingBadge(input: {
   featured?: boolean;
 }): MerchandisingBadge | null {
   const name = input.name.toLowerCase();
+  // Badges are intentionally rare. Ordinary products should remain calm and legible.
   if (input.featured) return { label: "Most Bought", tone: "violet" };
-  if (name.includes("twilight") || name.includes("monthly") || name.includes("weekly")) {
-    return { label: "Hot", tone: "rose" };
-  }
-  if (/\d+\s*\+\s*\d+/.test(name)) return { label: "Best Value", tone: "emerald" };
+  if (name.includes("hot offer")) return { label: "Hot", tone: "rose" };
+  if (name.includes("best value")) return { label: "Best Value", tone: "emerald" };
   return null;
 }
 
-export function splitBonusQuantity(name: string): { base: string; bonus: string | null } {
-  const match = name.match(/^(.*?\d+)\s*\+\s*(\d+)(\s+.*)?$/);
-  if (!match) return { base: name, bonus: null };
+export function splitBonusQuantity(name: string): {
+  base: string;
+  plus: string;
+  bonus: string;
+} {
+  const match = name.match(/^(.*?\d+)\s*(\+\s*)(\d+)(\s+.*)?$/);
+  if (!match) return { base: name, plus: "", bonus: "" };
   return {
-    base: `${match[1].trim()}`,
-    bonus: `+ ${match[2]}${match[3] ?? ""}`,
+    base: match[1].trim(),
+    plus: "+",
+    bonus: `${match[3]}${match[4] ?? ""}`.trim(),
   };
 }

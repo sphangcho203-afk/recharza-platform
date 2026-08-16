@@ -578,28 +578,24 @@ export function SupplierGameCheckoutShell({
                     className="block w-full text-left"
                   >
                     <span className="relative block aspect-[16/9] overflow-hidden bg-[#141821]">
-                      <span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-slate-950/75 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-slate-300 shadow-[0_8px_24px_rgba(0,0,0,0.22)] backdrop-blur-md">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(110,231,183,0.85)]" aria-hidden="true" />
-                        {item.media.source === "supplier" ? "Live offer" : "Official item"}
-                      </span>
-                      {badge ? (
-                        <span className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.13em] backdrop-blur-md ${badgeClass}`}>
-                          <span aria-hidden="true">{badge.tone === "rose" ? "✦" : badge.tone === "emerald" ? "◆" : "↗"}</span>
-                          {badge.label}
-                        </span>
-                      ) : null}
                       <ResilientImage
                         sources={item.media.sources}
                         alt={item.media.alt}
                         fallbackLabel={item.name.slice(0, 2).toUpperCase()}
                         fill
                         sizes="(max-width: 640px) 45vw, 190px"
-                        className="object-contain p-4 sm:p-5 transition duration-300 group-hover:scale-[1.035]"
+                        className="object-contain p-4 sm:p-5 transition duration-300 group-hover:scale-[1.025]"
                         fallbackClassName="absolute inset-0 h-full w-full"
                       />
                     </span>
                     <span className="block p-3 sm:p-4">
-                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-[-0.01em] text-white sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-black text-emerald-300 drop-shadow-[0_0_12px_rgba(110,231,183,0.24)]">{quantity.bonus}</span></> : item.name}</strong>
+                      {badge ? (
+                        <span className={`mb-2 inline-flex w-fit items-center gap-1.5 rounded-md border px-2 py-1 text-[10px] font-semibold tracking-wide ${badgeClass}`}>
+                          <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
+                          {badge.label}
+                        </span>
+                      ) : null}
+                      <strong className="line-clamp-2 min-h-10 text-[13px] font-semibold leading-5 tracking-[-0.01em] text-white sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-semibold text-emerald-300">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
                       {gameSlug === "free-fire" && item.marketLabel ? (
                         <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{item.marketLabel}</span>
                       ) : null}

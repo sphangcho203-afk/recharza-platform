@@ -447,16 +447,6 @@ export function MobileLegendsCheckoutShell({
                     className="block w-full text-left"
                   >
                     <span className="relative block aspect-[16/9] overflow-hidden bg-[#141821]">
-                      <span className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-slate-950/75 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.14em] text-slate-300 shadow-[0_8px_24px_rgba(0,0,0,0.22)] backdrop-blur-md">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_10px_rgba(110,231,183,0.85)]" aria-hidden="true" />
-                        Official item
-                      </span>
-                      {badge ? (
-                        <span className={`absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.13em] backdrop-blur-md ${badgeClass}`}>
-                          <span aria-hidden="true">{badge.tone === "rose" ? "✦" : badge.tone === "emerald" ? "◆" : "↗"}</span>
-                          {badge.label}
-                        </span>
-                      ) : null}
                       <StorefrontArtwork
                         sources={item.media.sources}
                         alt={item.media.alt}
@@ -468,7 +458,13 @@ export function MobileLegendsCheckoutShell({
                       />
                     </span>
                     <span className="block p-3 sm:p-4">
-                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-[-0.01em] text-white sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-black text-emerald-300 drop-shadow-[0_0_12px_rgba(110,231,183,0.24)]">{quantity.bonus}</span></> : item.name}</strong>
+                      {badge ? (
+                        <span className={`mb-2 inline-flex w-fit items-center gap-1.5 rounded-md border px-2 py-1 text-[10px] font-semibold tracking-wide ${badgeClass}`}>
+                          <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
+                          {badge.label}
+                        </span>
+                      ) : null}
+                      <strong className="line-clamp-2 min-h-10 text-[13px] font-semibold leading-5 tracking-[-0.01em] text-white sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-semibold text-emerald-300">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
                       <span className="mt-3 block text-lg font-black tracking-[-0.025em] text-violet-200">{formatPresentment(item.amountInPaise)}</span>
                       <span className="mt-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-slate-600">{item.source === "fazercards-live" ? "Live delivery" : "Ready to deliver"}</span>
                     </span>
