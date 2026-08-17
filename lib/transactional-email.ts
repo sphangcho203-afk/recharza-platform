@@ -4,6 +4,15 @@ import { getPrisma } from "@/lib/prisma";
 
 const BRAND_NAME = "Recharza";
 const SUPPORT_EMAIL = "recherzatopup@gmail.com";
+const BRAND_TAGLINE = "PLAY · PAY · DELIVERED";
+
+function appUrl() {
+  return (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "");
+}
+
+function logoUrl() {
+  return `${appUrl()}/assets/brand/recharza-line-electric-mark.png`;
+}
 
 type EmailDetail = {
   label: string;
@@ -75,20 +84,22 @@ function formatTimestamp(date: Date) {
   }).format(date);
 }
 
-function renderEmail(input: TransactionalEmailInput) {
+export function renderEmail(input: TransactionalEmailInput) {
   const accent = ACCENTS[input.kind];
   const details = (input.details ?? [])
-    .map(
-      (item) => `<tr>
-        <td style="padding:14px 15px;color:#7f879b;font-size:10px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid #252536;">${escapeHtml(item.label)}</td>
-        <td style="padding:14px 15px;color:#f8fafc;font-size:13px;font-weight:850;text-align:right;border-bottom:1px solid #252536;">${escapeHtml(item.value)}</td>
-      </tr>`,
-    )
+    .map((item, index, items) => {
+      const isEmphasis = /^(amount|total)$/i.test(item.label);
+      const divider = index < items.length - 1 ? "border-bottom:1px solid #272938;" : "";
+      return `<tr>
+        <td style="padding:13px 16px;color:#8d93a6;font-size:10px;font-weight:700;letter-spacing:.105em;text-transform:uppercase;${divider}">${escapeHtml(item.label)}</td>
+        <td style="padding:13px 16px;color:${isEmphasis ? accent.primary : "#f4f6fb"};font-size:${isEmphasis ? "16px" : "13px"};font-weight:${isEmphasis ? "800" : "650"};letter-spacing:${isEmphasis ? "-.015em" : "0"};text-align:right;${divider}">${escapeHtml(item.value)}</td>
+      </tr>`;
+    })
     .join("");
 
   const action = input.action
-    ? `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;"><tr><td align="center">
-        <a href="${escapeHtml(input.action.url)}" style="display:block;padding:15px 18px;background:#f8fafc;color:#08080d;text-decoration:none;text-align:center;border-radius:12px;font-size:13px;font-weight:950;letter-spacing:.01em;">${escapeHtml(input.action.label)}</a>
+    ? `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;"><tr><td align="left">
+        <a href="${escapeHtml(input.action.url)}" style="display:inline-block;padding:13px 20px;background:#8b5cf6;color:#ffffff;text-decoration:none;text-align:center;border-radius:8px;font-size:13px;font-weight:750;letter-spacing:.005em;box-shadow:0 6px 18px rgba(139,92,246,.24);">${escapeHtml(input.action.label)} &nbsp;→</a>
       </td></tr></table>`
     : "";
 
@@ -100,58 +111,65 @@ function renderEmail(input: TransactionalEmailInput) {
   <meta name="color-scheme" content="dark">
   <meta name="supported-color-schemes" content="dark">
   <title>${escapeHtml(input.subject)}</title>
+  <style>
+    @media screen and (max-width: 640px) {
+      .email-shell { padding: 16px 8px !important; }
+      .email-card { border-radius: 12px !important; }
+      .email-pad { padding-left: 20px !important; padding-right: 20px !important; }
+      .email-title { font-size: 24px !important; }
+      .email-meta { display: none !important; }
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#06060a;color:#f8fafc;font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">
+<body style="margin:0;padding:0;background:#08090d;color:#f4f6fb;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">${escapeHtml(input.message)}</div>
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;background:#06060a;padding:28px 12px;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" class="email-shell" style="width:100%;background:#08090d;padding:32px 12px;">
     <tr><td align="center">
-      <table role="presentation" width="620" cellspacing="0" cellpadding="0" style="width:100%;max-width:620px;border-collapse:separate;border-spacing:0;background:#0f0f17;border:1px solid #282838;border-radius:22px;overflow:hidden;box-shadow:0 24px 70px rgba(0,0,0,.45);">
+      <table role="presentation" width="600" cellspacing="0" cellpadding="0" class="email-card" style="width:100%;max-width:600px;border-collapse:separate;border-spacing:0;background:#11131a;border:1px solid #292c38;border-radius:14px;overflow:hidden;box-shadow:0 14px 36px rgba(0,0,0,.32);">
         <tr>
-          <td style="padding:20px 22px;background:#09090f;border-bottom:1px solid #242433;">
+          <td class="email-pad" style="padding:20px 28px 18px;background:#0d0f14;border-bottom:1px solid #292c38;">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>
               <td valign="middle">
                 <table role="presentation" cellspacing="0" cellpadding="0"><tr>
-                  <td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;background:#7c3aed;border-radius:12px;color:#ffffff;font-size:20px;font-style:italic;font-weight:950;">R</td>
-                  <td style="padding-left:11px;">
-                    <div style="color:#ffffff;font-size:17px;font-weight:950;letter-spacing:-.04em;text-transform:uppercase;">RECHARZA</div>
-                    <div style="margin-top:2px;color:#8b5cf6;font-size:9px;font-weight:850;letter-spacing:.19em;text-transform:uppercase;">Play · Pay · Delivered</div>
+                  <td width="34" height="34" align="center" valign="middle" style="width:34px;height:34px;">
+                    <img src="${escapeHtml(logoUrl())}" width="34" height="34" alt="R" style="display:block;width:34px;height:34px;object-fit:contain;border:0;">
+                  </td>
+                  <td style="padding-left:10px;">
+                    <div style="color:#f4f6fb;font-size:16px;font-weight:800;letter-spacing:.015em;">RECHARZA</div>
+                    <div style="margin-top:4px;color:#9097aa;font-size:8px;font-weight:700;letter-spacing:.16em;">${BRAND_TAGLINE}</div>
                   </td>
                 </tr></table>
               </td>
-              <td align="right" valign="middle" style="color:#5f6677;font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;">Secure notification</td>
+              <td class="email-meta" align="right" valign="middle" style="color:#747b8d;font-size:9px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;">TRANSACTIONAL EMAIL</td>
             </tr></table>
           </td>
         </tr>
 
         <tr>
-          <td style="padding:30px 22px 28px;background:#151522;border-bottom:1px solid #2a2a3d;">
-            <table role="presentation" cellspacing="0" cellpadding="0"><tr>
-              <td style="padding:7px 10px;border-radius:999px;background:${accent.soft};border:1px solid ${accent.border};color:${accent.primary};font-size:9px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;">${escapeHtml(input.eyebrow)}</td>
-            </tr></table>
-            <h1 style="margin:15px 0 0;color:#ffffff;font-size:28px;line-height:1.12;letter-spacing:-.04em;font-weight:900;">${escapeHtml(input.title)}</h1>
-            <p style="margin:13px 0 0;color:#b8c0cf;font-size:14px;line-height:1.75;">${escapeHtml(input.message)}</p>
+          <td class="email-pad" style="padding:30px 28px 28px;background:linear-gradient(145deg,#171a25 0%,#1b1930 100%);border-bottom:1px solid #292c38;">
+            <div style="display:inline-block;padding:6px 9px;border:1px solid ${accent.border};border-radius:999px;background:${accent.soft};color:${accent.primary};font-size:9px;font-weight:750;letter-spacing:.13em;text-transform:uppercase;">${escapeHtml(input.eyebrow)}</div>
+            <h1 class="email-title" style="margin:13px 0 0;color:#f7f8fb;font-size:28px;line-height:1.16;letter-spacing:-.028em;font-weight:750;">${escapeHtml(input.title)}</h1>
+            <p style="margin:15px 0 0;color:#b8becb;font-size:15px;line-height:1.7;letter-spacing:-.005em;">${escapeHtml(input.message)}</p>
           </td>
         </tr>
 
         <tr>
-          <td style="padding:22px;">
-            ${details ? `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;border:1px solid #28283a;border-radius:14px;overflow:hidden;background:#0a0a10;">${details}</table>` : ""}
+          <td class="email-pad" style="padding:24px 28px 28px;background:#11131a;background:linear-gradient(180deg,#11131a 0%,#10121a 100%);">
+            ${details ? `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%;border:1px solid #2f3342;border-radius:8px;overflow:hidden;background:#0b0d13;">${details}</table>` : ""}
             ${action}
-
-            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:22px;background:#0b1715;border:1px solid #1f3a35;border-radius:12px;">
-              <tr><td style="padding:14px;color:#91cfc1;font-size:11px;line-height:1.7;">
-                <strong style="display:block;margin-bottom:3px;color:#d1fae5;font-size:11px;">Security reminder</strong>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:24px;border-top:1px solid #292c38;">
+              <tr><td style="padding:18px 0 0;color:#9dbfae;font-size:11px;line-height:1.7;">
+                <strong style="display:block;margin-bottom:4px;color:#d1e7da;font-size:11px;font-weight:750;">Security note</strong>
                 Recharza will never ask for your password, OTP, UPI PIN, card PIN, or remote-device access by email, chat, or call.
               </td></tr>
             </table>
-
-            <p style="margin:20px 0 0;color:#697184;font-size:11px;line-height:1.7;">${escapeHtml(input.footer ?? "This notification was generated automatically from activity on your Recharza account or order.")}</p>
-            <p style="margin:8px 0 0;color:#697184;font-size:11px;line-height:1.7;">Need help? <a href="mailto:${SUPPORT_EMAIL}" style="color:#c4b5fd;text-decoration:none;font-weight:800;">${SUPPORT_EMAIL}</a></p>
+            <p style="margin:20px 0 0;color:#737b8d;font-size:12px;line-height:1.7;">${escapeHtml(input.footer ?? "This is an automated notification from your Recharza account or order.")}</p>
+            <p style="margin:8px 0 0;color:#737b8d;font-size:12px;line-height:1.7;">Need help? <a href="mailto:${SUPPORT_EMAIL}" style="color:#b8a5ff;text-decoration:none;font-weight:700;">${SUPPORT_EMAIL}</a></p>
           </td>
         </tr>
 
-        <tr><td style="padding:14px 22px;background:#09090f;border-top:1px solid #242433;text-align:center;color:#4e5566;font-size:9px;line-height:1.6;">
-          © ${new Date().getUTCFullYear()} ${BRAND_NAME}. Automated transactional notification. Game names and trademarks belong to their respective owners.
+        <tr><td class="email-pad" style="padding:15px 28px;background:#0d0f14;border-top:1px solid #292c38;color:#666e80;font-size:9px;line-height:1.6;">
+          © ${new Date().getUTCFullYear()} ${BRAND_NAME} · Automated transactional notification<br>Game names and trademarks belong to their respective owners.
         </td></tr>
       </table>
     </td></tr>
@@ -267,7 +285,7 @@ export function sendAccountCreatedEmail(input: {
     ],
     action: {
       label: "Open my Recharza account",
-      url: `${(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "")}/account`,
+      url: `${appUrl()}/account`,
     },
     customerId: input.customerId,
   });
@@ -315,7 +333,7 @@ export function sendPasswordChangedEmail(input: {
     details: [{ label: "Changed", value: formatTimestamp(input.changedAt) }],
     action: {
       label: "Sign in to Recharza",
-      url: `${(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "")}/account`,
+      url: `${appUrl()}/account`,
     },
     footer:
       "If you did not make this change, contact Recharza support immediately and secure the email account linked to Recharza.",

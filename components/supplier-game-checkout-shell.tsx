@@ -78,7 +78,7 @@ type IdentityState = {
 type CheckoutStep = 1 | 2 | 3 | 4 | 5;
 
 const initialIdentity: IdentityState = { playerId: "", riotId: "", serverId: "" };
-const fieldClassName = "mt-2 min-h-12 w-full rounded-lg border border-white/[0.09] bg-[#080a10] px-3.5 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/10";
+const fieldClassName = "storefront-checkout-field mt-2 w-full px-3.5 text-sm placeholder:text-slate-600";
 
 function createIdempotencyKey() {
   if (globalThis.crypto?.randomUUID) return `rz_${globalThis.crypto.randomUUID()}`;
@@ -661,7 +661,7 @@ export function SupplierGameCheckoutShell({
             </div>
             <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-200">Ready for payment</span>
           </div>
-          <dl className="mt-6 grid gap-4 rounded-xl border border-white/[0.08] bg-black/20 p-4 text-sm sm:grid-cols-2">
+          <dl className="storefront-checkout-surface mt-6 grid gap-4 p-4 text-sm sm:grid-cols-2">
             <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-black text-white">{selectedPackage.name}</dd></div>
             <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-black text-white">{selectedPackage.marketLabel}</dd></div>
             {identity.riotId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-black tracking-wide text-white">{identity.riotId}</dd></div> : null}
@@ -669,11 +669,11 @@ export function SupplierGameCheckoutShell({
             {identity.serverId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-black tracking-wide text-white">{identity.serverId}</dd></div> : null}
             <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-black text-emerald-200">{verification?.nickname ?? "Verified player"}</dd></div>
             <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-black text-white">{billing.presentmentCurrency}</dd></div>
-            <div className="border-t border-white/[0.08] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-black text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+            <div className="border-t border-white/[0.1] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-black text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
           </dl>
           <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-            <button type="button" onClick={() => setStep(3)} className="min-h-11 rounded-xl border border-white/[0.1] px-4 text-sm font-black text-slate-300 transition hover:border-white/[0.2] hover:text-white">Back to billing</button>
-            <button type="submit" disabled={!canSubmit || isSubmitting || Boolean(order)} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 disabled:cursor-not-allowed disabled:opacity-45">{isSubmitting ? "Preparing payment…" : "Continue to payment"}</button>
+            <button type="button" onClick={() => setStep(3)} className="storefront-checkout-secondary px-4 text-sm">Back to billing</button>
+            <button type="submit" disabled={!canSubmit || isSubmitting || Boolean(order)} className="storefront-checkout-primary px-5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{isSubmitting ? "Preparing payment…" : "Continue to payment"}</button>
           </div>
         </section>
         </> : null}
@@ -718,14 +718,14 @@ type StepActionsProps = { current: number; onBack?: () => void; onNext: () => vo
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
   const labels = ["Package", "Player", "Billing", "Review", "Payment"];
   return (
-    <nav aria-label="Checkout progress" className="mb-5 rounded-2xl border border-white/[0.08] bg-[#0d0f16] p-3">
+    <nav aria-label="Checkout progress" className="storefront-checkout-surface mb-5 p-3">
       <ol className="grid grid-cols-5 gap-1">
         {labels.map((label, index) => {
           const number = index + 1;
           const active = number === step;
           const complete = number < step;
           return <li key={label}>
-            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} aria-current={active ? "step" : undefined} aria-label={`${label} step${active ? ", current step" : complete ? ", completed" : ", locked"}`} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-600"}`}>
+            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} aria-current={active ? "step" : undefined} aria-label={`${label} step${active ? ", current step" : complete ? ", completed" : ", locked"}`} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-500"}`}>
               <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-black">{complete ? "✓" : number}</span>
               <span className="text-[9px] font-black uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
             </button>
@@ -738,7 +738,7 @@ function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
 
 function StepActions({ current, onBack, onNext, nextLabel }: StepActionsProps) {
   return <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-    {current > 1 ? <button type="button" onClick={onBack} className="min-h-11 rounded-xl border border-white/[0.1] px-4 text-sm font-black text-slate-300 transition hover:border-white/[0.2] hover:text-white">Back</button> : <span />}
-    {current < 4 ? <button type="button" onClick={onNext} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
+    {current > 1 ? <button type="button" onClick={onBack} className="storefront-checkout-secondary px-4 text-sm">Back</button> : <span />}
+    {current < 4 ? <button type="button" onClick={onNext} className="storefront-checkout-primary px-5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
   </div>;
 }

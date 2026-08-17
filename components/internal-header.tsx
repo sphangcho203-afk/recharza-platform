@@ -20,7 +20,7 @@ export function InternalHeader({ workspace, role, email }: InternalHeaderProps) 
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[var(--surface-0)]/95 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-16 max-w-[100rem] items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
+      <div className="flex min-h-16 w-full items-center justify-between gap-3 px-4 py-2 sm:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-3">
           <Link
             href={workspace === "Admin" ? "/admin" : "/staff"}

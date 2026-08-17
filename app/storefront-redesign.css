@@ -155,7 +155,7 @@
 
 /* Recharza 2026 storefront direction: player-first, market-aware, editorial utility. */
 .storefront-alert { min-height: 2.5rem; }
-.storefront-hero-shell { isolation: isolate; background: linear-gradient(135deg, #070810 0%, #090b15 46%, #07080f 100%); }
+.storefront-hero-shell { isolation: isolate; background: radial-gradient(circle at 76% 18%, rgba(139, 92, 246, .16), transparent 24rem), radial-gradient(circle at 16% 82%, rgba(34, 211, 238, .08), transparent 20rem), linear-gradient(135deg, #070810 0%, #0b0d1b 48%, #080912 100%); }
 .storefront-hero-art { position: absolute; inset: 0; z-index: 0; background-image: linear-gradient(90deg, rgba(7, 8, 16, .96) 0%, rgba(7, 8, 16, .82) 34%, rgba(7, 8, 16, .42) 62%, rgba(7, 8, 16, .68) 100%), linear-gradient(180deg, rgba(7, 8, 16, .16) 0%, rgba(7, 8, 16, .34) 100%), url('/assets/recharza-brand-hero.png'); background-position: center; background-size: cover; background-repeat: no-repeat; opacity: .96; }
 .storefront-hero-art::after { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 46%, rgba(7, 8, 16, .74) 100%); content: ""; }
 .storefront-hero-glow { position: absolute; z-index: 1; width: 22rem; height: 22rem; border-radius: 999px; pointer-events: none; filter: blur(2px); opacity: .22; }
@@ -163,13 +163,13 @@
 .storefront-hero-glow-right { right: -12rem; bottom: -9rem; background: rgba(34, 211, 238, .26); }
 .storefront-kicker { display: inline-flex; align-items: center; gap: .6rem; border: 1px solid rgba(103, 232, 249, .17); border-radius: 999px; padding: .45rem .75rem; background: rgba(34, 211, 238, .06); color: rgba(165, 243, 252, .84); font-size: .64rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
 .storefront-kicker-dot { width: .38rem; height: .38rem; border-radius: 999px; background: #67e8f9; box-shadow: 0 0 14px rgba(103, 232, 249, .92); }
-.storefront-gradient-text { background: linear-gradient(115deg, #fff 6%, #c4b5fd 42%, #67e8f9 92%); background-clip: text; -webkit-background-clip: text; color: transparent; }
+.storefront-gradient-text { background: linear-gradient(112deg, #ffffff 8%, #d8ccff 42%, #8deffc 88%); background-clip: text; -webkit-background-clip: text; color: transparent; text-shadow: 0 0 34px rgba(139, 92, 246, .16); }
 .storefront-primary-cta, .storefront-secondary-cta { display: inline-flex; min-height: 2.9rem; align-items: center; justify-content: center; gap: .55rem; border-radius: .8rem; padding: 0 1rem; font-size: .82rem; font-weight: 850; transition: transform 180ms var(--ease-out), background-color 180ms var(--ease-out), border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out); }
 .storefront-primary-cta { background: #f8fafc; color: #080910; box-shadow: 0 12px 32px rgba(248, 250, 252, .12); }
 .storefront-primary-cta:hover { transform: translateY(-2px); background: #c4b5fd; box-shadow: 0 16px 38px rgba(196, 181, 253, .2); }
 .storefront-secondary-cta { border: 1px solid rgba(255,255,255,.13); background: rgba(255,255,255,.035); color: #dbe4f0; }
 .storefront-secondary-cta:hover { transform: translateY(-2px); border-color: rgba(103,232,249,.38); background: rgba(103,232,249,.08); color: white; }
-.storefront-hero-console { position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,.12); border-radius: 1.25rem; background: linear-gradient(145deg, rgba(19,22,36,.95), rgba(9,11,20,.95)); box-shadow: 0 24px 80px rgba(0,0,0,.36), inset 0 1px 0 rgba(255,255,255,.08); }
+.storefront-hero-console { position: relative; overflow: hidden; border: 1px solid rgba(196,181,253,.22); border-radius: 1.35rem; background: linear-gradient(145deg, rgba(27,29,50,.96), rgba(10,12,23,.96)); box-shadow: 0 28px 90px rgba(0,0,0,.42), 0 0 0 1px rgba(103,232,249,.035), inset 0 1px 0 rgba(255,255,255,.1); }
 .storefront-hero-console::before { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(125deg, rgba(139,92,246,.12), transparent 38%, rgba(34,211,238,.05)); content: ""; }
 .storefront-console-line { position: relative; display: grid; grid-template-columns: 2.4rem minmax(0,1fr) auto; align-items: center; gap: .75rem; border: 1px solid rgba(255,255,255,.07); border-radius: .85rem; padding: .7rem; background: rgba(255,255,255,.025); }
 .storefront-console-line b, .storefront-console-line small { display: block; }
@@ -182,16 +182,16 @@
 .storefront-trust-cell b, .storefront-trust-cell small { display: block; }
 .storefront-trust-cell b { font-size: .76rem; color: #f8fafc; }
 .storefront-trust-cell small { margin-top: .2rem; font-size: .68rem; color: #737f94; }
-.storefront-inline-link { display: inline-flex; align-items: center; gap: .45rem; font-size: .78rem; font-weight: 800; color: #a5f3fc; transition: color 150ms ease-out; }
-.storefront-inline-link:hover { color: white; }
-.storefront-popular-rail { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+.storefront-inline-link { display: inline-flex; align-items: center; gap: .45rem; border-bottom: 1px solid rgba(165,243,252,.25); padding-bottom: .18rem; font-size: .78rem; font-weight: 850; color: #a5f3fc; transition: color 150ms ease-out, border-color 150ms ease-out; }
+.storefront-inline-link:hover { border-color: rgba(255,255,255,.65); color: white; }
+.storefront-popular-rail { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
 .storefront-popular-item { min-width: 0; }
 .storefront-popular-item .mt-6 { margin-top: 0; }
 .storefront-popular-item .mt-5 { margin-top: .55rem; }
 .storefront-popular-item .grid { grid-template-columns: minmax(0,1fr); }
 .storefront-popular-item .grid > a { min-width: 0; }
-.storefront-popular-item .grid > a article { padding: .7rem; }
-.storefront-popular-item .grid > a article > div:first-child { aspect-ratio: 1.2 / 1; }
+.storefront-popular-item .grid > a article { padding: .8rem; background: linear-gradient(155deg, rgba(30,33,56,.94), rgba(14,16,29,.98)); }
+.storefront-popular-item .grid > a article > div:first-child { aspect-ratio: 1.14 / 1; border-color: rgba(196,181,253,.18); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
 .storefront-popular-item .grid > a article h3 { font-size: .78rem; }
 .storefront-popular-item .grid > a article p { font-size: .68rem; }
 .storefront-popular-item .grid > a article > div:last-child { display: none; }

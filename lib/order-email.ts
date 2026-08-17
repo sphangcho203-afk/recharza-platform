@@ -1,6 +1,10 @@
 import { formatInr } from "@/lib/mobile-legends";
 import { sendTransactionalEmail } from "@/lib/transactional-email";
 
+function appUrl() {
+  return (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "");
+}
+
 function formatTimestamp(date: Date) {
   return new Intl.DateTimeFormat("en-IN", {
     dateStyle: "full",
@@ -40,7 +44,7 @@ export function sendOrderCompletedEmail(input: OrderEmailInput) {
     ],
     action: {
       label: "Open order tracking",
-      url: `${(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "")}/orders/${encodeURIComponent(input.orderId)}`,
+      url: `${appUrl()}/orders/${encodeURIComponent(input.orderId)}`,
     },
     customerId: input.customerId,
     orderId: input.databaseOrderId,
@@ -69,7 +73,7 @@ export function sendOrderFailedEmail(
     ],
     action: {
       label: "Review order status",
-      url: `${(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000").replace(/\/$/, "")}/orders/${encodeURIComponent(input.orderId)}`,
+      url: `${appUrl()}/orders/${encodeURIComponent(input.orderId)}`,
     },
     customerId: input.customerId,
     orderId: input.databaseOrderId,

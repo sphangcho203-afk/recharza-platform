@@ -153,11 +153,11 @@ export function CartPage() {
             {[0, 1].map((index) => (
               <div
                 key={index}
-                className="h-40 animate-pulse rounded-xl border border-white/[0.06] bg-white/[0.03]"
+                className="h-40 animate-pulse rounded-2xl border border-white/[0.08] bg-[linear-gradient(155deg,rgba(30,33,56,.72),rgba(14,16,29,.8))]"
               />
             ))}
           </div>
-          <div className="h-64 animate-pulse rounded-xl border border-white/[0.06] bg-white/[0.03] lg:sticky lg:top-28" />
+          <div className="h-64 animate-pulse rounded-2xl border border-white/[0.08] bg-[linear-gradient(155deg,rgba(30,33,56,.72),rgba(14,16,29,.8))] lg:sticky lg:top-28" />
         </div>
       ) : null}
 
@@ -197,7 +197,7 @@ export function CartPage() {
       ) : null}
 
       {loadState.status === "ready" && cart.items.length === 0 ? (
-        <div className="mx-auto max-w-xl rounded-2xl border border-white/[0.08] bg-[#0d0f16] px-6 py-14 text-center shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
+        <div className="mx-auto max-w-xl rounded-2xl border border-[rgba(196,181,253,.18)] bg-[linear-gradient(155deg,rgba(30,33,56,.94),rgba(14,16,29,.98))] px-6 py-14 text-center shadow-[0_24px_70px_rgba(0,0,0,.28)]">
           <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-400/25 bg-violet-500/[0.08] text-violet-300">
             <StorefrontIcon name="cart" className="h-6 w-6" />
           </span>
@@ -210,7 +210,7 @@ export function CartPage() {
           <div className="mt-6 flex flex-col justify-center gap-2 sm:flex-row">
             <Link
               href="/#games"
-              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-violet-500 px-6 text-sm font-black text-white shadow-[0_12px_30px_rgba(124,58,237,0.3)] transition hover:bg-violet-400"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-extrabold text-primary-foreground shadow-[0_12px_32px_rgba(155,124,255,.24)] transition hover:bg-primary-hover hover:shadow-[0_16px_38px_rgba(155,124,255,.32)]"
             >
               Browse Games
             </Link>
@@ -223,7 +223,7 @@ export function CartPage() {
           <div className="grid min-w-0 gap-4">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-violet-200/80">
                   Ready to top up
                 </p>
                 <h2 className="mt-1 text-lg font-black tracking-[-0.02em] text-white">
@@ -234,7 +234,7 @@ export function CartPage() {
                 type="button"
                 disabled={busyClear}
                 onClick={() => void clearCart()}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/[0.08] px-3 text-[11px] font-black text-slate-500 transition hover:border-rose-400/25 hover:bg-rose-400/10 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-white/[0.1] px-3 text-[11px] font-extrabold text-slate-400 transition hover:border-rose-400/30 hover:bg-rose-400/10 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {busyClear ? "Clearing…" : "Clear cart"}
               </button>

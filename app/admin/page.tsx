@@ -71,17 +71,17 @@ export default async function AdminPage() {
   const plannedCount = modules.filter((module) => module.state === "planned").length;
 
   return (
-    <main className="min-h-screen overflow-x-clip bg-[var(--surface-0)] text-white">
+    <main className="min-h-screen w-full overflow-x-clip bg-[var(--surface-0)] text-white">
       <InternalHeader
         workspace="Admin"
         role={session.customer.role}
         email={session.customer.email}
       />
 
-      <div className="mx-auto grid max-w-[112rem] lg:grid-cols-[18rem_minmax(0,1fr)]">
+      <div className="grid min-h-[calc(100vh-4rem)] w-full min-w-0 lg:grid-cols-[16rem_minmax(0,1fr)]">
         <WorkspaceNavigation workspace="admin" activeId="overview" />
 
-        <div className="min-w-0 px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <div className="min-w-0 w-full px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
           <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
