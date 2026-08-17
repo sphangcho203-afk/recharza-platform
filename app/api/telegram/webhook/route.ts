@@ -16,6 +16,7 @@ import {
 } from "@/lib/support-delivery";
 import {
   createAndDeliverSupportTicket,
+  getSupportTicketForTelegram,
   getSupportTicketForWorker,
   linkTelegramSupportTicket,
   markSupportTicketReplied,
@@ -25,9 +26,11 @@ import {
 import {
   SUPPORT_CATEGORIES,
   supportCategoryLabel,
+  supportTicketStatusLabel,
   validateSupportTicketInput,
   type SupportCategory,
 } from "@/lib/support";
+import { PRIMARY_TELEGRAM_HELP } from "@/lib/telegram-support-menu";
 
 export const runtime = "nodejs";
 
@@ -133,6 +136,10 @@ function categoryKeyboard() {
       })),
     );
   }
+  rows.push([
+    { text: "📌 Check ticket status", callback_data: "support:status" },
+    { text: "❔ Help & commands", callback_data: "support:help" },
+  ]);
   return { inline_keyboard: rows };
 }
 
@@ -158,6 +165,27 @@ function categoryFromCallback(value: string | undefined) {
   return (
     SUPPORT_CATEGORIES.find((category) => category.value === requested)?.value ??
     null
+  );
+}
+
+async function showSupportHelp(chatId: string) {
+  await sendTelegramCustomerMessage(chatId, PRIMARY_TELEGRAM_HELP, {
+    reply_markup: categoryKeyboard(),
+  });
+}
+
+async function askForTicketStatus(chatId: string) {
+  await sendTelegramCustomerMessage(
+    chatId,
+    [
+      "<b>📌 Check ticket status</b>",
+      "",
+      "Send the Recharza support ticket ID that is already linked to this Telegram chat.",
+      "Example: <code>/status RZS-ABCDEF1234567890</code>",
+      "",
+      "For order delivery status, use the secure tracking link from your order email. The bot will not expose order details from an unverified chat.",
+    ].join("\n"),
+    { reply_markup: categoryKeyboard() },
   );
 }
 
@@ -255,6 +283,53 @@ async function showDraftReview(chatId: string, session: SupportBotSession) {
   );
 }
 
+async function handleTicketStatus(message: TelegramMessage, order: string) {
+  const chatId = String(message.chat.id);
+  const publicId = order.trim().toUpperCase();
+  if (!/^RZS-[A-Z0-9]{16}$/.test(publicId)) {
+    await sendTelegramCustomerMessage(
+      chatId,
+      "Use a valid support ticket ID, for example <code>/status RZS-ABCDEF1234567890</code>.",
+      { reply_markup: categoryKeyboard() },
+    );
+    return;
+  }
+
+  const ticket = await getSupportTicketForTelegram({
+    publicId,
+    telegramChatId: chatId,
+  });
+  if (!ticket) {
+    await sendTelegramCustomerMessage(
+      chatId,
+      "I could not find a ticket with that ID linked to this Telegram chat. Check the ID or open the original Recharza support link.",
+      { reply_markup: categoryKeyboard() },
+    );
+    return;
+  }
+
+  const status = String(ticket.status).toUpperCase();
+  const statusLabel =
+    status === "OPEN" || status === "ASSIGNED" || status === "WAITING_CUSTOMER" || status === "UNDER_REVIEW" || status === "RESOLVED" || status === "CLOSED"
+      ? supportTicketStatusLabel(status)
+      : status;
+  await sendTelegramCustomerMessage(
+    chatId,
+    [
+      `<b>📌 Ticket ${escapeHtml(ticket.publicId)}</b>`,
+      "",
+      `<b>Status:</b> ${escapeHtml(statusLabel)}`,
+      `<b>Issue:</b> ${escapeHtml(supportCategoryLabel(ticket.category))}`,
+      `<b>Subject:</b> ${escapeHtml(ticket.subject)}`,
+      "",
+      status === "RESOLVED" || status === "CLOSED"
+        ? "If the problem is still present, start a new request and include this ticket ID."
+        : "Your request is still with support. Keep this chat open for the next reply.",
+    ].join("\n"),
+    { reply_markup: categoryKeyboard() },
+  );
+}
+
 async function handleStart(message: TelegramMessage, payload: string) {
   const chatId = String(message.chat.id);
   const userId = telegramUserId(message.from, message.chat);
@@ -299,6 +374,25 @@ async function handleStart(message: TelegramMessage, payload: string) {
       "Support replies can now arrive here.",
     ].join("\n"),
   );
+}
+
+async function handleSupportCallback(callback: TelegramCallbackQuery) {
+  const data = callback.data ?? "";
+  const message = callback.message;
+  if (!message || message.chat.type !== "private") return false;
+
+  const chatId = String(message.chat.id);
+  if (data === "support:help") {
+    await answerTelegramCallback(callback.id, "Help and commands");
+    await showSupportHelp(chatId);
+    return true;
+  }
+  if (data === "support:status") {
+    await answerTelegramCallback(callback.id, "Ticket status");
+    await askForTicketStatus(chatId);
+    return true;
+  }
+  return false;
 }
 
 async function handleCategoryCallback(callback: TelegramCallbackQuery) {
@@ -602,6 +696,43 @@ async function handleWorkerCallback(callback: TelegramCallbackQuery) {
   return true;
 }
 
+async function handlePrimaryCommand(message: TelegramMessage) {
+  if (!message.text || message.chat.type !== "private") return false;
+  const match = message.text.match(/^\/(help|menu|new|status|cancel)(?:@\w+)?(?:\s+([\s\S]+))?$/i);
+  if (!match) return false;
+
+  const command = match[1].toLowerCase();
+  const argument = (match[2] ?? "").trim();
+  const chatId = String(message.chat.id);
+  const userId = telegramUserId(message.from, message.chat);
+
+  if (command === "help") {
+    await showSupportHelp(chatId);
+    return true;
+  }
+  if (command === "menu" || command === "start") {
+    await clearSupportBotSession(chatId, userId).catch(() => undefined);
+    await showSupportMenu(chatId);
+    return true;
+  }
+  if (command === "new") {
+    await clearSupportBotSession(chatId, userId).catch(() => undefined);
+    await showSupportMenu(chatId);
+    return true;
+  }
+  if (command === "cancel") {
+    await clearSupportBotSession(chatId, userId).catch(() => undefined);
+    await sendTelegramCustomerMessage(chatId, "Draft deleted. No ticket was created.");
+    await showSupportMenu(chatId);
+    return true;
+  }
+  if (command === "status") {
+    await handleTicketStatus(message, argument);
+    return true;
+  }
+  return false;
+}
+
 async function handleWorkerCommand(message: TelegramMessage) {
   const chatId = String(message.chat.id);
   if (!message.text || message.chat.type === "private") return false;
@@ -677,6 +808,7 @@ async function processUpdate(update: TelegramUpdate) {
   if (update.callback_query) {
     if (await handleWorkerCallback(update.callback_query)) return;
     if (await handleDraftCallback(update.callback_query)) return;
+    if (await handleSupportCallback(update.callback_query)) return;
     if (await handleCategoryCallback(update.callback_query)) return;
     await answerTelegramCallback(update.callback_query.id).catch(() => undefined);
     return;
@@ -685,6 +817,7 @@ async function processUpdate(update: TelegramUpdate) {
   const message = update.message;
   if (!message?.text) return;
   if (await handleWorkerCommand(message)) return;
+  if (await handlePrimaryCommand(message)) return;
 
   const startMatch = message.text.match(/^\/start(?:@\w+)?(?:\s+(.+))?$/i);
   if (startMatch) {

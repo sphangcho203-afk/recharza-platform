@@ -259,6 +259,29 @@ export async function getSupportTicketForWorker(publicId: string) {
   return rows[0] ?? null;
 }
 
+export async function getSupportTicketForTelegram(input: {
+  publicId: string;
+  telegramChatId: string;
+}) {
+  const rows = await getPrisma().$queryRaw<StoredSupportTicket[]>`
+    SELECT
+      "publicId",
+      "status",
+      "category",
+      "subject",
+      "description",
+      "replyChannel",
+      "requesterEmail",
+      "telegramUsername",
+      "telegramChatId"
+    FROM "SupportTicket"
+    WHERE "publicId" = ${input.publicId}
+      AND "telegramChatId" = ${input.telegramChatId}
+    LIMIT 1
+  `;
+  return rows[0] ?? null;
+}
+
 export async function updateSupportTicketStatus(
   publicId: string,
   status:

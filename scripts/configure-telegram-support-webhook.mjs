@@ -3,6 +3,14 @@ const primarySecret = process.env.TELEGRAM_WEBHOOK_SECRET?.trim();
 const groupToken = process.env.TELEGRAM_GROUP_BOT_TOKEN?.trim();
 const groupSecret = process.env.TELEGRAM_GROUP_BOT_WEBHOOK_SECRET?.trim();
 const appUrl = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(/\/$/, "");
+const primaryCommands = [
+  { command: "start", description: "Open the Recharza support menu" },
+  { command: "menu", description: "Show support options" },
+  { command: "new", description: "Start a new support request" },
+  { command: "status", description: "Check a ticket linked to this chat" },
+  { command: "cancel", description: "Cancel the current draft" },
+  { command: "help", description: "Show commands and safety guidance" },
+];
 
 function fail(message) {
   console.error(`Telegram support webhook: ${message}`);
@@ -48,6 +56,18 @@ await setWebhook({
   label: "Primary support bot",
   allowedUpdates: ["message", "callback_query"],
 });
+
+const commandsResponse = await fetch(`https://api.telegram.org/bot${primaryToken}/setMyCommands`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ commands: primaryCommands, scope: { type: "all_private_chats" } }),
+  signal: AbortSignal.timeout(15_000),
+});
+const commandsPayload = await commandsResponse.json().catch(() => null);
+if (!commandsResponse.ok || !commandsPayload?.ok) {
+  fail(`Primary command registration failed: ${commandsPayload?.description || `HTTP ${commandsResponse.status}`}`);
+}
+console.log("Primary support bot commands synchronized.");
 
 if (groupToken || groupSecret) {
   if (!groupToken || !groupSecret || groupSecret.length < 16 || groupSecret.length > 256) {

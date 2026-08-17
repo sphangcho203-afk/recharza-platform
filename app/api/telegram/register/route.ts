@@ -1,4 +1,5 @@
 import { timingSafeEqual } from "node:crypto";
+import { PRIMARY_TELEGRAM_COMMANDS } from "@/lib/telegram-support-menu";
 
 export const runtime = "nodejs";
 
@@ -88,9 +89,39 @@ export async function POST(request: Request) {
     );
   }
 
+  const commandsResponse = await fetch(
+    `https://api.telegram.org/bot${token}/setMyCommands`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        commands: PRIMARY_TELEGRAM_COMMANDS,
+        scope: { type: "all_private_chats" },
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(15_000),
+    },
+  );
+  const commandsPayload = (await commandsResponse.json().catch(() => null)) as
+    | TelegramResponse
+    | null;
+  if (!commandsResponse.ok || !commandsPayload?.ok) {
+    return Response.json(
+      {
+        ok: false,
+        message:
+          commandsPayload?.description ||
+          `Telegram command registration returned HTTP ${commandsResponse.status}.`,
+        webhookUrl: webhookUrl.toString(),
+      },
+      { status: 502 },
+    );
+  }
+
   return Response.json({
     ok: true,
     webhookUrl: webhookUrl.toString(),
     telegram: payload,
+    commands: commandsPayload,
   });
 }
