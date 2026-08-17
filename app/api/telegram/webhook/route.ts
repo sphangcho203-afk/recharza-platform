@@ -4,6 +4,7 @@ import {
   clearSupportBotSession,
   getSupportBotSession,
   markTelegramUpdateProcessed,
+  setPendingStaffReply,
   startSupportBotSession,
   telegramUpdateAlreadyProcessed,
   updateSupportBotSession,
@@ -13,6 +14,7 @@ import {
   answerTelegramCallback,
   getTelegramSupportChatId,
   sendTelegramCustomerMessage,
+  sendTelegramReplyRequest,
 } from "@/lib/support-delivery";
 import {
   createAndDeliverSupportTicket,
@@ -601,8 +603,51 @@ async function handleDraftCallback(callback: TelegramCallbackQuery) {
     return true;
   }
 
+  if (action === "worker:quickreply") {
+    await handleWorkerQuickReply(callback, "WORKER");
+    return true;
+  }
+
   await answerTelegramCallback(callback.id, "That action is no longer available");
   return true;
+}
+
+async function handleWorkerQuickReply(
+  callback: TelegramCallbackQuery,
+  mode: "WORKER" | "GROUP",
+) {
+  const data = callback.data ?? "";
+  const match = data.match(/^worker:quickreply:(RZS-[A-Z0-9]{16})$/);
+  const chatId = callback.message ? String(callback.message.chat.id) : null;
+  if (!match || !chatId) return;
+  const workerUserId = String(callback.from.id ?? chatId);
+  if (mode === "WORKER" && !isWorkerActionAuthorized(chatId, workerUserId)) {
+    await answerTelegramCallback(callback.id, "Worker action not authorized");
+    return;
+  }
+  const ticket = await getSupportTicketForWorker(match[1]);
+  if (!ticket) {
+    await answerTelegramCallback(callback.id, "Ticket not found");
+    return;
+  }
+  if (!ticket.telegramChatId) {
+    await answerTelegramCallback(
+      callback.id,
+      "This ticket is not connected to Telegram. Use its recorded email channel.",
+    );
+    return;
+  }
+  const stored = await setPendingStaffReply({
+    workerChatId: chatId,
+    workerUserId,
+    ticketPublicId: ticket.publicId,
+  });
+  if (!stored) {
+    await answerTelegramCallback(callback.id, "Could not open the reply flow. Try again.");
+    return;
+  }
+  await answerTelegramCallback(callback.id, `Reply mode · ${ticket.publicId}`);
+  await sendTelegramReplyRequest(chatId, ticket.publicId);
 }
 
 function workerUserIds() {

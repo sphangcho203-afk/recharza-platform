@@ -111,6 +111,55 @@ export async function updateSupportBotSession(
   return rows[0] ?? null;
 }
 
+const STAFF_REPLY_TTL_MS = 10 * 60 * 1000;
+
+export async function setPendingStaffReply(input: {
+  workerChatId: string;
+  workerUserId: string;
+  ticketPublicId: string;
+}) {
+  const now = new Date();
+  const rows = await getPrisma().$queryRaw<Array<{
+    workerChatId: string;
+    workerUserId: string;
+    ticketPublicId: string;
+    expiresAt: Date;
+  }>>`
+    INSERT INTO "StaffReplyRequest" (
+      "workerChatId", "workerUserId", "ticketPublicId", "createdAt", "updatedAt", "expiresAt"
+    ) VALUES (
+      ${input.workerChatId}, ${input.workerUserId}, ${input.ticketPublicId}, ${now}, ${now},
+      ${new Date(Date.now() + STAFF_REPLY_TTL_MS)}
+    )
+    ON CONFLICT ("workerChatId", "workerUserId") DO UPDATE SET
+      "ticketPublicId" = EXCLUDED."ticketPublicId",
+      "updatedAt" = EXCLUDED."updatedAt",
+      "expiresAt" = EXCLUDED."expiresAt"
+    RETURNING "workerChatId", "workerUserId", "ticketPublicId", "expiresAt"
+  `;
+  return rows[0] ?? null;
+}
+
+export async function consumePendingStaffReply(input: {
+  workerChatId: string;
+  workerUserId: string;
+}) {
+  const prisma = getPrisma();
+  const rows = await prisma.$queryRaw<Array<{
+    workerChatId: string;
+    workerUserId: string;
+    ticketPublicId: string;
+    expiresAt: Date;
+  }>>`
+    DELETE FROM "StaffReplyRequest"
+    WHERE "workerChatId" = ${input.workerChatId}
+      AND "workerUserId" = ${input.workerUserId}
+      AND "expiresAt" > ${new Date()}
+    RETURNING "workerChatId", "workerUserId", "ticketPublicId", "expiresAt"
+  `;
+  return rows[0] ?? null;
+}
+
 export async function clearSupportBotSession(chatId: string, telegramUserId: string) {
   await getPrisma().$executeRaw`
     DELETE FROM "SupportBotSession"

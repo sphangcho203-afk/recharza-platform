@@ -19,6 +19,20 @@ import {
   type GroupTelegramUpdate,
 } from "@/lib/telegram-group-bot";
 import {
+  consumePendingStaffReply,
+  setPendingStaffReply,
+} from "@/lib/support-bot-session";
+import {
+
+  sendTelegramCustomerMessage,
+  sendTelegramReplyRequest,
+} from "@/lib/support-delivery";
+import {
+  getSupportTicketForWorker,
+  markSupportTicketReplied,
+  recordSupportStaffReply,
+} from "@/lib/support-service";
+import {
   appendGroupTurn as appendSessionTurn,
   getGroupBotSession,
   saveGroupBotSession,
@@ -130,8 +144,116 @@ async function handleGroupCallback(update: GroupTelegramUpdate) {
   return true;
 }
 
+
+async function captureStaffReplyMessage(update: GroupTelegramUpdate) {
+  const message = update.message;
+  if (!message?.text || !message.from) return false;
+  if (message.chat.type === "group" || message.chat.type === "supergroup") return false;
+
+  const chatId = String(message.chat.id);
+  const userId = String(message.from.id);
+  const replyState = await consumePendingStaffReply({
+    workerChatId: chatId,
+    workerUserId: userId,
+  });
+  if (!replyState) return false;
+
+  const text = message.text.trim();
+  if (/^\/cancel(?:@\w+)?$/i.test(text)) {
+    await sendGroupMessage(
+      chatId,
+      "Reply cancelled. No message was sent to the customer.",
+    );
+    return true;
+  }
+
+  const cleanText = text
+    .replace(/\r\n?/g, "\n")
+    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "")
+    .trim()
+    .slice(0, 2_000);
+  if (cleanText.length < 5) {
+    await sendGroupMessage(
+      chatId,
+      "That reply is too short. Type the full support response or press /cancel to stop.",
+    );
+    await sendTelegramReplyRequest(chatId, replyState.ticketPublicId);
+    await setPendingStaffReply({
+      workerChatId: chatId,
+      workerUserId: userId,
+      ticketPublicId: replyState.ticketPublicId,
+    });
+    return true;
+  }
+
+  const ticket = await getSupportTicketForWorker(replyState.ticketPublicId);
+  if (!ticket?.telegramChatId) {
+    await sendGroupMessage(
+      chatId,
+      `⚠️ Ticket <code>${replyState.ticketPublicId}</code> is not connected to a Telegram chat. The reply could not be delivered.`,
+    );
+    await markSupportTicketReplied(replyState.ticketPublicId);
+    await recordSupportStaffReply({
+      publicId: replyState.ticketPublicId,
+      text: cleanText,
+      actorFingerprint: `telegram-worker:${userId}`,
+      actorLabel: "Telegram worker",
+      channel: "TELEGRAM",
+      delivery: "FAILED",
+      messageId: null,
+      deliveredAt: new Date(),
+    });
+    return true;
+  }
+
+  const htmlText = cleanText
+    .split("\n")
+    .map((line) => line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"))
+    .join("\n");
+  let delivered: { sent: boolean; messageId: string | null } = { sent: false, messageId: null };
+  try {
+    const result = await sendTelegramCustomerMessage(
+      ticket.telegramChatId,
+      [
+        `<b>💬 RECHARZA SUPPORT // ${replyState.ticketPublicId}</b>`,
+        "",
+        htmlText,
+        "",
+        "<i>Reply here anytime — our support team will see it.</i>",
+      ].join("\n"),
+    );
+    delivered = { sent: true, messageId: String(result.message_id) };
+  } catch (error) {
+    console.error("Staff Telegram relay delivery failed", error);
+    delivered = { sent: false, messageId: null };
+  }
+
+  if (ticket) {
+    await markSupportTicketReplied(ticket.publicId);
+    await recordSupportStaffReply({
+      publicId: ticket.publicId,
+      text: cleanText,
+      actorFingerprint: `telegram-worker:${userId}`,
+      actorLabel: "Telegram worker",
+      channel: "TELEGRAM",
+      delivery: delivered.sent ? "SENT" : "FAILED",
+      messageId: delivered.messageId,
+      deliveredAt: new Date(),
+    });
+  }
+
+  await sendGroupMessage(
+    chatId,
+    delivered.sent
+      ? `<b>✅ Response delivered</b>\n\nYour reply for <code>${replyState.ticketPublicId}</code> was sent privately to the customer.\n\nThey can reply here whenever they need more help.`
+      : `<b>⚠️ Response could not be delivered</b>\n\nThe customer's Telegram chat is not reachable right now. Try again later or use their email channel.`,
+  );
+  return true;
+}
+
 async function processGroupUpdate(update: GroupTelegramUpdate) {
   if (await handleGroupCallback(update)) return;
+  if (await captureStaffReplyMessage(update)) return;
   const message = update.message;
   if (!message?.text || !message.from) return;
 

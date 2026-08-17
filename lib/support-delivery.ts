@@ -125,9 +125,12 @@ export async function sendTelegramSupportNotification(
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "Claim", callback_data: `worker:claim:${ticket.publicId}` },
-            { text: "Pending", callback_data: `worker:pending:${ticket.publicId}` },
-            { text: "Resolve", callback_data: `worker:resolve:${ticket.publicId}` },
+            { text: "💬 Quick Reply", callback_data: `worker:quickreply:${ticket.publicId}` },
+            { text: "🤝 Claim", callback_data: `worker:claim:${ticket.publicId}` },
+          ],
+          [
+            { text: "⏳ Pending", callback_data: `worker:pending:${ticket.publicId}` },
+            { text: "✅ Resolve", callback_data: `worker:resolve:${ticket.publicId}` },
           ],
         ],
       },
@@ -139,6 +142,26 @@ export async function sendTelegramSupportNotification(
       reason: error instanceof Error ? error.message : "Telegram delivery failed.",
     };
   }
+}
+
+export async function sendTelegramReplyRequest(chatId: string, ticketPublicId: string) {
+  return telegramRequest<{ message_id: number }>("sendMessage", {
+    chat_id: chatId,
+    text: [
+      `<b>💬 REPLY TO ${escapeHtml(ticketPublicId)}</b>`,
+      "",
+      "Type the support reply as your next message.",
+      "The first message you send now will be delivered privately to the customer.",
+      "To stop without replying, press /cancel.",
+    ].join("\n"),
+    parse_mode: "HTML",
+    disable_web_page_preview: true,
+    reply_markup: {
+      force_reply: true,
+      input_field_placeholder: "Customer reply message",
+      selective: true,
+    },
+  });
 }
 
 export async function sendSupportEmailNotification(
