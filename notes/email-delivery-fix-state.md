@@ -131,3 +131,8 @@ Implementation done (typecheck passes):
 
 Remaining: email template audit (lib/transactional-email.ts uses current premium template with logo at /assets/brand/recharza-line-electric-mark.png — verify ALL senders use renderTransactionalEmail; check lib/lifecycle-email.ts, lib/order-email.ts for old templates). Then typecheck + lint + build + commit + push.
 Vercel token in /home/ubuntu/.vercel_api.sh; latest prod deployment commit 3865dd4 (docs cleanup). Prod URL: recharza-platform-e2oy28kvw-stand-still.vercel.app.
+
+## Google Button Placement (user request, Aug 18 evening)
+User wants "Continue with Google" at the BOTTOM of the auth card (below email/password submit buttons), not at the top. Currently in components/customer-account-shell.tsx the Google link (lines 266-273) sits BEFORE the header heading/forms. Plan: keep outcome banner directly after tabs; move Google button after the submit button of each form (with a small "or continue with" divider), below the primary submit.
+Deployed so far: commit d4470ba ("merge Google sign-in into single auth card") — newest READY dep recharza-platform-enapddu2j-stand-still.vercel.app. Vercel token at /home/ubuntu/.vercel_api.sh (VERCEL_TOKEN, VERCEL_PROJECT_ID=prj_97Lj5h6yobyPZMJWQrpi6yfCFNzo, VERCEL_TEAM_ID=team_6W1aKKvykfYhQKrJlvewD9bl).
+Email fix verified live earlier: provider gmail-smtp, SMTP configured, tests sent successfully to phangchosongja02@gmail.com and recharza.mailtest2@gmail.com.

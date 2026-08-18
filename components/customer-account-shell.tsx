@@ -25,6 +25,28 @@ type GoogleAuthOutcome = "signup" | "login";
 
 const GOOGLE_RETURN_TO = "/account";
 
+function GoogleContinue({ className = "" }: { className?: string }) {
+  return (
+    <a
+      href={`/api/auth/google?returnTo=${encodeURIComponent(GOOGLE_RETURN_TO)}`}
+      className={`flex min-h-12 w-full items-center justify-center gap-3 rounded-lg border border-white/[0.12] bg-white px-5 text-sm font-semibold text-slate-950 transition duration-150 ease-out hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1110] active:scale-[0.99] ${className}`}
+    >
+      <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full border border-slate-300 bg-white text-xs font-bold text-blue-600">G</span>
+      Continue with Google
+    </a>
+  );
+}
+
+function Divider({ label, className = "" }: { label: string; className?: string }) {
+  return (
+    <div className={`relative flex items-center ${className}`} aria-hidden="true">
+      <span className="flex-1 border-t border-white/[0.1]" />
+      <span className="px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{label}</span>
+      <span className="flex-1 border-t border-white/[0.1]" />
+    </div>
+  );
+}
+
 function GoogleOutcomeBanner({ outcome, returnTo }: { outcome: GoogleAuthOutcome; returnTo: string }) {
   const content =
     outcome === "signup"
@@ -259,18 +281,10 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
           </div>
 
           {googleAuth ? (
-            <div className="mt-7">
+            <div className="mt-6">
               <GoogleOutcomeBanner outcome={googleAuth} returnTo={returnTo} />
             </div>
-          ) : (
-            <a
-              href={`/api/auth/google?returnTo=${encodeURIComponent(GOOGLE_RETURN_TO)}`}
-              className="mt-7 flex min-h-12 w-full items-center justify-center gap-3 rounded-lg border border-white/[0.12] bg-white px-5 text-sm font-semibold text-slate-950 transition duration-150 ease-out hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1110] active:scale-[0.99]"
-            >
-              <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full border border-slate-300 bg-white text-xs font-bold text-blue-600">G</span>
-              Continue with Google
-            </a>
-          )}
+          ) : null}
 
           <div className="mt-7">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">{showOrders ? "Order history access" : mode === "login" ? "Welcome back" : "Start with Recharza"}</p>
@@ -293,6 +307,8 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
               <button disabled={submitting} className="min-h-12 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d13] disabled:cursor-wait disabled:opacity-60">
                 {submitting ? "Signing in…" : "Sign in"}
               </button>
+              <Divider label="or continue with" />
+              <GoogleContinue />
             </form>
           ) : (
             <form onSubmit={submitSignup} className="mt-7 grid gap-5 sm:grid-cols-2" noValidate>
@@ -315,6 +331,8 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
               <button disabled={submitting} className="min-h-12 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d13] disabled:cursor-wait disabled:opacity-60 sm:col-span-2">
                 {submitting ? "Creating account…" : "Create account"}
               </button>
+              <Divider label="or continue with" className="sm:col-span-2" />
+              <GoogleContinue className="sm:col-span-2" />
             </form>
           )}
 
