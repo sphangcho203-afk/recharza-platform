@@ -39,9 +39,19 @@ function base64Url(value: string) {
 }
 
 function selectedProvider(): MailProvider {
-  const configured = value("EMAIL_DELIVERY_PROVIDER").toLowerCase();
+  const configured = value("EMAIL_DELIVERY_PROVIDER").toLowerCase().trim();
   if (configured === "resend") return "resend";
-  if (configured === "gmail-smtp" || configured === "smtp") return "gmail-smtp";
+  if (
+    configured === "gmail-smtp" ||
+    configured === "smtp" ||
+    configured === "gmail_smtp" ||
+    configured.includes("smtp") ||
+    configured.includes("password") ||
+    configured.includes("app-password") ||
+    configured.includes("app_password")
+  ) {
+    return "gmail-smtp";
+  }
   return "gmail";
 }
 
@@ -207,6 +217,8 @@ async function gmailAccessToken() {
   return payload.access_token;
 }
 
+let oauthFailureReportedAt = 0;
+
 function buildGmailRawMessage(input: SystemEmailInput) {
   const boundary = `recharza_${Date.now()}_${Math.random().toString(36).slice(2)}`;
   const headers = [
@@ -363,11 +375,37 @@ export async function sendSystemEmail(
 
   if (configuration.requestedProvider === "gmail") {
     if (!configuration.gmail.configured) {
+      if (configuration.smtp.configured) {
+        const now = Date.now();
+        if (now - oauthFailureReportedAt > 30 * 60 * 1000) {
+          oauthFailureReportedAt = now;
+          console.error(
+            "[recharza] Gmail OAuth is not configured; falling back to Gmail SMTP (app password) transport.",
+          );
+        }
+        return sendWithGmailSmtp(input);
+      }
       throw new Error(
         `Gmail is the configured Recharza mail transport but OAuth is incomplete: ${configuration.gmail.missing.join(", ") || "unknown Gmail configuration error"}.`,
       );
     }
-    return sendWithGmail(input);
+    try {
+      return await sendWithGmail(input);
+    } catch (oauthError) {
+      const message =
+        oauthError instanceof Error ? oauthError.message : String(oauthError);
+      if (!message.includes("token exchange failed") || !configuration.smtp.configured) {
+        throw oauthError;
+      }
+      const now = Date.now();
+      if (now - oauthFailureReportedAt > 30 * 60 * 1000) {
+        oauthFailureReportedAt = now;
+        console.error(
+          `[recharza] Gmail OAuth token failed (${message}); falling back to Gmail SMTP (app password) transport.`,
+        );
+      }
+      return sendWithGmailSmtp(input);
+    }
   }
 
   if (configuration.requestedProvider === "gmail-smtp") {
