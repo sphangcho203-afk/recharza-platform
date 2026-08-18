@@ -34,7 +34,7 @@ export async function POST(request: Request) {
         "This is an automated delivery test from the Recharza production mail system. If you received this message, transactional emails — signup, login, order confirmations, and password resets — are flowing correctly. This preview uses the exact same premium template your customers receive.",
       details: [
         { label: "Recipient", value: to },
-        { label: "Sent at", value: formatTimestamp(new Date()) },
+        { label: "Sent at", value: new Date().toUTCString() },
         { label: "Transport", value: "Gmail SMTP" },
       ],
       action: { label: "Open my account", url: BASE_URL + "/account" },
