@@ -1,8 +1,7 @@
-import { StorefrontIcon, type StorefrontIconName } from "@/components/storefront-icon";
 
 type ExplainerChannel = {
   id: string;
-  icon: StorefrontIconName;
+  logo: string;
   name: string;
   tagline: string;
   bestFor: string;
@@ -14,7 +13,7 @@ type ExplainerChannel = {
 const CHANNEL_EXPLAINER: ExplainerChannel[] = [
   {
     id: "telegram-bot",
-    icon: "support",
+    logo: "/assets/brand/support-telegram.png",
     name: "Telegram support bot",
     tagline: "The guided, step-by-step option — recommended first.",
     bestFor:
@@ -26,7 +25,7 @@ const CHANNEL_EXPLAINER: ExplainerChannel[] = [
   },
   {
     id: "live-group",
-    icon: "globe",
+    logo: "/assets/brand/support-group.png",
     name: "Live support group",
     tagline: "A shared space where everyone can see answers and updates.",
     bestFor:
@@ -38,7 +37,7 @@ const CHANNEL_EXPLAINER: ExplainerChannel[] = [
   },
   {
     id: "website-chat",
-    icon: "account",
+    logo: "/assets/brand/recharza-line-electric-mark.png",
     name: "Website chat (this page)",
     tagline: "An AI assistant that answers instantly, right here on the store.",
     bestFor:
@@ -50,7 +49,7 @@ const CHANNEL_EXPLAINER: ExplainerChannel[] = [
   },
   {
     id: "email",
-    icon: "receipt",
+    logo: "/assets/brand/support-gmail.png",
     name: "Email",
     tagline: "The formal channel for written records and longer issues.",
     bestFor:
@@ -62,7 +61,7 @@ const CHANNEL_EXPLAINER: ExplainerChannel[] = [
   },
   {
     id: "whatsapp",
-    icon: "arrow",
+    logo: "/assets/brand/support-whatsapp.png",
     name: "WhatsApp",
     tagline: "A direct messaging channel you already know.",
     bestFor:
@@ -74,7 +73,7 @@ const CHANNEL_EXPLAINER: ExplainerChannel[] = [
   },
   {
     id: "instagram",
-    icon: "search",
+    logo: "/assets/brand/support-instagram.png",
     name: "Instagram",
     tagline: "Reach us through our social inbox.",
     bestFor:
@@ -125,9 +124,14 @@ export function SupportExplainer() {
           {CHANNEL_EXPLAINER.map((channel) => (
             <div key={channel.id} className="bg-[#0b0b13] p-5">
               <div className="flex items-center gap-3">
-                <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-white/[0.1] bg-white/[0.04] text-white">
-                  <StorefrontIcon name={channel.icon} className="h-4 w-4" />
-                </span>
+                <img
+                  src={channel.logo}
+                  alt=""
+                  aria-hidden="true"
+                  className="h-9 w-9 shrink-0 rounded-lg border border-white/[0.1] bg-white object-contain"
+                  width={36}
+                  height={36}
+                />
                 <div>
                   <strong className="block text-sm font-semibold text-white">{channel.name}</strong>
                   <span className="mt-0.5 block text-[11px] text-slate-500">{channel.tagline}</span>
