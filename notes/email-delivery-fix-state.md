@@ -136,3 +136,19 @@ Vercel token in /home/ubuntu/.vercel_api.sh; latest prod deployment commit 3865d
 User wants "Continue with Google" at the BOTTOM of the auth card (below email/password submit buttons), not at the top. Currently in components/customer-account-shell.tsx the Google link (lines 266-273) sits BEFORE the header heading/forms. Plan: keep outcome banner directly after tabs; move Google button after the submit button of each form (with a small "or continue with" divider), below the primary submit.
 Deployed so far: commit d4470ba ("merge Google sign-in into single auth card") — newest READY dep recharza-platform-enapddu2j-stand-still.vercel.app. Vercel token at /home/ubuntu/.vercel_api.sh (VERCEL_TOKEN, VERCEL_PROJECT_ID=prj_97Lj5h6yobyPZMJWQrpi6yfCFNzo, VERCEL_TEAM_ID=team_6W1aKKvykfYhQKrJlvewD9bl).
 Email fix verified live earlier: provider gmail-smtp, SMTP configured, tests sent successfully to phangchosongja02@gmail.com and recharza.mailtest2@gmail.com.
+
+## Email Template Audit (Aug 18 evening)
+All email flows verified to use the premium template with the real electric 'R' logo image (/public/assets/brand/recharza-line-electric-mark.png):
+- lib/transactional-email.ts: renderEmail (signup/password-reset/password-changed + order email via lib/order-email.ts) — logo at line 135.
+- lib/lifecycle-email.ts: renderHtml (login security/signout/order lifecycle) — logo at line 103, updated earlier today from text badge to image.
+- Live send-test POST /api/internal/mail-send-test delivered to phangchosongja02@gmail.com (id fafa6b56). User says the received mail "isn't how you described" — need to see exactly what the user received (likely the OLD mail-send-test plain template, NOT the premium one).
+- CRITICAL: app/api/internal/mail-send-test/route.ts sends a hardcoded OLD plain-light template ("Your Recharza emails are working." with #6b7280 grey text, #111827 heading) — that's the "Live Email Delivery Test" mail the user saw! It's NOT the premium dark template. Must update mail-send-test to render the real premium transactional template via renderEmail.
+- Rendering previews: esbuild bundle of lib/transactional-email.ts + lib/lifecycle-email.ts -> /tmp/email-bundle.cjs, then /tmp/render_preview.js generates /tmp/preview-transactional.html and /tmp/preview-lifecycle.html (server-only shim needed).
+- Current production URL: recharza-platform-2o3wxy8mj-stand-still.vercel.app (commit ea75428). Token in /home/ubuntu/.vercel_api.sh.
+
+## Template Preview Rendering (Aug 18, ~21:00)
+Both template HTMLs confirmed premium dark design with logo in source: transactional template (lib/transactional-email.ts) uses background #08090d shell, #11131a card, logo at header; lifecycle (lib/lifecycle-email.ts) uses #06060a body, #0f0f17 card, logo 38px at header — both verified earlier via grep.
+The "mail-send-test" endpoint at app/api/internal/mail-send-test/route.ts still sends a hardcoded OLD plain light template (grey text "Your Recharza emails are working.") — THIS is what the user saw as the "Live Email Delivery Test" email. Fix: update that route to use renderEmail() from transactional-email.ts with kind ACCOUNT_CREATED / ORDER_CONFIRMED styling, then redeploy.
+Preview rendering scripts live at /tmp/render_preview.js using bundles in /tmp/bundle_out/ and /tmp/email-bundle-full.cjs (esbuild bundle of both email libs, platform node, external:next). Server-only throws and import.meta patches needed — extraction of lifecycle renderHtml failed (wrong brace scope due to nested strings); workaround available.
+User message: received the test email but "it isn't how you described" — because the send-test route uses the old plain template, not the premium one.
+Production URL: https://recharza-platform-2o3wxy8mj-stand-still.vercel.app (commit ea75428). Token + ids in /home/ubuntu/.vercel_api.sh.
