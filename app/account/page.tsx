@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CustomerAccountShell } from "@/components/customer-account-shell";
-import { GoogleOAuthPanel } from "@/components/google-oauth-panel";
 import { RecharzaMark } from "@/components/recharza-mark";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -54,8 +53,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         {rawReason === "forbidden" ? <div role="alert" className="mt-6 rounded-lg border border-amber-300/20 bg-amber-300/[0.06] px-4 py-3 text-sm text-amber-100">This account does not have permission to open that workspace.</div> : null}
 
         <div className="mx-auto mt-8 grid max-w-5xl gap-4 lg:mt-10">
-          <GoogleOAuthPanel returnTo={returnTo} authError={rawAuthError} googleAuth={googleAuth} />
-          <CustomerAccountShell returnTo={returnTo} />
+          <CustomerAccountShell returnTo={returnTo} googleAuth={googleAuth} />
         </div>
       </section>
       <SiteFooter />

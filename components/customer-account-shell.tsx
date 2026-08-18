@@ -21,7 +21,40 @@ type SignupSuccess = {
 const inputClassName =
   "mt-2 min-h-12 w-full rounded-lg border border-white/[0.12] bg-[#080a10] px-3.5 text-sm text-white outline-none transition duration-150 placeholder:text-slate-600 focus:border-violet-300/70 focus:ring-2 focus:ring-violet-300/15 disabled:cursor-not-allowed disabled:opacity-50";
 
-export function CustomerAccountShell({ showOrders = false, returnTo = "/account" }: { showOrders?: boolean; returnTo?: string }) {
+type GoogleAuthOutcome = "signup" | "login";
+
+const GOOGLE_RETURN_TO = "/account";
+
+function GoogleOutcomeBanner({ outcome, returnTo }: { outcome: GoogleAuthOutcome; returnTo: string }) {
+  const content =
+    outcome === "signup"
+      ? {
+          badge: "Signed up via Google",
+          title: "Welcome to Recharza.",
+          message: "Your account was created automatically with your Google email. No password needed — just tap Continue with Google next time.",
+        }
+      : {
+          badge: "Signed in via Google",
+          title: "Welcome back.",
+          message: "You were signed in with your Google account. Your dashboard is ready.",
+        };
+  return (
+    <div role="status" className="rounded-lg border border-emerald-300/25 bg-emerald-300/[0.08] px-4 py-3.5">
+      <div className="flex items-center gap-2.5">
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-emerald-300/30 bg-emerald-300/[0.12] text-emerald-200" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+        </span>
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-200">{content.badge}</p>
+          <p className="text-sm font-semibold text-white">{content.title}</p>
+        </div>
+      </div>
+      <p className="mt-2 text-sm leading-6 text-emerald-100/80">{content.message}</p>
+    </div>
+  );
+}
+
+export function CustomerAccountShell({ showOrders = false, returnTo = "/account", googleAuth = null }: { showOrders?: boolean; returnTo?: string; googleAuth?: GoogleAuthOutcome | null }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
@@ -224,6 +257,20 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
               Create account
             </button>
           </div>
+
+          {googleAuth ? (
+            <div className="mt-7">
+              <GoogleOutcomeBanner outcome={googleAuth} returnTo={returnTo} />
+            </div>
+          ) : (
+            <a
+              href={`/api/auth/google?returnTo=${encodeURIComponent(GOOGLE_RETURN_TO)}`}
+              className="mt-7 flex min-h-12 w-full items-center justify-center gap-3 rounded-lg border border-white/[0.12] bg-white px-5 text-sm font-semibold text-slate-950 transition duration-150 ease-out hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1110] active:scale-[0.99]"
+            >
+              <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full border border-slate-300 bg-white text-xs font-bold text-blue-600">G</span>
+              Continue with Google
+            </a>
+          )}
 
           <div className="mt-7">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">{showOrders ? "Order history access" : mode === "login" ? "Welcome back" : "Start with Recharza"}</p>
