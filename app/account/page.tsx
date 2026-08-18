@@ -13,11 +13,12 @@ export const metadata: Metadata = {
   description: "Sign in or create a Recharza account to checkout, track orders, and manage support securely.",
 };
 
-type AccountPageProps = {
+  type AccountPageProps = {
   searchParams: Promise<{
     returnTo?: string | string[];
     reason?: string | string[];
     authError?: string | string[];
+    googleAuth?: string | string[];
   }>;
 };
 
@@ -26,6 +27,8 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const rawReturnTo = Array.isArray(params.returnTo) ? params.returnTo[0] : params.returnTo;
   const rawReason = Array.isArray(params.reason) ? params.reason[0] : params.reason;
   const rawAuthError = Array.isArray(params.authError) ? params.authError[0] : params.authError;
+  const rawGoogleAuth = Array.isArray(params.googleAuth) ? params.googleAuth[0] : params.googleAuth;
+  const googleAuth = rawGoogleAuth === "signup" || rawGoogleAuth === "login" ? rawGoogleAuth : null;
   const returnTo = sanitizeReturnPath(rawReturnTo, "/account");
   const protectedWorkspace = returnTo === "/admin" || returnTo === "/staff" || returnTo === "/operator";
 
@@ -51,7 +54,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
         {rawReason === "forbidden" ? <div role="alert" className="mt-6 rounded-lg border border-amber-300/20 bg-amber-300/[0.06] px-4 py-3 text-sm text-amber-100">This account does not have permission to open that workspace.</div> : null}
 
         <div className="mx-auto mt-8 grid max-w-5xl gap-4 lg:mt-10">
-          <GoogleOAuthPanel returnTo={returnTo} authError={rawAuthError} />
+          <GoogleOAuthPanel returnTo={returnTo} authError={rawAuthError} googleAuth={googleAuth} />
           <CustomerAccountShell returnTo={returnTo} />
         </div>
       </section>

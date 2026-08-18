@@ -102,3 +102,32 @@ any value containing "smtp" or matching gmailSmtpConfigured with oauth revoked f
 
 ## Pending
 - User confirms test email received. Optionally keep send-test endpoint as admin tool. Re-register Telegram bot commands (non-blocking). Long-term: SPF/DKIM/DMARC for sender domain.
+
+## FINAL VERIFICATION (Aug 18 20:00 UTC)
+The fix IS live on production — vercel CLI `promote` confirmed: "is already the current production deployment" (dpl_3cWxdf2bUFFbTQSVme722ipe5ngD, commit 0e45903). The user was testing against OLD deployment URLs (e.g., recharza-platform-g7pn63ykt-... vercel.app alias serves the old commit f21a468 without the fix; canonical alias has NOT been promoted to the new deployment).
+
+Live end-to-end verification completed on recharza-platform-e2oy28kvw-stand-still.vercel.app:
+- Signup: created recharza.mailtest1@gmail.com (201, emailQueued:true) and recharza.mailtest2@gmail.com (201, emailQueued:true, pw "MailTest-2026", username rczmailtest2).
+- Login: rczmailtest2 signed in successfully (200) via production login API.
+- Two manual delivery-test emails sent to phangchosongja02@gmail.com (messageIds confirmed by Gmail).
+- Zero email errors in runtime logs after fix. Remaining unrelated: SSL warning, FX timeout, Gemini 2.5-flash rename.
+
+Why user's original requests showed no emails:
+1. Original account likely created via Google OAuth — forgot-password intentionally sends nothing for OAuth accounts.
+2. Earlier attempts happened on the old broken deployment (pre-fix).
+3. Rate limit: 4 reset attempts per 15 min per IP/route (consumed by user's retries).
+
+Test accounts created (cleanup candidate): rczmailtest1/recharza.mailtest1@gmail.com, rczmailtest2/recharza.mailtest2@gmail.com (pw MailTest-2026).
+Diagnostic endpoints live in production (protected by INTERNAL_HEALTH_SECRET=rcz-probe-7k3m9q2x): GET /api/internal/mail-health, POST /api/internal/mail-send-test (body {"to":"..."}).
+Vercel token saved at /home/ubuntu/.vercel_api.sh (user-created, scope team stand-still).
+
+## Google Sign-In Unification (Aug 18, in progress)
+User request: one "Continue with Google" button; if Gmail has no account → auto-create; if exists → auto-login; show banner "Signed up via Google" / "Signed in via Google" after redirect; email templates must all use current premium version with Recharza logo visible.
+
+Implementation done (typecheck passes):
+1. `app/api/auth/google/callback/route.ts`: transaction now tracks `googleOutcome` ("login" default; "signup" on customer.create). Redirect URL gets `?googleAuth=signup|login` when destination is /account.
+2. `app/account/page.tsx`: reads `googleAuth` searchParam, passes to GoogleOAuthPanel.
+3. `components/google-oauth-panel.tsx`: added `googleAuth` prop; renders emerald outcome banner ("Signed up via Google — Welcome to Recharza" with Continue → button, or "Signed in via Google — Welcome back"). Outcome renders immediately (bypasses session fetch race). Link import added.
+
+Remaining: email template audit (lib/transactional-email.ts uses current premium template with logo at /assets/brand/recharza-line-electric-mark.png — verify ALL senders use renderTransactionalEmail; check lib/lifecycle-email.ts, lib/order-email.ts for old templates). Then typecheck + lint + build + commit + push.
+Vercel token in /home/ubuntu/.vercel_api.sh; latest prod deployment commit 3865dd4 (docs cleanup). Prod URL: recharza-platform-e2oy28kvw-stand-still.vercel.app.

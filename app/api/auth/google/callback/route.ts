@@ -86,6 +86,8 @@ export async function GET(request: Request) {
     const prisma = getPrisma();
 
     const linked = await prisma.$transaction(async (transaction) => {
+      let googleOutcome: "login" | "signup" = "login";
+
       const subjectCustomer = await transaction.customer.findUnique({
         where: { authSubject },
       });
@@ -103,7 +105,7 @@ export async function GET(request: Request) {
             lastLoginAt: now,
           },
         });
-        return { kind: "ok" as const, customer };
+        return { kind: "ok" as const, customer, googleOutcome };
       }
 
       const emailCustomer = await transaction.customer.findUnique({
@@ -130,9 +132,10 @@ export async function GET(request: Request) {
             lastLoginAt: now,
           },
         });
-        return { kind: "ok" as const, customer };
+        return { kind: "ok" as const, customer, googleOutcome };
       }
 
+      googleOutcome = "signup";
       const customer = await transaction.customer.create({
         data: {
           email,
@@ -143,7 +146,7 @@ export async function GET(request: Request) {
           lastLoginAt: now,
         },
       });
-      return { kind: "ok" as const, customer };
+      return { kind: "ok" as const, customer, googleOutcome };
     });
 
     if (linked.kind === "restricted") {
@@ -172,6 +175,9 @@ export async function GET(request: Request) {
     }
 
     const destination = new URL(state.returnTo, request.url);
+    if (destination.pathname === "/account" && linked.kind === "ok") {
+      destination.searchParams.set("googleAuth", linked.googleOutcome);
+    }
 
     return redirectResponse(destination, [
       createSessionCookie(session.sessionToken, session.expiresAt),

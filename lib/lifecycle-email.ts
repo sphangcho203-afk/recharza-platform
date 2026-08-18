@@ -50,6 +50,10 @@ function appUrl() {
   return (process.env.NEXT_PUBLIC_APP_URL?.trim() || "http://localhost:3000").replace(/\/$/, "");
 }
 
+function logoUrl() {
+  return `${appUrl()}/assets/brand/recharza-line-electric-mark.png`;
+}
+
 function formatTimestamp(date: Date) {
   return new Intl.DateTimeFormat("en-IN", {
     dateStyle: "medium",
@@ -95,7 +99,9 @@ function renderHtml(input: LifecycleEmailInput) {
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>
               <td valign="middle">
                 <table role="presentation" cellspacing="0" cellpadding="0"><tr>
-                  <td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;background:#7c3aed;border-radius:12px;color:#ffffff;font-size:20px;font-style:italic;font-weight:950;">R</td>
+                  <td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;">
+                    <img src="${logoUrl()}" width="38" height="38" alt="Recharza" style="display:block;width:38px;height:38px;object-fit:contain;border:0;">
+                  </td>
                   <td style="padding-left:11px;">
                     <div style="color:#ffffff;font-size:17px;font-weight:950;letter-spacing:-.04em;text-transform:uppercase;">RECHARZA</div>
                     <div style="margin-top:2px;color:#8b5cf6;font-size:9px;font-weight:850;letter-spacing:.19em;text-transform:uppercase;">Play · Pay · Delivered</div>
