@@ -242,10 +242,10 @@ export function AdminPeopleConsole({
     <section id="customers" className="mt-10 scroll-mt-24">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">
             People, roles, sessions, and restrictions
           </p>
-          <h2 className="mt-1 text-2xl font-black">People &amp; access authority</h2>
+          <h2 className="mt-1 text-2xl font-semibold">People &amp; access authority</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
             Inspect every verified account, control customer access, promote trusted staff,
             grant exact operator permissions, and terminate active sessions with a permanent
@@ -256,7 +256,7 @@ export function AdminPeopleConsole({
           type="button"
           onClick={() => void loadPeople(selectedId)}
           disabled={loading || acting}
-          className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/10 disabled:cursor-wait disabled:opacity-50"
+          className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/10 disabled:cursor-wait disabled:opacity-50"
         >
           {loading ? "Refreshing..." : "Refresh people database"}
         </button>
@@ -270,15 +270,15 @@ export function AdminPeopleConsole({
           ["Active sessions", totals.sessions],
         ].map(([label, value]) => (
           <article key={label} className="system-card p-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">{label}</p>
-            <p className="mt-2 text-2xl font-black text-white">{value}</p>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{label}</p>
+            <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
           </article>
         ))}
       </div>
 
       <p
         aria-live="polite"
-        className={`mt-4 rounded-xl border px-4 py-3 text-sm ${
+        className={`mt-4 rounded-lg border px-4 py-3 text-sm ${
           isError
             ? "border-rose-300/20 bg-rose-300/10 text-rose-100"
             : "border-white/10 bg-black/20 text-slate-400"
@@ -295,12 +295,12 @@ export function AdminPeopleConsole({
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search email, name, role, or status"
-              className="min-h-11 min-w-0 rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400/50"
+              className="min-h-11 min-w-0 rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400/50"
             />
             <select
               value={roleFilter}
               onChange={(event) => setRoleFilter(event.target.value as typeof roleFilter)}
-              className="min-h-11 rounded-xl border border-white/10 bg-[#11111a] px-3 text-sm text-white"
+              className="min-h-11 rounded-lg border border-white/10 bg-[#11111a] px-3 text-sm text-white"
             >
               <option value="ALL">All roles</option>
               <option value="CUSTOMER">Customers</option>
@@ -310,7 +310,7 @@ export function AdminPeopleConsole({
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
-              className="min-h-11 rounded-xl border border-white/10 bg-[#11111a] px-3 text-sm text-white"
+              className="min-h-11 rounded-lg border border-white/10 bg-[#11111a] px-3 text-sm text-white"
             >
               <option value="ALL">All access states</option>
               {ACCESS_OPTIONS.map((option) => (
@@ -327,14 +327,14 @@ export function AdminPeopleConsole({
                   key={person.id}
                   type="button"
                   onClick={() => selectPerson(person)}
-                  className={`mb-2 grid w-full min-w-0 gap-3 rounded-xl border p-3 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
+                  className={`mb-2 grid w-full min-w-0 gap-3 rounded-lg border p-3 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
                     active
                       ? "border-violet-300/40 bg-violet-300/10"
                       : "border-white/8 bg-black/15 hover:border-white/15 hover:bg-white/[0.035]"
                   }`}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-black text-white">{person.email}</span>
+                    <span className="block truncate text-sm font-semibold text-white">{person.email}</span>
                     <span className="mt-1 block truncate text-xs text-slate-500">
                       {person.displayName ?? person.username ?? "No public profile name"}
                     </span>
@@ -343,10 +343,10 @@ export function AdminPeopleConsole({
                     </span>
                   </span>
                   <span className="flex flex-wrap items-start gap-1.5 sm:justify-end">
-                    <span className={`rounded-full border px-2 py-1 text-[9px] font-black ${roleTone(person.role)}`}>
+                    <span className={`rounded-full border px-2 py-1 text-[9px] font-semibold ${roleTone(person.role)}`}>
                       {person.role}
                     </span>
-                    <span className={`rounded-full border px-2 py-1 text-[9px] font-black ${accessTone(person.accessStatus)}`}>
+                    <span className={`rounded-full border px-2 py-1 text-[9px] font-semibold ${accessTone(person.accessStatus)}`}>
                       {person.accessStatus.replaceAll("_", " ")}
                     </span>
                   </span>
@@ -366,24 +366,24 @@ export function AdminPeopleConsole({
             <div className="grid gap-6">
               <div className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
-                  <p className="truncate text-xl font-black text-white">{selected.email}</p>
+                  <p className="truncate text-xl font-semibold text-white">{selected.email}</p>
                   <p className="mt-1 font-mono text-[11px] text-slate-600">{selected.id}</p>
                   <p className="mt-3 text-xs text-slate-500">
                     Verified {formatDate(selected.verifiedAt)} · Last login {formatDate(selected.lastLoginAt)}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <span className={`rounded-full border px-3 py-1.5 text-xs font-black ${roleTone(selected.role)}`}>
+                  <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${roleTone(selected.role)}`}>
                     {selected.role}
                   </span>
-                  <span className={`rounded-full border px-3 py-1.5 text-xs font-black ${accessTone(selected.accessStatus)}`}>
+                  <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${accessTone(selected.accessStatus)}`}>
                     {selected.accessStatus.replaceAll("_", " ")}
                   </span>
                 </div>
               </div>
 
               {protectedTarget ? (
-                <div className="rounded-xl border border-amber-300/20 bg-amber-300/10 p-4 text-sm text-amber-100">
+                <div className="rounded-lg border border-amber-300/20 bg-amber-300/10 p-4 text-sm text-amber-100">
                   This administrator account is protected. Role, permissions, restrictions, and sessions require a separate dual-approval workflow.
                 </div>
               ) : null}
@@ -396,18 +396,18 @@ export function AdminPeopleConsole({
                   onChange={(event) => setReason(event.target.value)}
                   disabled={protectedTarget || acting}
                   placeholder="Explain why this access change is necessary"
-                  className="mt-2 w-full resize-none rounded-xl border border-white/10 bg-black/20 px-3 py-3 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400/50 disabled:opacity-40"
+                  className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-black/20 px-3 py-3 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400/50 disabled:opacity-40"
                 />
               </label>
 
               <div className="grid gap-4 xl:grid-cols-2">
-                <div className="rounded-xl border border-white/10 bg-black/15 p-4">
-                  <h3 className="text-sm font-black text-white">Account access state</h3>
+                <div className="rounded-lg border border-white/10 bg-black/15 p-4">
+                  <h3 className="text-sm font-semibold text-white">Account access state</h3>
                   <select
                     value={draftStatus}
                     onChange={(event) => setDraftStatus(event.target.value as AccessStatus)}
                     disabled={protectedTarget || acting}
-                    className="mt-3 min-h-11 w-full rounded-xl border border-white/10 bg-[#11111a] px-3 text-sm text-white disabled:opacity-40"
+                    className="mt-3 min-h-11 w-full rounded-lg border border-white/10 bg-[#11111a] px-3 text-sm text-white disabled:opacity-40"
                   >
                     {ACCESS_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>{option.label}</option>
@@ -423,19 +423,19 @@ export function AdminPeopleConsole({
                       { operation: "set-access", accessStatus: draftStatus },
                       `Access changed to ${draftStatus.replaceAll("_", " ")}.`,
                     )}
-                    className="mt-4 min-h-11 w-full rounded-xl bg-white px-3 text-sm font-black text-slate-950 disabled:cursor-not-allowed disabled:opacity-30"
+                    className="mt-4 min-h-11 w-full rounded-lg bg-white px-3 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     Apply access state
                   </button>
                 </div>
 
-                <div className="rounded-xl border border-white/10 bg-black/15 p-4">
-                  <h3 className="text-sm font-black text-white">Role authority</h3>
+                <div className="rounded-lg border border-white/10 bg-black/15 p-4">
+                  <h3 className="text-sm font-semibold text-white">Role authority</h3>
                   <select
                     value={draftRole}
                     onChange={(event) => setDraftRole(event.target.value as "CUSTOMER" | "STAFF")}
                     disabled={protectedTarget || acting}
-                    className="mt-3 min-h-11 w-full rounded-xl border border-white/10 bg-[#11111a] px-3 text-sm text-white disabled:opacity-40"
+                    className="mt-3 min-h-11 w-full rounded-lg border border-white/10 bg-[#11111a] px-3 text-sm text-white disabled:opacity-40"
                   >
                     <option value="CUSTOMER">Customer</option>
                     <option value="STAFF">Staff</option>
@@ -455,17 +455,17 @@ export function AdminPeopleConsole({
                       { operation: "set-role", role: draftRole },
                       `Role changed to ${draftRole}.`,
                     )}
-                    className="mt-4 min-h-11 w-full rounded-xl border border-cyan-300/25 bg-cyan-300/10 px-3 text-sm font-black text-cyan-100 disabled:cursor-not-allowed disabled:opacity-30"
+                    className="mt-4 min-h-11 w-full rounded-lg border border-cyan-300/25 bg-cyan-300/10 px-3 text-sm font-semibold text-cyan-100 disabled:cursor-not-allowed disabled:opacity-30"
                   >
                     Apply role and revoke sessions
                   </button>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/10 bg-black/15 p-4">
+              <div className="rounded-lg border border-white/10 bg-black/15 p-4">
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h3 className="text-sm font-black text-white">Scoped staff permissions</h3>
+                    <h3 className="text-sm font-semibold text-white">Scoped staff permissions</h3>
                     <p className="mt-1 text-xs leading-5 text-slate-500">
                       Backend operator routes enforce these permissions. Empty configured access means the staff account cannot operate protected tools.
                     </p>
@@ -480,7 +480,7 @@ export function AdminPeopleConsole({
                     return (
                       <label
                         key={permission.id}
-                        className={`flex gap-3 rounded-xl border p-3 ${
+                        className={`flex gap-3 rounded-lg border p-3 ${
                           checked ? "border-violet-300/25 bg-violet-300/10" : "border-white/8 bg-white/[0.02]"
                         }`}
                       >
@@ -498,7 +498,7 @@ export function AdminPeopleConsole({
                           className="mt-1 h-4 w-4 accent-violet-500"
                         />
                         <span>
-                          <span className="block text-sm font-black text-white">{permission.label}</span>
+                          <span className="block text-sm font-semibold text-white">{permission.label}</span>
                           <span className="mt-1 block text-xs leading-5 text-slate-500">{permission.description}</span>
                         </span>
                       </label>
@@ -512,15 +512,15 @@ export function AdminPeopleConsole({
                     { operation: "set-permissions", permissions: draftPermissions },
                     "Staff permissions updated.",
                   )}
-                  className="mt-4 min-h-11 rounded-xl border border-violet-300/25 bg-violet-300/10 px-4 text-sm font-black text-violet-100 disabled:cursor-not-allowed disabled:opacity-30"
+                  className="mt-4 min-h-11 rounded-lg border border-violet-300/25 bg-violet-300/10 px-4 text-sm font-semibold text-violet-100 disabled:cursor-not-allowed disabled:opacity-30"
                 >
                   Save enforced permissions
                 </button>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
-                <div className="rounded-xl border border-white/10 bg-black/15 p-4">
-                  <p className="text-sm font-black text-white">Session authority</p>
+                <div className="rounded-lg border border-white/10 bg-black/15 p-4">
+                  <p className="text-sm font-semibold text-white">Session authority</p>
                   <p className="mt-1 text-xs text-slate-500">
                     {selected.counts.activeSessions} active of {selected.counts.sessions} stored sessions.
                   </p>
@@ -532,15 +532,15 @@ export function AdminPeopleConsole({
                     { operation: "revoke-sessions" },
                     "All active sessions revoked.",
                   )}
-                  className="min-h-12 rounded-xl border border-rose-300/25 bg-rose-300/10 px-5 text-sm font-black text-rose-100 disabled:cursor-not-allowed disabled:opacity-30"
+                  className="min-h-12 rounded-lg border border-rose-300/25 bg-rose-300/10 px-5 text-sm font-semibold text-rose-100 disabled:cursor-not-allowed disabled:opacity-30"
                 >
                   Revoke all sessions
                 </button>
               </div>
 
               {selected.restrictionReason ? (
-                <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Current restriction evidence</p>
+                <div className="rounded-lg border border-white/10 bg-white/[0.025] p-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">Current restriction evidence</p>
                   <p className="mt-2 text-sm text-slate-300">{selected.restrictionReason}</p>
                   <p className="mt-2 text-xs text-slate-600">Updated {formatDate(selected.restrictionUpdatedAt)}</p>
                 </div>

@@ -26,10 +26,10 @@ export function StorefrontCategoryNav() {
             key={item.id}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`min-h-9 shrink-0 rounded-full border px-3.5 py-2 text-[11px] font-black transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${
+            className={`min-h-9 shrink-0 rounded-md border px-3.5 py-2 text-xs font-semibold transition duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${
               active
                 ? "border-white bg-white text-slate-950"
-                : "border-white/[0.08] bg-white/[0.025] text-slate-400 hover:border-cyan-300/20 hover:bg-cyan-300/[0.05] hover:text-white"
+                : "border-white/[0.08] bg-white/[0.025] text-slate-400 hover:border-violet-300/25 hover:bg-violet-300/[0.06] hover:text-white"
             }`}
           >
             {item.label}

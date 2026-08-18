@@ -194,11 +194,11 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
   if (loading) {
     return (
       <div className="grid gap-4" aria-label="Loading account">
-        <div className="h-32 animate-pulse rounded-3xl border border-white/10 bg-white/[0.035]" />
+        <div className="h-32 animate-pulse rounded-lg border border-white/10 bg-white/[0.03]" />
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="h-28 animate-pulse rounded-2xl border border-white/10 bg-white/[0.025]" />
-          <div className="h-28 animate-pulse rounded-2xl border border-white/10 bg-white/[0.025]" />
-          <div className="h-28 animate-pulse rounded-2xl border border-white/10 bg-white/[0.025]" />
+          <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/[0.025]" />
+          <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/[0.025]" />
+          <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/[0.025]" />
         </div>
       </div>
     );
@@ -206,17 +206,17 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
 
   if (!customer || sessionEnded) {
     return (
-      <section className="mx-auto max-w-xl rounded-3xl border border-white/10 bg-[#0f0f19] p-6 text-center shadow-2xl shadow-black/25 sm:p-8">
-        <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+      <section className="mx-auto max-w-xl rounded-lg border border-white/10 bg-[#0f0f19] p-6 text-center sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
           Session closed
         </p>
-        <h2 className="mt-3 text-3xl font-black text-white">
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
           Sign in to reopen your account.
         </h2>
         <p className="mt-3 text-sm leading-6 text-slate-400">{message}</p>
         <a
           href="/account"
-          className="mt-5 block min-h-12 rounded-xl bg-violet-500 px-5 py-3.5 text-sm font-black text-white transition hover:bg-violet-400"
+          className="mt-5 block min-h-12 rounded-lg bg-violet-500 px-5 py-3.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
         >
           Return to login
         </a>
@@ -228,28 +228,28 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
   return (
     <div className="grid gap-6">
       {showOrders ? (
-        <section className="rounded-3xl border border-violet-300/15 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.16),transparent_48%),#0f0f19] p-5 shadow-2xl shadow-black/25 sm:p-7">
-          <Link href="/account" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2 text-sm font-bold text-slate-300 transition hover:border-violet-300/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70">
+        <section className="rounded-lg border border-violet-300/15 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.16),transparent_48%),#0f0f19] p-5 sm:p-7">
+          <Link href="/account" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2 text-sm font-semibold text-slate-300 transition duration-150 ease-out hover:border-violet-300/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70">
             <span aria-hidden="true">←</span> Back to account
           </Link>
-          <p className="mt-7 text-xs font-black uppercase tracking-[0.18em] text-violet-300">Order history</p>
-          <h2 className="mt-2 text-3xl font-black tracking-tight text-white sm:text-4xl">Your purchases</h2>
+          <p className="mt-7 text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">Order history</p>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Your purchases</h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Every purchase has its own tracking link, payment state, player destination, and delivery timeline. This is your complete account-owned order workspace.</p>
-          <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold text-slate-400">
+          <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-slate-400">
             <span className="rounded-lg border border-white/10 bg-black/20 px-3 py-2">{orders.length} total orders</span>
             <span className="rounded-lg border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-amber-100">{activeOrders} active</span>
           </div>
         </section>
       ) : null}
       {!showOrders ? (
-      <section className="overflow-hidden rounded-3xl border border-white/10 bg-[#0f0f19] shadow-2xl shadow-black/25">
+      <section className="overflow-hidden rounded-lg border border-white/10 bg-[#0f0f19]">
         <div className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.15),transparent_50%),rgba(255,255,255,0.025)] p-5 sm:p-6">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
             <div className="min-w-0">
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-emerald-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
                 Account active
               </p>
-              <h2 className="mt-2 break-words text-3xl font-black text-white">
+              <h2 className="mt-2 break-words text-2xl font-semibold tracking-tight text-white sm:text-3xl">
                 {customer.displayName || customer.username || customer.email}
               </h2>
               <p className="mt-2 break-all text-sm text-slate-400">
@@ -261,7 +261,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               {customer.role !== "customer" ? (
                 <Link
                   href={internalDestination}
-                  className="min-h-11 rounded-xl border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-black text-violet-100"
+                  className="min-h-11 rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-semibold text-violet-100 transition duration-150 ease-out hover:bg-violet-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
                 >
                   Open {customer.role} workspace
                 </Link>
@@ -269,7 +269,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               <button
                 type="button"
                 onClick={() => void logout()}
-                className="min-h-11 rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-xs font-black text-slate-200"
+                className="min-h-11 rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-xs font-semibold text-slate-200 transition duration-150 ease-out hover:border-rose-300/25 hover:bg-rose-300/10 hover:text-rose-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
               >
                 Sign out
               </button>
@@ -287,9 +287,9 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
             <Link
               key={label}
               href={href}
-              className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition hover:-translate-y-0.5 hover:border-violet-400/40 hover:bg-violet-400/[0.08]"
+              className="group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.03] p-4 transition duration-150 ease-out hover:border-violet-400/40 hover:bg-violet-400/[0.08]"
             >
-              <span className="grid h-11 w-11 place-items-center rounded-2xl border border-violet-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(167,139,250,0.34),rgba(124,58,237,0.12))] text-violet-100 shadow-inner shadow-violet-300/10 transition group-hover:bg-violet-400/20">
+              <span className="grid h-11 w-11 place-items-center rounded-lg border border-violet-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(167,139,250,0.34),rgba(124,58,237,0.12))] text-violet-100 transition duration-150 ease-out group-hover:bg-violet-400/20">
                 <StorefrontIcon name={icon as Parameters<typeof StorefrontIcon>[0]["name"]} className="h-4 w-4" />
               </span>
               <strong className="mt-4 block text-sm font-bold text-white">{label}</strong>
@@ -308,16 +308,16 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               ["Active orders", String(activeOrders), "Still moving through the flow"],
               ["Saved players", String(savedPlayers.length), "Derived from order history"],
             ].map(([label, value, note]) => (
-              <article key={label} className="rounded-2xl border border-white/10 bg-white/[0.035] p-5">
-                <p className="text-xs font-black uppercase tracking-[0.13em] text-slate-500">{label}</p>
-                <p className="mt-3 text-3xl font-black text-white">{value}</p>
+              <article key={label} className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.13em] text-slate-500">{label}</p>
+                <p className="mt-3 text-3xl font-semibold tracking-tight text-white">{value}</p>
                 <p className="mt-2 text-xs text-slate-600">{note}</p>
               </article>
             ))}
           </section>
-          <section className="rounded-3xl border border-white/10 bg-white/[0.025] p-5 sm:p-6" aria-labelledby="account-next-step">
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">Account overview</p>
-            <h2 id="account-next-step" className="mt-2 text-2xl font-black text-white">What would you like to do?</h2>
+          <section className="rounded-lg border border-white/10 bg-white/[0.025] p-5 sm:p-6" aria-labelledby="account-next-step">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">Account overview</p>
+            <h2 id="account-next-step" className="mt-2 text-xl font-semibold tracking-tight text-white sm:text-2xl">What would you like to do?</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Use the account tools above to review your cart, open your order history, or contact support. Games stay in the storefront where they belong.</p>
           </section>
           <SavedAddressesPanel />
@@ -329,10 +329,10 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
         <section className="min-w-0">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
                 Order history
               </p>
-              <h2 className="mt-2 text-2xl font-black text-white">
+              <h2 className="mt-2 text-xl font-semibold tracking-tight text-white sm:text-2xl">
                 Your purchases
               </h2>
             </div>
@@ -340,7 +340,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               type="button"
               disabled={refreshing}
               onClick={() => void refresh()}
-              className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-xs font-black text-slate-200 disabled:opacity-50"
+              className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold text-slate-200 transition duration-150 ease-out hover:bg-white/10 disabled:opacity-50"
             >
               {refreshing ? "Refreshing..." : "Refresh"}
             </button>
@@ -350,17 +350,17 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
             {orders.map((order) => (
               <article
                 key={order.id}
-                className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 sm:p-5"
+                className="rounded-lg border border-white/10 bg-white/[0.035] p-4 sm:p-5"
               >
                 <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
                   <div className="min-w-0">
-                    <p className="break-all text-xs font-black uppercase tracking-[0.12em] text-violet-300">
+                    <p className="break-all font-mono text-xs font-medium uppercase tracking-[0.12em] text-violet-300">
                       {order.id}
                     </p>
                     <div className="mt-3 flex items-center gap-3">
-                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-12 w-12 shrink-0 rounded-xl object-cover" fallbackClassName="h-12 w-12 shrink-0 rounded-xl" />
+                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-12 w-12 shrink-0 rounded-lg object-cover" fallbackClassName="h-12 w-12 shrink-0 rounded-lg" />
                       <div className="min-w-0">
-                        <h3 className="truncate text-xl font-black text-white">{order.package.name}</h3>
+                        <h3 className="truncate text-base font-semibold text-white sm:text-lg">{order.package.name}</h3>
                         <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{gameTitle(order.gameSlug)}</p>
                       </div>
                     </div>
@@ -372,7 +372,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                     </p>
                   </div>
                   <span
-                    className={`w-fit rounded-full border px-3 py-1.5 text-xs font-black uppercase tracking-wider ${statusClassName(order.status)}`}
+                    className={`w-fit rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wider ${statusClassName(order.status)}`}
                   >
                     {order.status.replaceAll("_", " ")}
                   </span>
@@ -386,7 +386,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                   </p>
                   <Link
                     href={`/orders/${encodeURIComponent(order.id)}`}
-                    className="min-h-11 rounded-xl border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-black text-violet-100"
+                    className="min-h-11 rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-semibold text-violet-100 transition duration-150 ease-out hover:bg-violet-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
                   >
                     Open tracking
                   </Link>
@@ -395,14 +395,14 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
             ))}
 
             {!orders.length ? (
-              <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
-                <p className="font-black text-slate-300">No orders yet.</p>
+              <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
+                <p className="text-base font-semibold text-slate-300">No orders yet.</p>
                 <p className="mt-2 text-sm text-slate-500">
                   Your completed and active purchases will appear here.
                 </p>
                 <Link
                   href="/#games"
-                  className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-white px-4 py-3 text-xs font-black text-slate-950"
+                  className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-white px-4 py-3 text-xs font-semibold text-slate-950 transition duration-150 ease-out hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                 >
                   Browse games
                 </Link>
@@ -411,22 +411,22 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
           </div>
         </section>
 
-        <aside className="h-fit rounded-3xl border border-white/10 bg-[#0f0f19] p-5 lg:sticky lg:top-24">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+        <aside className="h-fit rounded-lg border border-white/10 bg-[#0f0f19] p-5 lg:sticky lg:top-24">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
             Saved players
           </p>
-          <h2 className="mt-2 text-xl font-black text-white">
+          <h2 className="mt-2 text-lg font-semibold tracking-tight text-white">
             Recent destinations
           </h2>
           <div className="mt-4 grid gap-3">
             {savedPlayers.map((order) => (
               <article
                 key={`${order.gameSlug}:${order.player.playerId}:${order.player.zoneId}:${order.market?.code ?? "global"}`}
-                className="rounded-xl border border-white/10 bg-black/20 p-4"
+                className="rounded-lg border border-white/10 bg-black/20 p-4"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
-                    <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-11 w-11 shrink-0 rounded-xl object-cover" fallbackClassName="h-11 w-11 shrink-0 rounded-xl" />
+                    <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-11 w-11 shrink-0 rounded-lg object-cover" fallbackClassName="h-11 w-11 shrink-0 rounded-lg" />
                     <strong className="truncate text-sm text-white">
                     {order.player.nickname || "Mobile Legends player"}
                     </strong>
@@ -441,7 +441,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               </article>
             ))}
             {!savedPlayers.length ? (
-              <p className="rounded-xl border border-dashed border-white/10 px-4 py-5 text-sm leading-6 text-slate-500">
+              <p className="rounded-lg border border-dashed border-white/10 px-4 py-5 text-sm leading-6 text-slate-500">
                 Validated player destinations will be collected from your order
                 history.
               </p>
@@ -451,7 +451,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               </div>
       ) : null}
       <p
-        className={`rounded-xl border px-4 py-3 text-sm ${
+        className={`rounded-lg border px-4 py-3 text-sm ${
           error
             ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
             : "border-white/10 bg-black/20 text-slate-400"

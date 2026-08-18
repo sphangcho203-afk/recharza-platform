@@ -132,7 +132,7 @@ export function CartPage() {
         <p
           role="status"
           aria-live="polite"
-          className={`mb-4 rounded-lg border px-4 py-3 text-xs font-bold ${
+          className={`mb-4 rounded-lg border px-4 py-3 text-xs font-semibold ${
             notice.tone === "error"
               ? "border-rose-400/20 bg-rose-400/[0.07] text-rose-200"
               : "border-emerald-400/20 bg-emerald-400/[0.07] text-emerald-200"
@@ -153,23 +153,23 @@ export function CartPage() {
             {[0, 1].map((index) => (
               <div
                 key={index}
-                className="h-40 animate-pulse rounded-2xl border border-white/[0.08] bg-[linear-gradient(155deg,rgba(30,33,56,.72),rgba(14,16,29,.8))]"
+                className="h-40 animate-pulse rounded-lg border border-white/[0.08] bg-[linear-gradient(155deg,rgba(30,33,56,.72),rgba(14,16,29,.8))]"
               />
             ))}
           </div>
-          <div className="h-64 animate-pulse rounded-2xl border border-white/[0.08] bg-[linear-gradient(155deg,rgba(30,33,56,.72),rgba(14,16,29,.8))] lg:sticky lg:top-28" />
+          <div className="h-64 animate-pulse rounded-lg border border-white/[0.08] bg-[linear-gradient(155deg,rgba(30,33,56,.72),rgba(14,16,29,.8))] lg:sticky lg:top-28" />
         </div>
       ) : null}
 
       {loadState.status === "error" ? (
         <div
           role="alert"
-          className="mx-auto max-w-xl rounded-xl border border-rose-400/20 bg-rose-400/[0.06] p-8 text-center"
+          className="mx-auto max-w-xl rounded-lg border border-rose-400/20 bg-rose-400/[0.06] p-8 text-center"
         >
-          <span className="mx-auto grid h-12 w-12 place-items-center rounded-full border border-rose-400/20 bg-rose-400/[0.08] text-rose-200">
+          <span className="mx-auto grid h-12 w-12 place-items-center rounded-lg border border-rose-400/20 bg-rose-400/[0.08] text-rose-200">
             <StorefrontIcon name="cart" className="h-5 w-5" />
           </span>
-          <h2 className="mt-4 text-lg font-black text-white">
+          <h2 className="mt-4 text-lg font-semibold tracking-tight text-white">
             The cart couldn&apos;t be loaded
           </h2>
           <p className="mt-2 text-sm leading-6 text-rose-100/65">
@@ -182,13 +182,13 @@ export function CartPage() {
                 setLoadState({ status: "loading" });
                 void load();
               }}
-              className="min-h-10 rounded-lg bg-white px-4 text-xs font-black text-slate-950"
+              className="min-h-10 rounded-lg bg-white px-4 text-xs font-semibold text-slate-950 transition duration-150 ease-out hover:bg-slate-200"
             >
               Try again
             </button>
             <Link
               href="/#games"
-              className="inline-flex min-h-10 items-center rounded-lg border border-white/[0.1] px-4 text-xs font-black text-white"
+              className="inline-flex min-h-10 items-center rounded-lg border border-white/[0.1] px-4 text-xs font-semibold text-white transition duration-150 ease-out hover:bg-white/[0.06]"
             >
               Browse games
             </Link>
@@ -197,11 +197,11 @@ export function CartPage() {
       ) : null}
 
       {loadState.status === "ready" && cart.items.length === 0 ? (
-        <div className="mx-auto max-w-xl rounded-2xl border border-[rgba(196,181,253,.18)] bg-[linear-gradient(155deg,rgba(30,33,56,.94),rgba(14,16,29,.98))] px-6 py-14 text-center shadow-[0_24px_70px_rgba(0,0,0,.28)]">
-          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-400/25 bg-violet-500/[0.08] text-violet-300">
+        <div className="mx-auto max-w-xl rounded-lg border border-[rgba(196,181,253,.18)] bg-[linear-gradient(155deg,rgba(30,33,56,.94),rgba(14,16,29,.98))] px-6 py-14 text-center shadow-[0_16px_52px_rgba(0,0,0,.22)]">
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-lg border border-violet-400/25 bg-violet-500/[0.08] text-violet-300">
             <StorefrontIcon name="cart" className="h-6 w-6" />
           </span>
-          <h2 className="mt-5 text-xl font-black tracking-[-0.02em] text-white">
+          <h2 className="mt-5 text-xl font-semibold tracking-tight text-white">
             Your cart is empty
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-500">
@@ -210,7 +210,7 @@ export function CartPage() {
           <div className="mt-6 flex flex-col justify-center gap-2 sm:flex-row">
             <Link
               href="/#games"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-6 text-sm font-extrabold text-primary-foreground shadow-[0_12px_32px_rgba(155,124,255,.24)] transition hover:bg-primary-hover hover:shadow-[0_16px_38px_rgba(155,124,255,.32)]"
+              className="inline-flex min-h-11 items-center justify-center rounded-lg bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-[0_12px_32px_rgba(155,124,255,.24)] transition duration-150 ease-out hover:bg-primary-hover hover:shadow-[0_16px_38px_rgba(155,124,255,.32)]"
             >
               Browse Games
             </Link>
@@ -223,10 +223,10 @@ export function CartPage() {
           <div className="grid min-w-0 gap-4">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-violet-200/80">
+                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-violet-200/80">
                   Ready to top up
                 </p>
-                <h2 className="mt-1 text-lg font-black tracking-[-0.02em] text-white">
+                <h2 className="mt-1 text-lg font-semibold tracking-tight text-white">
                   Your items
                 </h2>
               </div>
@@ -234,7 +234,7 @@ export function CartPage() {
                 type="button"
                 disabled={busyClear}
                 onClick={() => void clearCart()}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-xl border border-white/[0.1] px-3 text-[11px] font-extrabold text-slate-400 transition hover:border-rose-400/30 hover:bg-rose-400/10 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/[0.1] px-3 text-[11px] font-semibold text-slate-400 transition duration-150 ease-out hover:border-rose-400/30 hover:bg-rose-400/10 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {busyClear ? "Clearing…" : "Clear cart"}
               </button>

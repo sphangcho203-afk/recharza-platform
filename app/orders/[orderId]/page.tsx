@@ -35,10 +35,10 @@ export default async function OrderTrackingPage({
             <span aria-hidden="true">←</span>
             Back to games
           </Link>
-          <p className="mt-8 text-xs font-black uppercase tracking-[0.2em] text-violet-300">
+          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
             Secure order console
           </p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-black tracking-[-0.045em] sm:text-5xl">
+          <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
             Track an order without exposing customer data.
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300">

@@ -26,7 +26,7 @@ export function WorkspaceNavigation({
         {modules.map((module) => {
           const active = module.id === activeId;
           const interactive = isInteractiveModule(module.state);
-          const className = `group min-h-12 min-w-[10rem] shrink-0 rounded-xl border px-3.5 py-3 text-left transition sm:min-w-[12rem] lg:min-w-0 lg:w-full ${
+          const className = `group min-h-12 min-w-[10rem] shrink-0 rounded-lg border px-3.5 py-3 text-left transition sm:min-w-[12rem] lg:min-w-0 lg:w-full ${
             active
               ? "border-white bg-white text-slate-950"
               : interactive
@@ -37,7 +37,7 @@ export function WorkspaceNavigation({
           const content = (
             <span className="grid gap-2">
               <span className="flex items-center justify-between gap-3">
-                <span className="text-sm font-black">{module.label}</span>
+                <span className="text-sm font-semibold">{module.label}</span>
                 <ModuleStateBadge state={module.state} />
               </span>
               <span

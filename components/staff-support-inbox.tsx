@@ -316,10 +316,10 @@ export function StaffSupportInbox() {
     <section id="support" className="scroll-mt-24">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">
             Customer support cases
           </p>
-          <h2 className="mt-1 text-2xl font-black">Support inbox</h2>
+          <h2 className="mt-1 text-2xl font-semibold">Support inbox</h2>
           <p className="mt-2 text-sm text-slate-500">
             {message}
           </p>
@@ -328,7 +328,7 @@ export function StaffSupportInbox() {
           type="button"
           onClick={() => loadTickets()}
           disabled={loading}
-          className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-4 text-xs font-bold text-slate-200 transition-colors hover:bg-white/10 disabled:opacity-50"
+          className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 text-xs font-bold text-slate-200 transition-colors hover:bg-white/10 disabled:opacity-50"
         >
           {loading ? "Refreshing..." : "Refresh"}
         </button>
@@ -360,13 +360,13 @@ export function StaffSupportInbox() {
               if (event.key === "Enter") loadTickets(filter, search);
             }}
             placeholder="Search tickets..."
-            className="min-h-11 w-full min-w-0 flex-1 rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400/40 lg:w-64"
+            className="min-h-11 w-full min-w-0 flex-1 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400/40 lg:w-64"
             aria-label="Search support tickets"
           />
           <button
             type="button"
             onClick={() => loadTickets(filter, search)}
-            className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-4 text-xs font-bold text-slate-200 transition-colors hover:bg-white/10"
+            className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 text-xs font-bold text-slate-200 transition-colors hover:bg-white/10"
           >
             Search
           </button>
@@ -376,7 +376,7 @@ export function StaffSupportInbox() {
       <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
         <div className="system-panel overflow-hidden">
           <div className="flex items-center justify-between gap-3 border-b border-white/10 p-4">
-            <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
               Tickets · {visibleCount}
             </p>
             <span className="rounded-full bg-white/5 px-2 py-1 text-[10px] font-bold text-slate-500">
@@ -387,12 +387,12 @@ export function StaffSupportInbox() {
           {isError ? (
             <div className="system-empty-state min-h-56">
               <div>
-                <p className="font-black text-slate-300">Support access unavailable</p>
+                <p className="font-semibold text-slate-300">Support access unavailable</p>
                 <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">{message}</p>
                 <button
                   type="button"
                   onClick={() => loadTickets()}
-                  className="mt-4 min-h-10 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-bold text-slate-200"
+                  className="mt-4 min-h-10 rounded-lg border border-white/10 bg-white/5 px-3 text-xs font-bold text-slate-200"
                 >
                   Try again
                 </button>
@@ -401,7 +401,7 @@ export function StaffSupportInbox() {
           ) : tickets.length === 0 && !loading ? (
             <div className="system-empty-state min-h-56">
               <div>
-                <p className="font-black text-slate-300">No support tickets</p>
+                <p className="font-semibold text-slate-300">No support tickets</p>
                 <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
                   No tickets match the current filter. New customer requests appear here as they arrive.
                 </p>
@@ -430,7 +430,7 @@ export function StaffSupportInbox() {
                         {supportTicketStatusLabel(ticket.status)}
                       </span>
                     </div>
-                    <h3 className="mt-2 line-clamp-2 text-sm font-black text-white">
+                    <h3 className="mt-2 line-clamp-2 text-sm font-semibold text-white">
                       {ticket.subject}
                     </h3>
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500">
@@ -456,7 +456,7 @@ export function StaffSupportInbox() {
           ) : !detail ? (
             <div className="system-empty-state min-h-72">
               <div>
-                <p className="font-black text-slate-300">Select a ticket</p>
+                <p className="font-semibold text-slate-300">Select a ticket</p>
                 <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
                   {selected
                     ? "The selected ticket could not be loaded."
@@ -483,7 +483,7 @@ export function StaffSupportInbox() {
                     {detail.replyChannel.toLowerCase()} replies
                   </span>
                 </div>
-                <h3 className="mt-3 text-lg font-black text-white">{detail.subject}</h3>
+                <h3 className="mt-3 text-lg font-semibold text-white">{detail.subject}</h3>
                 <dl className="mt-3 grid gap-x-6 gap-y-1 text-xs text-slate-400 sm:grid-cols-2">
                   <div className="flex justify-between gap-2">
                     <dt className="text-slate-600">Requester</dt>
@@ -526,14 +526,14 @@ export function StaffSupportInbox() {
 
               <div className="grid gap-4 border-b border-white/10 p-5 sm:grid-cols-2">
                 <label className="block">
-                  <span className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
                     Assigned staff
                   </span>
                   <select
                     value={detail.assignee?.id ?? ""}
                     onChange={(event) => changeAssignee(event.target.value)}
                     disabled={busy}
-                    className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-400/40 disabled:opacity-50"
+                    className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-400/40 disabled:opacity-50"
                   >
                     <option value="">Unassigned</option>
                     {assignees.map((assignee) => (
@@ -544,7 +544,7 @@ export function StaffSupportInbox() {
                   </select>
                 </label>
                 <label className="block">
-                  <span className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
                     Ticket status
                   </span>
                   <select
@@ -553,7 +553,7 @@ export function StaffSupportInbox() {
                       changeStatus(event.target.value as SupportTicketStatus)
                     }
                     disabled={busy}
-                    className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-400/40 disabled:opacity-50"
+                    className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-400/40 disabled:opacity-50"
                   >
                     {SUPPORT_TICKET_STATUSES.map((status) => (
                       <option key={status} value={status}>
@@ -563,7 +563,7 @@ export function StaffSupportInbox() {
                   </select>
                 </label>
                 <label className="block sm:col-span-2">
-                  <span className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
                     Reason (required for assignment and status changes)
                   </span>
                   <input
@@ -572,17 +572,17 @@ export function StaffSupportInbox() {
                     onChange={(event) => setReason(event.target.value)}
                     maxLength={240}
                     placeholder="Short audit reason, e.g. claiming ticket"
-                    className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-white/5 px-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                    className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                   />
                 </label>
               </div>
 
               <div className="flex-1 border-b border-white/10 p-5">
-                <p className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
                   Conversation
                 </p>
                 <ol className="mt-4 space-y-4">
-                  <li className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+                  <li className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <p className="text-xs font-bold text-slate-400">
                         Customer · {detail.categoryLabel}
@@ -598,7 +598,7 @@ export function StaffSupportInbox() {
                   {detail.replies.map((replyRecord, index) => (
                     <li
                       key={`${replyRecord.at}-${index}`}
-                      className="rounded-xl border border-cyan-400/15 bg-cyan-400/[0.04] p-4"
+                      className="rounded-lg border border-cyan-400/15 bg-cyan-400/[0.04] p-4"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <p className="text-xs font-bold text-cyan-200">
@@ -626,7 +626,7 @@ export function StaffSupportInbox() {
 
               <div className="p-5">
                 <label className="block">
-                  <span className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
                     Reply to customer
                   </span>
                   <textarea
@@ -635,7 +635,7 @@ export function StaffSupportInbox() {
                     rows={4}
                     maxLength={2000}
                     placeholder="Write a clear reply for the customer..."
-                    className="mt-2 w-full resize-y rounded-xl border border-white/10 bg-white/5 px-3 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                    className="mt-2 w-full resize-y rounded-lg border border-white/10 bg-white/5 px-3 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
                   />
                 </label>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
@@ -648,7 +648,7 @@ export function StaffSupportInbox() {
                     type="button"
                     onClick={sendReply}
                     disabled={busy || !reply.trim()}
-                    className="min-h-11 rounded-xl bg-cyan-400 px-5 text-xs font-black uppercase tracking-[0.1em] text-black transition-colors hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="min-h-11 rounded-lg bg-cyan-400 px-5 text-xs font-semibold uppercase tracking-[0.1em] text-black transition-colors hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {busy ? "Sending..." : "Send reply"}
                   </button>

@@ -247,7 +247,7 @@ export function OperatorConsole() {
                 value={token}
                 onChange={(event) => setToken(event.target.value)}
                 placeholder="Leave empty to use verified staff session"
-                className="mt-2 w-full resize-none rounded-2xl border border-white/10 bg-black/20 px-4 py-3 font-mono text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
+                className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-black/20 px-4 py-3 font-mono text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
               />
             </label>
             {access ? (
@@ -258,10 +258,10 @@ export function OperatorConsole() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-            <button type="button" onClick={useSavedToken} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-bold text-slate-200 hover:bg-white/10">
+            <button type="button" onClick={useSavedToken} className="rounded-lg border border-white/10 bg-white/5 px-5 py-3 text-sm font-bold text-slate-200 hover:bg-white/10">
               Use saved fallback
             </button>
-            <button type="button" disabled={loading} onClick={() => void loadOrders()} className="rounded-2xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 py-3 text-sm font-black text-white disabled:cursor-wait disabled:opacity-60">
+            <button type="button" disabled={loading} onClick={() => void loadOrders()} className="rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500 px-5 py-3 text-sm font-semibold text-white disabled:cursor-wait disabled:opacity-60">
               {loading ? "Loading..." : "Open operator console"}
             </button>
           </div>
@@ -277,7 +277,7 @@ export function OperatorConsole() {
                 setFilter(nextFilter);
                 if (orders.length) void loadOrders(token, nextFilter);
               }}
-              className="ml-3 rounded-xl border border-white/10 bg-[#11111d] px-3 py-2 text-sm text-white outline-none"
+              className="ml-3 rounded-lg border border-white/10 bg-[#11111d] px-3 py-2 text-sm text-white outline-none"
             >
               {FILTERS.map((item) => (
                 <option key={item} value={item}>{item.replaceAll("_", " ")}</option>
@@ -287,7 +287,7 @@ export function OperatorConsole() {
           <p className="text-sm text-slate-500">Visible orders: {visibleTotal}</p>
         </div>
 
-        <p aria-live="polite" className={`mt-4 rounded-2xl border px-4 py-3 text-sm ${isError ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-white/10 bg-black/15 text-slate-400"}`}>
+        <p aria-live="polite" className={`mt-4 rounded-lg border px-4 py-3 text-sm ${isError ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-white/10 bg-black/15 text-slate-400"}`}>
           {message}
         </p>
       </section>
@@ -301,7 +301,7 @@ export function OperatorConsole() {
               <div className="flex flex-col justify-between gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-start">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-300">{order.id}</p>
-                  <h2 className="mt-2 text-2xl font-black text-white">{order.package.name}</h2>
+                  <h2 className="mt-2 text-2xl font-semibold text-white">{order.package.name}</h2>
                   <p className="mt-2 text-sm text-slate-400">
                     Player {order.player.nickname || order.player.playerId} ({order.player.zoneId})
                   </p>
@@ -321,31 +321,31 @@ export function OperatorConsole() {
               </dl>
 
               {(transitions.length || canFulfil) ? (
-                <div className="mt-6 rounded-3xl border border-white/10 bg-black/15 p-4">
+                <div className="mt-6 rounded-lg border border-white/10 bg-black/15 p-4">
                   <label className="text-sm font-semibold text-slate-200">
                     Required audit reason
                     <input
                       value={reasons[order.id] ?? ""}
                       onChange={(event) => setReasons((current) => ({ ...current, [order.id]: event.target.value }))}
                       placeholder="Explain the staff action"
-                      className="mt-2 w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
+                      className="mt-2 w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
                     />
                   </label>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {canFulfil ? (
                       <>
-                        <button type="button" disabled={activeOrder === order.id} onClick={() => void runFulfilment(order, false)} className="rounded-xl border border-emerald-400/25 bg-emerald-400/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-emerald-100 disabled:opacity-50">
+                        <button type="button" disabled={activeOrder === order.id} onClick={() => void runFulfilment(order, false)} className="rounded-lg border border-emerald-400/25 bg-emerald-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-emerald-100 disabled:opacity-50">
                           Ensure fulfilment
                         </button>
                         {order.counts.fulfilmentAttempts > 0 ? (
-                          <button type="button" disabled={activeOrder === order.id} onClick={() => void runFulfilment(order, true)} className="rounded-xl border border-amber-300/25 bg-amber-300/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-amber-100 disabled:opacity-50">
+                          <button type="button" disabled={activeOrder === order.id} onClick={() => void runFulfilment(order, true)} className="rounded-lg border border-amber-300/25 bg-amber-300/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-amber-100 disabled:opacity-50">
                             Retry failed / dry run
                           </button>
                         ) : null}
                       </>
                     ) : null}
                     {transitions.map((target) => (
-                      <button key={target} type="button" disabled={activeOrder === order.id} onClick={() => void transitionOrder(order, target)} className="rounded-xl border border-violet-400/25 bg-violet-400/10 px-4 py-2 text-xs font-black uppercase tracking-wider text-violet-100 disabled:opacity-50">
+                      <button key={target} type="button" disabled={activeOrder === order.id} onClick={() => void transitionOrder(order, target)} className="rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-violet-100 disabled:opacity-50">
                         Move to {target.replaceAll("_", " ")}
                       </button>
                     ))}

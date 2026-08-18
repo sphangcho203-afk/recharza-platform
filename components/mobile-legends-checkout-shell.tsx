@@ -325,7 +325,7 @@ export function MobileLegendsCheckoutShell({
   }
 
   if (!selectedPackage) {
-    return <div className="rounded-xl border border-amber-300/20 bg-amber-300/[0.07] p-5 text-sm text-amber-100">No approved packages are available for this market.</div>;
+    return <div className="rounded-lg border border-amber-300/20 bg-amber-300/[0.07] p-5 text-sm text-amber-100">No approved packages are available for this market.</div>;
   }
 
   return (
@@ -337,13 +337,13 @@ export function MobileLegendsCheckoutShell({
         <section className="storefront-checkout-surface p-4 sm:p-5">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-base font-black text-white">Order information</h2>
+              <h2 className="text-base font-semibold text-white">Order information</h2>
               <p className="mt-1 text-xs text-slate-500">Verify the Mobile Legends destination before creating an order.</p>
             </div>
           </div>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_0.7fr_auto] sm:items-end">
-            <label className="text-xs font-black text-slate-400">
+            <label className="text-xs font-semibold text-slate-400">
               Player ID
               <input
                 required
@@ -358,7 +358,7 @@ export function MobileLegendsCheckoutShell({
                 className={inputClassName}
               />
             </label>
-            <label className="text-xs font-black text-slate-400">
+            <label className="text-xs font-semibold text-slate-400">
               Zone ID
               <input
                 required
@@ -411,7 +411,7 @@ export function MobileLegendsCheckoutShell({
         <section>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-lg font-black tracking-[-0.025em] text-white">Choose a package</h2>
+              <h2 className="text-lg font-semibold tracking-[-0.025em] text-white">Choose a package</h2>
               <p className="mt-1 text-xs text-slate-500">{packages.length} offers · {market.flag} {market.label}</p>
             </div>
             <div className="flex items-center gap-3">
@@ -465,7 +465,7 @@ export function MobileLegendsCheckoutShell({
                         </span>
                       ) : null}
                       <strong className="line-clamp-2 min-h-10 text-[13px] font-semibold leading-5 tracking-[-0.01em] text-white sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-semibold text-emerald-300">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
-                      <span className="mt-3 block text-lg font-black tracking-[-0.025em] text-violet-200">{formatPresentment(item.amountInPaise)}</span>
+                      <span className="mt-3 block text-lg font-semibold tracking-[-0.025em] text-violet-200">{formatPresentment(item.amountInPaise)}</span>
                       <span className="mt-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-slate-600">{item.source === "fazercards-live" ? "Live delivery" : "Ready to deliver"}</span>
                     </span>
                   </button>
@@ -511,7 +511,7 @@ export function MobileLegendsCheckoutShell({
           />
 
           {isAuthenticated && selectedAddressId === null ? (
-            <label className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3">
+            <label className="flex items-start gap-3 rounded-lg border border-white/[0.08] bg-white/[0.025] px-4 py-3">
               <input
                 type="checkbox"
                 checked={saveNewAddress}
@@ -519,7 +519,7 @@ export function MobileLegendsCheckoutShell({
                 className="mt-0.5 h-4 w-4 accent-violet-500"
               />
               <span className="text-sm text-slate-200">
-                <strong className="font-black text-white">Save this billing address</strong>
+                <strong className="font-semibold text-white">Save this billing address</strong>
                 <span className="mt-0.5 block text-xs text-slate-500">Keep this address for faster checkout on your next top-up.</span>
               </span>
             </label>
@@ -529,22 +529,22 @@ export function MobileLegendsCheckoutShell({
         </> : null}
 
         {step === 4 ? <>
-        <section className="rounded-xl border border-violet-300/20 bg-[#0d0f16] p-4 sm:p-5">
-          <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-300">Review before payment</p>
-          <h2 className="mt-1 text-xl font-black text-white">Confirm your top-up</h2>
+        <section className="rounded-lg border border-violet-300/20 bg-[#0d0f16] p-4 sm:p-5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-300">Review before payment</p>
+          <h2 className="mt-1 text-xl font-semibold text-white">Confirm your top-up</h2>
           <p className="mt-1 text-sm text-slate-500">Check the verified player, package, market, and billing details before creating the order.</p>
-          <dl className="mt-5 grid gap-4 rounded-xl border border-white/[0.08] bg-black/20 p-4 text-sm sm:grid-cols-2">
-            <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-black text-white">{selectedPackage.name}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-black text-white">{market.flag} {market.label}</dd></div>
-            <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Player ID</dt><dd className="mt-1 break-all font-mono text-sm font-black tracking-wide text-white">{playerId || "—"}</dd></div>
-            <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-black tracking-wide text-white">{zoneId || "—"}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-black text-emerald-200">{verification.nickname || "Verified player"}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-black text-white">{billing.presentmentCurrency}</dd></div>
-            <div className="border-t border-white/[0.08] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-black text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+          <dl className="mt-5 grid gap-4 rounded-lg border border-white/[0.08] bg-black/20 p-4 text-sm sm:grid-cols-2">
+            <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-semibold text-white">{selectedPackage.name}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-semibold text-white">{market.flag} {market.label}</dd></div>
+            <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Player ID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{playerId || "—"}</dd></div>
+            <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{zoneId || "—"}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-semibold text-emerald-200">{verification.nickname || "Verified player"}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-semibold text-white">{billing.presentmentCurrency}</dd></div>
+            <div className="border-t border-white/[0.08] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-semibold text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
           </dl>
           <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
             <button type="button" onClick={() => setStep(3)} className="storefront-checkout-secondary px-4 text-sm">Back to billing</button>
-            <button type="submit" disabled={isSubmitting || !canCreateOrder || Boolean(order)} className="min-h-11 rounded-xl bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45">{isSubmitting ? "Creating protected order…" : "Continue to payment"}</button>
+            <button type="submit" disabled={isSubmitting || !canCreateOrder || Boolean(order)} className="min-h-11 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45">{isSubmitting ? "Creating protected order…" : "Continue to payment"}</button>
           </div>
         </section>
         </> : null}
@@ -553,15 +553,15 @@ export function MobileLegendsCheckoutShell({
         {checkoutMessage && !order ? <p className="rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-4 py-3 text-sm text-cyan-100">{checkoutMessage}</p> : null}
 
         {step === 5 && order ? (
-          <section className="rounded-xl border border-emerald-400/20 bg-[#0c1110] p-4 sm:p-5">
+          <section className="rounded-lg border border-emerald-400/20 bg-[#0c1110] p-4 sm:p-5">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-emerald-300">{duplicate ? "Existing order recovered" : "Order created"}</p>
-                <h3 className="mt-1 break-all text-lg font-black text-white">{order.id}</h3>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-300">{duplicate ? "Existing order recovered" : "Order created"}</p>
+                <h3 className="mt-1 break-all text-lg font-semibold text-white">{order.id}</h3>
                 <p className="mt-1 text-xs leading-5 text-emerald-100/65">{checkoutMessage}</p>
                 {addressSaveNote ? <p className="mt-2 text-xs leading-5 text-amber-200/80">{addressSaveNote}</p> : null}
               </div>
-              <span className="w-fit rounded-md border border-emerald-300/20 bg-emerald-300/[0.07] px-2 py-1 text-[10px] font-black text-emerald-200">{order.ownership.accountLinked ? "Linked account" : "Guest checkout"}</span>
+              <span className="w-fit rounded-md border border-emerald-300/20 bg-emerald-300/[0.07] px-2 py-1 text-[10px] font-semibold text-emerald-200">{order.ownership.accountLinked ? "Linked account" : "Guest checkout"}</span>
             </div>
 
             <PrivateOrderTokenCard token={order.tracking.accessToken} />
@@ -580,11 +580,11 @@ export function MobileLegendsCheckoutShell({
             )}
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <Link href={order.tracking.path} className="inline-flex min-h-10 items-center rounded-lg border border-emerald-300/20 px-3 text-xs font-black text-emerald-200">Open tracking</Link>
+              <Link href={order.tracking.path} className="inline-flex min-h-10 items-center rounded-lg border border-emerald-300/20 px-3 text-xs font-semibold text-emerald-200">Open tracking</Link>
               <button
                 type="button"
                 onClick={() => resetCreatedOrder()}
-                className="inline-flex min-h-10 items-center rounded-lg border border-white/[0.08] px-3 text-xs font-black text-slate-400 hover:text-white"
+                className="inline-flex min-h-10 items-center rounded-lg border border-white/[0.08] px-3 text-xs font-semibold text-slate-400 hover:text-white"
               >
                 Start another order
               </button>
@@ -610,9 +610,9 @@ function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
           const active = number === step;
           const complete = number < step;
           return <li key={label}>
-            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-500"}`}>
-              <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-black">{complete ? "✓" : number}</span>
-              <span className="text-[9px] font-black uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
+            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} className={`flex w-full flex-col items-center gap-1 rounded-lg px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-500"}`}>
+              <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-semibold">{complete ? "✓" : number}</span>
+              <span className="text-[9px] font-semibold uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
             </button>
           </li>;
         })}

@@ -1,0 +1,303 @@
+
+> recharza-platform@0.3.0 build
+> if [ "$SKIP_DB_MIGRATIONS" = "1" ] || [ "$VERCEL" = "1" ]; then next build; else prisma migrate deploy && next build; fi
+
+▲ Next.js 16.3.0 (Turbopack)
+✓ Running next.config.ts took 58ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1649ms
+  Running TypeScript ...
+  Finished TypeScript in 4.6s ...
+  Collecting page data using 5 workers ...
+  Generating static pages using 5 workers (0/68) ...
+  Generating static pages using 5 workers (17/68) 
+  Generating static pages using 5 workers (34/68) 
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at k (components/site-footer.tsx:40:5)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at k (components/site-footer.tsx:40:5)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+  Generating static pages using 5 workers (51/68) 
+Published storefront content could not be loaded Error: DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.
+    at <unknown> (lib/database-url.ts:26:11)
+    at <unknown> (lib/prisma.ts:12:30)
+    at r (lib/storefront-content.ts:585:29)
+    at o (components/site-header.tsx:23:39)
+  24 |   const databaseUrl = getDatabaseUrl();
+  25 |   if (!databaseUrl) {
+> 26 |     throw new Error(
+     |           ^
+  27 |       "DATABASE_URL or POSTGRES_PRISMA_URL is required before the database can be used.",
+  28 |     );
+  29 |   }
+✓ Generating static pages using 5 workers (68/68) in 926ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /account
+├ ○ /account/orders
+├ ƒ /admin
+├ ƒ /admin/login
+├ ƒ /api/account/addresses
+├ ƒ /api/account/orders
+├ ƒ /api/admin/catalogue
+├ ƒ /api/admin/media
+├ ƒ /api/admin/media/assets/[assetId]
+├ ƒ /api/admin/payments
+├ ƒ /api/admin/people
+├ ƒ /api/admin/storefront
+├ ƒ /api/auth/consume
+├ ƒ /api/auth/forgot-password
+├ ƒ /api/auth/google
+├ ƒ /api/auth/google/callback
+├ ƒ /api/auth/login
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/request-link
+├ ƒ /api/auth/reset-password
+├ ƒ /api/auth/session
+├ ƒ /api/auth/signup
+├ ƒ /api/cart
+├ ƒ /api/cart/items
+├ ƒ /api/cart/items/[itemId]
+├ ƒ /api/checkout/cart
+├ ƒ /api/checkout/game
+├ ƒ /api/checkout/mobile-legends
+├ ƒ /api/commerce/display-rates
+├ ƒ /api/games/[gameSlug]/checkout-config
+├ ƒ /api/games/[gameSlug]/verify
+├ ƒ /api/games/mobile-legends/verify
+├ ƒ /api/health
+├ ƒ /api/internal/maintenance/cleanup
+├ ƒ /api/internal/maintenance/reconcile-fulfilment
+├ ƒ /api/media/assets/[assetId]
+├ ƒ /api/operator/health
+├ ƒ /api/operator/orders
+├ ƒ /api/operator/orders/[orderId]/fulfilment
+├ ƒ /api/operator/orders/[orderId]/status
+├ ƒ /api/operator/pricing
+├ ƒ /api/operator/suppliers/fazercards/sync
+├ ƒ /api/orders
+├ ƒ /api/orders/[orderId]
+├ ƒ /api/orders/[orderId]/payment
+├ ƒ /api/orders/[orderId]/payment-session
+├ ƒ /api/payments/razorpay/verify
+├ ƒ /api/readiness
+├ ƒ /api/staff/auth/login
+├ ƒ /api/staff/auth/logout
+├ ƒ /api/staff/auth/password/change
+├ ƒ /api/staff/auth/session
+├ ƒ /api/staff/support
+├ ƒ /api/staff/support/[publicId]
+├ ƒ /api/staff/support/[publicId]/assign
+├ ƒ /api/staff/support/[publicId]/reply
+├ ƒ /api/staff/support/[publicId]/status
+├ ƒ /api/staff/support/assignees
+├ ƒ /api/support/chat
+├ ƒ /api/support/email-diagnostics
+├ ƒ /api/support/tickets
+├ ƒ /api/telegram/group-bot/health
+├ ƒ /api/telegram/group-bot/register
+├ ƒ /api/telegram/group-bot/webhook
+├ ƒ /api/telegram/health
+├ ƒ /api/telegram/register
+├ ƒ /api/telegram/webhook
+├ ƒ /api/webhooks/razorpay
+├ ƒ /cart
+├ ƒ /cart/checkout
+├ ○ /forgot-password
+├ ƒ /games/[gameSlug]
+├ ƒ /games/mobile-legends
+├ ƒ /games/mobile-legends/[market]
+├ ○ /icon.svg
+├ ƒ /operator
+├ ƒ /orders/[orderId]
+├ ○ /orders/lookup
+├ ƒ /policies/[policy]
+├ ƒ /reset-password
+├ ƒ /staff
+└ ○ /support
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

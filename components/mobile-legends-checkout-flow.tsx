@@ -351,7 +351,7 @@ export function MobileLegendsCheckoutFlow({
 
   if (!selectedPackage) {
     return (
-      <div className="rounded-3xl border border-amber-300/20 bg-amber-300/10 p-6 text-amber-100">
+      <div className="rounded-lg border border-amber-300/20 bg-amber-300/10 p-6 text-amber-100">
         No approved packages are available for this market. Run the reviewed supplier
         sync or choose another region.
       </div>
@@ -360,17 +360,17 @@ export function MobileLegendsCheckoutFlow({
 
   return (
     <form onSubmit={submitCheckout} className="grid gap-5">
-      <section className="sticky top-0 z-20 -mx-4 border-y border-white/10 bg-[#080810]/92 px-4 py-3 backdrop-blur-xl sm:mx-0 sm:rounded-2xl sm:border">
+      <section className="sticky top-0 z-20 -mx-4 border-y border-white/10 bg-[#080810]/92 px-4 py-3 backdrop-blur-xl sm:mx-0 sm:rounded-lg sm:border">
         <div className="grid grid-cols-4 gap-2">
           {stageLabels.map((label, index) => (
             <div
               key={label}
-              className={`rounded-xl border px-2 py-2.5 text-center transition ${stageTone(stages[index])}`}
+              className={`rounded-lg border px-2 py-2.5 text-center transition ${stageTone(stages[index])}`}
             >
-              <span className="block text-[10px] font-black uppercase tracking-[0.14em] opacity-70">
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] opacity-70">
                 0{index + 1}
               </span>
-              <span className="mt-0.5 block truncate text-xs font-black sm:text-sm">
+              <span className="mt-0.5 block truncate text-xs font-semibold sm:text-sm">
                 {label}
               </span>
             </div>
@@ -382,14 +382,14 @@ export function MobileLegendsCheckoutFlow({
         </p>
       </section>
 
-      <section className="overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(91,124,255,0.15),transparent_42%),rgba(255,255,255,0.04)] shadow-2xl shadow-black/20">
+      <section className="overflow-hidden rounded-lg border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(91,124,255,0.15),transparent_42%),rgba(255,255,255,0.04)] shadow-2xl shadow-black/20">
         <div className="border-b border-white/10 p-4 sm:p-6">
           <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
                 01 · Package
               </p>
-              <h2 className="mt-2 text-2xl font-black tracking-tight">
+              <h2 className="mt-2 text-2xl font-semibold tracking-tight">
                 Choose the top-up
               </h2>
               <p className="mt-2 text-sm leading-6 text-slate-400">
@@ -404,7 +404,7 @@ export function MobileLegendsCheckoutFlow({
                 value={packageQuery}
                 onChange={(event) => setPackageQuery(event.target.value)}
                 placeholder="Diamonds, pass, amount..."
-                className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
+                className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
               />
             </label>
           </div>
@@ -433,20 +433,20 @@ export function MobileLegendsCheckoutFlow({
             </div>
 
             {visiblePackages.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-slate-500">
+              <div className="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-slate-500">
                 No package matches that search.
               </div>
             ) : null}
           </div>
 
-          <aside className="h-fit rounded-2xl border border-violet-400/20 bg-violet-400/10 p-4 lg:sticky lg:top-24">
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-200">
+          <aside className="h-fit rounded-lg border border-violet-400/20 bg-violet-400/10 p-4 lg:sticky lg:top-24">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-200">
               Selected offer
             </p>
-            <p className="mt-2 text-lg font-black text-white">
+            <p className="mt-2 text-lg font-semibold text-white">
               {selectedPackage.name}
             </p>
-            <p className="mt-2 text-3xl font-black text-white">
+            <p className="mt-2 text-3xl font-semibold text-white">
               {formatPresentment(selectedPackage.amountInPaise)}
             </p>
             {billing.presentmentCurrency !== "INR" ? (
@@ -467,13 +467,13 @@ export function MobileLegendsCheckoutFlow({
         </div>
       </section>
 
-      <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-4 shadow-2xl shadow-black/20 sm:p-6">
+      <section className="rounded-lg border border-white/10 bg-white/[0.04] p-4 shadow-2xl shadow-black/20 sm:p-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
               02 · Player
             </p>
-            <h2 className="mt-2 text-2xl font-black tracking-tight">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight">
               Verify the game destination
             </h2>
             <p className="mt-2 text-sm leading-6 text-slate-400">
@@ -502,7 +502,7 @@ export function MobileLegendsCheckoutFlow({
                 resetVerification();
               }}
               placeholder="Example: 123456789"
-              className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
+              className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
             />
           </label>
           <label className="text-sm font-semibold text-slate-200">
@@ -517,7 +517,7 @@ export function MobileLegendsCheckoutFlow({
                 resetVerification();
               }}
               placeholder="Example: 2045"
-              className="mt-2 min-h-12 w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
+              className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
             />
           </label>
         </div>
@@ -528,7 +528,7 @@ export function MobileLegendsCheckoutFlow({
           disabled={
             verification.status === "loading" || !playerId || !zoneId
           }
-          className="mt-4 min-h-12 w-full rounded-xl border border-violet-400/30 bg-violet-400/10 px-4 py-3 text-sm font-black text-violet-100 transition hover:bg-violet-400/15 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-4 min-h-12 w-full rounded-lg border border-violet-400/30 bg-violet-400/10 px-4 py-3 text-sm font-semibold text-violet-100 transition hover:bg-violet-400/15 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {verification.status === "loading"
             ? "Validating player..."
@@ -537,7 +537,7 @@ export function MobileLegendsCheckoutFlow({
 
         <div
           aria-live="polite"
-          className={`mt-3 rounded-xl border px-4 py-3 text-sm leading-6 ${
+          className={`mt-3 rounded-lg border px-4 py-3 text-sm leading-6 ${
             verification.status === "success"
               ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
               : verification.status === "error"
@@ -563,13 +563,13 @@ export function MobileLegendsCheckoutFlow({
         fixedCurrency={marketCurrency}
       />
 
-      <section className="overflow-hidden rounded-3xl border border-white/10 bg-[linear-gradient(145deg,rgba(17,17,29,0.98),rgba(8,8,16,0.98))] shadow-2xl shadow-black/30">
+      <section className="overflow-hidden rounded-lg border border-white/10 bg-[linear-gradient(145deg,rgba(17,17,29,0.98),rgba(8,8,16,0.98))] shadow-2xl shadow-black/30">
         <div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
               04 · Review and payment
             </p>
-            <h2 className="mt-2 text-2xl font-black">
+            <h2 className="mt-2 text-2xl font-semibold">
               Create once, then pay here
             </h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
@@ -578,25 +578,25 @@ export function MobileLegendsCheckoutFlow({
               optional instead of blocking checkout.
             </p>
             <div className="mt-4 grid gap-2 text-xs sm:grid-cols-2">
-              <div className="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2.5">
+              <div className="rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5">
                 <span className="text-slate-500">Region</span>
                 <strong className="float-right text-white">
                   {market.flag} {market.label}
                 </strong>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2.5">
+              <div className="rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5">
                 <span className="text-slate-500">Player</span>
                 <strong className="float-right max-w-[60%] truncate text-white">
                   {verification.nickname || playerId || "Not validated"}
                 </strong>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2.5">
+              <div className="rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5">
                 <span className="text-slate-500">Package</span>
                 <strong className="float-right max-w-[60%] truncate text-white">
                   {selectedPackage.name}
                 </strong>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/[0.035] px-3 py-2.5">
+              <div className="rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5">
                 <span className="text-slate-500">Recovery email</span>
                 <strong className="float-right max-w-[58%] truncate text-white">
                   {billing.email || "Required"}
@@ -605,11 +605,11 @@ export function MobileLegendsCheckoutFlow({
             </div>
           </div>
 
-          <div className="min-w-56 rounded-2xl border border-white/10 bg-black/25 p-4 text-right">
-            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">
+          <div className="min-w-56 rounded-lg border border-white/10 bg-black/25 p-4 text-right">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
               Total
             </p>
-            <p className="mt-1 text-3xl font-black text-white">
+            <p className="mt-1 text-3xl font-semibold text-white">
               {formatPresentment(selectedPackage.amountInPaise)}
             </p>
             {billing.presentmentCurrency !== "INR" ? (
@@ -624,7 +624,7 @@ export function MobileLegendsCheckoutFlow({
           <button
             type="submit"
             disabled={isSubmitting || !canCreateOrder}
-            className="min-h-13 w-full rounded-xl bg-violet-500 px-5 py-3.5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
+            className="min-h-13 w-full rounded-lg bg-violet-500 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
           >
             {isSubmitting
               ? "Creating order..."
@@ -640,7 +640,7 @@ export function MobileLegendsCheckoutFlow({
           {checkoutError ? (
             <p
               aria-live="assertive"
-              className="mt-3 rounded-xl border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200"
+              className="mt-3 rounded-lg border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200"
             >
               {checkoutError}
             </p>
@@ -649,7 +649,7 @@ export function MobileLegendsCheckoutFlow({
           {checkoutMessage && !order ? (
             <p
               aria-live="polite"
-              className="mt-3 rounded-xl border border-white/10 bg-white/[0.035] px-4 py-3 text-sm text-slate-300"
+              className="mt-3 rounded-lg border border-white/10 bg-white/[0.035] px-4 py-3 text-sm text-slate-300"
             >
               {checkoutMessage}
             </p>
@@ -659,22 +659,22 @@ export function MobileLegendsCheckoutFlow({
 
       <div ref={paymentSection} className="scroll-mt-24">
         {order ? (
-          <section className="rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-4 shadow-2xl shadow-black/25 sm:p-6">
+          <section className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-4 shadow-2xl shadow-black/25 sm:p-6">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-emerald-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">
                   {duplicate
                     ? "Existing order safely recovered"
                     : "Order created"}
                 </p>
-                <h2 className="mt-2 break-all text-2xl font-black text-white">
+                <h2 className="mt-2 break-all text-2xl font-semibold text-white">
                   {order.id}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-emerald-100/80">
                   {checkoutMessage}
                 </p>
               </div>
-              <span className="w-fit rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1.5 text-xs font-black text-emerald-100">
+              <span className="w-fit rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1.5 text-xs font-semibold text-emerald-100">
                 {order.ownership.accountLinked
                   ? "Linked account"
                   : "Guest checkout"}
@@ -682,13 +682,13 @@ export function MobileLegendsCheckoutFlow({
             </div>
 
             <div className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-              <div className="rounded-xl border border-emerald-300/15 bg-black/15 px-3 py-3">
+              <div className="rounded-lg border border-emerald-300/15 bg-black/15 px-3 py-3">
                 <span className="text-emerald-100/60">Package</span>
                 <strong className="float-right text-white">
                   {order.package.name}
                 </strong>
               </div>
-              <div className="rounded-xl border border-emerald-300/15 bg-black/15 px-3 py-3">
+              <div className="rounded-lg border border-emerald-300/15 bg-black/15 px-3 py-3">
                 <span className="text-emerald-100/60">Player</span>
                 <strong className="float-right text-white">
                   {order.player.nickname || order.player.playerId}
@@ -697,7 +697,7 @@ export function MobileLegendsCheckoutFlow({
             </div>
 
             {paymentVerified ? (
-              <div className="mt-5 rounded-2xl border border-emerald-300/25 bg-emerald-300/15 p-4 text-sm font-bold text-emerald-50">
+              <div className="mt-5 rounded-lg border border-emerald-300/25 bg-emerald-300/15 p-4 text-sm font-bold text-emerald-50">
                 Payment response verified. The order remains in this interface and can
                 also be recovered from secure tracking.
               </div>
@@ -715,7 +715,7 @@ export function MobileLegendsCheckoutFlow({
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <Link
                 href={order.tracking.path}
-                className="min-h-12 rounded-xl border border-emerald-300/25 bg-black/15 px-4 py-3 text-center text-sm font-black text-emerald-100"
+                className="min-h-12 rounded-lg border border-emerald-300/25 bg-black/15 px-4 py-3 text-center text-sm font-semibold text-emerald-100"
               >
                 Open secure tracking
               </Link>
@@ -725,7 +725,7 @@ export function MobileLegendsCheckoutFlow({
                   resetCreatedOrder();
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className="min-h-12 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black text-white"
+                className="min-h-12 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white"
               >
                 Start another order
               </button>

@@ -65,7 +65,7 @@ export default async function Home() {
             <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.8)]" aria-hidden="true" />
             <strong>{storefront.announcement.title}</strong>
             <span className="hidden text-cyan-100/55 sm:inline">{storefront.announcement.message}</span>
-            <Link href={storefront.announcement.href} className="font-black text-cyan-200 transition hover:text-white">{storefront.announcement.linkLabel}</Link>
+            <Link href={storefront.announcement.href} className="font-semibold text-cyan-200 transition hover:text-white">{storefront.announcement.linkLabel}</Link>
           </div>
         </div>
       ) : null}
@@ -91,19 +91,19 @@ export default async function Home() {
           </div>
 
           <div className="storefront-hero-console storefront-motion-console">
-            <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4"><div><p className="text-[10px] font-black uppercase tracking-[0.2em] text-cyan-300/75">Live storefront</p><p className="mt-1 text-sm font-semibold text-white">Checkout, without guesswork.</p></div><span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-300/10 text-emerald-300"><StorefrontIcon name="shield" className="h-4 w-4" /></span></div>
+            <div className="flex items-center justify-between border-b border-white/[0.08] px-5 py-4"><div><p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-cyan-300/75">Live storefront</p><p className="mt-1 text-sm font-semibold text-white">Checkout, without guesswork.</p></div><span className="grid h-9 w-9 place-items-center rounded-lg bg-emerald-300/10 text-emerald-300"><StorefrontIcon name="shield" className="h-4 w-4" /></span></div>
             <div className="grid gap-3 p-5">
               <div className="storefront-console-line storefront-motion-console-line"><span className="storefront-console-icon bg-violet-300/10 text-violet-200"><StorefrontIcon name="games" className="h-4 w-4" /></span><span><b>Choose a title</b><small>Game and market stay visible</small></span><strong>01</strong></div>
               <div className="storefront-console-line storefront-motion-console-line"><span className="storefront-console-icon bg-cyan-300/10 text-cyan-200"><StorefrontIcon name="shield" className="h-4 w-4" /></span><span><b>Verify the player</b><small>Nickname returned before payment</small></span><strong>02</strong></div>
               <div className="storefront-console-line storefront-motion-console-line"><span className="storefront-console-icon bg-amber-300/10 text-amber-200"><StorefrontIcon name="receipt" className="h-4 w-4" /></span><span><b>Review the package</b><small>Currency and total are clear</small></span><strong>03</strong></div>
             </div>
-            <div className="mx-5 mb-5 rounded-xl border border-emerald-300/15 bg-emerald-300/[0.055] px-4 py-3 text-xs text-emerald-100/80"><span className="font-bold text-emerald-200">Protected flow</span><span className="ml-2">No payment is submitted before verification.</span></div>
+            <div className="mx-5 mb-5 rounded-lg border border-emerald-300/15 bg-emerald-300/[0.055] px-4 py-3 text-xs text-emerald-100/80"><span className="font-bold text-emerald-200">Protected flow</span><span className="ml-2">No payment is submitted before verification.</span></div>
           </div>
         </div>
       </section>
 
       <section className="storefront-trust-section storefront-motion-section border-b border-white/[0.07] px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
-        <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
+        <div className="mx-auto grid max-w-[1240px] gap-px overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
           <div className="storefront-trust-cell storefront-motion-card"><span className="storefront-trust-number">8+</span><span><b>Regional markets</b><small>MLBB paths built for the account region</small></span></div>
           <div className="storefront-trust-cell storefront-motion-card"><span className="storefront-trust-number">{visibleGames.length}</span><span><b>Game paths</b><small>Published titles and regional destinations</small></span></div>
           <div className="storefront-trust-cell storefront-motion-card"><span className="storefront-trust-number">4</span><span><b>Clear checkout stages</b><small>Package, player, billing, and payment</small></span></div>
@@ -122,7 +122,7 @@ export default async function Home() {
       </section>
 
       <section id="how-it-works" className="storefront-process-section storefront-motion-section border-y border-white/[0.07] bg-[#090b12] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1240px]"><div className="max-w-2xl"><div className="storefront-section-label">How Recharza works</div><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">Clear steps. Fewer checkout surprises.</h2><p className="mt-3 text-sm leading-6 text-slate-400">The flow is designed around the player destination first, because a correct package is only useful when it reaches the right account.</p></div><div className="mt-8 grid gap-3 md:grid-cols-3">{processItems.map((item) => <article key={item.step} className="storefront-process-card storefront-motion-card"><div className="flex items-start justify-between"><span className="grid h-11 w-11 place-items-center rounded-2xl bg-white/[0.055] text-cyan-200 ring-1 ring-white/[0.08]"><StorefrontIcon name={item.icon} className="h-5 w-5" /></span><span className="font-mono text-xs font-bold text-slate-600">{item.step}</span></div><h3 className="mt-6 text-base font-semibold text-white">{item.title}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{item.text}</p></article>)}</div></div>
+        <div className="mx-auto max-w-[1240px]"><div className="max-w-2xl"><div className="storefront-section-label">How Recharza works</div><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">Clear steps. Fewer checkout surprises.</h2><p className="mt-3 text-sm leading-6 text-slate-400">The flow is designed around the player destination first, because a correct package is only useful when it reaches the right account.</p></div><div className="mt-8 grid gap-3 md:grid-cols-3">{processItems.map((item) => <article key={item.step} className="storefront-process-card storefront-motion-card"><div className="flex items-start justify-between"><span className="grid h-11 w-11 place-items-center rounded-lg bg-white/[0.055] text-cyan-200 ring-1 ring-white/[0.08]"><StorefrontIcon name={item.icon} className="h-5 w-5" /></span><span className="font-mono text-xs font-bold text-slate-600">{item.step}</span></div><h3 className="mt-6 text-base font-semibold text-white">{item.title}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{item.text}</p></article>)}</div></div>
       </section>
 
       <StorefrontAccountPrompt />

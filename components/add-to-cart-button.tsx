@@ -91,7 +91,7 @@ export function AddToCartButton({
         type="button"
         disabled={disabled || state.status === "adding"}
         onClick={() => void addToCart()}
-        className="flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-violet-400/30 bg-violet-500/10 px-3 text-[11px] font-black text-violet-200 transition hover:bg-violet-500/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
+        className="flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-violet-400/30 bg-violet-500/10 px-3 text-[11px] font-semibold text-violet-200 transition hover:bg-violet-500/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
       >
         {state.status === "adding" ? (
           <>

@@ -30,10 +30,10 @@ export default function OrderLookupPage() {
             <span aria-hidden="true">←</span>
             Back to storefront
           </Link>
-          <p className="mt-8 text-xs font-black uppercase tracking-[0.2em] text-violet-300">
+          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
             Customer order access
           </p>
-          <h1 className="mt-3 max-w-4xl text-4xl font-black tracking-[-0.045em] sm:text-5xl lg:text-6xl">
+          <h1 className="mt-3 max-w-4xl text-4xl font-semibold tracking-[-0.045em] sm:text-5xl lg:text-6xl">
             Find the order without exposing the customer.
           </h1>
           <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300">

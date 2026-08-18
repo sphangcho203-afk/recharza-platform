@@ -68,16 +68,16 @@ export default async function PolicyPage({
         <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
           <Link
             href="/"
-            className="inline-flex min-h-10 items-center gap-2 rounded-xl text-sm font-black text-cyan-300 transition hover:text-cyan-200"
+            className="inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-semibold text-cyan-300 transition hover:text-cyan-200"
           >
             ← Back to Recharza
           </Link>
 
           <div className="mt-8 max-w-3xl">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-300">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-300">
               Recharza legal centre
             </p>
-            <h1 className="mt-3 text-4xl font-black tracking-[-0.055em] sm:text-5xl">
+            <h1 className="mt-3 text-4xl font-semibold tracking-[-0.055em] sm:text-5xl">
               {policy.title}
             </h1>
           </div>
@@ -89,14 +89,14 @@ export default async function PolicyPage({
           {paragraphs.map((paragraph) => (
             <p
               key={paragraph.slice(0, 64)}
-              className="whitespace-pre-line rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 text-sm leading-7 text-slate-400 sm:p-6 sm:text-[0.95rem]"
+              className="whitespace-pre-line rounded-lg border border-white/[0.08] bg-white/[0.025] p-5 text-sm leading-7 text-slate-400 sm:p-6 sm:text-[0.95rem]"
             >
               {paragraph}
             </p>
           ))}
         </article>
 
-        <aside className="h-fit rounded-2xl border border-white/[0.08] bg-[#0b0d14] p-5 lg:sticky lg:top-24">
+        <aside className="h-fit rounded-lg border border-white/[0.08] bg-[#0b0d14] p-5 lg:sticky lg:top-24">
           <RecharzaMark />
           <p className="mt-4 text-sm leading-6 text-slate-500">
             Need help applying a policy to an order? Start with private tracking,
@@ -105,14 +105,14 @@ export default async function PolicyPage({
           <div className="mt-5 grid gap-2">
             <Link
               href="/orders/lookup"
-              className="inline-flex min-h-11 items-center justify-between rounded-xl border border-white/[0.09] bg-white/[0.035] px-3.5 text-sm font-black text-white transition hover:border-cyan-300/20 hover:bg-cyan-300/[0.05]"
+              className="inline-flex min-h-11 items-center justify-between rounded-lg border border-white/[0.09] bg-white/[0.035] px-3.5 text-sm font-semibold text-white transition hover:border-cyan-300/20 hover:bg-cyan-300/[0.05]"
             >
               Track order
               <StorefrontIcon name="arrow" className="h-4 w-4" />
             </Link>
             <Link
               href="/support"
-              className="inline-flex min-h-11 items-center justify-between rounded-xl border border-white/[0.09] bg-white/[0.035] px-3.5 text-sm font-black text-white transition hover:border-violet-300/20 hover:bg-violet-300/[0.05]"
+              className="inline-flex min-h-11 items-center justify-between rounded-lg border border-white/[0.09] bg-white/[0.035] px-3.5 text-sm font-semibold text-white transition hover:border-violet-300/20 hover:bg-violet-300/[0.05]"
             >
               Contact support
               <StorefrontIcon name="arrow" className="h-4 w-4" />

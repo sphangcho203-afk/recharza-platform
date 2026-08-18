@@ -1,0 +1,35 @@
+flowchart TB
+  R[Recharza visual system]
+  R --> S[Storefront]
+  R --> C[Checkout]
+  R --> W[Protected workspaces]
+  R --> E[Transactional email]
+
+  S --> S1[Hero atmosphere]
+  S --> S2[Product cards]
+  S --> S3[Cart surfaces]
+  S --> S4[Typography and color tokens]
+
+  C --> C1[Shared fields]
+  C --> C2[Progress states]
+  C --> C3[Verification and review]
+  C --> C4[Payment actions]
+
+  W --> W1[Full-screen admin shell]
+  W --> W2[Full-screen staff shell]
+  W --> W3[Responsive navigation]
+
+  E --> E1[Electric logo mark]
+  E --> E2[Status chips]
+  E --> E3[Order detail emphasis]
+  E --> E4[Mobile-safe Gmail HTML]
+
+  classDef root fill:#1b1734,stroke:#a78bfa,color:#ffffff,stroke-width:2px;
+  classDef group fill:#131729,stroke:#6366f1,color:#f8fafc,stroke-width:1.5px;
+  classDef item fill:#0d2029,stroke:#22d3ee,color:#f8fafc,stroke-width:1px;
+  class R root;
+  class S,C,W,E group;
+  class S1,S2,S3,S4,C1,C2,C3,C4,W1,W2,W3,E1,E2,E3,E4 item;
+
+  style R font-size:22px,font-weight:700;
+  linkStyle default stroke:#8b5cf6,stroke-width:1.5px;

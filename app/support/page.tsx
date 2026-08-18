@@ -24,15 +24,15 @@ export default function SupportPage() {
 
       <section className="border-b border-white/[0.08] px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1100px]">
-          <Link href="/" className="inline-flex items-center gap-2 text-xs font-black text-slate-500 transition hover:text-white">
+          <Link href="/" className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 transition hover:text-white">
             ← Back to store
           </Link>
           <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl font-black tracking-[-0.05em] text-white sm:text-4xl">Recharza Support</h1>
+              <h1 className="text-3xl font-semibold tracking-[-0.05em] text-white sm:text-4xl">Recharza Support</h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">Choose the issue, create a ticket, or jump directly into one of the connected support apps.</p>
             </div>
-            <Link href="/orders/lookup" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/[0.09] bg-white/[0.025] px-3.5 text-xs font-black text-slate-300 transition hover:bg-white/[0.05] hover:text-white">
+            <Link href="/orders/lookup" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/[0.09] bg-white/[0.025] px-3.5 text-xs font-semibold text-slate-300 transition hover:bg-white/[0.05] hover:text-white">
               <StorefrontIcon name="track" className="h-4 w-4" />
               Track order
             </Link>
@@ -42,14 +42,14 @@ export default function SupportPage() {
 
       <section id="live-chat" className="border-b border-white/[0.08] px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
         <div className="mx-auto grid max-w-[1100px] gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:items-start">
-          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 sm:p-6">
-            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-300">Instant help</p>
-            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Chat with Recharza support</h2>
+          <div className="rounded-lg border border-white/[0.08] bg-white/[0.025] p-5 sm:p-6">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300">Instant help</p>
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Chat with Recharza support</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">Ask about games, top-ups, player verification, checkout, delivery, or the safest next step for your order.</p>
             <p className="mt-4 text-xs leading-5 text-slate-600">For order access, never share passwords, OTPs, card details, UPI PINs, or private access tokens.</p>
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              <TelegramGroupLauncher className="inline-flex min-h-11 items-center justify-center rounded-xl border border-cyan-300/25 bg-cyan-300/[0.08] px-4 text-sm font-black text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-200/45 hover:bg-cyan-300/[0.14]">Open live support in Telegram</TelegramGroupLauncher>
-              <a href="https://t.me/supprtrz" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-white/[0.1] px-4 text-xs font-black text-slate-300 transition hover:border-white/20 hover:bg-white/[0.05] hover:text-white">Use Telegram Web <span className="ml-2" aria-hidden="true">↗</span></a>
+              <TelegramGroupLauncher className="inline-flex min-h-11 items-center justify-center rounded-lg border border-cyan-300/25 bg-cyan-300/[0.08] px-4 text-sm font-semibold text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-200/45 hover:bg-cyan-300/[0.14]">Open live support in Telegram</TelegramGroupLauncher>
+              <a href="https://t.me/supprtrz" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/[0.1] px-4 text-xs font-semibold text-slate-300 transition hover:border-white/20 hover:bg-white/[0.05] hover:text-white">Use Telegram Web <span className="ml-2" aria-hidden="true">↗</span></a>
             </div>
           </div>
           <LiveSupportChat embedded />
@@ -72,7 +72,7 @@ export default function SupportPage() {
             <StorefrontIcon name="shield" className="h-4 w-4" />
           </span>
           <div>
-            <h2 className="text-sm font-black text-amber-50">Support will never request sensitive security codes.</h2>
+            <h2 className="text-sm font-semibold text-amber-50">Support will never request sensitive security codes.</h2>
             <p className="mt-1 text-xs leading-5 text-amber-50/60">Never send a password, OTP, UPI PIN, card PIN, sign-in link or remote-device access code.</p>
           </div>
         </div>

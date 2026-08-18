@@ -33,15 +33,15 @@ export default async function AdminLoginPage({
       <div className="mx-auto max-w-md">
         <Link
           href="/"
-          className="inline-flex rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
+          className="inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
         >
           <RecharzaMark />
         </Link>
         <section className="system-panel mt-8 p-5 sm:p-7">
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
             Private staff access
           </p>
-          <h1 className="mt-2 text-3xl font-black tracking-tight">
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
             Sign in with your staff credential.
           </h1>
           <p className="mt-3 text-sm leading-6 text-slate-400">

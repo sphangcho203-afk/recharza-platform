@@ -197,8 +197,8 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
         <div className="border-b border-white/10 px-5 py-5 sm:px-7">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.2em] text-violet-300">Master administration layer</p>
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.035em] sm:text-3xl">Recharza Control Center</h2>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">Master administration layer</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">Recharza Control Center</h2>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
                 Store-wide commands, operational alerts, database records, security evidence, and every existing control surface in one protected workspace.
               </p>
@@ -207,13 +207,13 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
               <button
                 type="button"
                 onClick={() => router.refresh()}
-                className="min-h-11 rounded-xl border border-white/10 bg-white/[0.045] px-4 py-2 text-xs font-black text-white transition hover:bg-white/[0.08]"
+                className="min-h-11 rounded-lg border border-white/10 bg-white/[0.045] px-4 py-2 text-xs font-semibold text-white transition hover:bg-white/[0.08]"
               >
                 Refresh live data
               </button>
               <a
                 href="#database"
-                className="inline-flex min-h-11 items-center rounded-xl bg-white px-4 py-2 text-xs font-black text-slate-950 transition hover:bg-violet-200"
+                className="inline-flex min-h-11 items-center rounded-lg bg-white px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-violet-200"
               >
                 Open database
               </a>
@@ -226,9 +226,9 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
 
         <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-6 xl:grid-cols-4">
           {snapshot.metrics.map((metric) => (
-            <article key={metric.id} className={`rounded-2xl border p-4 ${metricClasses(metric)}`}>
-              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">{metric.label}</p>
-              <p className="mt-3 text-2xl font-black text-white">{metric.value}</p>
+            <article key={metric.id} className={`rounded-lg border p-4 ${metricClasses(metric)}`}>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{metric.label}</p>
+              <p className="mt-3 text-2xl font-semibold text-white">{metric.value}</p>
               <p className="mt-2 text-xs leading-5 text-slate-500">{metric.note}</p>
             </article>
           ))}
@@ -239,10 +239,10 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
         <section className="system-panel p-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-300">Attention rail</p>
-              <h3 className="mt-1 text-lg font-black">System alerts</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-300">Attention rail</p>
+              <h3 className="mt-1 text-lg font-semibold">System alerts</h3>
             </div>
-            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-black text-slate-400">
+            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-semibold text-slate-400">
               {snapshot.alerts.length}
             </span>
           </div>
@@ -250,16 +250,16 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
             {snapshot.alerts.map((alert) => {
               const content = (
                 <>
-                  <span className="text-sm font-black">{alert.title}</span>
+                  <span className="text-sm font-semibold">{alert.title}</span>
                   <span className="mt-1 block text-xs leading-5 opacity-70">{alert.detail}</span>
                 </>
               );
               return alert.href ? (
-                <a key={alert.id} href={alert.href} className={`rounded-xl border p-3 transition hover:brightness-110 ${alertClasses(alert.severity)}`}>
+                <a key={alert.id} href={alert.href} className={`rounded-lg border p-3 transition hover:brightness-110 ${alertClasses(alert.severity)}`}>
                   {content}
                 </a>
               ) : (
-                <div key={alert.id} className={`rounded-xl border p-3 ${alertClasses(alert.severity)}`}>
+                <div key={alert.id} className={`rounded-lg border p-3 ${alertClasses(alert.severity)}`}>
                   {content}
                 </div>
               );
@@ -270,8 +270,8 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
         <section className="system-panel p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-300">Command matrix</p>
-              <h3 className="mt-1 text-lg font-black">Whole-store controls</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">Command matrix</p>
+              <h3 className="mt-1 text-lg font-semibold">Whole-store controls</h3>
               <p className="mt-1 text-xs leading-5 text-slate-500">Live controls navigate to working systems. Locked commands remain visibly unavailable until authorization, persistence, rollback, and audit behavior exist.</p>
             </div>
             <label className="block sm:w-72">
@@ -280,7 +280,7 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
                 value={commandQuery}
                 onChange={(event) => setCommandQuery(event.target.value)}
                 placeholder="Search commands, modules, states..."
-                className="h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400/50"
+                className="h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400/50"
               />
             </label>
           </div>
@@ -292,7 +292,7 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
               return (
                 <div key={group}>
                   <div className="mb-2 flex items-center gap-3">
-                    <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-500">{group}</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">{group}</p>
                     <span className="h-px flex-1 bg-white/8" />
                     <span className="font-mono text-[10px] text-slate-700">{commands.length}</span>
                   </div>
@@ -301,10 +301,10 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
                       const inner = (
                         <>
                           <span className="flex items-center justify-between gap-3">
-                            <span className="font-mono text-[10px] font-black tracking-[0.12em] opacity-60">{command.code}</span>
-                            <span className="rounded-full border border-current/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider opacity-75">{command.state}</span>
+                            <span className="font-mono text-[10px] font-semibold tracking-[0.12em] opacity-60">{command.code}</span>
+                            <span className="rounded-full border border-current/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider opacity-75">{command.state}</span>
                           </span>
-                          <span className="mt-3 block text-sm font-black text-white/95">{command.label}</span>
+                          <span className="mt-3 block text-sm font-semibold text-white/95">{command.label}</span>
                           <span className="mt-1 block text-[11px] leading-4 opacity-65">{command.description}</span>
                         </>
                       );
@@ -314,7 +314,7 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
                           href={command.href}
                           target={command.href.startsWith("http") ? "_blank" : undefined}
                           rel={command.href.startsWith("http") ? "noreferrer" : undefined}
-                          className={`min-h-32 rounded-xl border p-3 transition hover:-translate-y-0.5 hover:brightness-110 ${stateClasses(command.state, command.danger)}`}
+                          className={`min-h-32 rounded-lg border p-3 transition hover:-translate-y-0.5 hover:brightness-110 ${stateClasses(command.state, command.danger)}`}
                         >
                           {inner}
                         </a>
@@ -324,7 +324,7 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
                           type="button"
                           disabled
                           title={command.state === "locked" ? "Locked until safety and approval requirements exist." : "Planned module."}
-                          className={`min-h-32 cursor-not-allowed rounded-xl border p-3 text-left ${stateClasses(command.state, command.danger)}`}
+                          className={`min-h-32 cursor-not-allowed rounded-lg border p-3 text-left ${stateClasses(command.state, command.danger)}`}
                         >
                           {inner}
                         </button>
@@ -342,8 +342,8 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
         <div className="border-b border-white/10 p-4 sm:p-6">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-fuchsia-300">Operational database</p>
-              <h3 className="mt-1 text-2xl font-black">Store data explorer</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-300">Operational database</p>
+              <h3 className="mt-1 text-2xl font-semibold">Store data explorer</h3>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
                 Search the latest admin-visible records across every critical commerce table. This explorer is intentionally read-only; mutations stay inside audited domain-specific controls.
               </p>
@@ -352,21 +352,21 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
               <button
                 type="button"
                 onClick={() => setCompact((value) => !value)}
-                className="min-h-11 rounded-xl border border-white/10 bg-white/[0.035] px-3 text-xs font-black text-slate-300 hover:bg-white/[0.065]"
+                className="min-h-11 rounded-lg border border-white/10 bg-white/[0.035] px-3 text-xs font-semibold text-slate-300 hover:bg-white/[0.065]"
               >
                 {compact ? "Comfortable rows" : "Compact rows"}
               </button>
               <button
                 type="button"
                 onClick={() => downloadDataset(dataset, filteredRows)}
-                className="min-h-11 rounded-xl border border-violet-400/20 bg-violet-400/10 px-3 text-xs font-black text-violet-100 hover:bg-violet-400/15"
+                className="min-h-11 rounded-lg border border-violet-400/20 bg-violet-400/10 px-3 text-xs font-semibold text-violet-100 hover:bg-violet-400/15"
               >
                 Export visible CSV
               </button>
               <button
                 type="button"
                 onClick={() => router.refresh()}
-                className="min-h-11 rounded-xl bg-white px-3 text-xs font-black text-slate-950 hover:bg-violet-200"
+                className="min-h-11 rounded-lg bg-white px-3 text-xs font-semibold text-slate-950 hover:bg-violet-200"
               >
                 Refresh snapshot
               </button>
@@ -385,13 +385,13 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
                     setDataQuery("");
                     setSelectedRow(null);
                   }}
-                  className={`min-h-12 shrink-0 rounded-xl border px-3 text-left transition ${
+                  className={`min-h-12 shrink-0 rounded-lg border px-3 text-left transition ${
                     active
                       ? "border-white bg-white text-slate-950"
                       : "border-white/10 bg-white/[0.025] text-slate-400 hover:bg-white/[0.055] hover:text-white"
                   }`}
                 >
-                  <span className="block text-xs font-black">{item.label}</span>
+                  <span className="block text-xs font-semibold">{item.label}</span>
                   <span className={`mt-0.5 block font-mono text-[9px] ${active ? "text-slate-500" : "text-slate-600"}`}>
                     {item.total} total · {item.rows.length} loaded
                   </span>
@@ -407,7 +407,7 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
                 value={dataQuery}
                 onChange={(event) => setDataQuery(event.target.value)}
                 placeholder={`Search ${dataset.label.toLowerCase()} across every visible column`}
-                className="h-12 w-full rounded-xl border border-white/10 bg-black/25 px-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-fuchsia-400/40"
+                className="h-12 w-full rounded-lg border border-white/10 bg-black/25 px-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-fuchsia-400/40"
               />
             </label>
             <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-slate-600">
@@ -422,7 +422,7 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
               <thead className="sticky top-0 z-10 bg-[#11111a] text-[9px] uppercase tracking-[0.12em] text-slate-500">
                 <tr>
                   {dataset.columns.map((column) => (
-                    <th key={column.key} className="whitespace-nowrap border-b border-white/10 px-3 py-3 font-black">
+                    <th key={column.key} className="whitespace-nowrap border-b border-white/10 px-3 py-3 font-semibold">
                       {column.label}
                     </th>
                   ))}
@@ -445,7 +445,7 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
                         return (
                           <td key={column.key} className={`max-w-72 ${compact ? "px-3 py-2" : "px-3 py-3"}`}>
                             {status && value !== null ? (
-                              <span className="inline-flex whitespace-nowrap rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-300">
+                              <span className="inline-flex whitespace-nowrap rounded-full border border-white/10 bg-white/[0.04] px-2 py-1 text-[9px] font-semibold uppercase tracking-wider text-slate-300">
                                 {formatted}
                               </span>
                             ) : (
@@ -463,7 +463,7 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
             </table>
             {!filteredRows.length ? (
               <div className="px-6 py-14 text-center">
-                <p className="font-black text-white">No records matched this search</p>
+                <p className="font-semibold text-white">No records matched this search</p>
                 <p className="mt-2 text-sm text-slate-600">Clear the query or refresh the database snapshot.</p>
               </div>
             ) : null}
@@ -472,14 +472,14 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
           <aside className="min-w-0 bg-white/[0.018] p-4 sm:p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-600">Record inspector</p>
-                <h4 className="mt-1 text-base font-black text-white">{selectedRow ? "Selected record" : "Choose a table row"}</h4>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-600">Record inspector</p>
+                <h4 className="mt-1 text-base font-semibold text-white">{selectedRow ? "Selected record" : "Choose a table row"}</h4>
               </div>
               {selectedRow ? (
                 <button
                   type="button"
                   onClick={() => void copySelectedRow()}
-                  className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-[10px] font-black text-slate-300 hover:bg-white/[0.08]"
+                  className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-[10px] font-semibold text-slate-300 hover:bg-white/[0.08]"
                 >
                   Copy JSON
                 </button>
@@ -489,8 +489,8 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
             {selectedRow ? (
               <dl className="mt-4 grid gap-2">
                 {dataset.columns.map((column) => (
-                  <div key={column.key} className="rounded-xl border border-white/8 bg-black/20 p-3">
-                    <dt className="text-[9px] font-black uppercase tracking-[0.12em] text-slate-600">{column.label}</dt>
+                  <div key={column.key} className="rounded-lg border border-white/8 bg-black/20 p-3">
+                    <dt className="text-[9px] font-semibold uppercase tracking-[0.12em] text-slate-600">{column.label}</dt>
                     <dd className={`mt-1 break-words text-xs leading-5 ${column.format === "code" ? "font-mono text-cyan-200/80" : "text-slate-300"}`}>
                       {displayValue(selectedRow[column.key] ?? null, column)}
                     </dd>
@@ -498,7 +498,7 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
                 ))}
               </dl>
             ) : (
-              <div className="mt-5 rounded-2xl border border-dashed border-white/10 px-4 py-10 text-center text-xs leading-5 text-slate-600">
+              <div className="mt-5 rounded-lg border border-dashed border-white/10 px-4 py-10 text-center text-xs leading-5 text-slate-600">
                 Select any record to inspect every visible field without leaving the control center.
               </div>
             )}

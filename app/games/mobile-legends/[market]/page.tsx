@@ -62,21 +62,21 @@ export default async function MobileLegendsMarketPage({
       <main className="storefront-page min-h-screen overflow-x-clip text-white">
         <SiteHeader />
         <section className="mx-auto max-w-[900px] px-4 py-10 sm:px-6 lg:px-8">
-          <Link href="/games/mobile-legends" className="text-xs font-black text-violet-300 hover:text-violet-200">← Mobile Legends markets</Link>
-          <div className="mt-5 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-5 sm:p-7">
+          <Link href="/games/mobile-legends" className="text-xs font-semibold text-violet-300 hover:text-violet-200">← Mobile Legends markets</Link>
+          <div className="mt-5 rounded-lg border border-amber-300/20 bg-amber-300/[0.06] p-5 sm:p-7">
             <div className="flex items-start gap-4">
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-amber-300/20 bg-amber-300/[0.07] text-amber-200">
                 <StorefrontIcon name="globe" className="h-5 w-5" />
               </span>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-amber-300">{selectedMarket.flag} {selectedMarket.label}</p>
-                <h1 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">Checkout is not open for this market yet.</h1>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-300">{selectedMarket.flag} {selectedMarket.label}</p>
+                <h1 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">Checkout is not open for this market yet.</h1>
                 <p className="mt-3 text-sm leading-6 text-amber-50/65">No approved fulfilment catalogue is published for this region. Recharza will not substitute another market or invent a price.</p>
               </div>
             </div>
             <div className="mt-5 flex flex-wrap gap-2">
-              <Link href="/games/mobile-legends" className="inline-flex min-h-10 items-center rounded-lg bg-white px-3.5 text-xs font-black text-slate-950">View markets</Link>
-              <Link href="/support" className="inline-flex min-h-10 items-center rounded-lg border border-white/[0.1] px-3.5 text-xs font-black text-white">Ask support</Link>
+              <Link href="/games/mobile-legends" className="inline-flex min-h-10 items-center rounded-lg bg-white px-3.5 text-xs font-semibold text-slate-950">View markets</Link>
+              <Link href="/support" className="inline-flex min-h-10 items-center rounded-lg border border-white/[0.1] px-3.5 text-xs font-semibold text-white">Ask support</Link>
             </div>
           </div>
         </section>
@@ -100,7 +100,7 @@ export default async function MobileLegendsMarketPage({
             <span className="text-slate-400">{selectedMarket.label}</span>
           </div>
 
-          <div className="flex flex-col gap-4 rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="flex flex-col gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="flex min-w-0 items-center gap-4">
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-white/[0.08] bg-[#151923] sm:h-20 sm:w-20">
                 <ResilientImage
@@ -115,7 +115,7 @@ export default async function MobileLegendsMarketPage({
                 />
               </div>
               <div className="min-w-0">
-                <h1 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">Mobile Legends: Bang Bang Top Up</h1>
+                <h1 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">Mobile Legends: Bang Bang Top Up</h1>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-slate-500">
                   <span>{selectedMarket.flag} {selectedMarket.label}</span>
                   <span>{packages.length} offers</span>
@@ -144,7 +144,7 @@ export default async function MobileLegendsMarketPage({
       <section className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
         <div className="mb-4 flex flex-col gap-2 rounded-lg border border-white/[0.08] bg-[#0d0f16] px-4 py-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <span><strong className="text-slate-300">{selectedMarket.flag} {selectedMarket.label}:</strong> {selectedMarket.note}</span>
-          <span className="font-black text-emerald-300">Prices shown in {selectedMarket.defaultCurrency}</span>
+          <span className="font-semibold text-emerald-300">Prices shown in {selectedMarket.defaultCurrency}</span>
         </div>
 
         <MobileLegendsCheckoutShell

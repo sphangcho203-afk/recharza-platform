@@ -17,9 +17,9 @@ export function SavedAddressPicker({
   onSelect: (address: SavedAddressView | null) => void;
 }) {
   return (
-    <section className="rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:p-5">
+    <section className="rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:p-5">
       <div>
-        <h3 className="text-base font-black text-white">Saved billing addresses</h3>
+        <h3 className="text-base font-semibold text-white">Saved billing addresses</h3>
         <p className="mt-1 text-xs text-slate-500">
           Pick a saved address or choose a new one to enter below.
         </p>
@@ -38,7 +38,7 @@ export function SavedAddressPicker({
               type="button"
               onClick={() => onSelect(address)}
               aria-pressed={selected}
-              className={`flex min-h-12 items-start gap-3 rounded-xl border px-3.5 py-3 text-left transition ${
+              className={`flex min-h-12 items-start gap-3 rounded-lg border px-3.5 py-3 text-left transition ${
                 selected
                   ? "border-violet-400/55 bg-violet-500/[0.08]"
                   : "border-white/[0.08] bg-[#0a0c12] hover:border-white/[0.17]"
@@ -49,9 +49,9 @@ export function SavedAddressPicker({
               </span>
               <span className="min-w-0">
                 <span className="flex flex-wrap items-center gap-2">
-                  <strong className="text-sm font-black text-white">{address.fullName}</strong>
+                  <strong className="text-sm font-semibold text-white">{address.fullName}</strong>
                   {address.isDefault ? (
-                    <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-2 py-0.5 text-[10px] font-black text-emerald-200">
+                    <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-200">
                       Default
                     </span>
                   ) : null}
@@ -73,7 +73,7 @@ export function SavedAddressPicker({
           type="button"
           onClick={() => onSelect(null)}
           aria-pressed={selectedAddressId === null}
-          className={`flex min-h-12 items-center gap-3 rounded-xl border border-dashed px-3.5 py-3 text-left text-sm font-black transition ${
+          className={`flex min-h-12 items-center gap-3 rounded-lg border border-dashed px-3.5 py-3 text-left text-sm font-semibold transition ${
             selectedAddressId === null
               ? "border-violet-400/55 bg-violet-500/[0.08] text-white"
               : "border-white/[0.12] bg-[#0a0c12] text-slate-300 hover:border-white/[0.22] hover:text-white"

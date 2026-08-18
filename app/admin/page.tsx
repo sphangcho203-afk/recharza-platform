@@ -84,10 +84,10 @@ export default async function AdminPage() {
         <div className="min-w-0 w-full px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
           <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
                 Private whole-store administration
               </p>
-              <h1 className="mt-2 text-3xl font-black tracking-[-0.04em] sm:text-4xl">
+              <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
                 Recharza command authority
               </h1>
               <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-400">
@@ -97,17 +97,17 @@ export default async function AdminPage() {
                 administration system.
               </p>
             </div>
-            <div className="grid w-fit grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-white/[0.025] p-2 text-center">
-              <div className="rounded-xl bg-emerald-300/[0.06] px-3 py-2">
-                <p className="text-lg font-black text-emerald-200">{liveCount}</p>
+            <div className="grid w-fit grid-cols-3 gap-2 rounded-lg border border-white/10 bg-white/[0.025] p-2 text-center">
+              <div className="rounded-lg bg-emerald-300/[0.06] px-3 py-2">
+                <p className="text-lg font-semibold text-emerald-200">{liveCount}</p>
                 <p className="text-[9px] font-bold uppercase tracking-wider text-emerald-300/70">Live</p>
               </div>
-              <div className="rounded-xl bg-cyan-300/[0.06] px-3 py-2">
-                <p className="text-lg font-black text-cyan-200">{betaCount}</p>
+              <div className="rounded-lg bg-cyan-300/[0.06] px-3 py-2">
+                <p className="text-lg font-semibold text-cyan-200">{betaCount}</p>
                 <p className="text-[9px] font-bold uppercase tracking-wider text-cyan-300/70">Beta</p>
               </div>
-              <div className="rounded-xl bg-amber-300/[0.06] px-3 py-2">
-                <p className="text-lg font-black text-amber-100">{plannedCount}</p>
+              <div className="rounded-lg bg-amber-300/[0.06] px-3 py-2">
+                <p className="text-lg font-semibold text-amber-100">{plannedCount}</p>
                 <p className="text-[9px] font-bold uppercase tracking-wider text-amber-300/70">Planned</p>
               </div>
             </div>
@@ -150,13 +150,13 @@ export default async function AdminPage() {
               <a
                 key={source.label}
                 href={source.href}
-                className="group rounded-xl border border-white/10 bg-white/[0.025] p-4 transition duration-150 ease-out hover:-translate-y-0.5 hover:border-violet-300/25 hover:bg-violet-300/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60"
+                className="group rounded-lg border border-white/10 bg-white/[0.025] p-4 transition duration-150 ease-out hover:-translate-y-0.5 hover:border-violet-300/25 hover:bg-violet-300/[0.05] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60"
               >
                 <span className="flex items-center justify-between gap-3">
-                  <span className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">{source.label}</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{source.label}</span>
                   <span aria-hidden="true" className="text-slate-600 transition group-hover:text-violet-200">↗</span>
                 </span>
-                <span className="mt-3 block text-sm font-black text-white">{source.value}</span>
+                <span className="mt-3 block text-sm font-semibold text-white">{source.value}</span>
                 <span className="mt-1 block text-xs text-slate-500">{source.note}</span>
               </a>
             ))}
@@ -177,7 +177,7 @@ export default async function AdminPage() {
               <article className="system-panel p-5">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-black">Platform control map</h2>
+                    <h2 className="text-lg font-semibold">Platform control map</h2>
                     <p className="mt-1 text-sm text-slate-500">
                       Every admin capability is registered with an honest lifecycle state.
                     </p>
@@ -188,10 +188,10 @@ export default async function AdminPage() {
                   {modules.map((module) => (
                     <div
                       key={module.id}
-                      className="rounded-xl border border-white/10 bg-black/15 p-3"
+                      className="rounded-lg border border-white/10 bg-black/15 p-3"
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-black text-white">{module.label}</p>
+                        <p className="text-sm font-semibold text-white">{module.label}</p>
                         <ModuleStateBadge state={module.state} />
                       </div>
                       <p className="mt-2 text-xs leading-5 text-slate-500">
@@ -203,7 +203,7 @@ export default async function AdminPage() {
               </article>
 
               <article className="system-panel p-5">
-                <h2 className="text-lg font-black">Registered control surfaces</h2>
+                <h2 className="text-lg font-semibold">Registered control surfaces</h2>
                 <p className="mt-1 text-sm text-slate-500">
                   Live modules open real controls. Planned modules remain disabled until
                   persistence, authorization, audit, and recovery behavior exist.
@@ -216,7 +216,7 @@ export default async function AdminPage() {
                         key={module.id}
                         href={interactive ? module.href : undefined}
                         aria-disabled={!interactive}
-                        className={`grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl border px-3 py-3 text-sm font-bold ${
+                        className={`grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-lg border px-3 py-3 text-sm font-bold ${
                           interactive
                             ? "border-white/10 bg-black/20 text-slate-300 hover:bg-white/5 hover:text-white"
                             : "cursor-not-allowed border-white/5 bg-black/10 text-slate-600"
@@ -234,10 +234,10 @@ export default async function AdminPage() {
 
           <section id="interfaces" className="mt-10 scroll-mt-24">
             <div className="mb-4">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">
                 Whole-platform access
               </p>
-              <h2 className="mt-1 text-2xl font-black">Website interface map</h2>
+              <h2 className="mt-1 text-2xl font-semibold">Website interface map</h2>
               <p className="mt-2 text-sm text-slate-500">
                 Open every public, customer, staff, administrative, tracking, and regional
                 version without exposing internal navigation to customers.
@@ -248,10 +248,10 @@ export default async function AdminPage() {
 
           <section id="catalogue" className="mt-10 scroll-mt-24">
             <div className="mb-4">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-fuchsia-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-fuchsia-300">
                 Games, packages, icons, and media
               </p>
-              <h2 className="mt-1 text-2xl font-black">Catalogue control</h2>
+              <h2 className="mt-1 text-2xl font-semibold">Catalogue control</h2>
               <p className="mt-2 text-sm text-slate-500">
                 Publish or pause supplier products and manage product names or reviewed
                 image sources with a complete audit trail.
@@ -266,20 +266,20 @@ export default async function AdminPage() {
 
           <section id="pricing" className="mt-10 scroll-mt-24">
             <div className="mb-4">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-cyan-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">
                 Catalogue and pricing
               </p>
-              <h2 className="mt-1 text-2xl font-black">Supplier and pricing controls</h2>
+              <h2 className="mt-1 text-2xl font-semibold">Supplier and pricing controls</h2>
             </div>
             <SupplierPricingConsole />
           </section>
 
           <section id="orders" className="mt-10 scroll-mt-24">
             <div className="mb-4">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">
                 Order operations
               </p>
-              <h2 className="mt-1 text-2xl font-black">Order control</h2>
+              <h2 className="mt-1 text-2xl font-semibold">Order control</h2>
             </div>
             <OperatorConsole />
           </section>

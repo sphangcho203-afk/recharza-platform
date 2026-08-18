@@ -17,7 +17,7 @@ export function CountryPicker({ value, onChange }: CountryPickerProps) {
         required
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-12 w-full appearance-none rounded-xl border border-white/10 bg-[#08080f] px-4 py-3 pr-11 text-base font-normal text-white outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
+        className="min-h-12 w-full appearance-none rounded-lg border border-white/10 bg-[#08080f] px-4 py-3 pr-11 text-base font-normal text-white outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
         aria-label="Billing country"
       >
         {allBillingCountries.map((country) => (
@@ -27,7 +27,7 @@ export function CountryPicker({ value, onChange }: CountryPickerProps) {
         ))}
       </select>
       <StorefrontIcon name="arrow" className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90 text-slate-500" aria-hidden="true" />
-      <span className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase tracking-wider text-slate-600">
+      <span className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-slate-600">
         {selected?.isoCode}
       </span>
     </div>

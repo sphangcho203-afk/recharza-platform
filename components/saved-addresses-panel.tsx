@@ -299,16 +299,16 @@ export function SavedAddressesPanel() {
   return (
     <section
       aria-labelledby="saved-addresses-heading"
-      className="rounded-3xl border border-white/10 bg-[#0f0f19] p-5 shadow-2xl shadow-black/25 sm:p-6"
+      className="rounded-lg border border-white/10 bg-[#0f0f19] p-5 shadow-2xl shadow-black/25 sm:p-6"
     >
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
             Billing identity
           </p>
           <h2
             id="saved-addresses-heading"
-            className="mt-2 text-2xl font-black text-white"
+            className="mt-2 text-2xl font-semibold text-white"
           >
             Saved billing addresses
           </h2>
@@ -325,7 +325,7 @@ export function SavedAddressesPanel() {
             type="button"
             onClick={openCreate}
             disabled={busy}
-            className="min-h-11 rounded-xl border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-black text-violet-100 transition hover:bg-violet-400/20 disabled:opacity-50"
+            className="min-h-11 rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-semibold text-violet-100 transition hover:bg-violet-400/20 disabled:opacity-50"
           >
             Add address
           </button>
@@ -364,12 +364,12 @@ export function SavedAddressesPanel() {
       <div className="mt-4 grid gap-3" aria-live="polite">
         {loading ? (
           <>
-            <div className="h-28 animate-pulse rounded-2xl border border-white/10 bg-white/[0.025]" />
-            <div className="h-28 animate-pulse rounded-2xl border border-white/10 bg-white/[0.025]" />
+            <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/[0.025]" />
+            <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/[0.025]" />
           </>
         ) : addresses.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
-            <p className="font-black text-slate-300">No saved billing addresses.</p>
+          <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
+            <p className="font-semibold text-slate-300">No saved billing addresses.</p>
             <p className="mt-2 text-sm text-slate-500">
               Add an address and it will prefill billing in checkout.
             </p>
@@ -377,7 +377,7 @@ export function SavedAddressesPanel() {
               type="button"
               onClick={openCreate}
               disabled={busy}
-              className="mt-4 inline-flex min-h-11 items-center rounded-xl bg-white px-4 py-3 text-xs font-black text-slate-950 disabled:opacity-50"
+              className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-white px-4 py-3 text-xs font-semibold text-slate-950 disabled:opacity-50"
             >
               Add billing address
             </button>
@@ -386,14 +386,14 @@ export function SavedAddressesPanel() {
           addresses.map((item) => (
             <article
               key={item.id}
-              className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 sm:p-5"
+              className="rounded-lg border border-white/10 bg-white/[0.035] p-4 sm:p-5"
             >
               <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-xl font-black text-white">{item.fullName}</h3>
+                    <h3 className="text-xl font-semibold text-white">{item.fullName}</h3>
                     {item.isDefault ? (
-                      <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-[11px] font-black text-emerald-200">
+                      <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
                         Default
                       </span>
                     ) : null}
@@ -416,7 +416,7 @@ export function SavedAddressesPanel() {
                     type="button"
                     onClick={() => void setDefault(item)}
                     disabled={busy}
-                    className="min-h-10 rounded-lg border border-emerald-300/20 bg-emerald-300/[0.07] px-3.5 text-xs font-black text-emerald-200 transition hover:bg-emerald-300/15 disabled:opacity-50"
+                    className="min-h-10 rounded-lg border border-emerald-300/20 bg-emerald-300/[0.07] px-3.5 text-xs font-semibold text-emerald-200 transition hover:bg-emerald-300/15 disabled:opacity-50"
                   >
                     {settingDefaultId === item.id ? "Setting…" : "Set as default"}
                   </button>
@@ -425,7 +425,7 @@ export function SavedAddressesPanel() {
                   type="button"
                   onClick={() => startEdit(item)}
                   disabled={busy}
-                  className="min-h-10 rounded-lg border border-white/10 bg-white/[0.03] px-3.5 text-xs font-black text-slate-200 transition hover:text-white disabled:opacity-50"
+                  className="min-h-10 rounded-lg border border-white/10 bg-white/[0.03] px-3.5 text-xs font-semibold text-slate-200 transition hover:text-white disabled:opacity-50"
                 >
                   Edit
                 </button>
@@ -438,7 +438,7 @@ export function SavedAddressesPanel() {
                       : armDelete(item)
                   }
                   disabled={Boolean(deletingId)}
-                  className={`min-h-10 rounded-lg border px-3.5 text-xs font-black transition disabled:opacity-50 ${
+                  className={`min-h-10 rounded-lg border px-3.5 text-xs font-semibold transition disabled:opacity-50 ${
                     confirmingDeleteId === item.id
                       ? "border-rose-400/40 bg-rose-500/15 text-rose-100 hover:bg-rose-500/25"
                       : "border-white/10 bg-white/[0.03] text-slate-400 transition hover:border-rose-400/25 hover:text-rose-200"
@@ -459,7 +459,7 @@ export function SavedAddressesPanel() {
       {message ? (
         <div
           role="status"
-          className={`mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm ${
+          className={`mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm ${
             error
               ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
               : "border-white/10 bg-black/20 text-slate-400"
@@ -470,7 +470,7 @@ export function SavedAddressesPanel() {
             <button
               type="button"
               onClick={() => void retryAddresses()}
-              className="text-xs font-black text-rose-100 underline"
+              className="text-xs font-semibold text-rose-100 underline"
             >
               Retry
             </button>

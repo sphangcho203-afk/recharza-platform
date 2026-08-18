@@ -113,14 +113,14 @@ export function SupportExplainer() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-300">How support works</p>
-        <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white sm:text-3xl">Reach help your way — every channel, explained.</h2>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300">How support works</p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">Reach help your way — every channel, explained.</h2>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500">
           Recharza support works through one shared ticket system and several doors you can enter from. Whatever channel you use, a real team member reads your request, and nothing about your account is ever solved by an unattended script.
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.025]">
+      <div className="overflow-hidden rounded-lg border border-white/[0.08] bg-white/[0.025]">
         <div className="grid gap-px bg-white/[0.06] sm:grid-cols-2 lg:grid-cols-3">
           {CHANNEL_EXPLAINER.map((channel) => (
             <div key={channel.id} className="bg-[#0b0b13] p-5">
@@ -129,15 +129,15 @@ export function SupportExplainer() {
                   <StorefrontIcon name={channel.icon} className="h-4 w-4" />
                 </span>
                 <div>
-                  <strong className="block text-sm font-black text-white">{channel.name}</strong>
+                  <strong className="block text-sm font-semibold text-white">{channel.name}</strong>
                   <span className="mt-0.5 block text-[11px] text-slate-500">{channel.tagline}</span>
                 </div>
               </div>
-              <p className="mt-4 text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">Best for</p>
+              <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Best for</p>
               <p className="mt-1 text-xs leading-5 text-slate-300">{channel.bestFor}</p>
-              <p className="mt-3 text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">How it works</p>
+              <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">How it works</p>
               <p className="mt-1 text-xs leading-5 text-slate-400">{channel.howItWorks}</p>
-              <p className="mt-3 text-[11px] font-black uppercase tracking-[0.14em] text-slate-500">What to bring</p>
+              <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">What to bring</p>
               <p className="mt-1 text-xs leading-5 text-slate-400">{channel.whatToBring}</p>
             </div>
           ))}
@@ -145,22 +145,22 @@ export function SupportExplainer() {
       </div>
 
       <div>
-        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-300">Creating a ticket</p>
-        <h3 className="mt-2 text-xl font-black tracking-[-0.04em] text-white">From first tap to solved — four steps.</h3>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300">Creating a ticket</p>
+        <h3 className="mt-2 text-xl font-semibold tracking-[-0.04em] text-white">From first tap to solved — four steps.</h3>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {ticketSteps.map((item) => (
-            <div key={item.step} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-300">{item.step}</p>
-              <strong className="mt-1.5 block text-sm font-black text-white">{item.title}</strong>
+            <div key={item.step} className="rounded-lg border border-white/[0.08] bg-white/[0.025] p-4">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-300">{item.step}</p>
+              <strong className="mt-1.5 block text-sm font-semibold text-white">{item.title}</strong>
               <p className="mt-1.5 text-xs leading-5 text-slate-400">{item.body}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5">
-        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-300">What happens behind the scenes</p>
-        <h3 className="mt-2 text-lg font-black tracking-[-0.04em] text-white">Your ticket is tracked end to end.</h3>
+      <div className="rounded-lg border border-white/[0.08] bg-white/[0.025] p-5">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300">What happens behind the scenes</p>
+        <h3 className="mt-2 text-lg font-semibold tracking-[-0.04em] text-white">Your ticket is tracked end to end.</h3>
         <p className="mt-2 max-w-3xl text-xs leading-5 text-slate-400">
           Every request receives a unique ticket number (for example <span className="rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[11px] text-cyan-200">RZS-XXXXXXXXXXXXXXXX</span>) and is recorded in our system with its status, category, and every reply exchanged. You can check progress anytime by typing <span className="rounded border border-white/10 bg-white/[0.04] px-1.5 py-0.5 font-mono text-[11px] text-cyan-200">/status</span> followed by your ticket number in the Telegram bot, and our team marks it resolved only when you confirm everything is fixed.
         </p>

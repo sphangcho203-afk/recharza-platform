@@ -13,7 +13,7 @@ const stateClassNames: Record<ProductModuleState, string> = {
 export function ModuleStateBadge({ state }: { state: ProductModuleState }) {
   return (
     <span
-      className={`inline-flex shrink-0 rounded-full border px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] ${stateClassNames[state]}`}
+      className={`inline-flex shrink-0 rounded-full border px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.12em] ${stateClassNames[state]}`}
     >
       {getModuleStateLabel(state)}
     </span>

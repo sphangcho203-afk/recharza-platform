@@ -380,8 +380,8 @@ export function SupplierGameCheckoutShell({
 
   if (!selectedPackage) {
     return (
-      <div className="rounded-xl border border-amber-300/20 bg-amber-300/[0.07] p-4 text-sm text-amber-100">
-        <p className="font-black">This market is not available yet.</p>
+      <div className="rounded-lg border border-amber-300/20 bg-amber-300/[0.07] p-4 text-sm text-amber-100">
+        <p className="font-semibold">This market is not available yet.</p>
         <p className="mt-1 text-amber-100/65">No curated supplier packs are published for this game and region.</p>
       </div>
     );
@@ -400,7 +400,7 @@ export function SupplierGameCheckoutShell({
             <span className="sm:hidden">Back</span>
           </Link>
           <div className="min-w-0 text-right">
-            <h1 className="truncate text-base font-black tracking-[-0.02em] text-white sm:text-lg">{gameLabel}</h1>
+            <h1 className="truncate text-base font-semibold tracking-[-0.02em] text-white sm:text-lg">{gameLabel}</h1>
             <p className="truncate text-[11px] font-medium text-slate-500">{selectedMarketLabel}</p>
           </div>
         </header>
@@ -412,7 +412,7 @@ export function SupplierGameCheckoutShell({
                   key={market.code}
                   type="button"
                   onClick={() => chooseMarket(market.code)}
-                  className={`min-h-9 rounded-lg border px-3 text-xs font-black transition ${
+                  className={`min-h-9 rounded-lg border px-3 text-xs font-semibold transition ${
                     market.code === marketCode
                       ? "border-violet-400/45 bg-violet-500/12 text-white"
                       : "border-white/[0.08] bg-[#0d0f16] text-slate-500 hover:border-white/[0.16] hover:text-white"
@@ -428,18 +428,18 @@ export function SupplierGameCheckoutShell({
         <CheckoutProgress step={step} onStepChange={setStep} />
 
         {step === 2 ? <>
-        <section className="rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:p-5">
+        <section className="rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:p-5">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-base font-black text-white">Order information</h2>
+              <h2 className="text-base font-semibold text-white">Order information</h2>
               <p className="mt-1 text-xs text-slate-500">Enter the destination exactly as shown in-game.</p>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-[0.12em] text-violet-300">Step 3</span>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-violet-300">Step 3</span>
           </div>
 
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {gameSlug === "valorant" ? (
-              <label className="text-xs font-black text-slate-400 sm:col-span-2">
+              <label className="text-xs font-semibold text-slate-400 sm:col-span-2">
                 Riot ID
                 <input
                   required
@@ -458,7 +458,7 @@ export function SupplierGameCheckoutShell({
                 />
               </label>
             ) : (
-                <label className="text-xs font-black text-slate-400">
+                <label className="text-xs font-semibold text-slate-400">
                 {gameSlug === "genshin-impact" ? "UID" : "Player ID"}
                 {gameSlug === "free-fire" ? <span className="ml-2 font-normal text-slate-600">works across supported regions</span> : null}
                 <input
@@ -480,7 +480,7 @@ export function SupplierGameCheckoutShell({
             )}
 
             {gameSlug === "genshin-impact" ? (
-              <label className="text-xs font-black text-slate-400">
+              <label className="text-xs font-semibold text-slate-400">
                 Server
                 <select
                   required
@@ -513,7 +513,7 @@ export function SupplierGameCheckoutShell({
               type="button"
               onClick={() => void verifyIdentity()}
               disabled={!identityResult?.valid || isVerifying}
-              className="min-h-10 shrink-0 rounded-lg border border-emerald-300/25 bg-emerald-300/[0.08] px-4 text-xs font-black text-emerald-200 transition hover:border-emerald-300/45 hover:bg-emerald-300/[0.14] disabled:cursor-not-allowed disabled:opacity-45"
+              className="min-h-10 shrink-0 rounded-lg border border-emerald-300/25 bg-emerald-300/[0.08] px-4 text-xs font-semibold text-emerald-200 transition hover:border-emerald-300/45 hover:bg-emerald-300/[0.14] disabled:cursor-not-allowed disabled:opacity-45"
             >
               {isVerifying ? "Verifying…" : verification?.valid ? "Verify again" : "Verify account"}
             </button>
@@ -526,7 +526,7 @@ export function SupplierGameCheckoutShell({
         <section>
           <div className="flex items-end justify-between gap-3">
             <div>
-              <h2 className="text-lg font-black tracking-[-0.025em] text-white">Choose a package</h2>
+              <h2 className="text-lg font-semibold tracking-[-0.025em] text-white">Choose a package</h2>
               <p className="mt-1 text-xs text-slate-500">
                 {marketPackages.length} published offers{gameSlug === "free-fire" ? " across supported regions" : ` for ${selectedPackage.marketLabel}`}.
               </p>
@@ -592,8 +592,8 @@ export function SupplierGameCheckoutShell({
                       {gameSlug === "free-fire" && item.marketLabel ? (
                         <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{item.marketLabel}</span>
                       ) : null}
-                      <span className="mt-3 block text-lg font-black tracking-[-0.025em] text-violet-200">{formatPresentment(item.amountInPaise)}</span>
-                      {selected ? <span className="mt-1 block text-[10px] font-black text-emerald-300">Selected</span> : null}
+                      <span className="mt-3 block text-lg font-semibold tracking-[-0.025em] text-violet-200">{formatPresentment(item.amountInPaise)}</span>
+                      {selected ? <span className="mt-1 block text-[10px] font-semibold text-emerald-300">Selected</span> : null}
                     </span>
                   </button>
                   <div className="px-3 pb-3 sm:px-4 sm:pb-4">
@@ -634,7 +634,7 @@ export function SupplierGameCheckoutShell({
           />
 
           {isAuthenticated && selectedAddressId === null ? (
-            <label className="flex items-start gap-3 rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 py-3">
+            <label className="flex items-start gap-3 rounded-lg border border-white/[0.08] bg-white/[0.025] px-4 py-3">
               <input
                 type="checkbox"
                 checked={saveNewAddress}
@@ -642,7 +642,7 @@ export function SupplierGameCheckoutShell({
                 className="mt-0.5 h-4 w-4 accent-violet-500"
               />
               <span className="text-sm text-slate-200">
-                <strong className="font-black text-white">Save this billing address</strong>
+                <strong className="font-semibold text-white">Save this billing address</strong>
                 <span className="mt-0.5 block text-xs text-slate-500">Keep this address for faster checkout on your next top-up.</span>
               </span>
             </label>
@@ -652,24 +652,24 @@ export function SupplierGameCheckoutShell({
         </> : null}
 
         {step === 4 ? <>
-        <section className="rounded-2xl border border-violet-300/20 bg-[radial-gradient(circle_at_0%_0%,rgba(139,92,246,0.16),transparent_42%),#0d0f16] p-5 sm:p-6">
+        <section className="rounded-lg border border-violet-300/20 bg-[radial-gradient(circle_at_0%_0%,rgba(139,92,246,0.16),transparent_42%),#0d0f16] p-5 sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.14em] text-violet-300">Step 4 · Final review</p>
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-white">Review your order</h2>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-300">Step 4 · Final review</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Review your order</h2>
               <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Confirm the player destination, package, market, currency, and total before continuing to secure payment.</p>
             </div>
-            <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-200">Ready for payment</span>
+            <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-200">Ready for payment</span>
           </div>
           <dl className="storefront-checkout-surface mt-6 grid gap-4 p-4 text-sm sm:grid-cols-2">
-            <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-black text-white">{selectedPackage.name}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-black text-white">{selectedPackage.marketLabel}</dd></div>
-            {identity.riotId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-black tracking-wide text-white">{identity.riotId}</dd></div> : null}
-            {identity.playerId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Player ID / UID</dt><dd className="mt-1 break-all font-mono text-sm font-black tracking-wide text-white">{identity.playerId}</dd></div> : null}
-            {identity.serverId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-black tracking-wide text-white">{identity.serverId}</dd></div> : null}
-            <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-black text-emerald-200">{verification?.nickname ?? "Verified player"}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-black text-white">{billing.presentmentCurrency}</dd></div>
-            <div className="border-t border-white/[0.1] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-black text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-semibold text-white">{selectedPackage.name}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-semibold text-white">{selectedPackage.marketLabel}</dd></div>
+            {identity.riotId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{identity.riotId}</dd></div> : null}
+            {identity.playerId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Player ID / UID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{identity.playerId}</dd></div> : null}
+            {identity.serverId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{identity.serverId}</dd></div> : null}
+            <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-semibold text-emerald-200">{verification?.nickname ?? "Verified player"}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-semibold text-white">{billing.presentmentCurrency}</dd></div>
+            <div className="border-t border-white/[0.1] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-semibold text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
           </dl>
           <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
             <button type="button" onClick={() => setStep(3)} className="storefront-checkout-secondary px-4 text-sm">Back to billing</button>
@@ -682,14 +682,14 @@ export function SupplierGameCheckoutShell({
         {message ? <p className="rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-4 py-3 text-sm text-cyan-100">{message}</p> : null}
 
         {step === 5 && order ? (
-          <section className="rounded-xl border border-emerald-300/20 bg-[#0c1110] p-4 sm:p-5">
+          <section className="rounded-lg border border-emerald-300/20 bg-[#0c1110] p-4 sm:p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-sm font-black text-emerald-100">Order {order.id} created</h2>
+                <h2 className="text-sm font-semibold text-emerald-100">Order {order.id} created</h2>
                 <p className="mt-1 text-xs text-emerald-100/60">The order is saved and recoverable before payment.</p>
                 {addressSaveNote ? <p className="mt-2 text-xs leading-5 text-amber-200/80">{addressSaveNote}</p> : null}
               </div>
-              <Link href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`} className="text-xs font-black text-emerald-300 underline">Open tracking</Link>
+              <Link href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`} className="text-xs font-semibold text-emerald-300 underline">Open tracking</Link>
             </div>
             <PrivateOrderTokenCard token={order.tracking.accessToken} />
             <RazorpayTestCheckout
@@ -725,9 +725,9 @@ function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
           const active = number === step;
           const complete = number < step;
           return <li key={label}>
-            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} aria-current={active ? "step" : undefined} aria-label={`${label} step${active ? ", current step" : complete ? ", completed" : ", locked"}`} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-500"}`}>
-              <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-black">{complete ? "✓" : number}</span>
-              <span className="text-[9px] font-black uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
+            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} aria-current={active ? "step" : undefined} aria-label={`${label} step${active ? ", current step" : complete ? ", completed" : ", locked"}`} className={`flex w-full flex-col items-center gap-1 rounded-lg px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-500"}`}>
+              <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-semibold">{complete ? "✓" : number}</span>
+              <span className="text-[9px] font-semibold uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
             </button>
           </li>;
         })}

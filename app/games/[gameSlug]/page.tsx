@@ -91,7 +91,7 @@ export default async function GameCheckoutPage({
               <span className="text-slate-400">{definition.title}</span>
             </div>
 
-            <div className="flex flex-col gap-4 rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="flex flex-col gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div className="flex min-w-0 items-center gap-4">
                 <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-white/[0.08] bg-[#151923] sm:h-20 sm:w-20">
                   <ResilientImage
@@ -106,7 +106,7 @@ export default async function GameCheckoutPage({
                   />
                 </div>
                 <div className="min-w-0">
-                  <h1 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">{definition.title} Top Up</h1>
+                  <h1 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">{definition.title} Top Up</h1>
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-slate-500">
                     <span className="text-amber-300">★ 4.9</span>
                     <span>{packages.length} offers</span>
@@ -152,8 +152,8 @@ export default async function GameCheckoutPage({
       <SiteHeader />
       <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <StorefrontBackButton />
-        <div className="mt-6 rounded-xl border border-amber-400/20 bg-amber-400/[0.07] p-5 sm:p-7">
-          <h1 className="text-2xl font-black sm:text-3xl">{definition.title}</h1>
+        <div className="mt-6 rounded-lg border border-amber-400/20 bg-amber-400/[0.07] p-5 sm:p-7">
+          <h1 className="text-2xl font-semibold sm:text-3xl">{definition.title}</h1>
           <p className="mt-3 leading-7 text-amber-100/75">{definition.readinessNote}</p>
           <p className="mt-4 text-sm leading-6 text-amber-100/60">No substitute market or unverified price will be used. Return to the catalogue or contact support for availability.</p>
         </div>

@@ -64,7 +64,7 @@ export function ProductOfferCard({
           {item.deliveryLabel}
         </span>
         <span className="mt-auto pt-4">
-          <span className="block text-xl font-black tracking-[-0.03em] text-white">
+          <span className="block text-xl font-semibold tracking-[-0.03em] text-white">
             {displayPrice}
           </span>
           {settlementPrice ? (

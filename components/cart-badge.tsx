@@ -22,7 +22,7 @@ export function CartBadge() {
       {ready && count > 0 ? (
         <span
           aria-hidden="true"
-          className="absolute -right-1 -top-1 grid min-h-4 min-w-4 place-items-center rounded-full border border-[#050a14] bg-violet-500 px-1 text-[9px] font-black leading-none text-white shadow-[0_4px_14px_rgba(124,58,237,0.45)] sm:-right-1.5 sm:-top-1.5 sm:min-h-[1.125rem] sm:min-w-[1.125rem] sm:text-[10px]"
+          className="absolute -right-1 -top-1 grid min-h-4 min-w-4 place-items-center rounded-full border border-[#050a14] bg-violet-500 px-1 text-[9px] font-semibold leading-none text-white shadow-[0_4px_14px_rgba(124,58,237,0.45)] sm:-right-1.5 sm:-top-1.5 sm:min-h-[1.125rem] sm:min-w-[1.125rem] sm:text-[10px]"
         >
           {formatBadgeCount(count)}
         </span>

@@ -16,10 +16,10 @@ export function PrivateOrderTokenCard({ token }: { token: string }) {
   }
 
   return (
-    <div className="mt-4 rounded-xl border border-amber-300/20 bg-amber-300/[0.06] p-4">
+    <div className="mt-4 rounded-lg border border-amber-300/20 bg-amber-300/[0.06] p-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-200">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-amber-200">
             🔐 Save your private tracking token
           </p>
           <p className="mt-1 text-xs leading-5 text-amber-100/75">
@@ -29,7 +29,7 @@ export function PrivateOrderTokenCard({ token }: { token: string }) {
         <button
           type="button"
           onClick={() => void copyToken()}
-          className="min-h-10 shrink-0 rounded-lg border border-amber-200/25 bg-amber-200/10 px-3 text-xs font-black text-amber-100 transition hover:bg-amber-200/20"
+          className="min-h-10 shrink-0 rounded-lg border border-amber-200/25 bg-amber-200/10 px-3 text-xs font-semibold text-amber-100 transition hover:bg-amber-200/20"
         >
           {copied ? "✅ Copied" : "📋 Copy token"}
         </button>

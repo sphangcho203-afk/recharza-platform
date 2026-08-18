@@ -146,17 +146,17 @@ export function GameCatalogue({
         <div className="mt-8 border-t border-white/[0.08] pt-5">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-base font-black text-white">Mobile Legends markets</h3>
+              <h3 className="text-base font-semibold text-white">Mobile Legends markets</h3>
               <p className="mt-2 text-sm text-text-secondary">Choose the region that matches the game account.</p>
             </div>
-            <Link href="/games/mobile-legends" className="text-xs font-black text-violet-300">View all</Link>
+            <Link href="/games/mobile-legends" className="text-xs font-semibold text-violet-300">View all</Link>
           </div>
           <div className="mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {regionalMarkets.map((game) => (
               <Link
                 key={game.slug}
                 href={game.href ?? "/games/mobile-legends"}
-                className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg border border-white/[0.08] bg-[#0d0f16] px-3.5 text-xs font-black text-slate-300 transition hover:border-violet-400/30 hover:text-white"
+                className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg border border-white/[0.08] bg-[#0d0f16] px-3.5 text-xs font-semibold text-slate-300 transition hover:border-violet-400/30 hover:text-white"
               >
                 <span className="text-base" aria-hidden="true">{game.region?.flag}</span>
                 {game.region?.label}

@@ -74,22 +74,22 @@ export function SavedAddressForm({
     <form
       onSubmit={submit}
       aria-label={title}
-      className="rounded-2xl border border-violet-400/20 bg-[#0f0f19] p-4 shadow-2xl shadow-black/25 sm:p-5"
+      className="rounded-lg border border-violet-400/20 bg-[#0f0f19] p-4 shadow-2xl shadow-black/25 sm:p-5"
     >
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-sm font-black text-white">{title}</h3>
+        <h3 className="text-sm font-semibold text-white">{title}</h3>
         <button
           type="button"
           onClick={onCancel}
           disabled={saving}
-          className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-black text-slate-300 transition hover:text-white disabled:opacity-50"
+          className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs font-semibold text-slate-300 transition hover:text-white disabled:opacity-50"
         >
           Cancel
         </button>
       </div>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2">
-        <label className="text-xs font-black text-slate-400 sm:col-span-2">
+        <label className="text-xs font-semibold text-slate-400 sm:col-span-2">
           Full billing name
           <input
             required
@@ -101,7 +101,7 @@ export function SavedAddressForm({
             placeholder="Name on the payment account"
           />
         </label>
-        <label className="text-xs font-black text-slate-400">
+        <label className="text-xs font-semibold text-slate-400">
           Receipt email
           <input
             required
@@ -114,7 +114,7 @@ export function SavedAddressForm({
             placeholder="billing@example.com"
           />
         </label>
-        <label className="text-xs font-black text-slate-400">
+        <label className="text-xs font-semibold text-slate-400">
           Phone number
           <input
             required
@@ -128,7 +128,7 @@ export function SavedAddressForm({
             placeholder="+91 98765 43210"
           />
         </label>
-        <label className="text-xs font-black text-slate-400">
+        <label className="text-xs font-semibold text-slate-400">
           Country
           <select
             required
@@ -145,7 +145,7 @@ export function SavedAddressForm({
             ))}
           </select>
         </label>
-        <label className="text-xs font-black text-slate-400">
+        <label className="text-xs font-semibold text-slate-400">
           Postal code
           <input
             required
@@ -157,7 +157,7 @@ export function SavedAddressForm({
             placeholder="600001"
           />
         </label>
-        <label className="text-xs font-black text-slate-400 sm:col-span-2">
+        <label className="text-xs font-semibold text-slate-400 sm:col-span-2">
           Address line 1
           <input
             required
@@ -169,7 +169,7 @@ export function SavedAddressForm({
             placeholder="House, building and street"
           />
         </label>
-        <label className="text-xs font-black text-slate-400 sm:col-span-2">
+        <label className="text-xs font-semibold text-slate-400 sm:col-span-2">
           Address line 2{" "}
           <span className="font-normal text-slate-600">(optional)</span>
           <input
@@ -181,7 +181,7 @@ export function SavedAddressForm({
             placeholder="Apartment, landmark or district"
           />
         </label>
-        <label className="text-xs font-black text-slate-400">
+        <label className="text-xs font-semibold text-slate-400">
           City
           <input
             required
@@ -192,7 +192,7 @@ export function SavedAddressForm({
             className={inputClassName}
           />
         </label>
-        <label className="text-xs font-black text-slate-400">
+        <label className="text-xs font-semibold text-slate-400">
           State or province
           <input
             required
@@ -214,7 +214,7 @@ export function SavedAddressForm({
             className="mt-0.5 h-4 w-4 accent-violet-500"
           />
           <span>
-            <strong className="font-black text-white">
+            <strong className="font-semibold text-white">
               Make this the default billing address
             </strong>
             <span className="mt-0.5 block text-xs text-slate-500">
@@ -231,7 +231,7 @@ export function SavedAddressForm({
         <button
           type="submit"
           disabled={saving}
-          className="min-h-11 rounded-lg bg-violet-500 px-5 text-sm font-black text-white transition hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60"
+          className="min-h-11 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60"
         >
           {saving ? "Saving…" : submitLabel}
         </button>

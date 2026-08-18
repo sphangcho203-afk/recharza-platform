@@ -97,7 +97,7 @@ export function MobileBottomNav() {
                 {showBadge ? (
                   <span
                     aria-hidden="true"
-                    className="absolute -right-2 -top-1.5 grid min-h-[1rem] min-w-[1rem] place-items-center rounded-full bg-violet-500 px-1 text-[8px] font-black leading-none text-white"
+                    className="absolute -right-2 -top-1.5 grid min-h-[1rem] min-w-[1rem] place-items-center rounded-full bg-violet-500 px-1 text-[8px] font-semibold leading-none text-white"
                   >
                     {count > 99 ? "99+" : count}
                   </span>

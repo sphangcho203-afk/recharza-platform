@@ -26,7 +26,7 @@ export default function CartRoute() {
             <span className="text-slate-400">Cart</span>
           </div>
           <div>
-            <h1 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">
+            <h1 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">
               Your cart
             </h1>
             <p className="mt-1.5 text-xs text-slate-500">

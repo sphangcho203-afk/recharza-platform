@@ -196,10 +196,10 @@ export function AdminCatalogueConsole() {
           ["Supplier media", String(supplierMediaCount), "Products with upstream artwork"],
         ].map(([label, value, note]) => (
           <article key={label} className="system-card p-4">
-            <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
               {label}
             </p>
-            <p className="mt-2 text-2xl font-black text-white">{value}</p>
+            <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
             <p className="mt-1 text-xs text-slate-600">{note}</p>
           </article>
         ))}
@@ -209,7 +209,7 @@ export function AdminCatalogueConsole() {
         <section className="system-panel overflow-hidden">
           <div className="grid gap-3 border-b border-white/10 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
             <div>
-              <h3 className="text-lg font-black text-white">Product catalogue</h3>
+              <h3 className="text-lg font-semibold text-white">Product catalogue</h3>
               <p className="mt-1 text-sm text-slate-500">
                 Publish, pause, inspect and open the media editor.
               </p>
@@ -217,7 +217,7 @@ export function AdminCatalogueConsole() {
             <button
               type="button"
               onClick={() => void load()}
-              className="min-h-11 rounded-xl border border-white/10 px-3 text-xs font-black text-slate-300 hover:bg-white/5"
+              className="min-h-11 rounded-lg border border-white/10 px-3 text-xs font-semibold text-slate-300 hover:bg-white/5"
             >
               Refresh
             </button>
@@ -226,7 +226,7 @@ export function AdminCatalogueConsole() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search products, regions or offer IDs"
-              className="min-h-12 rounded-xl border border-white/10 bg-black/20 px-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400 sm:col-span-2"
+              className="min-h-12 rounded-lg border border-white/10 bg-black/20 px-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400 sm:col-span-2"
             />
           </div>
 
@@ -236,7 +236,7 @@ export function AdminCatalogueConsole() {
                 key={product.id}
                 className="grid gap-4 p-4 sm:grid-cols-[4.5rem_minmax(0,1fr)_auto] sm:items-center"
               >
-                <div className="aspect-square overflow-hidden rounded-xl border border-white/10 bg-black/25">
+                <div className="aspect-square overflow-hidden rounded-lg border border-white/10 bg-black/25">
                   <ResilientImage
                     sources={product.media.sources}
                     alt={product.media.alt}
@@ -247,7 +247,7 @@ export function AdminCatalogueConsole() {
                 </div>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h4 className="truncate font-black text-white">{product.name}</h4>
+                    <h4 className="truncate font-semibold text-white">{product.name}</h4>
                     <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[9px] font-bold uppercase text-slate-400">
                       {product.region ?? "Global"}
                     </span>
@@ -270,7 +270,7 @@ export function AdminCatalogueConsole() {
                         product.published ? "Product unpublished." : "Product published.",
                       )
                     }
-                    className={`min-h-10 rounded-xl border px-3 text-[11px] font-black ${
+                    className={`min-h-10 rounded-lg border px-3 text-[11px] font-semibold ${
                       product.published
                         ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200"
                         : "border-white/10 bg-white/5 text-slate-400"
@@ -288,7 +288,7 @@ export function AdminCatalogueConsole() {
                         product.available ? "Product paused." : "Product activated.",
                       )
                     }
-                    className={`min-h-10 rounded-xl border px-3 text-[11px] font-black ${
+                    className={`min-h-10 rounded-lg border px-3 text-[11px] font-semibold ${
                       product.available
                         ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100"
                         : "border-rose-300/20 bg-rose-300/10 text-rose-200"
@@ -299,7 +299,7 @@ export function AdminCatalogueConsole() {
                   <button
                     type="button"
                     onClick={() => openEditor(product)}
-                    className="min-h-10 rounded-xl bg-white px-3 text-[11px] font-black text-slate-950 hover:bg-violet-200"
+                    className="min-h-10 rounded-lg bg-white px-3 text-[11px] font-semibold text-slate-950 hover:bg-violet-200"
                   >
                     Edit media
                   </button>
@@ -315,12 +315,12 @@ export function AdminCatalogueConsole() {
         </section>
 
         <aside className="system-panel h-fit p-5 xl:sticky xl:top-24">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">
             Media and display override
           </p>
           {selected ? (
             <div className="mt-4 grid gap-4">
-              <div className="aspect-[16/10] overflow-hidden rounded-2xl border border-white/10 bg-black/25">
+              <div className="aspect-[16/10] overflow-hidden rounded-lg border border-white/10 bg-black/25">
                 <ResilientImage
                   sources={selected.media.sources}
                   alt={selected.media.alt}
@@ -339,7 +339,7 @@ export function AdminCatalogueConsole() {
                       storefrontName: event.target.value,
                     }))
                   }
-                  className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
+                  className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
                 />
               </label>
               <label className="text-xs font-bold text-slate-300">
@@ -350,7 +350,7 @@ export function AdminCatalogueConsole() {
                     setEdit((current) => ({ ...current, imageUrl: event.target.value }))
                   }
                   placeholder="https://reviewed-cdn.example/product.png"
-                  className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
+                  className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
                 />
               </label>
               <label className="text-xs font-bold text-slate-300">
@@ -360,7 +360,7 @@ export function AdminCatalogueConsole() {
                   onChange={(event) =>
                     setEdit((current) => ({ ...current, imageAlt: event.target.value }))
                   }
-                  className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
+                  className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
                 />
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -370,7 +370,7 @@ export function AdminCatalogueConsole() {
                   onClick={() =>
                     void patchProduct(selected.id, edit, "Storefront media updated.")
                   }
-                  className="min-h-11 rounded-xl bg-violet-500 px-3 text-xs font-black text-white hover:bg-violet-400 disabled:opacity-50"
+                  className="min-h-11 rounded-lg bg-violet-500 px-3 text-xs font-semibold text-white hover:bg-violet-400 disabled:opacity-50"
                 >
                   Save override
                 </button>
@@ -384,7 +384,7 @@ export function AdminCatalogueConsole() {
                       "Overrides cleared.",
                     )
                   }
-                  className="min-h-11 rounded-xl border border-white/10 px-3 text-xs font-black text-slate-300 hover:bg-white/5 disabled:opacity-50"
+                  className="min-h-11 rounded-lg border border-white/10 px-3 text-xs font-semibold text-slate-300 hover:bg-white/5 disabled:opacity-50"
                 >
                   Clear override
                 </button>
@@ -395,7 +395,7 @@ export function AdminCatalogueConsole() {
               </p>
             </div>
           ) : (
-            <div className="mt-4 rounded-2xl border border-dashed border-white/10 p-8 text-center text-sm text-slate-600">
+            <div className="mt-4 rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-slate-600">
               Select a product to edit its storefront name and real media source.
             </div>
           )}
@@ -404,7 +404,7 @@ export function AdminCatalogueConsole() {
 
       <p
         aria-live="polite"
-        className="rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-slate-400"
+        className="rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-sm text-slate-400"
       >
         {message}
       </p>

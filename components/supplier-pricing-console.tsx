@@ -199,7 +199,7 @@ export function SupplierPricingConsole() {
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-300">
             Supplier and pricing cockpit
           </p>
-          <h2 className="mt-2 text-2xl font-black">FazerCards catalogue economics</h2>
+          <h2 className="mt-2 text-2xl font-semibold">FazerCards catalogue economics</h2>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
             The API key remains server-side. Staff sessions control the retail policy and approved catalogue synchronization.
           </p>
@@ -210,7 +210,7 @@ export function SupplierPricingConsole() {
           ) : null}
         </div>
 
-        <div className="grid min-w-60 gap-2 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm">
+        <div className="grid min-w-60 gap-2 rounded-lg border border-white/10 bg-black/20 p-4 text-sm">
           <div className="flex justify-between gap-6"><span className="text-slate-500">Products synced</span><span className="font-bold text-white">{catalog?.productCount ?? "—"}</span></div>
           <div className="flex justify-between gap-6"><span className="text-slate-500">Published live</span><span className="font-bold text-emerald-300">{catalog?.publishedCount ?? "—"}</span></div>
           <div className="flex justify-between gap-6"><span className="text-slate-500">Last sync</span><span className="font-bold capitalize text-white">{catalog?.latestSync?.status?.toLowerCase() ?? "—"}</span></div>
@@ -224,19 +224,19 @@ export function SupplierPricingConsole() {
           onChange={(event) => setToken(event.target.value)}
           placeholder="Optional emergency token"
           autoComplete="off"
-          className="rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400"
+          className="rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400"
         />
-        <button type="button" onClick={useSavedToken} disabled={Boolean(busy)} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10 disabled:opacity-50">
+        <button type="button" onClick={useSavedToken} disabled={Boolean(busy)} className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-slate-200 transition hover:bg-white/10 disabled:opacity-50">
           Use saved fallback
         </button>
-        <button type="button" onClick={() => void loadPricing()} disabled={Boolean(busy)} className="rounded-2xl bg-violet-500 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-400 disabled:opacity-50">
+        <button type="button" onClick={() => void loadPricing()} disabled={Boolean(busy)} className="rounded-lg bg-violet-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:opacity-50">
           {busy === "load" ? "Loading..." : "Load controls"}
         </button>
       </div>
 
       <form onSubmit={savePolicy} className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {policyFields.map((field) => (
-          <label key={field.key} className="rounded-2xl border border-white/10 bg-black/15 p-4 text-sm font-semibold text-slate-200">
+          <label key={field.key} className="rounded-lg border border-white/10 bg-black/15 p-4 text-sm font-semibold text-slate-200">
             <span className="flex items-center justify-between gap-3">{field.label}<span className="text-[10px] uppercase tracking-wider text-slate-600">{field.suffix}</span></span>
             <input
               required
@@ -244,30 +244,30 @@ export function SupplierPricingConsole() {
               inputMode="numeric"
               value={policy[field.key]}
               onChange={(event) => setPolicy((current) => ({ ...current, [field.key]: Number(event.target.value) }))}
-              className="mt-3 w-full rounded-xl border border-white/10 bg-black/25 px-3 py-2 text-base font-bold text-white outline-none focus:border-violet-400"
+              className="mt-3 w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-base font-bold text-white outline-none focus:border-violet-400"
             />
             <span className="mt-2 block text-xs font-normal leading-5 text-slate-500">{field.helper}</span>
           </label>
         ))}
 
-        <div className="rounded-2xl border border-violet-400/20 bg-violet-400/10 p-4 sm:col-span-2 lg:col-span-2">
+        <div className="rounded-lg border border-violet-400/20 bg-violet-400/10 p-4 sm:col-span-2 lg:col-span-2">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-200">Readable policy</p>
           <p className="mt-3 text-sm leading-6 text-violet-100/80">
             USD/INR ₹{(policy.usdInrRatePaise / 100).toFixed(2)} · FX {(policy.fxBufferBps / 100).toFixed(2)}% · gateway {(policy.gatewayFeeBps / 100).toFixed(2)}% · base margin {(policy.targetMarginBps / 100).toFixed(2)}% · minimum profit {formatInr(policy.minimumMarginInPaise)} · overhead {formatInr(policy.overheadInPaise)}.
           </p>
         </div>
 
-        <div className="grid gap-3 rounded-2xl border border-white/10 bg-black/15 p-4">
-          <button type="submit" disabled={Boolean(busy)} className="rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-3 text-sm font-black text-white disabled:opacity-50">
+        <div className="grid gap-3 rounded-lg border border-white/10 bg-black/15 p-4">
+          <button type="submit" disabled={Boolean(busy)} className="rounded-lg bg-gradient-to-r from-violet-500 to-fuchsia-500 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">
             {busy === "save" ? "Repricing..." : "Save and reprice"}
           </button>
-          <button type="button" onClick={() => void syncSupplier()} disabled={Boolean(busy)} className="rounded-xl border border-emerald-300/20 bg-emerald-300/10 px-4 py-3 text-sm font-black text-emerald-100 disabled:opacity-50">
+          <button type="button" onClick={() => void syncSupplier()} disabled={Boolean(busy)} className="rounded-lg border border-emerald-300/20 bg-emerald-300/10 px-4 py-3 text-sm font-semibold text-emerald-100 disabled:opacity-50">
             {busy === "sync" ? "Syncing FazerCards..." : "Sync FazerCards now"}
           </button>
         </div>
       </form>
 
-      <p aria-live="polite" className={`mt-5 rounded-2xl border px-4 py-3 text-sm leading-6 ${isError ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-white/10 bg-black/15 text-slate-400"}`}>
+      <p aria-live="polite" className={`mt-5 rounded-lg border px-4 py-3 text-sm leading-6 ${isError ? "border-rose-400/20 bg-rose-400/10 text-rose-200" : "border-white/10 bg-black/15 text-slate-400"}`}>
         {message}
       </p>
     </section>

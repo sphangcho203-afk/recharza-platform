@@ -38,7 +38,7 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
             <span className="text-slate-400">Mobile Legends</span>
           </div>
 
-          <div className="flex flex-col gap-4 rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="flex flex-col gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="flex min-w-0 items-center gap-4">
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-white/[0.08] bg-[#151923] sm:h-20 sm:w-20">
                 <ResilientImage
@@ -53,7 +53,7 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
                 />
               </div>
               <div>
-                <h1 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">Mobile Legends: Bang Bang Top Up</h1>
+                <h1 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">Mobile Legends: Bang Bang Top Up</h1>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-slate-500">
                   <span className="text-amber-300">★ 4.9</span>
                   <span>{mobileLegendsMarkets.length} markets</span>
@@ -80,10 +80,10 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
       <section className="mx-auto max-w-[1240px] px-4 py-7 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-xl font-black tracking-[-0.03em] text-white sm:text-2xl">Choose your account market</h2>
+            <h2 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">Choose your account market</h2>
             <p className="mt-1.5 text-sm text-slate-500">The selected market controls packages, currency, validation and fulfilment.</p>
           </div>
-          <Link href="/support" className="hidden text-xs font-black text-violet-300 hover:text-violet-200 sm:block">Need help?</Link>
+          <Link href="/support" className="hidden text-xs font-semibold text-violet-300 hover:text-violet-200 sm:block">Need help?</Link>
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -91,13 +91,13 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
             <Link
               key={market.code}
               href={`/games/mobile-legends/${market.code}`}
-              className="group flex min-h-28 items-center gap-4 rounded-xl border border-white/[0.08] bg-[#0d0f16] p-4 transition hover:-translate-y-0.5 hover:border-violet-400/35 hover:shadow-[0_14px_36px_rgba(0,0,0,0.24)]"
+              className="group flex min-h-28 items-center gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 transition hover:-translate-y-0.5 hover:border-violet-400/35 hover:shadow-[0_14px_36px_rgba(0,0,0,0.24)]"
             >
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-2xl" aria-hidden="true">{market.flag}</span>
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025] text-2xl" aria-hidden="true">{market.flag}</span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-2">
-                  <strong className="truncate text-sm font-black text-white">{market.label}</strong>
-                  <span className="rounded-md border border-white/[0.08] px-1.5 py-0.5 text-[9px] font-black text-slate-500">{market.defaultCurrency}</span>
+                  <strong className="truncate text-sm font-semibold text-white">{market.label}</strong>
+                  <span className="rounded-md border border-white/[0.08] px-1.5 py-0.5 text-[9px] font-semibold text-slate-500">{market.defaultCurrency}</span>
                 </span>
                 <span className="mt-1.5 line-clamp-2 block text-xs leading-5 text-slate-500">{market.note}</span>
               </span>
@@ -106,7 +106,7 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
           ))}
         </div>
 
-        <div className="mt-7 rounded-xl border border-white/[0.08] bg-[#0b0d13] p-4 text-xs leading-5 text-slate-500 sm:p-5">
+        <div className="mt-7 rounded-lg border border-white/[0.08] bg-[#0b0d13] p-4 text-xs leading-5 text-slate-500 sm:p-5">
           Choose a market only when it matches the Mobile Legends account. Recharza does not silently substitute a different region.
         </div>
       </section>

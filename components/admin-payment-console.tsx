@@ -419,10 +419,10 @@ export function AdminPaymentConsole({
         <div className="border-b border-white/10 p-5 sm:p-7">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">
                 Payment evidence, reconciliation, refund review, and disputes
               </p>
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.035em] sm:text-3xl">
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
                 Payment Command Center
               </h2>
               <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-400">
@@ -434,14 +434,14 @@ export function AdminPaymentConsole({
                 type="button"
                 onClick={() => void refresh()}
                 disabled={loading}
-                className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-4 text-sm font-black text-white hover:bg-white/10 disabled:cursor-wait disabled:opacity-50"
+                className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white hover:bg-white/10 disabled:cursor-wait disabled:opacity-50"
               >
                 {loading ? "Working..." : "Refresh ledger"}
               </button>
               <button
                 type="button"
                 onClick={exportCurrentView}
-                className="min-h-11 rounded-xl border border-white/10 bg-white/5 px-4 text-sm font-black text-white hover:bg-white/10"
+                className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white hover:bg-white/10"
               >
                 Export current view
               </button>
@@ -450,9 +450,9 @@ export function AdminPaymentConsole({
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             {snapshot.metrics.map((metric) => (
-              <article key={metric.id} className={`rounded-xl border p-4 ${metricTone(metric.tone)}`}>
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">{metric.label}</p>
-                <p className="mt-2 text-2xl font-black text-white">{metric.value}</p>
+              <article key={metric.id} className={`rounded-lg border p-4 ${metricTone(metric.tone)}`}>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{metric.label}</p>
+                <p className="mt-2 text-2xl font-semibold text-white">{metric.value}</p>
                 <p className="mt-2 text-xs leading-5 text-slate-500">{metric.note}</p>
               </article>
             ))}
@@ -474,7 +474,7 @@ export function AdminPaymentConsole({
                   setView(value as View);
                   setSelection(null);
                 }}
-                className={`min-h-11 rounded-xl border px-3 text-sm font-black transition ${
+                className={`min-h-11 rounded-lg border px-3 text-sm font-semibold transition ${
                   view === value
                     ? "border-cyan-300/35 bg-cyan-300/10 text-cyan-100"
                     : "border-white/10 bg-black/20 text-slate-400 hover:bg-white/5 hover:text-white"
@@ -489,13 +489,13 @@ export function AdminPaymentConsole({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search orders, provider IDs, events, cases..."
-            className="min-h-11 min-w-0 rounded-xl border border-white/10 bg-black/20 px-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/40 lg:w-[24rem]"
+            className="min-h-11 min-w-0 rounded-lg border border-white/10 bg-black/20 px-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/40 lg:w-[24rem]"
           />
         </div>
 
         <p
           aria-live="polite"
-          className={`mx-5 mt-5 rounded-xl border px-4 py-3 text-sm sm:mx-7 ${
+          className={`mx-5 mt-5 rounded-lg border px-4 py-3 text-sm sm:mx-7 ${
             isError
               ? "border-rose-300/20 bg-rose-300/10 text-rose-100"
               : "border-white/10 bg-black/20 text-slate-400"
@@ -505,7 +505,7 @@ export function AdminPaymentConsole({
         </p>
 
         <div className="grid min-w-0 gap-5 p-5 2xl:grid-cols-[minmax(24rem,0.9fr)_minmax(0,1.1fr)] sm:p-7">
-          <article className="min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-black/15">
+          <article className="min-w-0 overflow-hidden rounded-lg border border-white/10 bg-black/15">
             <div className="max-h-[50rem] overflow-y-auto p-2">
               {view === "orders"
                 ? visibleOrders.map((order) => (
@@ -513,15 +513,15 @@ export function AdminPaymentConsole({
                       key={order.id}
                       type="button"
                       onClick={() => chooseOrder(order)}
-                      className={`mb-2 grid w-full gap-3 rounded-xl border p-4 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
+                      className={`mb-2 grid w-full gap-3 rounded-lg border p-4 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
                         selection?.kind === "order" && selection.id === order.id
                           ? "border-cyan-300/35 bg-cyan-300/10"
                           : "border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
                       }`}
                     >
                       <span className="min-w-0">
-                        <span className="block font-mono text-xs font-black text-cyan-200">{order.id}</span>
-                        <span className="mt-1 block truncate text-sm font-black text-white">{order.packageName}</span>
+                        <span className="block font-mono text-xs font-semibold text-cyan-200">{order.id}</span>
+                        <span className="mt-1 block truncate text-sm font-semibold text-white">{order.packageName}</span>
                         <span className="mt-2 block text-xs text-slate-500">
                           {formatMoney(order.amountInPaise, order.currency)} · {order.customerEmail}
                         </span>
@@ -529,7 +529,7 @@ export function AdminPaymentConsole({
                           {order.webhookCount} webhook(s) · {order.caseCount} case(s) · updated {formatDate(order.updatedAt)}
                         </span>
                       </span>
-                      <span className={`h-fit rounded-full border px-2.5 py-1 text-[10px] font-black uppercase ${stateTone(order.paymentState)}`}>
+                      <span className={`h-fit rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase ${stateTone(order.paymentState)}`}>
                         {order.paymentState.replaceAll("_", " ")}
                       </span>
                     </button>
@@ -542,14 +542,14 @@ export function AdminPaymentConsole({
                       key={webhook.id}
                       type="button"
                       onClick={() => chooseWebhook(webhook)}
-                      className={`mb-2 grid w-full gap-3 rounded-xl border p-4 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
+                      className={`mb-2 grid w-full gap-3 rounded-lg border p-4 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
                         selection?.kind === "webhook" && selection.id === webhook.id
                           ? "border-cyan-300/35 bg-cyan-300/10"
                           : "border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
                       }`}
                     >
                       <span className="min-w-0">
-                        <span className="block truncate text-sm font-black text-white">{webhook.eventType}</span>
+                        <span className="block truncate text-sm font-semibold text-white">{webhook.eventType}</span>
                         <span className="mt-1 block font-mono text-[10px] text-cyan-200">{webhook.eventId ?? webhook.id}</span>
                         <span className="mt-2 block text-xs text-slate-500">
                           {webhook.orderId ?? "Unmatched order"} · {formatDate(webhook.receivedAt)}
@@ -558,7 +558,7 @@ export function AdminPaymentConsole({
                           <span className="mt-1 block line-clamp-2 text-[10px] text-rose-300/80">{webhook.errorMessage}</span>
                         ) : null}
                       </span>
-                      <span className={`h-fit rounded-full border px-2.5 py-1 text-[10px] font-black uppercase ${stateTone(webhook.status)}`}>
+                      <span className={`h-fit rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase ${stateTone(webhook.status)}`}>
                         {webhook.status}
                       </span>
                     </button>
@@ -571,21 +571,21 @@ export function AdminPaymentConsole({
                       key={paymentCase.id}
                       type="button"
                       onClick={() => chooseCase(paymentCase)}
-                      className={`mb-2 grid w-full gap-3 rounded-xl border p-4 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
+                      className={`mb-2 grid w-full gap-3 rounded-lg border p-4 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
                         selection?.kind === "case" && selection.id === paymentCase.id
                           ? "border-violet-300/35 bg-violet-300/10"
                           : "border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
                       }`}
                     >
                       <span className="min-w-0">
-                        <span className="block font-mono text-xs font-black text-violet-200">{paymentCase.id}</span>
-                        <span className="mt-1 block truncate text-sm font-black text-white">{paymentCase.title}</span>
+                        <span className="block font-mono text-xs font-semibold text-violet-200">{paymentCase.id}</span>
+                        <span className="mt-1 block truncate text-sm font-semibold text-white">{paymentCase.title}</span>
                         <span className="mt-2 block text-xs text-slate-500">
                           {paymentCase.type.replaceAll("_", " ")} · {paymentCase.orderId ?? "No order"}
                         </span>
                         <span className="mt-1 block text-[10px] text-slate-600">Updated {formatDate(paymentCase.updatedAt)}</span>
                       </span>
-                      <span className={`h-fit rounded-full border px-2.5 py-1 text-[10px] font-black uppercase ${stateTone(paymentCase.status)}`}>
+                      <span className={`h-fit rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase ${stateTone(paymentCase.status)}`}>
                         {paymentCase.status.replaceAll("_", " ")}
                       </span>
                     </button>
@@ -606,18 +606,18 @@ export function AdminPaymentConsole({
                           if (webhook) chooseWebhook(webhook);
                         }
                       }}
-                      className={`mb-2 grid w-full gap-3 rounded-xl border p-4 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
+                      className={`mb-2 grid w-full gap-3 rounded-lg border p-4 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
                         selection?.kind === item.kind && selection.id === item.id
                           ? "border-amber-300/35 bg-amber-300/10"
                           : "border-white/8 bg-white/[0.02] hover:border-white/15 hover:bg-white/[0.04]"
                       }`}
                     >
                       <span className="min-w-0">
-                        <span className="block font-mono text-xs font-black text-amber-100">{item.label}</span>
-                        <span className="mt-1 block truncate text-sm font-black text-white">{item.title}</span>
+                        <span className="block font-mono text-xs font-semibold text-amber-100">{item.label}</span>
+                        <span className="mt-1 block truncate text-sm font-semibold text-white">{item.title}</span>
                         <span className="mt-2 block line-clamp-2 text-xs text-slate-500">{item.note}</span>
                       </span>
-                      <span className={`h-fit rounded-full border px-2.5 py-1 text-[10px] font-black uppercase ${stateTone(item.state)}`}>
+                      <span className={`h-fit rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase ${stateTone(item.state)}`}>
                         {item.state.replaceAll("_", " ")}
                       </span>
                     </button>
@@ -633,11 +633,11 @@ export function AdminPaymentConsole({
             </div>
           </article>
 
-          <article className="min-w-0 rounded-2xl border border-white/10 bg-black/15 p-5 sm:p-6">
+          <article className="min-w-0 rounded-lg border border-white/10 bg-black/15 p-5 sm:p-6">
             {!selectedEvidence ? (
               <div className="grid min-h-[30rem] place-items-center text-center">
                 <div>
-                  <p className="text-lg font-black text-white">Select payment evidence</p>
+                  <p className="text-lg font-semibold text-white">Select payment evidence</p>
                   <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
                     Choose an order, webhook receipt, or payment case to inspect identifiers, create a case, export evidence, or advance an existing investigation.
                   </p>
@@ -647,10 +647,10 @@ export function AdminPaymentConsole({
               <div className="grid gap-6">
                 <div className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0">
-                    <p className="text-xs font-black uppercase tracking-[0.14em] text-cyan-300">
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-cyan-300">
                       {selection?.kind} evidence
                     </p>
-                    <h3 className="mt-2 truncate text-xl font-black text-white">
+                    <h3 className="mt-2 truncate text-xl font-semibold text-white">
                       {selectedOrder?.id ?? selectedWebhook?.eventType ?? selectedCase?.id}
                     </h3>
                     <p className="mt-2 text-xs text-slate-500">
@@ -660,7 +660,7 @@ export function AdminPaymentConsole({
                   <button
                     type="button"
                     onClick={() => void copyEvidence()}
-                    className="min-h-10 rounded-xl border border-white/10 bg-white/5 px-3 text-xs font-black text-white hover:bg-white/10"
+                    className="min-h-10 rounded-lg border border-white/10 bg-white/5 px-3 text-xs font-semibold text-white hover:bg-white/10"
                   >
                     Copy evidence JSON
                   </button>
@@ -668,23 +668,23 @@ export function AdminPaymentConsole({
 
                 {selectedOrder ? (
                   <dl className="grid gap-3 text-sm sm:grid-cols-2">
-                    <div><dt className="text-slate-500">Order state</dt><dd className="mt-1 font-black text-white">{selectedOrder.status}</dd></div>
-                    <div><dt className="text-slate-500">Payment state</dt><dd className="mt-1 font-black text-white">{selectedOrder.paymentState.replaceAll("_", " ")}</dd></div>
-                    <div><dt className="text-slate-500">Settlement</dt><dd className="mt-1 font-black text-white">{formatMoney(selectedOrder.amountInPaise, selectedOrder.currency)}</dd></div>
-                    <div><dt className="text-slate-500">Provider</dt><dd className="mt-1 font-black text-white">{selectedOrder.provider ?? "Not assigned"}</dd></div>
+                    <div><dt className="text-slate-500">Order state</dt><dd className="mt-1 font-semibold text-white">{selectedOrder.status}</dd></div>
+                    <div><dt className="text-slate-500">Payment state</dt><dd className="mt-1 font-semibold text-white">{selectedOrder.paymentState.replaceAll("_", " ")}</dd></div>
+                    <div><dt className="text-slate-500">Settlement</dt><dd className="mt-1 font-semibold text-white">{formatMoney(selectedOrder.amountInPaise, selectedOrder.currency)}</dd></div>
+                    <div><dt className="text-slate-500">Provider</dt><dd className="mt-1 font-semibold text-white">{selectedOrder.provider ?? "Not assigned"}</dd></div>
                     <div className="sm:col-span-2"><dt className="text-slate-500">Provider order ID</dt><dd className="mt-1 break-all font-mono text-xs text-cyan-200">{selectedOrder.providerOrderId ?? "Not created"}</dd></div>
                     <div className="sm:col-span-2"><dt className="text-slate-500">Provider payment ID</dt><dd className="mt-1 break-all font-mono text-xs text-cyan-200">{selectedOrder.providerPaymentId ?? "Not recorded"}</dd></div>
-                    <div><dt className="text-slate-500">Webhooks</dt><dd className="mt-1 font-black text-white">{selectedOrder.webhookCount}</dd></div>
-                    <div><dt className="text-slate-500">Fulfilment attempts</dt><dd className="mt-1 font-black text-white">{selectedOrder.fulfilmentCount}</dd></div>
+                    <div><dt className="text-slate-500">Webhooks</dt><dd className="mt-1 font-semibold text-white">{selectedOrder.webhookCount}</dd></div>
+                    <div><dt className="text-slate-500">Fulfilment attempts</dt><dd className="mt-1 font-semibold text-white">{selectedOrder.fulfilmentCount}</dd></div>
                   </dl>
                 ) : null}
 
                 {selectedWebhook ? (
                   <dl className="grid gap-3 text-sm sm:grid-cols-2">
-                    <div><dt className="text-slate-500">Receipt state</dt><dd className="mt-1 font-black text-white">{selectedWebhook.status}</dd></div>
-                    <div><dt className="text-slate-500">Linked order</dt><dd className="mt-1 font-black text-white">{selectedWebhook.orderId ?? "Unmatched"}</dd></div>
-                    <div><dt className="text-slate-500">Amount</dt><dd className="mt-1 font-black text-white">{formatMoney(selectedWebhook.amountInPaise, selectedWebhook.currency ?? "INR")}</dd></div>
-                    <div><dt className="text-slate-500">Provider state</dt><dd className="mt-1 font-black text-white">{selectedWebhook.paymentStatus ?? "Unknown"}</dd></div>
+                    <div><dt className="text-slate-500">Receipt state</dt><dd className="mt-1 font-semibold text-white">{selectedWebhook.status}</dd></div>
+                    <div><dt className="text-slate-500">Linked order</dt><dd className="mt-1 font-semibold text-white">{selectedWebhook.orderId ?? "Unmatched"}</dd></div>
+                    <div><dt className="text-slate-500">Amount</dt><dd className="mt-1 font-semibold text-white">{formatMoney(selectedWebhook.amountInPaise, selectedWebhook.currency ?? "INR")}</dd></div>
+                    <div><dt className="text-slate-500">Provider state</dt><dd className="mt-1 font-semibold text-white">{selectedWebhook.paymentStatus ?? "Unknown"}</dd></div>
                     <div className="sm:col-span-2"><dt className="text-slate-500">Provider order ID</dt><dd className="mt-1 break-all font-mono text-xs text-cyan-200">{selectedWebhook.providerOrderId ?? "Missing"}</dd></div>
                     <div className="sm:col-span-2"><dt className="text-slate-500">Provider payment ID</dt><dd className="mt-1 break-all font-mono text-xs text-cyan-200">{selectedWebhook.providerPaymentId ?? "Missing"}</dd></div>
                     {selectedWebhook.errorMessage ? <div className="sm:col-span-2"><dt className="text-slate-500">Reconciliation error</dt><dd className="mt-1 text-rose-200">{selectedWebhook.errorMessage}</dd></div> : null}
@@ -694,22 +694,22 @@ export function AdminPaymentConsole({
                 {selectedCase ? (
                   <div className="grid gap-4">
                     <dl className="grid gap-3 text-sm sm:grid-cols-2">
-                      <div><dt className="text-slate-500">Type</dt><dd className="mt-1 font-black text-white">{selectedCase.type.replaceAll("_", " ")}</dd></div>
-                      <div><dt className="text-slate-500">Status</dt><dd className="mt-1 font-black text-white">{selectedCase.status.replaceAll("_", " ")}</dd></div>
-                      <div><dt className="text-slate-500">Order</dt><dd className="mt-1 font-black text-white">{selectedCase.orderId ?? "None"}</dd></div>
-                      <div><dt className="text-slate-500">Review amount</dt><dd className="mt-1 font-black text-white">{formatMoney(selectedCase.requestedAmountInPaise, selectedCase.currency ?? "INR")}</dd></div>
+                      <div><dt className="text-slate-500">Type</dt><dd className="mt-1 font-semibold text-white">{selectedCase.type.replaceAll("_", " ")}</dd></div>
+                      <div><dt className="text-slate-500">Status</dt><dd className="mt-1 font-semibold text-white">{selectedCase.status.replaceAll("_", " ")}</dd></div>
+                      <div><dt className="text-slate-500">Order</dt><dd className="mt-1 font-semibold text-white">{selectedCase.orderId ?? "None"}</dd></div>
+                      <div><dt className="text-slate-500">Review amount</dt><dd className="mt-1 font-semibold text-white">{formatMoney(selectedCase.requestedAmountInPaise, selectedCase.currency ?? "INR")}</dd></div>
                     </dl>
-                    <div className="rounded-xl border border-white/10 bg-white/[0.025] p-4">
-                      <p className="text-sm font-black text-white">{selectedCase.title}</p>
+                    <div className="rounded-lg border border-white/10 bg-white/[0.025] p-4">
+                      <p className="text-sm font-semibold text-white">{selectedCase.title}</p>
                       <p className="mt-2 text-sm leading-6 text-slate-400">{selectedCase.reason}</p>
                     </div>
                     <div>
-                      <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">Append-only case timeline</p>
+                      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">Append-only case timeline</p>
                       <div className="mt-3 grid gap-2">
                         {selectedCase.events.map((event) => (
-                          <div key={`${event.createdAt}:${event.status}`} className="rounded-xl border border-white/8 bg-white/[0.02] p-3">
+                          <div key={`${event.createdAt}:${event.status}`} className="rounded-lg border border-white/8 bg-white/[0.02] p-3">
                             <div className="flex flex-wrap items-center justify-between gap-2">
-                              <span className={`rounded-full border px-2 py-1 text-[9px] font-black uppercase ${stateTone(event.status)}`}>{event.status.replaceAll("_", " ")}</span>
+                              <span className={`rounded-full border px-2 py-1 text-[9px] font-semibold uppercase ${stateTone(event.status)}`}>{event.status.replaceAll("_", " ")}</span>
                               <span className="text-[10px] text-slate-600">{formatDate(event.createdAt)}</span>
                             </div>
                             <p className="mt-2 text-xs leading-5 text-slate-400">{event.message}</p>
@@ -722,45 +722,45 @@ export function AdminPaymentConsole({
                 ) : null}
 
                 {!selectedCase ? (
-                  <div className="rounded-2xl border border-violet-300/20 bg-violet-300/[0.055] p-4">
-                    <h4 className="text-sm font-black text-violet-100">Create payment case</h4>
+                  <div className="rounded-lg border border-violet-300/20 bg-violet-300/[0.055] p-4">
+                    <h4 className="text-sm font-semibold text-violet-100">Create payment case</h4>
                     <div className="mt-4 grid gap-3 sm:grid-cols-2">
                       <label className="text-xs font-bold text-slate-300">
                         Case type
-                        <select value={caseType} onChange={(event) => setCaseType(event.target.value as PaymentCaseType)} className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-[#11111a] px-3 text-sm text-white">
+                        <select value={caseType} onChange={(event) => setCaseType(event.target.value as PaymentCaseType)} className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-[#11111a] px-3 text-sm text-white">
                           {CASE_TYPES.map((type) => <option key={type.value} value={type.value}>{type.label}</option>)}
                         </select>
                       </label>
                       <label className="text-xs font-bold text-slate-300">
                         Review amount in rupees
-                        <input value={refundRupees} onChange={(event) => setRefundRupees(event.target.value)} disabled={caseType !== "REFUND_REVIEW"} inputMode="decimal" placeholder="0.00" className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600 disabled:opacity-35" />
+                        <input value={refundRupees} onChange={(event) => setRefundRupees(event.target.value)} disabled={caseType !== "REFUND_REVIEW"} inputMode="decimal" placeholder="0.00" className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600 disabled:opacity-35" />
                       </label>
                     </div>
                     <p className="mt-2 text-xs text-slate-500">{CASE_TYPES.find((type) => type.value === caseType)?.note}</p>
                     <label className="mt-4 block text-xs font-bold text-slate-300">
                       Case title
-                      <input value={caseTitle} onChange={(event) => setCaseTitle(event.target.value)} placeholder="Describe the payment problem" className="mt-2 min-h-11 w-full rounded-xl border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600" />
+                      <input value={caseTitle} onChange={(event) => setCaseTitle(event.target.value)} placeholder="Describe the payment problem" className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600" />
                     </label>
                     <label className="mt-4 block text-xs font-bold text-slate-300">
                       Required audit reason
-                      <textarea rows={4} value={caseReason} onChange={(event) => setCaseReason(event.target.value)} placeholder="Explain the evidence, mismatch, or customer request" className="mt-2 w-full resize-none rounded-xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-white outline-none placeholder:text-slate-600" />
+                      <textarea rows={4} value={caseReason} onChange={(event) => setCaseReason(event.target.value)} placeholder="Explain the evidence, mismatch, or customer request" className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-black/20 px-3 py-3 text-sm text-white outline-none placeholder:text-slate-600" />
                     </label>
-                    <button type="button" onClick={() => void createCase()} disabled={loading} className="mt-4 min-h-11 w-full rounded-xl bg-white px-4 text-sm font-black text-slate-950 disabled:cursor-wait disabled:opacity-40">
+                    <button type="button" onClick={() => void createCase()} disabled={loading} className="mt-4 min-h-11 w-full rounded-lg bg-white px-4 text-sm font-semibold text-slate-950 disabled:cursor-wait disabled:opacity-40">
                       Create append-only case
                     </button>
                   </div>
                 ) : null}
 
                 {selectedCase ? (
-                  <div className="rounded-2xl border border-cyan-300/20 bg-cyan-300/[0.05] p-4">
-                    <h4 className="text-sm font-black text-cyan-100">Advance case workflow</h4>
+                  <div className="rounded-lg border border-cyan-300/20 bg-cyan-300/[0.05] p-4">
+                    <h4 className="text-sm font-semibold text-cyan-100">Advance case workflow</h4>
                     {selectedCaseTransitions.length ? (
                       <>
-                        <select value={targetStatus} onChange={(event) => setTargetStatus(event.target.value as PaymentCaseStatus)} className="mt-4 min-h-11 w-full rounded-xl border border-white/10 bg-[#11111a] px-3 text-sm text-white">
+                        <select value={targetStatus} onChange={(event) => setTargetStatus(event.target.value as PaymentCaseStatus)} className="mt-4 min-h-11 w-full rounded-lg border border-white/10 bg-[#11111a] px-3 text-sm text-white">
                           {selectedCaseTransitions.map((status) => <option key={status} value={status}>{status.replaceAll("_", " ")}</option>)}
                         </select>
-                        <textarea rows={4} value={caseNote} onChange={(event) => setCaseNote(event.target.value)} placeholder="Required investigation note" className="mt-3 w-full resize-none rounded-xl border border-white/10 bg-black/20 px-3 py-3 text-sm text-white outline-none placeholder:text-slate-600" />
-                        <button type="button" onClick={() => void updateCase()} disabled={loading} className="mt-3 min-h-11 w-full rounded-xl bg-cyan-200 px-4 text-sm font-black text-slate-950 disabled:cursor-wait disabled:opacity-40">
+                        <textarea rows={4} value={caseNote} onChange={(event) => setCaseNote(event.target.value)} placeholder="Required investigation note" className="mt-3 w-full resize-none rounded-lg border border-white/10 bg-black/20 px-3 py-3 text-sm text-white outline-none placeholder:text-slate-600" />
+                        <button type="button" onClick={() => void updateCase()} disabled={loading} className="mt-3 min-h-11 w-full rounded-lg bg-cyan-200 px-4 text-sm font-semibold text-slate-950 disabled:cursor-wait disabled:opacity-40">
                           Save case transition
                         </button>
                       </>
@@ -772,7 +772,7 @@ export function AdminPaymentConsole({
 
                 <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
                   {["Replay webhook", "Mark order paid", "Execute refund", "Submit dispute"].map((label) => (
-                    <button key={label} type="button" disabled title="Locked until provider-backed approval and recovery controls exist" className="min-h-11 cursor-not-allowed rounded-xl border border-rose-300/10 bg-rose-300/[0.025] px-3 text-xs font-black text-rose-300/45">
+                    <button key={label} type="button" disabled title="Locked until provider-backed approval and recovery controls exist" className="min-h-11 cursor-not-allowed rounded-lg border border-rose-300/10 bg-rose-300/[0.025] px-3 text-xs font-semibold text-rose-300/45">
                       {label} · locked
                     </button>
                   ))}
@@ -784,12 +784,12 @@ export function AdminPaymentConsole({
 
         <div className="grid gap-4 border-t border-white/10 p-5 sm:p-7 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
-            <p className="text-sm font-black text-white">Provider boundary: {snapshot.provider.name}</p>
+            <p className="text-sm font-semibold text-white">Provider boundary: {snapshot.provider.name}</p>
             <p className="mt-1 text-xs leading-5 text-slate-500">
               {snapshot.provider.state.replaceAll("-", " ")} · key {snapshot.provider.keyConfigured ? "configured" : "missing"} · secret {snapshot.provider.secretConfigured ? "configured" : "missing"} · webhook {snapshot.provider.webhookConfigured ? "configured" : "missing"}
             </p>
           </div>
-          <span className="rounded-full border border-rose-300/15 bg-rose-300/[0.04] px-4 py-2 text-xs font-black uppercase tracking-wider text-rose-200/70">
+          <span className="rounded-full border border-rose-300/15 bg-rose-300/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-wider text-rose-200/70">
             Live money movement locked
           </span>
         </div>

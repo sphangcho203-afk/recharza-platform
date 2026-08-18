@@ -243,7 +243,7 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
                 <span className="text-xs text-slate-600">Secure sign-in for your Recharza account.</span>
                 <Link href="/forgot-password" className="shrink-0 text-sm font-semibold text-violet-300 underline-offset-4 transition hover:text-violet-200 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70">Forgot password?</Link>
               </div>
-              <button disabled={submitting} className="min-h-12 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d13] active:scale-[0.99] disabled:cursor-wait disabled:opacity-60">
+              <button disabled={submitting} className="min-h-12 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d13] disabled:cursor-wait disabled:opacity-60">
                 {submitting ? "Signing in…" : "Sign in"}
               </button>
             </form>
@@ -265,7 +265,7 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
                 <PasswordInput id="confirm-password" value={confirmPassword} onChange={setConfirmPassword} visible={showConfirmPassword} onToggle={() => setShowConfirmPassword((value) => !value)} autoComplete="new-password" placeholder="Repeat password" />
               </Field>
               <p className="text-xs leading-5 text-slate-600 sm:col-span-2">Use at least 10 characters and a password you do not reuse elsewhere.</p>
-              <button disabled={submitting} className="min-h-12 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d13] active:scale-[0.99] disabled:cursor-wait disabled:opacity-60 sm:col-span-2">
+              <button disabled={submitting} className="min-h-12 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d13] disabled:cursor-wait disabled:opacity-60 sm:col-span-2">
                 {submitting ? "Creating account…" : "Create account"}
               </button>
             </form>

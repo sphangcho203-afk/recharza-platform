@@ -83,10 +83,10 @@ function ResolvedImage({
         className={`grid place-items-center overflow-hidden bg-[radial-gradient(circle_at_25%_20%,rgba(34,211,238,0.12),transparent_42%),radial-gradient(circle_at_80%_75%,rgba(139,92,246,0.13),transparent_46%),linear-gradient(145deg,#111522,#070910)] text-center ${fallbackClassName}`}
       >
         <span className="flex flex-col items-center gap-2.5 px-4" aria-hidden="true">
-          <span className="grid h-11 w-11 place-items-center rounded-xl border border-white/[0.1] bg-white/[0.045] text-xs font-black tracking-[-0.04em] text-cyan-100 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
+          <span className="grid h-11 w-11 place-items-center rounded-lg border border-white/[0.1] bg-white/[0.045] text-xs font-semibold tracking-[-0.04em] text-cyan-100 shadow-[0_10px_30px_rgba(0,0,0,0.25)]">
             {initials}
           </span>
-          <span className="text-[9px] font-black uppercase tracking-[0.16em] text-slate-600">
+          <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-600">
             Artwork unavailable
           </span>
         </span>

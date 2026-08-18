@@ -1,0 +1,105 @@
+{
+  "project_info": {
+    "title": "Recharza Platform",
+    "created": 1786989755.2,
+    "last_updated": 1786990237.37,
+    "total_slides": 9
+  },
+  "slides": [
+    {
+      "id": "cover",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "one_visual_system",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "storefront",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "journey",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "tokens",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "workspaces",
+      "state": "edited",
+      "pageNum": 6
+    },
+    {
+      "id": "email",
+      "state": "edited",
+      "pageNum": 7
+    },
+    {
+      "id": "verification",
+      "state": "edited",
+      "pageNum": 8
+    },
+    {
+      "id": "release",
+      "state": "edited",
+      "pageNum": 9
+    }
+  ],
+  "outline": [
+    {
+      "id": "cover",
+      "title": "Recharza Platform",
+      "summary": "Executive review of the premium storefront, responsive workspaces, checkout system, and branded transactional emails.",
+      "image_plan": "/home/ubuntu/recharza-platform/reports/recharza-style-system-map.png - Diagram of the Recharza visual system architecture and layers matching the cover overview"
+    },
+    {
+      "id": "one_visual_system",
+      "title": "One visual system now connects the platform",
+      "summary": "Show how storefront, checkout, protected workspaces, and email now share one design language."
+    },
+    {
+      "id": "storefront",
+      "title": "The storefront now sells the brand before the product",
+      "summary": "Highlight the homepage hero and game-card improvements that strengthen brand presence and merchandising clarity."
+    },
+    {
+      "id": "journey",
+      "title": "Cart and checkout now feel like one continuous journey",
+      "summary": "Show the end-to-end flow from homepage selection through cart, verification, payment, and order email."
+    },
+    {
+      "id": "tokens",
+      "title": "Shared tokens remove visual drift across game flows",
+      "summary": "Explain the shared semantic token families used by supplier and Mobile Legends checkout shells."
+    },
+    {
+      "id": "workspaces",
+      "title": "Internal workspaces were redesigned for the full viewport",
+      "summary": "Summarize admin and staff full-screen responsive shell improvements and the deployment caveat.",
+      "image_plan": "/home/ubuntu/upload/1000169789.jpg - Screenshot of admin control center showing the registered control surfaces and workspace shell"
+    },
+    {
+      "id": "email",
+      "title": "Transactional email now carries the same brand promise",
+      "summary": "Show the branded Gmail notification system with authentic logo, status chips, details, CTA, security, and mobile-safe rendering.",
+      "image_plan": "/home/ubuntu/upload/1000169766.jpg; /home/ubuntu/upload/1000169765.jpg - Screenshots showing transactional email styling and sign-out message rendering in mobile view"
+    },
+    {
+      "id": "verification",
+      "title": "Verification confirms design safety and platform readiness",
+      "summary": "Present the verified build, lint, migration, Gmail delivery, and live-admin findings."
+    },
+    {
+      "id": "release",
+      "title": "Release the system as one coherent visual upgrade",
+      "summary": "Close with the controlled release sequence and executive takeaway."
+    }
+  ]
+}

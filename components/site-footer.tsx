@@ -77,7 +77,7 @@ export async function SiteFooter() {
           <FooterColumn title="Support" links={supportLinks} />
 
           <div>
-            <h2 className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">Payments</h2>
+            <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">Payments</h2>
             <div className="mt-3 flex flex-wrap items-center gap-2.5" aria-label="Accepted payment methods">
               {paymentMarks.map((mark) => (
                 <span key={mark.label} title={mark.label} className="grid h-10 min-w-11 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035] px-2.5 shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
@@ -91,7 +91,7 @@ export async function SiteFooter() {
 
         {publishedPolicies.length > 0 ? (
           <section aria-labelledby="footer-legal-heading" className="mt-8 border-t border-white/[0.07] pt-5">
-            <h2 id="footer-legal-heading" className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">Legal</h2>
+            <h2 id="footer-legal-heading" className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">Legal</h2>
             <nav aria-label="Legal policies" className="mt-3 max-w-md">
               <div className="grid gap-1.5">
                 {publishedPolicies.map((policy) => (
@@ -120,7 +120,7 @@ export async function SiteFooter() {
 function FooterColumn({ title, links }: { title: string; links: { label: string; href: string }[] }) {
   return (
     <div>
-      <h2 className="text-xs font-black uppercase tracking-[0.14em] text-slate-300">{title}</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">{title}</h2>
       <nav className="mt-3 grid gap-2.5" aria-label={`${title} links`}>
         {links.map((link) => (
           <Link key={link.href} href={link.href} className="text-sm text-slate-500 transition hover:text-white">

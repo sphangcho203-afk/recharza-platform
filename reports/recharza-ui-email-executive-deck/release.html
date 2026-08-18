@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Release the system as one coherent visual upgrade</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0}
+.slide-container{width:1280px;min-height:720px;background:#0b0b12;color:#f8fafc;font-family:Arial,"Helvetica Neue",sans-serif;padding:58px 82px 0;position:relative;overflow:hidden}
+.rule{height:1px;background:linear-gradient(90deg,#8b5cf6,#22d3ee,transparent);margin-bottom:24px}
+.eyebrow{font-size:13px;letter-spacing:2.6px;text-transform:uppercase;color:#22d3ee;font-weight:700;margin-bottom:13px}
+.layout{display:grid;grid-template-columns:44% 56%;gap:36px;align-items:start}
+h1{font-size:50px;line-height:1.05;letter-spacing:-2.3px;margin:0 0 20px;max-width:510px}
+.lead{font-size:21px;line-height:1.42;color:#cbd5e1;max-width:500px;margin:0}
+.takeaway{margin-top:20px;border-top:1px solid #5b21b6;padding-top:14px;max-width:495px;color:#c4b5fd;font-size:15px;line-height:1.45}
+.sequence{padding-top:8px}
+.sequence-line{height:1px;background:linear-gradient(90deg,#8b5cf6,#22d3ee,#8b5cf6);margin:21px 28px 0}
+.steps{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:-6px}
+.step{min-height:120px;padding-top:0}
+.marker{width:22px;height:22px;border:1px solid #22d3ee;background:#0b0b12;margin-bottom:12px;position:relative;z-index:1}
+.number{font-size:12px;letter-spacing:1.5px;color:#a78bfa;font-weight:800;text-transform:uppercase;margin-bottom:8px}
+.title{font-size:19px;line-height:1.15;font-weight:800;margin-bottom:6px}
+.desc{font-size:14px;line-height:1.4;color:#94a3b8;max-width:240px}
+.step.pending .marker{border-color:#f0abfc}
+.step.pending .number{color:#f0abfc}
+.step.pending .desc{color:#c4b5fd}
+.bottom{position:absolute;left:82px;right:82px;bottom:8px;border-top:1px solid #3b2356;padding-top:13px;color:#64748b;font-size:12px;letter-spacing:1.15px;text-transform:uppercase}
+.bottom strong{color:#a78bfa;font-weight:800}
+</style>
+</head>
+<body>
+<div class="slide-container">
+<div class="rule"></div>
+<div class="layout">
+<section>
+<div class="eyebrow">08 · Executive close</div>
+<h1>Release the system as one coherent visual upgrade</h1>
+<p class="lead">The work is not a collection of isolated screens. It is one visual language carried from discovery to payment, operations, and customer communication.</p>
+<p class="takeaway">Executive takeaway: approve the email and storefront styling patch, deploy the full-screen workspace changes, then repeat the authenticated live check before calling the transformation complete.</p>
+</section>
+<section class="sequence">
+<div class="sequence-line"></div>
+<div class="steps">
+<div class="step"><div class="marker"></div><div class="number">01 · Ready</div><div class="title">Approve</div><div class="desc">Confirm the visual system and email direction.</div></div>
+<div class="step"><div class="marker"></div><div class="number">02 · Ready</div><div class="title">Commit</div><div class="desc">Release the reviewed styling-only changes.</div></div>
+<div class="step"><div class="marker"></div><div class="number">03 · Ready</div><div class="title">Deploy</div><div class="desc">Propagate the admin and storefront updates.</div></div>
+<div class="step pending"><div class="marker"></div><div class="number">04 · Verify</div><div class="title">Recheck live</div><div class="desc">Validate mobile, desktop, checkout, and email behavior.</div></div>
+</div>
+</section>
+</div>
+<div class="bottom"><strong>One brand system</strong> · one purchase journey · one operational standard · one customer promise</div>
+</div>
+</body>
+</html>

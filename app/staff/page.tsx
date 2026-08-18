@@ -59,10 +59,10 @@ export default async function StaffPage() {
         <div className="min-w-0 w-full px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
           <section className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-cyan-300">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">
                 Private staff workspace
               </p>
-              <h1 className="mt-2 text-3xl font-black tracking-[-0.04em] sm:text-4xl">
+              <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
                 Operations queue
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
@@ -73,7 +73,7 @@ export default async function StaffPage() {
               {modules.map((module) => (
                 <div
                   key={module.id}
-                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.025] px-3 py-2 text-xs font-bold text-slate-300"
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2 text-xs font-bold text-slate-300"
                 >
                   {module.label}
                   <ModuleStateBadge state={module.state} />
@@ -93,7 +93,7 @@ export default async function StaffPage() {
                 <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
                   {label}
                 </p>
-                <p className="mt-3 text-3xl font-black">{value}</p>
+                <p className="mt-3 text-3xl font-semibold">{value}</p>
                 <p className="mt-2 text-xs text-slate-600">{note}</p>
               </article>
             ))}
@@ -103,7 +103,7 @@ export default async function StaffPage() {
             <section id="queue" className="system-panel overflow-hidden scroll-mt-24">
               <div className="flex items-start justify-between gap-4 border-b border-white/10 p-5">
                 <div>
-                  <h2 className="text-lg font-black">Assigned work</h2>
+                  <h2 className="text-lg font-semibold">Assigned work</h2>
                   <p className="mt-1 text-sm text-slate-500">
                     Preview queue until assignment persistence is implemented.
                   </p>
@@ -118,7 +118,7 @@ export default async function StaffPage() {
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-black text-white">{item.game}</h3>
+                        <h3 className="font-semibold text-white">{item.game}</h3>
                         <span
                           className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${
                             item.priority === "High"
@@ -138,7 +138,7 @@ export default async function StaffPage() {
                       type="button"
                       disabled
                       title="Task assignment workflow is planned."
-                      className="min-h-11 cursor-not-allowed rounded-xl border border-white/8 bg-black/10 px-3 text-xs font-bold text-slate-600"
+                      className="min-h-11 cursor-not-allowed rounded-lg border border-white/8 bg-black/10 px-3 text-xs font-bold text-slate-600"
                     >
                       Preview only
                     </button>
@@ -150,7 +150,7 @@ export default async function StaffPage() {
             <div className="grid content-start gap-6">
               <section id="activity" className="system-panel scroll-mt-24 p-5">
                 <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-lg font-black">Shift activity</h2>
+                  <h2 className="text-lg font-semibold">Shift activity</h2>
                   <ModuleStateBadge state="beta" />
                 </div>
                 <div className="mt-4 grid gap-3 text-sm">
@@ -178,10 +178,10 @@ export default async function StaffPage() {
           <section id="orders" className="mt-8 scroll-mt-24">
             <div className="mb-4 flex items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-300">
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">
                   Protected order records
                 </p>
-                <h2 className="mt-1 text-2xl font-black">Order operations</h2>
+                <h2 className="mt-1 text-2xl font-semibold">Order operations</h2>
                 <p className="mt-2 text-sm text-slate-500">
                   This is the live operational module. API authorization still verifies every request.
                 </p>

@@ -1,0 +1,44 @@
+
+> recharza-platform@0.3.0 lint
+> eslint .
+
+
+/home/ubuntu/recharza-platform/app/games/mobile-legends/[market]/page.tsx
+  56:9  warning  'livePricing' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/home/ubuntu/recharza-platform/components/currency-selector.tsx
+  18:54  warning  '_locale' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/ubuntu/recharza-platform/components/mobile-legends-checkout-flow.tsx
+  16:10  warning  'DisplayPrice' is defined but never used         @typescript-eslint/no-unused-vars
+  20:3   warning  'formatCurrencyMinor' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/ubuntu/recharza-platform/components/mobile-legends-checkout-shell.tsx
+  11:10  warning  'ResilientImage' is defined but never used       @typescript-eslint/no-unused-vars
+  14:10  warning  'StorefrontIcon' is defined but never used       @typescript-eslint/no-unused-vars
+  16:3   warning  'formatCurrencyMinor' is defined but never used  @typescript-eslint/no-unused-vars
+  24:10  warning  'formatInr' is defined but never used            @typescript-eslint/no-unused-vars
+
+/home/ubuntu/recharza-platform/components/mobile-legends-order-form.tsx
+  11:10  warning  'DisplayPrice' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/ubuntu/recharza-platform/components/mobile-nav-menu.tsx
+  141:31  warning  The ref value 'triggerRef.current' will likely have changed by the time this effect cleanup function runs. If this ref points to a node rendered by React, copy 'triggerRef.current' to a variable inside the effect, and use that variable in the cleanup function  react-hooks/exhaustive-deps
+
+/home/ubuntu/recharza-platform/components/promo-carousel.tsx
+  74:13  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/ubuntu/recharza-platform/components/site-footer.tsx
+  84:19  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/home/ubuntu/recharza-platform/components/storefront-hero.tsx
+  12:12  warning  '_content' is defined but never used   @typescript-eslint/no-unused-vars
+  13:13  warning  '_imageUrl' is defined but never used  @typescript-eslint/no-unused-vars
+  14:13  warning  '_imageAlt' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/ubuntu/recharza-platform/components/supplier-game-checkout-shell.tsx
+  16:3   warning  'formatCurrencyMinor' is defined but never used  @typescript-eslint/no-unused-vars
+  25:10  warning  'formatInr' is defined but never used            @typescript-eslint/no-unused-vars
+
+✖ 17 problems (0 errors, 17 warnings)
+
