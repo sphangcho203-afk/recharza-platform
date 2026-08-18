@@ -1,6 +1,7 @@
 import "server-only";
 
 import { sendSystemEmail } from "@/lib/mail-delivery";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://recharza-platform-2o3wxy8mj-stand-still.vercel.app";
 import { renderEmail } from "@/lib/transactional-email";
 
 export const runtime = "nodejs";
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
         { label: "Sent at", value: formatTimestamp(new Date()) },
         { label: "Transport", value: "Gmail SMTP" },
       ],
-      action: { label: "Open my account", url: appUrl() + "/account" },
+      action: { label: "Open my account", url: BASE_URL + "/account" },
       footer: "This is a system diagnostic email — no action required.",
     });
 
