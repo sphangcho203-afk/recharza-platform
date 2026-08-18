@@ -7,6 +7,7 @@ import { StorefrontIcon } from "@/components/storefront-icon";
 import { LiveSupportChat } from "@/components/live-support-chat";
 import { TelegramGroupLauncher } from "@/components/telegram-group-launcher";
 import { SupportCenter } from "@/components/support-center";
+import { SupportExplainer } from "@/components/support-explainer";
 import { getPublicSupportChannels } from "@/lib/support-config";
 
 export const metadata: Metadata = {
@@ -52,6 +53,12 @@ export default function SupportPage() {
             </div>
           </div>
           <LiveSupportChat embedded />
+        </div>
+      </section>
+
+      <section id="how-support-works" className="border-b border-white/[0.08] px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+        <div className="mx-auto max-w-[1100px]">
+          <SupportExplainer />
         </div>
       </section>
 
