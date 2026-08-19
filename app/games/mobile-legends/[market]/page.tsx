@@ -90,16 +90,16 @@ export default async function MobileLegendsMarketPage({
     <main className="storefront-page min-h-screen overflow-x-clip text-white">
       <SiteHeader />
 
-      <section className="border-b border-white/[0.08] bg-[#0a0c12] px-4 py-5 sm:px-6 lg:px-8">
+      <section className="recharza-atmosphere-game border-b border-white/[0.08] px-4 py-5 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1240px]">
           <StorefrontBackButton />
-          <div className="mb-4 mt-4 flex items-center gap-2 text-[11px] text-slate-600">
-            <Link href="/" className="hover:text-white">Home</Link>
-            <span>/</span>
-            <Link href="/games/mobile-legends" className="hover:text-white">Mobile Legends</Link>
-            <span>/</span>
-            <span className="text-slate-400">{selectedMarket.label}</span>
-          </div>
+          <nav className="recharza-breadcrumb mb-4 mt-4" aria-label="Page path">
+            <Link href="/">Home</Link>
+            <span aria-hidden="true">/</span>
+            <Link href="/games/mobile-legends">Mobile Legends</Link>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{selectedMarket.label}</span>
+          </nav>
 
           <div className="flex flex-col gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="flex min-w-0 items-center gap-4">
@@ -119,7 +119,8 @@ export default async function MobileLegendsMarketPage({
                 />
               </div>
               <div className="min-w-0">
-                <h1 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">Mobile Legends: Bang Bang Top Up</h1>
+                <p className="recharza-eyebrow">Instant delivery</p>
+                <h1 className="recharza-section-head mt-1 text-white">Mobile Legends: Bang Bang Top Up</h1>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{selectedMarket.flag} {selectedMarket.label}</span>
                   <span className="inline-flex whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{packages.length} offers</span>

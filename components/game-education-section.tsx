@@ -25,7 +25,7 @@ function Tile({
         <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/[0.05] ring-1 ring-white/[0.08] transition-transform duration-200 group-hover:scale-105" style={{ color: accent }}>
           <StorefrontIcon name={icon} className="h-5 w-5" />
         </span>
-        <h3 className="text-[12px] font-semibold uppercase tracking-[0.09em] text-white/85">{label}</h3>
+        <h3 className="recharza-card-title text-white">{label}</h3>
       </div>
       <div className="relative mt-4 text-[13px] leading-[1.75] text-white/70">{children}</div>
     </div>
@@ -51,11 +51,11 @@ export function GameEducationSection({
             <StorefrontIcon name="info" className="h-5 w-5" style={{ color: accent } as React.CSSProperties} />
           </span>
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: `${accent}aa` }}>Know the game</p>
-            <h2 className="text-[17px] font-semibold text-white">About {game.title}</h2>
+            <p className="recharza-eyebrow" style={{ background: `linear-gradient(90deg, ${accent}, #22d3ee)` }}>Know the game</p>
+            <h2 className="recharza-section-head mt-2 text-white">About {game.title}</h2>
           </div>
         </div>
-        <p className="relative mt-3 text-[13.5px] leading-[1.75] text-white/75">{about}</p>
+        <p className="recharza-body relative mt-4">{about}</p>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           <Tile game={game} icon="coin" label="What it buys" seed={1}>

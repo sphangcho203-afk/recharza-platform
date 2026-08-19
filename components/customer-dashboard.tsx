@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { SavedAddressesPanel } from "@/components/saved-addresses-panel";
+import { StatusBadge } from "@/components/status-badge";
 import { StorefrontArtwork } from "@/components/storefront-artwork";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { games } from "@/lib/games";
@@ -99,18 +100,12 @@ function gameTitle(gameSlug: string) {
   return games.find((entry) => entry.slug === gameSlug)?.title ?? gameSlug.replaceAll("-", " ").replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
-function statusClassName(status: string) {
+function statusStateFor(status: string): "pending" | "success" | "error" | "info" {
   const normalized = status.toLowerCase();
-  if (normalized === "completed" || normalized === "paid") {
-    return "border-emerald-400/20 bg-emerald-400/10 text-emerald-200";
-  }
-  if (normalized === "failed" || normalized === "cancelled") {
-    return "border-rose-400/20 bg-rose-400/10 text-rose-200";
-  }
-  if (normalized.includes("payment") || normalized === "created") {
-    return "border-amber-300/20 bg-amber-300/10 text-amber-100";
-  }
-  return "border-violet-400/20 bg-violet-400/10 text-violet-100";
+  if (normalized === "completed" || normalized === "paid") return "success";
+  if (normalized === "failed" || normalized === "cancelled") return "error";
+  if (normalized.includes("payment") || normalized === "created") return "pending";
+  return "info";
 }
 
 export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean }) {
@@ -238,12 +233,12 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
           <Link href="/account" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2 text-sm font-semibold text-slate-300 transition duration-150 ease-out hover:border-violet-300/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70">
             <span aria-hidden="true">←</span> Back to account
           </Link>
-          <p className="mt-7 text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">Order history</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-white sm:text-3xl">Your purchases</h2>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">Every purchase has its own tracking link, payment state, player destination, and delivery timeline. This is your complete account-owned order workspace.</p>
+          <p className="recharza-eyebrow mt-7">Order history</p>
+          <h2 className="recharza-section-head mt-3 text-white">Your purchases</h2>
+          <p className="recharza-body mt-3 max-w-2xl">Every purchase has its own tracking link, payment state, player destination, and delivery timeline. This is your complete account-owned order workspace.</p>
           <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-slate-400">
             <span className="rounded-lg border border-white/10 bg-black/20 px-3 py-2">{orders.length} total orders</span>
-            <span className="rounded-lg border border-amber-300/20 bg-amber-300/10 px-3 py-2 text-amber-100">{activeOrders} active</span>
+            <StatusBadge state={activeOrders > 0 ? "pending" : "neutral"} label={`${activeOrders} active`} />
           </div>
         </section>
       ) : null}
@@ -275,7 +270,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               <button
                 type="button"
                 onClick={() => void logout()}
-                className="min-h-11 rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-xs font-semibold text-slate-200 transition duration-150 ease-out hover:border-rose-300/25 hover:bg-rose-300/10 hover:text-rose-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
+                className="recharza-btn recharza-btn-secondary px-4 text-xs"
               >
                 Sign out
               </button>
@@ -324,9 +319,9 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
             ))}
           </section>
           <section className="rounded-lg border border-white/10 bg-white/[0.025] p-5 sm:p-6" aria-labelledby="account-next-step">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">Account overview</p>
-            <h2 id="account-next-step" className="mt-2 text-xl font-semibold tracking-tight text-white sm:text-2xl">What would you like to do?</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">Use the account tools above to review your cart, open your order history, or contact support. Games stay in the storefront where they belong.</p>
+            <p className="recharza-eyebrow">Account overview</p>
+            <h2 id="account-next-step" className="recharza-section-head mt-3 text-white">What would you like to do?</h2>
+            <p className="recharza-body mt-3 max-w-2xl">Use the account tools above to review your cart, open your order history, or contact support. Games stay in the storefront where they belong.</p>
           </section>
           <SavedAddressesPanel />
         </>
@@ -337,10 +332,10 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
         <section className="min-w-0">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+              <p className="recharza-eyebrow">
                 Order history
               </p>
-              <h2 className="mt-2 text-xl font-semibold tracking-tight text-white sm:text-2xl">
+              <h2 className="recharza-section-head mt-3 text-white">
                 Your purchases
               </h2>
             </div>
@@ -348,7 +343,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               type="button"
               disabled={refreshing}
               onClick={() => void refresh()}
-              className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold text-slate-200 transition duration-150 ease-out hover:bg-white/10 disabled:opacity-50"
+              className="recharza-btn recharza-btn-tertiary px-4 text-xs disabled:opacity-50"
             >
               {refreshing ? "Refreshing..." : "Refresh"}
             </button>
@@ -383,11 +378,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                       {order.player.nickname || order.player.playerId}
                     </p>
                   </div>
-                  <span
-                    className={`w-fit rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wider ${statusClassName(order.status)}${pending ? " recharza-status-ring" : ""}`}
-                  >
-                    {order.status.replaceAll("_", " ")}
-                  </span>
+                  <StatusBadge state={statusStateFor(order.status)} label={order.status.replaceAll("_", " ")} />
                 </div>
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
                   <p className="text-sm text-slate-400">
@@ -396,12 +387,12 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                     </strong>{" "}
                     · {new Date(order.createdAt).toLocaleDateString("en-IN")}
                   </p>
-                  <Link
-                    href={`/orders/${encodeURIComponent(order.id)}`}
-                    className="min-h-11 rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-semibold text-violet-100 transition duration-150 ease-out hover:bg-violet-400/20 hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
-                  >
-                    Open tracking
-                  </Link>
+                <Link
+                  href={`/orders/${encodeURIComponent(order.id)}`}
+                  className="recharza-btn recharza-btn-tertiary px-4 text-xs"
+                >
+                  Open tracking
+                </Link>
                 </div>
               </article>
               );

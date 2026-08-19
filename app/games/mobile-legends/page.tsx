@@ -29,15 +29,15 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
     <main className="storefront-page min-h-screen overflow-x-clip text-white">
       <SiteHeader />
 
-      <section className="border-b border-white/[0.08] bg-[#0a0c12] px-4 py-5 sm:px-6 lg:px-8">
+      <section className="recharza-atmosphere-game border-b border-white/[0.08] px-4 py-5 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1240px]">
-          <div className="mb-4 flex items-center gap-2 text-[11px] text-slate-600">
-            <Link href="/" className="hover:text-white">Home</Link>
-            <span>/</span>
-            <Link href="/#games" className="hover:text-white">Top Up</Link>
-            <span>/</span>
-            <span className="text-slate-400">Mobile Legends</span>
-          </div>
+          <nav className="recharza-breadcrumb mb-4" aria-label="Page path">
+            <Link href="/">Home</Link>
+            <span aria-hidden="true">/</span>
+            <Link href="/#games">Top Up</Link>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">Mobile Legends</span>
+          </nav>
 
           <div className="flex flex-col gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="flex min-w-0 items-center gap-4">
@@ -57,7 +57,8 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
                 />
               </div>
               <div>
-                <h1 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">Mobile Legends: Bang Bang Top Up</h1>
+                <p className="recharza-eyebrow">Instant delivery</p>
+                <h1 className="recharza-section-head mt-1 text-white">Mobile Legends: Bang Bang Top Up</h1>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
                   <span className="inline-flex whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{mobileLegendsMarkets.length} markets</span>
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-300/20 bg-amber-400/[0.06] px-2 py-0.5 text-[11px] font-medium text-amber-300/90">★ 4.9</span>
@@ -90,8 +91,9 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
       <section className="mx-auto max-w-[1240px] px-4 py-7 sm:px-6 lg:px-8">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">Choose your account market</h2>
-            <p className="mt-1.5 text-sm text-slate-500">The selected market controls packages, currency, validation and fulfilment.</p>
+            <p className="recharza-eyebrow">Step 1</p>
+            <h2 className="recharza-section-head mt-3 text-white">Choose your account market</h2>
+            <p className="recharza-body mt-3">The selected market controls packages, currency, validation and fulfilment.</p>
           </div>
           <Link href="/support" className="hidden text-xs font-semibold text-violet-300 hover:text-violet-200 sm:block">Need help?</Link>
         </div>

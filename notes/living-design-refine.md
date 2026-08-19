@@ -11,7 +11,14 @@ Remove glow overload; improve real design craft: layout, spacing, typography, su
 5. customer-dashboard.tsx: TODO — nav rows: remove aurora orb + sweep per tile; stat tiles: remove orb + sweep; order card status ring recharza-status-ring OK keep subtle; "recharza-electric-btn" usage → plain hover.
 6. mobile-nav-menu.tsx: TODO — drawer background keeps 2 soft orbs (already quiet); link rows remove sweep if added.
 
-## Remaining steps
+## STATUS (updated)
+- ALL edits DONE: living-backdrop.tsx rewritten (2 faint orbs only, no particles/sweep), game-card.tsx quieted, education section quieted, page.tsx how-it-works quieted, customer-dashboard quieted (removed dead indexForAccent), nav drawer aurora lowered.
+- typecheck 0 errors (23 pre-existing warnings), lint clean, VERCEL=1 build passed.
+- Commit 2a1c207 pushed. Deployment: recharza-platform-muohw4wt9-stand-still.vercel.app READY.
+- E2E 45/45 passed. Mail-health probe returned 200 (verified earlier).
+- VERIFIED via browser on new URL: how-it-works cards clean (quiet hairline, no glow flood), education tiles clean 3-col layout with quiet icons + numbered steps, region note subtle. Screenshots saved: recharza-platform-mu_2026-08-19_21-12-35 (home), recharza-platform-mu_2026-08-19_21-12-53 (MLBB education).
+
+## Remaining steps (original)
 - Edit education section, page.tsx how-it-works, customer-dashboard, mobile-nav-menu (strip recharza-aurora-drift/recharza-particle/recharza-line-sweep inline usages).
 - npm run typecheck && npm run lint && VERCEL=1 npm run build
 - git add -A && commit "refine: quiet living design — light and motion quality over glow density" && git push origin main

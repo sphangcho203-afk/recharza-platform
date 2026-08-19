@@ -7,6 +7,9 @@ import { AddToCartButton } from "@/components/add-to-cart-button";
 import { useDisplayCurrency } from "@/components/display-price";
 
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
+import { CheckoutProgressRail } from "@/components/checkout-progress-rail";
+import { Shimmer } from "@/components/shimmer";
+import { StatusBadge } from "@/components/status-badge";
 import { PrivateOrderTokenCard } from "@/components/private-order-token-card";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 import { ResilientImage } from "@/components/resilient-image";
@@ -727,19 +730,22 @@ function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
           const complete = number < step;
           return <li key={label}>
             <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} aria-current={active ? "step" : undefined} aria-label={`${label} step${active ? ", current step" : complete ? ", completed" : ", locked"}`} className={`flex w-full flex-col items-center gap-1 rounded-lg px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-500"}`}>
-              <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-semibold">{complete ? "✓" : number}</span>
+              <span className={`grid h-7 w-7 place-items-center rounded-full border text-[10px] font-semibold transition-all duration-300 ${active ? "border-violet-400/70 bg-violet-500 shadow-[0_0_14px_rgba(139,92,246,0.5)]" : complete ? "border-emerald-400/60 bg-emerald-500 shadow-[0_0_10px_rgba(34,197,94,0.35)]" : "border-white/15 bg-white/[0.06]"}`}>{complete ? "✓" : number}</span>
               <span className="text-[9px] font-semibold uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
             </button>
           </li>;
         })}
       </ol>
+      <div className="mt-3 pt-1">
+        <CheckoutProgressRail current={step} />
+      </div>
     </nav>
   );
 }
 
 function StepActions({ current, onBack, onNext, nextLabel }: StepActionsProps) {
   return <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-    {current > 1 ? <button type="button" onClick={onBack} className="storefront-checkout-secondary px-4 text-sm">Back</button> : <span />}
-    {current < 4 ? <button type="button" onClick={onNext} className="storefront-checkout-primary px-5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
+    {current > 1 ? <button type="button" onClick={onBack} className="recharza-btn recharza-btn-secondary px-4 text-sm">Back</button> : <span />}
+    {current < 4 ? <button type="button" onClick={onNext} className="recharza-btn recharza-btn-primary px-5 text-sm">{nextLabel}</button> : null}
   </div>;
 }
