@@ -261,6 +261,14 @@ export function MobileLegendsCheckoutShell({
       return;
     }
 
+    if (!isAuthenticated) {
+      setCheckoutError(
+        "Finish by signing in to your verified Recharza account — your package, player ID and billing details stay in place, and you will return to this page to complete payment.",
+      );
+      setCheckoutMessage("");
+      return;
+    }
+
     setIsSubmitting(true);
     setCheckoutError("");
     setCheckoutMessage("Creating the protected order...");

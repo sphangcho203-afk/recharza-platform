@@ -2,13 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { getRequestSession } from "@/lib/auth";
 
+// Storefront game pages (like /games/:path*) are publicly browsable.
+// Only checkout endpoints require a signed-in verified account; the
+// /games/* matcher stays so guests can browse packs without an account.
 function isProtectedStorefrontPath(pathname: string) {
   if (pathname.startsWith("/api/checkout/")) return true;
-
-  if (!pathname.startsWith("/games/")) return false;
-  if (pathname === "/games/mobile-legends") return false;
-
-  return true;
+  return false;
 }
 
 function signInUrl(request: NextRequest) {

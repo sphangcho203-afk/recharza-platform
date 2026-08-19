@@ -70,3 +70,11 @@
 ## Existing deployment state
 - Latest committed: 2a1c207 (quiet living design), deployed recharza-platform-muohw4wt9-stand-still.vercel.app
 - E2E harness: python3 /home/ubuntu/recharza-platform/scripts/e2e-suite.py <base-url>
+
+## VERIFICATION — overhaul deployment 9knhgg2jb (commit 612454c)
+- Deployed: recharza-platform-9knhgg2jb-stand-still.vercel.app — READY
+- E2E suite: 45/45 passed on new URL; mail-health probe HTTP 200
+- Homepage screenshot verified: hero displays type ramp (.recharza-display h1 with accent-gradient "market."), eyebrow tick "THE PLAYER-FIRST TOP-UP STORE", primary purple Browse games btn + secondary Track an order btn, live-storefront raised card with 01/02/03 steps (atmosphere + grain visible), trust strip 8+/16/4 flat cards, catalogue eyebrow THE CATALOGUE + section-head "Top up what you play." — all tokens rendering correctly
+- MLBB India market page (unauthenticated) redirects to sign-in as designed (pre-existing gate, same as prior deployments) — expected, no render failure. Account page shows eyebrow "RECHARZA ACCOUNT" + section-head + body tokens.
+- Screenshots: /home/ubuntu/screenshots/recharza-platform-9k_2026-08-19_21-29-22_1428.webp (home), /home/ubuntu/screenshots/recharza-platform-9k_2026-08-19_21-29-33_8612.webp (account gate)
+- Remaining: message user with results.

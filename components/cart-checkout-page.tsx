@@ -41,6 +41,14 @@ export function CartCheckoutPage() {
   const [message, setMessage] = useState("");
   const [creating, setCreating] = useState(false);
   const [orderSession, setOrderSession] = useState<{ orderId: string; accessToken: string; totalInPaise: number } | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    fetch("/api/auth/session", { cache: "no-store" })
+      .then((response) => response.json())
+      .then((result: { authenticated?: boolean }) => setIsAuthenticated(Boolean(result.authenticated)))
+      .catch(() => setIsAuthenticated(false));
+  }, []);
 
   useEffect(() => {
     fetch("/api/cart", { cache: "no-store" })
@@ -71,6 +79,10 @@ export function CartCheckoutPage() {
 
   async function createUnifiedOrder() {
     if (!cart || creating) return;
+    if (!isAuthenticated) {
+      setMessage("Sign in to your verified Recharza account to finish the order — your cart, player IDs and billing details stay in place.");
+      return;
+    }
     setCreating(true);
     setMessage("");
     try {

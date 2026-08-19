@@ -319,6 +319,13 @@ export function SupplierGameCheckoutShell({
       return;
     }
 
+    if (!isAuthenticated) {
+      setError(
+        "Finish by signing in to your verified Recharza account — your package, player ID and billing details stay in place, and you will return to this page to complete payment.",
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     setError("");
     setMessage("Creating the protected order...");
