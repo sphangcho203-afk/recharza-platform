@@ -4,6 +4,7 @@ import {
   createRateLimitHeaders,
 } from "@/lib/rate-limit";
 import { RuntimeConfigurationError } from "@/lib/runtime-config";
+import { lookupShop2TopUpPlayerIdentity } from "@/lib/suppliers/shop2topup";
 import {
   getPublishedGamePackageForCheckout,
   isSupplierCheckoutGameSlug,
@@ -128,7 +129,9 @@ export async function POST(
       );
     }
 
-    if (process.env.IGN_LOOKUP_PROVIDER?.trim().toLowerCase() !== "volsever") {
+    const provider = process.env.IGN_LOOKUP_PROVIDER?.trim().toLowerCase() ?? "";
+
+    if (provider !== "volsever" && provider !== "shop2topup") {
       return Response.json(
         {
           valid: true,
@@ -146,12 +149,46 @@ export async function POST(
       );
     }
 
-    const result = await lookupVolseverGameIdentity({
+    let result: Awaited<ReturnType<typeof lookupVolseverGameIdentity>> | null =
+      null;
+    let s2sUnavailable = false;
+
+    if (provider === "shop2topup") {
+      const outcome = await lookupShop2TopUpPlayerIdentity({
+        gameSlug: slug,
+        playerId: identity.playerId,
+        zoneId: identity.zoneId,
+        marketCode: selectedPackage.marketCode,
+      });
+      if (outcome.status !== "unavailable") {
+        return Response.json(
+          {
+            valid: outcome.result.valid,
+            confirmed: outcome.result.confirmed,
+            nickname: outcome.result.nickname,
+            verificationMode: outcome.result.verificationMode,
+            playerId: outcome.result.playerId,
+            zoneId: outcome.result.zoneId,
+            marketCode: selectedPackage.marketCode,
+            packageId: selectedPackage.id,
+            message: outcome.result.message,
+          },
+          { status: outcome.result.valid ? 200 : 400, headers: rateHeaders },
+        );
+      }
+      s2sUnavailable = true;
+    }
+
+    result = await lookupVolseverGameIdentity({
       gameSlug: slug,
       playerId: identity.playerId,
       zoneId: identity.zoneId,
       marketCode: selectedPackage.marketCode,
     });
+
+    if (s2sUnavailable && result.valid) {
+      result.message = "Account validated with our backup lookup service.";
+    }
 
     return Response.json(
       {
