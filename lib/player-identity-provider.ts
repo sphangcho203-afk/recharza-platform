@@ -10,6 +10,8 @@ export type PlayerIdentityResult = {
   playerId: string;
   zoneId: string;
   nickname: string | null;
+  /** Human-readable region the resolved account belongs to, e.g. "India". */
+  region: string | null;
   verificationMode: string;
   message: string;
 };
@@ -42,6 +44,7 @@ export async function validateMobileLegendsIdentity(input: {
       playerId,
       zoneId,
       nickname: null,
+      region: null,
       verificationMode: "account-lookup",
       message: "Enter both the Player ID and Zone ID.",
     };
@@ -56,6 +59,7 @@ export async function validateMobileLegendsIdentity(input: {
       playerId,
       zoneId,
       nickname: createPreviewNickname(playerId, zoneId),
+      region: null,
       verificationMode: "account-lookup",
       message: "Account validated successfully.",
     };
@@ -103,6 +107,7 @@ export async function validateMobileLegendsIdentity(input: {
       playerId,
       zoneId,
       nickname: null,
+      region: null,
       verificationMode: "account-lookup",
       message: "Account lookup is temporarily unavailable.",
     };

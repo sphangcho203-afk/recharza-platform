@@ -100,6 +100,7 @@ export async function POST(request: Request) {
         valid: identity.valid,
         confirmed: identity.confirmed,
         nickname: identity.nickname,
+        region: identity.region,
         verificationMode: identity.verificationMode,
         playerId: identity.playerId,
         zoneId: identity.zoneId,

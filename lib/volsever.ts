@@ -20,6 +20,23 @@ const volseverGameAliases: Record<string, string> = {
   "genshin-impact": "genshin-impact",
 };
 
+/**
+ * Human-readable region labels for the Volsever game endpoints we query.
+ * When a candidate endpoint successfully resolves the account, the label of
+ * the endpoint that matched is returned as the account's region — this is how
+ * cross-region resolution is surfaced to customers (e.g. a Free Fire India
+ * account resolved from the "free-fire-india" endpoint).
+ */
+const VOLSEVER_ENDPOINT_REGION_LABELS: Record<string, string> = {
+  "mobile-legends-wr": "Global",
+  "free-fire-asia": "Asia",
+  "free-fire-india": "India",
+  "free-fire-indonesia": "Indonesia",
+  "pubg-mobile-global": "Global",
+  "valorant-indonesia": "Indonesia",
+  "genshin-impact": "Global",
+};
+
 function getVolseverGameCandidates(value: unknown, marketCode?: unknown) {
   const normalized = normalizeGameSlug(value);
   if (!normalized) return [];
@@ -64,6 +81,8 @@ export type VolseverIdentityResult = {
   playerId: string;
   zoneId: string;
   nickname: string | null;
+  /** Human-readable region the resolved account was found in, e.g. "India". */
+  region: string | null;
   verificationMode: string;
   message: string;
 };
@@ -252,6 +271,7 @@ export async function lookupVolseverGameIdentity(
           playerId,
           zoneId: echoedZone || zoneId,
           nickname: username,
+          region: VOLSEVER_ENDPOINT_REGION_LABELS[slug] ?? null,
           verificationMode: VOLSEVER_VERIFICATION_MODE,
           message: "Account validated successfully.",
         };
@@ -265,6 +285,7 @@ export async function lookupVolseverGameIdentity(
         playerId,
         zoneId,
         nickname: null,
+        region: null,
         verificationMode: VOLSEVER_VERIFICATION_MODE,
         message,
       };
@@ -280,6 +301,7 @@ export async function lookupVolseverGameIdentity(
     playerId,
     zoneId,
     nickname: null,
+    region: null,
     verificationMode: VOLSEVER_VERIFICATION_MODE,
     message: "Game account validation could not be completed.",
   };

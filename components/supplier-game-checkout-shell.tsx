@@ -65,6 +65,7 @@ type IdentityVerification = {
   valid: boolean;
   confirmed: boolean;
   nickname: string | null;
+  region: string | null;
   verificationMode: string;
   message: string;
 };
@@ -245,7 +246,7 @@ export function SupplierGameCheckoutShell({
       setVerification(result);
       setMessage(
         result.confirmed && result.nickname
-          ? `Account verified as ${result.nickname}.`
+          ? `Account verified as ${result.nickname}${result.region ? ` (${result.region} account)` : ""}.`
           : "Player details verified. Live account lookup is not enabled.",
       );
     } catch {
@@ -504,7 +505,7 @@ export function SupplierGameCheckoutShell({
           <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className={`text-xs ${verification?.confirmed ? "text-emerald-300" : identityResult?.valid ? "text-slate-300" : "text-slate-600"}`}>
               {verification?.confirmed && verification.nickname
-                ? `Verified IGN: ${verification.nickname}`
+                ? `Verified IGN: ${verification.nickname}${verification.region ? ` — ${verification.region} account` : ""}`
                 : identityResult?.valid
                   ? `Destination format confirmed for ${selectedPackage.marketLabel}. Verify before continuing.`
                   : identityResult?.message ?? "Enter the destination details to continue."}
@@ -667,7 +668,7 @@ export function SupplierGameCheckoutShell({
             {identity.riotId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{identity.riotId}</dd></div> : null}
             {identity.playerId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Player ID / UID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{identity.playerId}</dd></div> : null}
             {identity.serverId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{identity.serverId}</dd></div> : null}
-            <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-semibold text-emerald-200">{verification?.nickname ?? "Verified player"}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-semibold text-emerald-200">{verification?.nickname ?? "Verified player"}{verification?.region ? <span className="ml-2 rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-cyan-200">{verification.region}</span> : null}</dd></div>
             <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-semibold text-white">{billing.presentmentCurrency}</dd></div>
             <div className="border-t border-white/[0.1] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-semibold text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
           </dl>

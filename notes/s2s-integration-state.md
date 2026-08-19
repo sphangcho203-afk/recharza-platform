@@ -98,3 +98,71 @@ Decision: keep ONLY games with verified validators in SHOP2TOPUP_GAME_CONFIG: mo
 4. Push main, monitor deploy via python3 /home/ubuntu/scripts/monitor_deploy.py, verify via curl on new deployment URL:
    - MLBB verify with fake IDs should show verificationMode shop2topup + player-not-found message.
    - mail-health probe check.
+
+## DEPLOYED & VERIFIED (round final, 2026-08-19 evening)
+Commit 2c14a9b pushed to main. Deployment READY: https://recharza-platform-7cru6uy53-stand-still.vercel.app
+Envs set: IGN_LOOKUP_PROVIDER=shop2topup (encrypted, preview+production), SHOP2TOPUP_API_KEY (sensitive, production, id aUsjrtKhoef2aD3u).
+
+Live evidence:
+1. MLBB verify with marketCode=india + packageId=mlbb-86-indicative + fake playerId/zoneId → valid:false, **verificationMode: "shop2topup"**, message "We could not find a game account with those details. Double-check the IDs." → PRIMARY PROVIDER LIVE.
+2. FF and Genshin verify with unknown packageId → 409 "package changed" — expected: route rejects before provider call. Provider logic for FF already proven against the live S2S API in the local provider test (PLAYER_NOT_FOUND → invalid, verificationMode shop2topup).
+3. Mail-health probe on new deployment: gmail-smtp active, from Recharza <recharza1@gmail.com>, SMTP ok.
+4. neon MCP run_sql: result files are unreliable locally; DB table is actually not supplier_product (does not exist). Not needed — verification done via the API instead.
+
+Remaining: final report to user. No further work needed unless user wants: add S2S validators for PUBG/Genshin/CODM (currently all their API items return INVALID_PRODUCT_CONFIG/INVALID_SUBCATEGORY so volsever remains their verifier).
+
+## EXTENSION INVESTIGATION — why some games can't validate (2026-08-19 night)
+User asked why validation doesn't cover all games. Answer so far + evidence:
+
+Root cause: Shop2TopUp validation is configured PER purchasable item (sub_category_id) by their suppliers. Many items return NO_PLAYER_VALIDATION_REQUIRED or INVALID_PRODUCT_CONFIG. It is NOT something we can force; it's their backend config.
+
+Range probe (subcat ids 2-119, fake player_id 5123456789) found 37 validators:
+- 28-32: Free Fire "Mena Direct Topup" Diamonds packs (cat 4 Mena Direct Topup) — ALL validate (PLAYER_NOT_FOUND)
+- 33-50: Free Fire "Cis Direct Topup" Diamonds packs + Weekly/Monthly Membership + Level Up Packages (cat 5) — ALL validate
+- 101-119: UNNAMED items (ids deleted/hidden from the catalogue list — gaps in global list) but they VALIDATE with player_id; genshin uid 800000001 → REGION_MISMATCH suggests these could be Genshin UID validators (UID is 8-9 digits, fake test id fails region check). IDs missing from /catalog/subcategories (gaps 90-130 in the 2621-item list), so they are unpublished/hidden items — risky to use in production but functional.
+- PUBG (cat 2, UC): ALL items return NO_PLAYER_VALIDATION_REQUIRED (subs 2-7) or INVALID_PRODUCT_CONFIG (8-10, 12-13) → PUBG MIGHT NOT be validate-able via Shop2TopUp at all; their UC vouchers/cards have no player validation. UC is voucher-redeem based, not direct top-up.
+- Genshin (subs 51-56 Genesis Crystals "Direct Topup api"): ALL INVALID_PRODUCT_CONFIG → no validation configured for Genshin items either.
+- Note: FF cat 4 "Mena Direct Topup" and cat 5 "Cis Direct Topup" both validate player_id only.
+
+Interesting: unknown items 101-119 give PLAYER_NOT_FOUND for numeric player_id and REGION_MISMATCH for 800000001 (Genshin-style UID) — consistent with Genshin UID validation. Could be hidden Genshin validators. But their items aren't in the public catalogue, so we can't be certain what game they belong to.
+
+Next idea: test 101-119 as Genshin (player_id = real-format UID, e.g. 8001234569) — REGION_MISMATCH with our fake may mean uid format accepted. If we have a real Genshin UID we could confirm. Not available. Alternative: accept MLBB+FF only, explain to user with evidence.
+
+CONCLUSION for user report:
+- MLBB + FF: fully validated via their regional diamond pack items (free, per support)
+- PUBG: items are voucher-redeem (UC cards) → supplier has no player validation configured; Shop2TopUp structurally cannot validate PUBG
+- Genshin: their Genesis Crystal items have no validation API configured on their side
+- CODM/Valorant/Wild Rift/Fortnite/CoC: no matching catalogue items with validation configured
+- Volsever remains fallback for all non-MLBB/FF games
+
+## CROSS-REGION IGN + REGION DISPLAY TASK (2026-08-20)
+User request: (1) any MLBB market page (e.g. Turkey) must resolve accounts from ANY region (e.g. India) and show the username; same for Volsever; must show resolved region next to username. (2) Add a researched headline/note per game/market about delivery region coverage (MLBB India is global, others limited to few regions). Research facts then implement.
+
+### Current architecture (reviewed)
+- lib/player-identity-provider.ts: validateMobileLegendsIdentity — s2s primary → volsever fallback; no region param.
+- app/api/games/mobile-legends/verify/route.ts: takes data.marketCode (parseMobileLegendsMarket) but currently doesn't pass it meaningfully to providers — no region restriction currently; it just labels response marketCode.
+- app/api/games/[gameSlug]/verify/route.ts: passes marketCode to both providers via selectedPackage.marketCode.
+- lib/volsever.ts: lookupVolseverGameIdentity — slugs per game; FF candidates: india route default, asia/indonesia fallback (market-aware). Returns {valid,confirmed,playerId,zoneId,nickname,verificationMode,message}. NO region field. Multi-candidate loop; status&&data with user_id echoed check.
+- lib/suppliers/shop2topup.ts: result.player.region exists in API response but DISCARDED in result construction (lines 210-236). No market-aware candidate list (single pinned item).
+- lib/mobile-legends-market.ts: 8 markets (india,indonesia,philippines,brazil,malaysia,singapore,turkey,united-states), each with providerAliases. isPackageAvailableForMarket(packageRegion, marketCode) filters packages by region.
+- lib/storefront-catalog.ts: getRoutingRegion (L72-84) computes space-joined list of markets a supplier product serves (getRoutingRegion uses isCuratedFazerCardsProductAvailableForMobileLegendsMarket) → package.region field. This is the SOURCE OF TRUTH for MLBB delivery coverage per package.
+- lib/catalog/curated-fazercards.ts: L362-379 isCuratedFazerCardsProductAvailableForMobileLegendsMarket; uses mobileLegendsOfferMarketOverrides then mobileLegendsCategoryMarkets (FAZER'S actual deliverable coverage per product line!).
+- components/supplier-game-checkout-shell.tsx: renders "Account verified as ${nickname}" (verifyIdentity, L213-257) — needs region display when response includes it.
+
+### Implementation plan
+1. Add `region: string | null` to PlayerIdentityResult + both providers:
+   - shop2topup.ts: pass through result.player.region (capitalize/normalize, map codes→labels) → nickname+region in result.
+   - volsever.ts: candidate slug list already spans regions (free-fire-india/asia/indonesia; mlbb mobile-legends-wr). The SLUG that matched = the region. Map matched slug → label and add region to result. Also keep multi-candidate loop (already cross-region!).
+2. Verify routes: return `region` in JSON response (MLBB + generic routes).
+3. UI: supplier-game-checkout-shell.tsx show "Verified as <nickname> — Region: <region>" badge; MLBB market page verify UI similarly.
+4. Cross-region: currently no region restriction in verify routes (good) — ensure Shop2TopUp pinned item resolves any-region accounts (their MLBB subcat 28 accepts global; FF subcat 28 Mena-region — verify FF subcat 33 Cis works too; test live with fake IDs both). If S2S pinned item returns REGION_MISMATCH for mismatched region, add candidate subcats per region (round-3 found 28-32 Mena, 33-50 Cis all validate) → try both pinned items in sequence.
+5. Delivery-region headline: research curated-fazercards category market coverage (FAZER deliverable regions) → static mapping per game/market with researched copy. MLBB: India = global-ish (multiple markets), others limited. Research facts first (search MLBB topup global vs regional delivery, Fazercards market coverage) then add headline component to MLBB market pages + game pages.
+
+### Research status
+Not started. Need facts: Fazercards delivers MLBB which regions; MLBB "Global" version accounts vs regional servers (Moonton MLBB has global server; Turkey/India share same accounts).
+
+### Research facts (saved from search, 2026-08-20)
+MLBB has NO regional account lock — all accounts exist on the Moonton global server. Players pick a regional *game server* (Asia, EU, NA, Brazil) for matchmaking, but the Player ID + Zone ID is globally unique and the SAME account works everywhere. Any market top-up (India, Turkey, Indonesia...) credits the same account regardless of chosen matchmaking server — which is why "MLBB India is global": a top-up delivered from ANY supplier region reaches the account. (Sources: r/MobileLegendsGame server list, Reddit/Facebook community posts; Tenorshare guide; Reddit note NA/Global merge in Season 40.)
+By contrast, games like Genshin Impact (UID is server-scoped: America/Europe/Asia/TW), PUBG (region-locked accounts/skins), FF (accounts ARE global though; but suppliers deliver regionally) — so per-game headlines needed.
+Free Fire: accounts global (Garena ID), top-ups deliver worldwide; supplier-side limits exist (some packs regional).
+Plan for headlines: add "deliveryCoverage" copy per game in lib/games.ts (derived from supplier facts: MLBB global, FF global, PUBG region-bound per account, Genshin UID server-scoped), render a Fable-5 pill/badge row under the header on game pages.

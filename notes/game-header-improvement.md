@@ -81,3 +81,28 @@ mobile-legends, free-fire, pubg-mobile, battlegrounds-mobile-india, call-of-duty
 - Deployment URL: recharza-platform-{uid}-stand-still.vercel.app
 - Protected probe: curl -H "Authorization: Bearer rcz-probe-7k3m9q2x" .../api/internal/mail-health
 - Mail send test (premium template): curl -X POST to /api/internal/mail-send-test (no body needed) on deployment.
+
+---
+
+# STATE UPDATE — post implementation & commit (b1a7960)
+
+## Completed
+- lib/games.ts: `icon?: string` added to Game type; set on mobileLegendsBase (covers ML + all regional markets), free-fire, pubg-mobile, bgmi, call-of-duty-mobile, valorant, genshin-impact, fortnite. Paths: `/assets/games/{slug}/icon.png` matching the 10 generated square icons (all committed).
+- components/resilient-image.tsx: sources widened to `(string | undefined)[]`; useMemo now filters with type predicate `(source): source is string => typeof source === "string" && isSafeImageSource(source)`.
+- Headers refined (icon tile w/ accent-gradient backdrop + pill badges): app/games/mobile-legends/[market]/page.tsx; app/games/[gameSlug]/page.tsx; app/games/mobile-legends/page.tsx.
+- Typecheck PASS, lint PASS (21 pre-existing warnings only), build PASS (VERCEL=1 run; local DB-less static errors are expected, Vercel has DATABASE_URL).
+- Committed b1a7960, pushed to main (prev: cb4ad2f).
+
+## Pre-deploy scan
+- Secret scan of app/lib/components: CLEAN.
+- npm audit: 3 HIGH — transitive chain: prisma → @prisma/config → deepmerge-ts (vulnerable). Dev-time transitive dependency, no direct prod-code exposure. Report to user; do not auto-fix (user standing instruction: report CVEs first, don't auto-commit fixes).
+
+## Remaining steps
+1. Monitor deployment via python3 /home/ubuntu/scripts/monitor_deploy.py (after sourcing /home/ubuntu/.vercel_api.sh).
+2. Verify on live deployment URL: /games/mobile-legends, /games/free-fire, /games/mobile-legends/india — confirm square icons + pills render; grab screenshots.
+3. Re-run mail-health probe on the new deployment (curl -H "Authorization: Bearer rcz-probe-7k3m9q2x" .../api/internal/mail-health).
+4. Report: live URL + screenshots + CVE summary (await user's decision on prisma upgrade).
+
+## Design tokens applied
+- Pill: rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70; emerald variant border-emerald-300/20 bg-emerald-400/[0.06] text-emerald-300/90; amber variant border-amber-300/20 bg-amber-400/[0.06] text-amber-300/90; cyan variant uses neutral pill style + text-cyan-300/90.
+- Icon tile: h-16 w-16 (sm:h-20 w-20) rounded-lg border border-white/[0.08], background `linear-gradient(135deg, ${accent}26, ${accent}08)`; ResilientImage sources=[icon, ...logoSources]; fallbackLabel initials.

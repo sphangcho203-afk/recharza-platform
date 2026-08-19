@@ -25,15 +25,26 @@ const BASE_URL = "https://shop2topup.com/api/endpoints/v1";
 export type Shop2TopUpGameConfig = {
   /** Shop2TopUp catalog category id (for docs/requirements reference). */
   categoryId: number;
-  /** Subcategory item whose supplier API performs real player validation. */
-  validateSubCategoryId: number;
+  /**
+   * Subcategory items whose supplier API performs real player validation.
+   * Multiple pinned items are tried in order so that accounts from different
+   * catalogue regions (e.g. MENA vs CIS free-fire diamond packs) all resolve —
+   * Shop2TopUp validation is regional to the pinned pack, not the player.
+   */
+  validateSubCategoryIds: number[];
   /** Requirement fields required by /player/validate for this game. */
   requiresZoneId: boolean;
   requiresServer?: boolean;
+  /**
+   * Region labels reported when each pinned item validates an account.
+   * `default` is used when the validating pack's region cannot be narrowed
+   * down (e.g. Mobile Legends accounts are global, so any pack works).
+   */
+  regionLabels?: Record<number, string> & { default?: string };
 };
 
 export const SHOP2TOPUP_GAME_CONFIG: Record<string, Shop2TopUpGameConfig> = {
-  // Only games whose pinned item has been live-tested to perform real player
+  // Only games whose pinned items have been live-tested to perform real player
   // validation are mapped here. Everything else falls back to Volsever.
   // Verified on the live API 2026-08-19: fake player IDs return PLAYER_NOT_FOUND
   // (validation executed), while pubg-mobile (12/13), genshin (51), valorant
@@ -41,13 +52,20 @@ export const SHOP2TOPUP_GAME_CONFIG: Record<string, Shop2TopUpGameConfig> = {
   // INVALID_SUBCATEGORY — no validation configured for those items.
   "mobile-legends": {
     categoryId: 474,
-    validateSubCategoryId: 28,
+    // MLBB accounts are global (Moonton server); pack 28 validates any region.
+    validateSubCategoryIds: [28],
     requiresZoneId: true,
+    regionLabels: { default: "Global" },
   },
   "free-fire": {
     categoryId: 4,
-    validateSubCategoryId: 28,
+    // MENA packs (28-32) and CIS packs (33-50) both validate. Trying both
+    // regional pack families makes Free Fire IGN lookup cross-region: an
+    // account that only one pack family resolves is still accepted, with the
+    // matching family's region label echoed back to the customer.
+    validateSubCategoryIds: [28, 33],
     requiresZoneId: false,
+    regionLabels: { 28: "Middle East & Africa", 33: "CIS", default: "Global" },
   },
 };
 
@@ -183,61 +201,83 @@ export async function lookupShop2TopUpPlayerIdentity(
     return { status: "unavailable", reason: "Shop2TopUp provider is not configured." };
   }
 
-  const body: Record<string, unknown> = {
-    sub_category_id: config.validateSubCategoryId,
-    player_id: normalizePlayerId(input.playerId, 64),
-  };
-  if (config.requiresZoneId && input.zoneId) {
-    body.zone_id = normalizePlayerId(input.zoneId, 24);
-  }
+  const playerId = normalizePlayerId(input.playerId, 64);
+  const zoneId = normalizePlayerId(input.zoneId ?? "", 24);
 
-  let result: Shop2TopUpValidateResponse;
-  try {
-    result = await callValidate(body);
-  } catch (error) {
-    const retryable = (error as { retryable?: boolean }).retryable;
-    return {
-      status: "unavailable",
-      reason: retryable
-        ? "Shop2TopUp is rate limited right now."
-        : "Shop2TopUp lookup failed temporarily.",
+  // Try every pinned validation pack in order. Each pack is regional to its
+  // catalogue, so an account that only resolves through one pack family is
+  // still accepted (cross-region lookup), and the matching pack's region is
+  // echoed back to the customer.
+  for (const subCategoryId of config.validateSubCategoryIds) {
+    const body: Record<string, unknown> = {
+      sub_category_id: subCategoryId,
+      player_id: playerId,
     };
-  }
+    if (config.requiresZoneId && zoneId) {
+      body.zone_id = zoneId;
+    }
 
-  const playerId = String(body.player_id ?? input.playerId);
-  const zoneId = String(body.zone_id ?? input.zoneId ?? "");
-
-  if (validationWasConfigured(result)) {
-    if (result.success && result.player?.player_name) {
+    let result: Shop2TopUpValidateResponse;
+    try {
+      result = await callValidate(body);
+    } catch (error) {
+      const retryable = (error as { retryable?: boolean }).retryable;
       return {
-        status: "valid",
-        result: {
-          valid: true,
-          confirmed: true,
-          playerId,
-          zoneId,
-          nickname: result.player.player_name,
-          verificationMode: "shop2topup",
-          message: "Account validated successfully.",
-        },
+        status: "unavailable",
+        reason: retryable
+          ? "Shop2TopUp is rate limited right now."
+          : "Shop2TopUp lookup failed temporarily.",
       };
     }
-    return {
-      status: "invalid",
-      result: {
-        valid: false,
-        confirmed: false,
-        playerId,
-        zoneId,
-        nickname: null,
-        verificationMode: "shop2topup",
-        message: "We could not find a game account with those details. Double-check the IDs.",
-      },
-    };
+
+    const resolvedRegion =
+      config.regionLabels?.[subCategoryId] ?? config.regionLabels?.default ?? null;
+
+    if (validationWasConfigured(result)) {
+      if (result.success && result.player?.player_name) {
+        return {
+          status: "valid",
+          result: {
+            valid: true,
+            confirmed: true,
+            playerId,
+            zoneId: String(body.zone_id ?? input.zoneId ?? ""),
+            nickname: result.player.player_name,
+            region: result.player.region || resolvedRegion,
+            verificationMode: "shop2topup",
+            message: "Account validated successfully.",
+          },
+        };
+      }
+      // PLAYER_NOT_FOUND / INVALID_PLAYER_ID = validation ran and no account
+      // exists. REGION_MISMATCH means the pack's region rejects this account
+      // — try the next pinned pack before declaring the account invalid.
+      const code = result.error?.code ?? "";
+      if (code !== "REGION_MISMATCH") {
+        return {
+          status: "invalid",
+          result: {
+            valid: false,
+            confirmed: false,
+            playerId,
+            zoneId: String(body.zone_id ?? input.zoneId ?? ""),
+            nickname: null,
+            region: null,
+            verificationMode: "shop2topup",
+            message: "We could not find a game account with those details. Double-check the IDs.",
+          },
+        };
+      }
+      // REGION_MISMATCH on this pack → try the next candidate pack.
+      continue;
+    }
+
+    // This pack has no validation configured; try the next pinned pack.
+    continue;
   }
 
   return {
     status: "unavailable",
-    reason: "Shop2TopUp has no validation configured for this item.",
+    reason: "Shop2TopUp has no validation configured for this game.",
   };
 }

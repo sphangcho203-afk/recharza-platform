@@ -126,6 +126,14 @@ export default async function MobileLegendsMarketPage({
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-emerald-300/20 bg-emerald-400/[0.06] px-2 py-0.5 text-[11px] font-medium text-emerald-300/90">Fixed market pricing</span>
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-cyan-300/90"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
                 </div>
+                {regionalGame.deliveryCoverage && (
+                  <div className="mt-2.5 flex max-w-xl flex-wrap items-center gap-2 rounded-md border border-white/[0.10] bg-white/[0.04] px-2.5 py-1.5">
+                    <StorefrontIcon name="shield" className="h-3.5 w-3.5 shrink-0 text-emerald-300/90" />
+                    <p className="text-[11px] font-medium leading-snug text-white/70">{regionalGame.deliveryCoverage.headline}</p>
+                    <span title={regionalGame.deliveryCoverage.note} className="hidden whitespace-nowrap rounded-sm border border-cyan-300/20 bg-cyan-400/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-cyan-300/90 sm:inline">Learn more</span>
+                    <span className="block w-full whitespace-normal text-[11px] leading-relaxed text-white/50 sm:hidden">{regionalGame.deliveryCoverage.note}</span>
+                  </div>
+                )}
               </div>
             </div>
 
