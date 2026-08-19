@@ -90,9 +90,9 @@ const mobileLegendsBase = {
   accent: "#5b7cff",
   packages: ["Diamonds", "Weekly Pass", "Twilight Pass"],
   deliveryCoverage: {
-    mode: "global" as const,
-    headline: "Global top-up — any region, one account",
-    note: "All Mobile Legends accounts live on Moonton's single global server. Your Player ID + Zone ID is unique worldwide, so a top-up delivered from our catalogue reaches the same account no matter which country buys it from. India, Turkey, US — every market delivers to every account.",
+    mode: "region-scoped" as const,
+    headline: "Your account region must match the market — verification works from any country",
+    note: "You can check any MLBB username from any country — the ID check is cross-region. But diamonds are delivered through region-scoped supplier catalogues: each market only credits the account server it is licensed for (e.g. the India catalogue credits India accounts only, Indonesia catalogue credits Indonesia accounts only, Global catalogue excludes Indonesia/Brazil/Philippines). Moonton blocks cross-region recharges, so choose the market whose region matches your account — a Saudi Arabia account must not be topped up via the India catalogue.",
   },
   pricingKey: "mobile-legends",
   startingPriceInPaise: 3_000,
@@ -169,8 +169,8 @@ export const games: Game[] = [
     packages: ["Diamonds", "Weekly Membership", "Monthly Membership"],
     deliveryCoverage: {
       mode: "global-id",
-      headline: "Global Garena account — worldwide delivery",
-      note: "Garena IDs are globally unique, so your Free Fire account can be verified from any market page. Actual delivery runs through regional supplier packs, which is why our catalogue spans both Middle East and CIS packs for the same item — you always land on the cheapest live price that matches your region.",
+      headline: "Global Garena ID — delivery follows your region's catalogue",
+      note: "Any Garena ID can be checked from any country — verification is cross-region. Delivery, however, runs through region-scoped supplier packs (Indonesia, Philippines, Malaysia/Singapore, Bangladesh catalogues and more). Only the catalogue matching your account's region can credit it, so pick the market whose region matches your Free Fire account — a Saudi Arabia account cannot be topped up from the Indonesia catalogue.",
     },
     pricingMode: "live",
     pricingKey: "free-fire",
@@ -205,7 +205,7 @@ export const games: Game[] = [
     deliveryCoverage: {
       mode: "region-scoped",
       headline: "Region-locked UC — match your account region",
-      note: "PUBG Mobile UC is bound to your account's region (Global, India, etc.). Buy only the market that matches the server you play on — buying for a different region will not credit your account. This is a Level Infinite server rule, not a store limitation.",
+      note: "UC is bound to your PUBG Mobile account region and redeemed as regional vouchers. Our catalogue serves one approved UC line, so you must buy from the market that matches the server you play on — a different-region purchase will not credit your account. This is a Level Infinite server rule, not a store limitation.",
     },
     pricingMode: "live",
     pricingKey: "pubg-mobile",
@@ -297,8 +297,8 @@ export const games: Game[] = [
     packages: ["VALORANT Points"],
     deliveryCoverage: {
       mode: "global-id",
-      headline: "Global Riot account — regional packs",
-      note: "Your Riot ID works everywhere, but VALORANT Points follow Riot's regional pricing, so each market sells the region it serves. Our verification checks your account against that region's catalogue before you pay.",
+      headline: "One Riot ID — but VP only credits its own region",
+      note: "Your Riot ID is the same everywhere and can be checked from any country, but VALORANT Points are strictly regional: points bought in one region can never be spent in another. Each market sells only the VP region it is licensed for (ID, PH, MY, SG catalogues), so choose the market whose region matches your account.",
     },
     pricingMode: "live",
     pricingKey: "valorant",
@@ -333,7 +333,7 @@ export const games: Game[] = [
     deliveryCoverage: {
       mode: "region-scoped",
       headline: "Server-scoped UID — pick the right server",
-      note: "Your UID belongs to exactly one server: Asia, America, Europe, or TW/HK/MO. Top-ups only credit the server printed on your UID, so check your in-game UID prefix before buying — this is a HoYoverse server rule, not a store limitation.",
+      note: "Your UID belongs to exactly one server: Asia, America, Europe, or TW/HK/MO (hint: UID prefix 8 = Asia, 7 = America, 9 = Europe, 6 = TW/HK/MO). Our Global catalogue credits accounts on the supported server only — top-ups never cross servers. Check your UID before buying; this is a HoYoverse server rule, not a store limitation.",
     },
     pricingMode: "live",
     pricingKey: "genshin-impact",
@@ -362,7 +362,7 @@ export const games: Game[] = [
     deliveryCoverage: {
       mode: "global",
       headline: "Global Epic account — V-Bucks delivered worldwide",
-      note: "Fortnite accounts live on one Epic ecosystem, so a V-Bucks top-up from any market credits the same account. Regional storefront differences apply only to the Epic Games Store, not to console or PC Fortnite.",
+      note: "Fortnite accounts live on one Epic ecosystem, so a V-Bucks top-up from any market credits the same account. Any Epic account can be checked from any country. Regional storefront differences apply only to the Epic Games Store, not to console or PC Fortnite.",
     },
     pricingMode: "staged",
   },

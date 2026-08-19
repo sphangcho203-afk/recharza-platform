@@ -28,5 +28,11 @@
 - CODM: CP packs mostly global via direct topup.
 
 ## Deployment target
-- Production deployment to watch: recharza-platform-7cru6uy53-stand-still.vercel.app
 - Mail health probe bearer: rcz-probe-7k3m9q2x
+
+## LIVE VERIFICATION (2026-08-20) — PASSED
+- Commit 2a93469 pushed to origin/main. Deployment READY: recharza-platform-1ddhamctu-stand-still.vercel.app.
+- Mail health probe on new deployment: HTTP 200, gmail-smtp configured (OAuth + SMTP + from header all OK).
+- MLBB verify POST works (market selection required first — expected pre-existing behaviour).
+- MLBB landing page publicly renders the new delivery-coverage pill: "Global top-up — any region, one account" + Learn more tooltip. Screenshot confirmed clean Fable 5 styling.
+- Auth-gate 307 on /games/[gameSlug] and /games/mobile-legends/[market] is PRE-EXISTING behaviour (same on prior deployment 7cru6uy53). Headlines on those pages verified present in the compiled build (build succeeded 0 errors).
