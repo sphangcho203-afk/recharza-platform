@@ -45,15 +45,13 @@ export function GameCard({
   const accent = game.accent ?? "#9b7cff";
   const card = (
     <article
-      className={`group grid h-full gap-4 rounded-xl border p-3 transition-[border-color,box-shadow,transform,background-color] duration-200 ease-out overflow-hidden sm:p-4 ${
-        interactive
-          ? "fable-surface-raised border-white/[0.08] bg-[linear-gradient(162deg,rgba(30,33,56,.96),rgba(14,16,29,.98))] hover:-translate-y-1 hover:shadow-elevation-2 motion-safe:group-hover:scale-[1.015]"
-          : "fable-surface-flat border-border opacity-60"
+      className={`recharza-bleed-card group relative h-full overflow-hidden ${
+        interactive ? "" : "opacity-60"
       }`}
-      style={interactive ? { boxShadow: "0 18px 44px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.06)", border: `1px solid rgba(255,255,255,.08)`, transitionDuration: "200ms" } : undefined}
     >
-      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px opacity-60 transition-opacity duration-300 motion-safe:group-hover:opacity-100" style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 55%, transparent) 50%, transparent)` }} />
-      <div className="relative aspect-[1.16] overflow-hidden rounded-lg border border-[rgba(196,181,253,.18)] bg-surface-sunken shadow-[inset_0_1px_0_rgba(255,255,255,.08)]">
+      <span aria-hidden="true" className="absolute inset-x-0 top-0 z-10 h-px opacity-60 transition-opacity duration-300 motion-safe:group-hover:opacity-100" style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 55%, transparent) 50%, transparent)`, boxShadow: `0 0 10px ${accent}` }} />
+      {/* Tall portrait artwork bleeding to the card edges (1.16, taller than offer cards). */}
+      <div className="recharza-bleed-media relative aspect-[1.16] bg-surface-sunken">
         <StorefrontArtwork
           artworkKey={game.artworkKey}
           sources={preferredArtworkSources(game)}
@@ -69,22 +67,18 @@ export function GameCard({
         />
       </div>
 
-      <div className="grid min-w-0 gap-2">
+      {/* Compact base strip — no price/CTA chip, only category + title + arrow. */}
+      <div className="relative flex min-h-[5.4rem] flex-col justify-between gap-1.5 bg-gradient-to-b from-[#111321] to-[#0d0e18] p-3.5">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-200/75">{category}</p>
-            <h3 className="min-w-0 truncate text-[1.02rem] font-semibold leading-5 tracking-[-0.02em] text-text-primary sm:text-lg">{title}</h3>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-200/75">{category}</p>
+            <h3 className="recharza-card-title mt-1 min-w-0 truncate">{title}</h3>
           </div>
-          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/[0.12] bg-white/[0.03] text-text-muted transition-[color,background-color,transform,border-color] duration-200 group-hover:translate-x-0.5 group-hover:border-white/[0.22] group-hover:text-white">
+          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/[0.12] bg-white/[0.03] text-slate-400 transition-[color,background-color,transform,border-color] duration-200 group-hover:translate-x-0.5 group-hover:border-cyan-300/40 group-hover:text-white">
             <StorefrontIcon name="arrow" className="h-3.5 w-3.5 transition-colors duration-200" />
           </span>
         </div>
-        {price ? <p className="truncate text-[.72rem] font-medium text-text-secondary">From <DisplayPrice amountInrMinor={price} className="ml-1 text-[.86rem] font-semibold text-violet-100" /></p> : <p className="text-[.72rem] font-medium text-text-secondary">Verified digital delivery</p>}
-      </div>
-
-      <div className="flex items-center gap-2 border-t border-white/[.09] pt-3">
-        <span className="inline-flex min-h-9 flex-1 items-center justify-center rounded-lg bg-primary px-3 py-2 text-xs font-semibold tracking-[.01em] text-primary-foreground transition-[background-color,box-shadow,transform] duration-200 group-hover:bg-primary-hover group-hover:translate-y-[-1px]">{label}</span>
-        <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-text-muted">Secure</span>
+        {price ? <p className="truncate text-[.72rem] font-medium text-slate-400">From <DisplayPrice amountInrMinor={price} className="ml-1 text-[.86rem] font-semibold text-violet-100" /></p> : <p className="text-[.72rem] font-medium text-slate-400">Verified digital delivery</p>}
       </div>
     </article>
   );

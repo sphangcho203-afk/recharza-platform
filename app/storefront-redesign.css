@@ -898,3 +898,301 @@
   .recharza-shimmer::after { animation: none !important; }
   .recharza-progress-fill { transition: none; }
 }
+
+
+/* ==================================================================
+   v2 SPEC SYSTEM — six distinct treatments, unifying tokens below.
+   1. Global backgrounds   2. Hero sweep+seam
+   3. Image-bleed cards    4. Checkout form blocks
+   5. Dense order rows     6. Elevated sheets
+   ================================================================== */
+
+/* --- 1a. Layered global backgrounds, varied per page --------------- */
+.recharza-atmo-v2 {
+  position: relative;
+  isolation: isolate;
+}
+.recharza-atmo-v2::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("/assets/design/grain.svg");
+  background-size: 200px 200px;
+  opacity: .03;
+  mix-blend-mode: screen;
+  z-index: 2;
+}
+
+/* Home — soft radial anchored top-left, purple→blue drift */
+.recharza-atmo-home {
+  background:
+    radial-gradient(78% 62% at 8% -8%, rgba(124, 58, 237, .14), transparent 60%),
+    radial-gradient(55% 48% at 62% 6%, rgba(56, 115, 224, .08), transparent 55%),
+    radial-gradient(90% 70% at 12% 96%, rgba(34, 211, 238, .045), transparent 50%),
+    linear-gradient(192deg, #070810 0%, #0b0d1b 48%, #090a14 100%);
+}
+/* Games/catalogue — anchored top-right, deeper violet wash */
+.recharza-atmo-games {
+  background:
+    radial-gradient(80% 64% at 94% -6%, rgba(124, 58, 237, .13), transparent 58%),
+    radial-gradient(60% 50% at 4% 14%, rgba(99, 102, 241, .07), transparent 54%),
+    linear-gradient(210deg, #080912 0%, #0d0f1e 52%, #0a0c16 100%);
+}
+/* Checkout — anchored bottom-left, quieter (form blocks carry the chrome) */
+.recharza-atmo-checkout {
+  background:
+    radial-gradient(70% 55% at 0% 102%, rgba(56, 115, 224, .10), transparent 56%),
+    radial-gradient(52% 44% at 96% -4%, rgba(139, 92, 246, .07), transparent 52%),
+    linear-gradient(180deg, #080911 0%, #0b0e1a 50%, #090b13 100%);
+}
+/* Account — anchored top-left, cool indigo */
+.recharza-atmo-account {
+  background:
+    radial-gradient(76% 60% at 6% -6%, rgba(79, 70, 229, .12), transparent 58%),
+    radial-gradient(58% 46% at 88% 92%, rgba(34, 211, 238, .05), transparent 52%),
+    linear-gradient(186deg, #080912 0%, #0c0e1c 50%, #0a0b15 100%);
+}
+/* Orders / lookup — anchored bottom-right, steel blue */
+.recharza-atmo-orders {
+  background:
+    radial-gradient(72% 58% at 102% 104%, rgba(56, 189, 248, .09), transparent 56%),
+    radial-gradient(60% 48% at 8% 4%, rgba(99, 102, 241, .06), transparent 52%),
+    linear-gradient(174deg, #070912 0%, #0c0f1b 50%, #0a0b15 100%);
+}
+
+/* --- 2. Hero: full-bleed diagonal sweep + hard seam ------------------- */
+.recharza-hero-sweep {
+  position: relative;
+  isolation: isolate;
+  background:
+    linear-gradient(118deg,
+      #20134a 0%,
+      #3b1e8f 16%,
+      #6d28d9 32%,
+      #2563eb 54%,
+      #0e1a33 74%,
+      #06070c 90%);
+}
+.recharza-hero-sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("/assets/design/grain.svg");
+  background-size: 220px 220px;
+  opacity: .035;
+  mix-blend-mode: screen;
+  z-index: 1;
+}
+/* Hard seam where the hero ends: opaque base color below the diagonal */
+.recharza-hero-seam {
+  position: relative;
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 74%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 74%, rgba(0, 0, 0, 0) 100%);
+}
+.recharza-hero-edge {
+  position: relative;
+}
+.recharza-hero-edge::after {
+  content: "";
+  position: absolute;
+  inset-x: 0;
+  bottom: -1px;
+  height: 56px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 0%, rgba(7, 8, 16, .55) 40%, #070810 100%);
+}
+
+/* --- 3. Image-bleed cards: art to edges + distinct lower strip + lift --- */
+.recharza-bleed-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #0c0d15;
+  border: 1px solid rgba(255, 255, 255, .08);
+  transition: transform 220ms cubic-bezier(.22, 1, .36, 1), box-shadow 220ms cubic-bezier(.22, 1, .36, 1), border-color 220ms ease-out;
+}
+.recharza-bleed-card:hover {
+  transform: translateY(-4px) scale(1.012);
+  border-color: rgba(165, 243, 252, .22);
+  box-shadow: 0 26px 64px rgba(0, 0, 0, .42), 0 0 0 1px rgba(139, 92, 246, .08);
+}
+.recharza-bleed-card:active { transform: translateY(-1px) scale(.995); }
+.recharza-bleed-media { position: relative; flex: none; overflow: hidden; }
+.recharza-bleed-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 52%, rgba(12, 13, 21, .85) 100%);
+}
+.recharza-bleed-strip {
+  position: relative;
+  margin: 0;
+  padding: .8rem 1rem 1rem;
+  background: linear-gradient(180deg, #111321 0%, #0d0e18 100%);
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+.recharza-bleed-strip .recharza-card-title { color: #f1f4fb; }
+
+/* --- 4. Checkout form blocks (sectioned, whitespace-first) ------------ */
+.recharza-form-block {
+  position: relative;
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+  padding-top: 1.4rem;
+  margin-top: 1.6rem;
+}
+.recharza-form-block:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+.recharza-form-block-head { display: flex; align-items: center; gap: .6rem; margin-bottom: .35rem; }
+.recharza-form-block-title { font-size: 1.02rem; font-weight: 600; letter-spacing: -0.01em; color: #f1f4fb; }
+.recharza-form-block-copy { font-size: .82rem; line-height: 1.5; color: #8b96ac; }
+.recharza-form-field { display: grid; gap: .4rem; }
+.recharza-form-field label { font-size: .7rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #8b96ac; }
+.recharza-form-input {
+  min-height: 3rem;
+  border-radius: .55rem;
+  border: 1px solid rgba(255, 255, 255, .09);
+  background: rgba(255, 255, 255, .03);
+  color: #f1f4fb;
+  padding: 0 .9rem;
+  font-size: .92rem;
+  transition: border-color 160ms ease-out, background-color 160ms ease-out, box-shadow 160ms ease-out;
+}
+.recharza-form-input:focus { border-color: rgba(139, 92, 246, .55); background: rgba(255, 255, 255, .045); box-shadow: 0 0 0 3px rgba(139, 92, 246, .14); outline: none; }
+
+/* --- 5. Dense order rows (dividers, not card borders) ----------------- */
+.recharza-order-rows { display: grid; }
+.recharza-order-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: .8rem;
+  padding: .95rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+}
+.recharza-order-row:last-child { border-bottom: none; }
+.recharza-order-row-main { display: grid; gap: .15rem; min-width: 0; }
+.recharza-order-row-title { font-size: .92rem; font-weight: 600; letter-spacing: -0.01em; color: #f1f4fb; }
+.recharza-order-row-meta { font-size: .76rem; line-height: 1.4; color: #7d879a; }
+.recharza-order-row-meta b { color: #b4bdce; font-weight: 600; }
+.recharza-order-row-side { display: flex; align-items: center; gap: .6rem; }
+.recharza-order-row-side .recharza-badge { flex: none; }
+
+/* --- 6. Elevated sheets/modals ---------------------------------------- */
+.recharza-sheet {
+  position: relative;
+  background: linear-gradient(168deg, #1a1c2e 0%, #12142200 0%, #121422 100%);
+  background: linear-gradient(168deg, rgba(26, 28, 46, .985), rgba(18, 20, 34, .99));
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: .9rem;
+  box-shadow: 0 40px 120px rgba(0, 0, 0, .62), 0 0 0 1px rgba(139, 92, 246, .06), inset 0 1px 0 rgba(255, 255, 255, .09);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+}
+
+/* --- Badges: three states only, per spec ------------------------------- */
+.recharza-state-amber {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  border-radius: 999px;
+  padding: .18rem .6rem;
+  background: rgba(245, 158, 11, .18);
+  border: 1px solid rgba(245, 158, 11, .35);
+  color: #fcd34d;
+  font-size: .66rem;
+  font-weight: 650;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+.recharza-state-green {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  border-radius: 999px;
+  padding: .18rem .6rem;
+  background: rgba(34, 197, 94, .15);
+  border: 1px solid rgba(34, 197, 94, .34);
+  color: #86efac;
+  font-size: .66rem;
+  font-weight: 650;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+.recharza-state-red {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  border-radius: 999px;
+  padding: .18rem .6rem;
+  background: rgba(239, 68, 68, .15);
+  border: 1px solid rgba(239, 68, 68, .34);
+  color: #fca5a5;
+  font-size: .66rem;
+  font-weight: 650;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+.recharza-state-amber::before,
+.recharza-state-green::before,
+.recharza-state-red::before {
+  content: "";
+  width: .34rem;
+  height: .34rem;
+  border-radius: 999px;
+  flex: none;
+}
+.recharza-state-amber::before { background: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, .6); }
+.recharza-state-green::before { background: #22c55e; box-shadow: 0 0 6px rgba(34, 197, 94, .55); }
+.recharza-state-red::before { background: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, .55); }
+
+@media (prefers-reduced-motion: reduce) {
+  .recharza-bleed-card, .recharza-bleed-card:hover, .recharza-bleed-card:active { transform: none !important; }
+}
+
+/* --- Segment rail (v2 spec, replaces circle nodes) -------------------- */
+.recharza-segment-rail {
+  display: grid;
+  grid-template-columns: repeat(var(--rcz-steps, 5), minmax(0, 1fr));
+  gap: .35rem;
+  align-items: start;
+}
+.recharza-segment-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .4rem;
+}
+.recharza-segment {
+  display: flex;
+  width: 100%;
+  height: .42rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: .25rem;
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid rgba(255, 255, 255, .06);
+  transition: background 320ms cubic-bezier(.22, 1, .36, 1), border-color 320ms ease-out, box-shadow 320ms ease-out;
+}
+.recharza-segment-done {
+  background: linear-gradient(90deg, #16a34a, #22c55e);
+  border-color: rgba(34, 197, 94, .5);
+  box-shadow: 0 0 12px rgba(34, 197, 94, .28);
+  color: #08201a;
+}
+.recharza-segment-active {
+  background: linear-gradient(90deg, #7c3aed, #60a5fa);
+  border-color: rgba(139, 92, 246, .6);
+  box-shadow: 0 0 16px rgba(139, 92, 246, .42);
+}
+.recharza-segment-label {
+  font-size: .6rem;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 320ms ease-out;
+}

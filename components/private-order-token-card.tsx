@@ -31,7 +31,7 @@ export function PrivateOrderTokenCard({ token }: { token: string }) {
           onClick={() => void copyToken()}
           className="min-h-10 shrink-0 rounded-lg border border-amber-200/25 bg-amber-200/10 px-3 text-xs font-semibold text-amber-100 transition hover:bg-amber-200/20"
         >
-          {copied ? "✅ Copied" : "📋 Copy token"}
+          {copied ? "Copied" : "Copy token"}
         </button>
       </div>
       <textarea

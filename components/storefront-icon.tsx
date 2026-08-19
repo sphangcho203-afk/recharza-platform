@@ -14,7 +14,18 @@ export type StorefrontIconName =
   | "search"
   | "shield"
   | "support"
-  | "track";
+  | "track"
+  | "close"
+  | "check"
+  | "copy"
+  | "phone"
+  | "chat"
+  | "mail"
+  | "lock"
+  | "package"
+  | "refresh"
+  | "eye"
+  | "chevron";
 
 type StorefrontIconProps = SVGProps<SVGSVGElement> & {
   name: StorefrontIconName;
@@ -28,7 +39,7 @@ export function StorefrontIcon({
   const common = {
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: 1.8,
+    strokeWidth: 1.5,
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
   };
@@ -141,6 +152,77 @@ export function StorefrontIcon({
           <circle cx="12" cy="12" r="9" />
           <path d="M12 8.5v.01M12 11.5v5" />
         </>
+      ) : null}
+
+      {name === "close" ? (
+        <>
+          <path d="m7 7 10 10M17 7 7 17" />
+        </>
+      ) : null}
+
+      {name === "check" ? (
+        <path d="m6 12.5 4 4L18 8" />
+      ) : null}
+
+      {name === "copy" ? (
+        <>
+          <rect x="9.5" y="9.5" width="9.5" height="9.5" rx="2" />
+          <path d="M5 16v-8a3 3 0 0 1 3-3h8" />
+        </>
+      ) : null}
+
+      {name === "phone" ? (
+        <>
+          <path d="M4.6 3.4c.7-.7 1.9-.7 2.6 0l1.4 1.4c.6.6.8 1.6.4 2.4l-.6 1.3a1 1 0 0 0 .3 1.2c1.3 1.3 2.9 2.4 4.6 3.2.4.2.9.1 1.2-.3l1.2-.7c.8-.4 1.8-.3 2.5.3l1.4 1.4c.7.7.7 1.9 0 2.6l-.5.5c-.8.8-2 .9-3 .6a20.6 20.6 0 0 1-8.4-5.6 20.6 20.6 0 0 1-3.2-5.5c-.3-1-.2-2.2.6-3l.5-.4Z" />
+        </>
+      ) : null}
+
+      {name === "chat" ? (
+        <>
+          <path d="M4 15c0 2.8 2.7 5 6 5 .8 0 1.6-.1 2.3-.4L17 21v-3.3c1.9-1.1 3-2.7 3-4.7 0-3.3-2.7-6-6-6H10C6.7 7 4 9.2 4 12v3Z" />
+          <path d="M8 11h.01M11.5 11h.01M15 11h.01" />
+        </>
+      ) : null}
+
+      {name === "mail" ? (
+        <>
+          <rect x="4" y="6" width="16" height="12" rx="2" />
+          <path d="m4 8 8 6 8-6" />
+        </>
+      ) : null}
+
+      {name === "lock" ? (
+        <>
+          <rect x="6.5" y="10" width="11" height="9" rx="2" />
+          <path d="M9 10V7a3 3 0 0 1 6 0v3" />
+        </>
+      ) : null}
+
+      {name === "package" ? (
+        <>
+          <path d="m3.5 8.5 8.5-5 8.5 5-8.5 5-8.5-5Z" />
+          <path d="M3.5 8.5v7l8.5 5 8.5-5v-7M12 13.5v7" />
+        </>
+      ) : null}
+
+      {name === "refresh" ? (
+        <>
+          <path d="M3.5 12a8.5 8.5 0 0 1 14.8-5.4L20.5 9" />
+          <path d="M20.5 6.2V9h-2.8" />
+          <path d="M20.5 12a8.5 8.5 0 0 1-14.8 5.4L3.5 15" />
+          <path d="M3.5 17.8V15h2.8" />
+        </>
+      ) : null}
+
+      {name === "eye" ? (
+        <>
+          <path d="M3 12s3.4-6.2 9-6.2S21 12 21 12s-3.4 6.2-9 6.2S3 12 3 12Z" />
+          <circle cx="12" cy="12" r="2.8" />
+        </>
+      ) : null}
+
+      {name === "chevron" ? (
+        <path d="m9 7 5 5-5 5" />
       ) : null}
     </svg>
   );

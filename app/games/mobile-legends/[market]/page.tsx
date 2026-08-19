@@ -60,7 +60,7 @@ export default async function MobileLegendsMarketPage({
 
   if (packages.length === 0) {
     return (
-      <main className="storefront-page min-h-screen overflow-x-clip text-white">
+      <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-white">
         <SiteHeader />
         <section className="mx-auto max-w-[900px] px-4 py-10 sm:px-6 lg:px-8">
           <Link href="/games/mobile-legends" className="text-xs font-semibold text-violet-300 hover:text-violet-200">← Mobile Legends markets</Link>
@@ -87,7 +87,7 @@ export default async function MobileLegendsMarketPage({
   }
 
   return (
-    <main className="storefront-page min-h-screen overflow-x-clip text-white">
+    <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-white">
       <SiteHeader />
 
       <section className="recharza-atmosphere-game border-b border-white/[0.08] px-4 py-5 sm:px-6 lg:px-8">

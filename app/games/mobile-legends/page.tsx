@@ -26,7 +26,7 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
   const gameArtwork = media.get("game.mobile-legends.artwork");
 
   return (
-    <main className="storefront-page min-h-screen overflow-x-clip text-white">
+    <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-white">
       <SiteHeader />
 
       <section className="recharza-atmosphere-game border-b border-white/[0.08] px-4 py-5 sm:px-6 lg:px-8">

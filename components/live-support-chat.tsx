@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { StorefrontIcon } from "@/components/storefront-icon";
+
 type ChatMessage = { id: number; role: "assistant" | "user"; text: string };
 
 const welcome: ChatMessage = {
@@ -63,7 +65,7 @@ export function LiveSupportChat({ embedded = false }: { embedded?: boolean }) {
       {open ? (
         <section
           aria-label="Recharza live support"
-          className={`${embedded ? "h-[min(620px,calc(100vh-180px))] w-full" : "mb-3 h-[min(680px,calc(100vh-112px))] w-[min(400px,calc(100vw-32px))]"} flex flex-col overflow-hidden rounded-[1.5rem] border border-white/[0.13] bg-[#0b0d15]/95 shadow-[0_24px_90px_rgba(0,0,0,0.48)] backdrop-blur-2xl`}
+          className={`${embedded ? "h-[min(620px,calc(100vh-180px))] w-full" : "mb-3 h-[min(680px,calc(100vh-112px))] w-[min(400px,calc(100vw-32px))]"} recharza-sheet flex flex-col overflow-hidden`}
         >
           <header className="relative overflow-hidden border-b border-white/[0.09] px-5 py-4">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_85%_15%,rgba(139,92,246,0.24),transparent_42%),radial-gradient(circle_at_10%_100%,rgba(34,211,238,0.1),transparent_45%)]" />
@@ -79,7 +81,7 @@ export function LiveSupportChat({ embedded = false }: { embedded?: boolean }) {
                   <p className="mt-0.5 text-[11px] text-slate-500">Here to guide your top-up</p>
                 </div>
               </div>
-              {!embedded ? <button type="button" onClick={() => setOpen(false)} className="grid h-9 w-9 place-items-center rounded-lg text-lg text-slate-500 transition hover:bg-white/[0.07] hover:text-white" aria-label="Close live support">×</button> : null}
+              {!embedded ? <button type="button" onClick={() => setOpen(false)} className="grid h-9 w-9 place-items-center rounded-lg text-slate-500 transition hover:bg-white/[0.07] hover:text-white" aria-label="Close live support"><StorefrontIcon name="close" className="h-5 w-5" /></button> : null}
             </div>
           </header>
 
@@ -106,7 +108,7 @@ export function LiveSupportChat({ embedded = false }: { embedded?: boolean }) {
             <form onSubmit={(event) => { event.preventDefault(); void sendMessage(); }} className="flex items-end gap-2 rounded-lg border border-white/[0.1] bg-black/20 p-1.5 focus-within:border-violet-300/40">
               <label htmlFor="live-support-message" className="sr-only">Message Recharza Support</label>
               <textarea id="live-support-message" rows={1} value={draft} onChange={(event) => setDraft(event.target.value.slice(0, 700))} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void sendMessage(); } }} placeholder="Ask about a top-up…" className="max-h-24 min-h-10 flex-1 resize-none bg-transparent px-2.5 py-2 text-sm text-white outline-none placeholder:text-slate-600" disabled={sending} />
-              <button type="submit" disabled={!draft.trim() || sending} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-violet-500 text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Send message">↑</button>
+              <button type="submit" disabled={!draft.trim() || sending} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-violet-500 text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-40" aria-label="Send message"><StorefrontIcon name="arrow" className="h-4 w-4 -rotate-90" /></button>
             </form>
             <p className="mt-2 px-1 text-[10px] leading-4 text-slate-600">Never send passwords, OTPs, card details, UPI PINs, or private access tokens.</p>
           </div>

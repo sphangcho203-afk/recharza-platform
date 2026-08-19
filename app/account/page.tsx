@@ -32,7 +32,7 @@ export default async function AccountPage({ searchParams }: AccountPageProps) {
   const protectedWorkspace = returnTo === "/admin" || returnTo === "/staff" || returnTo === "/operator";
 
   return (
-    <main className="storefront-page min-h-screen overflow-x-clip text-white">
+    <main className="storefront-page recharza-atmo-v2 recharza-atmo-account min-h-screen overflow-x-clip text-white">
       <SiteHeader />
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
         <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70">← Back to store</Link>

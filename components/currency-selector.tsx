@@ -75,13 +75,13 @@ export function CurrencySelector({ compact = false }: CurrencySelectorProps) {
 
   const picker = open ? (
     <div className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/70 p-0 backdrop-blur-[3px] sm:items-center sm:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} className="w-full max-h-[min(88vh,46rem)] overflow-hidden rounded-t-3xl border border-white/[0.12] bg-[#11131d] shadow-[0_24px_80px_rgba(0,0,0,0.65)] sm:max-w-lg sm:rounded-lg">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} className="recharza-sheet w-full max-h-[min(88vh,46rem)] overflow-hidden">
         <div className="flex items-center justify-between gap-3 border-b border-white/[0.08] px-4 py-3.5">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-300">Display currency</p>
             <h2 id={titleId} className="mt-0.5 text-lg font-semibold text-white">Choose currency</h2>
           </div>
-          <button type="button" onClick={() => setOpen(false)} aria-label="Close currency picker" className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition-colors duration-150 hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60"><span aria-hidden="true" className="text-lg leading-none">×</span></button>
+          <button type="button" onClick={() => setOpen(false)} aria-label="Close currency picker" className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition-colors duration-150 hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60"><StorefrontIcon name="close" className="h-5 w-5" /></button>
         </div>
         <ul className="max-h-[min(62vh,28rem)] overflow-y-auto p-2" aria-label="Currencies">
           {filteredCurrencies.map((item) => {

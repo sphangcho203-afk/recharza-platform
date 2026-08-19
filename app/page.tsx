@@ -57,7 +57,7 @@ export default async function Home() {
   const popularGames = visibleGames.filter((game) => popularSlugs.has(game.slug));
 
   return (
-    <main id="top" className="storefront-page min-h-screen overflow-x-clip text-white">
+    <main id="top" className="storefront-page recharza-atmo-v2 recharza-atmo-home min-h-screen overflow-x-clip text-white">
       <SiteHeader content={storefront} />
 
       {storefront.announcement.enabled ? (
@@ -71,8 +71,8 @@ export default async function Home() {
         </div>
       ) : null}
 
-      <section className="storefront-hero-shell storefront-motion-hero recharza-atmosphere relative overflow-hidden border-b border-white/[0.07] px-4 pb-8 pt-7 sm:px-6 sm:pb-14 sm:pt-12 lg:px-8 lg:pb-16">
-        <div className="storefront-hero-art storefront-motion-background" aria-hidden="true" />
+      <section className="storefront-hero-shell recharza-hero-sweep recharza-hero-edge storefront-motion-hero relative overflow-hidden px-4 pb-12 pt-7 sm:px-6 sm:pb-16 sm:pt-12 lg:px-8 lg:pb-20">
+        <div aria-hidden="true" />
         <div className="storefront-hero-glow storefront-hero-glow-left storefront-motion-orb" aria-hidden="true" />
         <div className="storefront-hero-glow storefront-hero-glow-right storefront-motion-orb" aria-hidden="true" />
         <div className="storefront-motion-hero-content relative z-10 mx-auto grid max-w-[1240px] items-end gap-10 lg:grid-cols-[minmax(0,1fr)_23rem] lg:gap-16">

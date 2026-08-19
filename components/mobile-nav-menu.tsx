@@ -149,7 +149,7 @@ export function MobileNavMenu() {
 
   const menu = open ? (
     <div className="recharza-scrim fixed inset-0 z-[9999] isolate" onMouseDown={(event) => { if (event.target === event.currentTarget) closeMenu(); }}>
-      <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby={supportOpen ? "support-chooser-title" : "mobile-navigation-title"} className="recharza-surface-floating relative h-full w-[min(22rem,88vw)] overflow-hidden border-r border-white/[0.12] bg-[#0e1018] p-4">
+      <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby={supportOpen ? "support-chooser-title" : "mobile-navigation-title"} className="recharza-sheet relative h-full w-[min(22rem,88vw)] overflow-hidden">
         <span aria-hidden="true" className="pointer-events-none absolute inset-0">
           <span style={{ position: "absolute", left: "-26%", top: "-18%", width: "120%", height: "60%", borderRadius: "50%", background: "radial-gradient(circle at 36% 32%, #8d5cff, transparent 70%)", filter: "blur(60px)", opacity: 0.07, animation: "recharza-aurora-drift-a 14s ease-in-out infinite alternate", willChange: "transform, opacity" }} />
           <span style={{ position: "absolute", right: "-30%", bottom: "-16%", width: "118%", height: "58%", borderRadius: "50%", background: "radial-gradient(circle at 62% 66%, #22d3ee, transparent 72%)", filter: "blur(64px)", opacity: 0.05, animation: "recharza-aurora-drift-b 17s ease-in-out infinite alternate", willChange: "transform, opacity" }} />
@@ -160,14 +160,14 @@ export function MobileNavMenu() {
             {supportOpen ? (
               <div className="mt-1 flex items-center gap-2">
                 <button type="button" onClick={() => setSupportOpen(false)} aria-label="Back to store navigation" className="grid h-7 w-7 place-items-center rounded-lg text-slate-400 transition hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">
-                  <span aria-hidden="true" className="text-xl leading-none">‹</span>
+                  <StorefrontIcon name="chevron" className="h-5 w-5 rotate-180" />
                 </button>
                 <h2 id="support-chooser-title" className="text-lg font-semibold tracking-tight text-white">Support</h2>
               </div>
             ) : <h2 id="mobile-navigation-title" className="mt-1 text-lg font-semibold tracking-tight text-white">Store navigation</h2>}
           </div>
           <button type="button" onClick={closeMenu} aria-label="Close navigation menu" className="grid h-9 w-9 place-items-center rounded-lg text-slate-400 transition hover:bg-white/[0.07] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">
-            <span aria-hidden="true" className="text-xl leading-none">×</span>
+            <StorefrontIcon name="close" className="h-5 w-5" />
           </button>
         </div>
 

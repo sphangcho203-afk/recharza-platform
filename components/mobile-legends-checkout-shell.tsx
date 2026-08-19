@@ -6,6 +6,7 @@ import { type ChangeEvent, type FormEvent, useEffect, useMemo, useRef, useState 
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { useDisplayCurrency } from "@/components/display-price";
 import { BillingAddressFields, initialBillingForm, type BillingFormState } from "@/components/billing-address-fields";
+import { CheckoutProgressRail } from "@/components/checkout-progress-rail";
 import { PrivateOrderTokenCard } from "@/components/private-order-token-card";
 import { RazorpayTestCheckout } from "@/components/razorpay-test-checkout";
 import { ResilientImage } from "@/components/resilient-image";
@@ -619,12 +620,13 @@ function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
           const complete = number < step;
           return <li key={label}>
             <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} className={`flex w-full flex-col items-center gap-1 rounded-lg px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-500"}`}>
-              <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-semibold">{complete ? "✓" : number}</span>
+              <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-semibold">{complete ? "\u2713" : number}</span>
               <span className="text-[9px] font-semibold uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
             </button>
           </li>;
         })}
       </ol>
+      <CheckoutProgressRail current={step} />
     </nav>
   );
 }

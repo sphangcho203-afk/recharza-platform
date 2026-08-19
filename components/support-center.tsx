@@ -2,6 +2,7 @@
 
 import { useMemo, useRef, useState } from "react";
 
+import { StorefrontIcon } from "@/components/storefront-icon";
 import { SupportChannelIcon, type SupportChannelIconName } from "@/components/support-channel-icon";
 import { SUPPORT_CATEGORIES, type SupportCategory, type SupportReplyChannel } from "@/lib/support";
 import type { PublicSupportChannel } from "@/lib/support-config";
@@ -122,7 +123,7 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
                   <strong className="block text-sm font-semibold text-white">{channel.label}</strong>
                   <span className="mt-0.5 block text-[11px] text-slate-500">{available ? "Open direct channel" : "Currently unavailable"}</span>
                 </span>
-                {available ? <span aria-hidden="true" className="text-slate-500">↗</span> : null}
+                {available ? <StorefrontIcon name="arrow" className="recharza-nav-arrow h-4 w-4 shrink-0 text-slate-500 group-hover:text-white" /> : null}
               </>
             );
             return available ? (
@@ -167,10 +168,10 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
       </section>
 
       {selected ? (
-        <section ref={formRef} className="scroll-mt-32 overflow-hidden rounded-lg border border-white/[0.09] bg-[#0b0d13]">
+        <section ref={formRef} className="scroll-mt-32 overflow-hidden rounded-xl border border-white/[0.09] recharza-form-block">
           {success ? (
             <div className="mx-auto max-w-xl px-5 py-10 text-center sm:px-8">
-              <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-emerald-400/10 text-emerald-300">✓</span>
+              <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-emerald-400/10 text-emerald-300"><StorefrontIcon name="check" className="h-6 w-6" /></span>
               <h2 className="mt-4 text-2xl font-semibold text-white">Ticket {success.id}</h2>
               <p className="mt-2 text-sm text-slate-500">Your request is in the support queue. Keep the ticket ID for follow-up.</p>
               {success.telegramConnectUrl ? (

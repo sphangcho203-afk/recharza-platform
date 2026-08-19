@@ -349,54 +349,35 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
             </button>
           </div>
 
-          <div className="mt-4 grid gap-3">
-            {orders.map((order) => {
-              const accent = gameAccent(order.gameSlug);
-              const pending = ["created", "awaiting_payment", "processing", "pending"].includes(order.status.toLowerCase());
-              return (
-              <article
-                key={order.id}
-                className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[linear-gradient(162deg,rgba(30,33,56,.92),rgba(13,15,25,.96))] p-4 shadow-[0_16px_40px_rgba(0,0,0,.28)] sm:p-5"
-              >
-                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[2px]" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)`, boxShadow: `0 0 12px ${accent}` }} />
-                <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
-                  <div className="min-w-0">
-                    <p className="break-all font-mono text-xs font-medium uppercase tracking-[0.12em] text-violet-300">
-                      {order.id}
-                    </p>
-                    <div className="mt-3 flex items-center gap-3">
-                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-12 w-12 shrink-0 rounded-lg object-cover" fallbackClassName="h-12 w-12 shrink-0 rounded-lg" />
-                      <div className="min-w-0">
-                        <h3 className="truncate text-base font-semibold text-white sm:text-lg">{order.package.name}</h3>
-                        <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{gameTitle(order.gameSlug)}</p>
-                      </div>
+          <div className="recharza-order-rows mt-4">
+            {orders.map((order) => (
+              <div key={order.id} className="recharza-order-row">
+                <div className="recharza-order-row-main min-w-0">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-10 w-10 shrink-0 rounded-lg object-cover" fallbackClassName="h-10 w-10 shrink-0 rounded-lg" />
+                    <div className="min-w-0">
+                      <p className="recharza-order-row-title truncate">{order.package.name}</p>
+                      <p className="recharza-order-row-meta">
+                        <span className="font-mono text-[.68rem] uppercase tracking-[0.1em] text-violet-300/80">{order.id}</span>
+                        {" · "}{gameTitle(order.gameSlug)}
+                        {order.market ? ` · ${order.market.label}` : ""}
+                        {" · "}<b>{formatInr(order.package.amountInPaise)}</b>
+                        {" · "}{new Date(order.createdAt).toLocaleDateString("en-IN")}
+                      </p>
                     </div>
-                    <p className="mt-1 text-sm text-slate-400">
-                      {order.market
-                        ? `${order.market.flag} ${order.market.label} · `
-                        : ""}
-                      {order.player.nickname || order.player.playerId}
-                    </p>
                   </div>
+                </div>
+                <div className="recharza-order-row-side">
                   <StatusBadge state={statusStateFor(order.status)} label={order.status.replaceAll("_", " ")} />
+                  <Link
+                    href={`/orders/${encodeURIComponent(order.id)}`}
+                    className="text-xs font-semibold text-cyan-200 transition hover:text-white"
+                  >
+                    Open →
+                  </Link>
                 </div>
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-                  <p className="text-sm text-slate-400">
-                    <strong className="text-white">
-                      {formatInr(order.package.amountInPaise)}
-                    </strong>{" "}
-                    · {new Date(order.createdAt).toLocaleDateString("en-IN")}
-                  </p>
-                <Link
-                  href={`/orders/${encodeURIComponent(order.id)}`}
-                  className="recharza-btn recharza-btn-tertiary px-4 text-xs"
-                >
-                  Open tracking
-                </Link>
-                </div>
-              </article>
-              );
-            })}
+              </div>
+            ))}
 
             {!orders.length ? (
               <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
@@ -422,30 +403,32 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
           <h2 className="mt-2 text-lg font-semibold tracking-tight text-white">
             Recent destinations
           </h2>
-          <div className="mt-4 grid gap-3">
+          <div className="mt-4 recharza-order-rows">
             {savedPlayers.map((order) => {
               const accent = gameAccent(order.gameSlug);
               return (
-              <article
+              <div
                 key={`${order.gameSlug}:${order.player.playerId}:${order.player.zoneId}:${order.market?.code ?? "global"}`}
-                className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[linear-gradient(160deg,rgba(30,33,56,.9),rgba(13,15,25,.95))] p-4 shadow-[0_10px_28px_rgba(0,0,0,.24)]"
+                className="recharza-order-row"
               >
-                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[1.5px]" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)`, boxShadow: `0 0 10px ${accent}` }} />
-                <div className="flex items-center justify-between gap-3">
+                <div className="recharza-order-row-main min-w-0">
                   <div className="flex min-w-0 items-center gap-3">
-                    <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-11 w-11 shrink-0 rounded-lg object-cover" fallbackClassName="h-11 w-11 shrink-0 rounded-lg" />
-                    <strong className="truncate text-sm text-white">
-                    {order.player.nickname || "Mobile Legends player"}
-                    </strong>
+                    <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-10 w-10 shrink-0 rounded-lg object-cover" fallbackClassName="h-10 w-10 shrink-0 rounded-lg" />
+                    <div className="min-w-0">
+                      <p className="recharza-order-row-title truncate">{order.player.nickname || "Mobile Legends player"}</p>
+                      <p className="recharza-order-row-meta break-all font-mono text-[.68rem]">
+                        {order.player.playerId}{order.player.zoneId ? ` (${order.player.zoneId})` : ""}
+                        {" · "}<span style={{ color: accent }}>{gameTitle(order.gameSlug)}</span>
+                      </p>
+                    </div>
                   </div>
-                  <span className="shrink-0 text-sm">
-                    {order.market?.flag ?? "🌐"}
+                </div>
+                <div className="recharza-order-row-side">
+                  <span className="text-[.68rem] font-semibold uppercase tracking-[0.1em] text-slate-400">
+                    {order.market?.code ?? "global"}
                   </span>
                 </div>
-                <p className="mt-2 break-all font-mono text-xs text-slate-400">
-                  {order.player.playerId} ({order.player.zoneId})
-                </p>
-              </article>
+              </div>
               );
             })}
             {!savedPlayers.length ? (

@@ -5,40 +5,47 @@ type CheckoutProgressRailProps = {
 };
 
 /**
- * A proper progress component for the checkout flow — filled gradient
- * track, done/active node states, and small-caps labels sharing the
- * store's eyebrow treatment. `current` is 1-based.
+ * Spec v2 progress rail — filled/unfilled SEGMENTS (not circles),
+ * current step labeled inline above the rail, completed steps shown
+ * with a checkmark instead of a number. Segments live directly under
+ * each label so the rail reads as one continuous bar.
  */
 export function CheckoutProgressRail({ current }: CheckoutProgressRailProps) {
   const total = STEP_LABELS.length;
-  const fillPct = Math.min(100, ((current - 1) / (total - 1)) * 100);
 
   return (
-    <div
-      className="relative"
-      style={{ "--rcz-fill": `${fillPct}%` } as React.CSSProperties}
-    >
+    <div className="w-full">
+      <div className="mb-2.5 flex items-center justify-between">
+        <p className="text-[.68rem] font-semibold uppercase tracking-[0.18em] text-cyan-200/80">Checkout</p>
+        <p className="text-[.72rem] font-semibold text-slate-300">
+          {STEP_LABELS[Math.min(current, total) - 1]} · <span className="text-slate-500">Step {Math.min(current, total)} of {total}</span>
+        </p>
+      </div>
       <div
-        className="recharza-progress-rail"
-        style={{ "--rcz-steps": total } as React.CSSProperties}
+        className="recharza-segment-rail"
+        style={{ "--rcz-steps": total, "--rcz-current": current } as React.CSSProperties}
       >
-        <div className="recharza-progress-track" />
-        <div className="recharza-progress-fill" />
         {STEP_LABELS.map((label, idx) => {
           const stepNo = idx + 1;
           const done = stepNo < current;
           const active = stepNo === current;
           return (
-            <div
-              key={label}
-              className="recharza-progress-step"
-              data-active={active}
-              data-done={done}
-            >
-              <div
-                className={`recharza-progress-node ${done ? "recharza-progress-node-done" : ""} ${active ? "recharza-progress-node-active" : ""}`}
-              />
-              <div className="recharza-progress-label">{label}</div>
+            <div key={label} className="recharza-segment-cell">
+              <span
+                className={`recharza-segment ${done ? "recharza-segment-done" : ""} ${active ? "recharza-segment-active" : ""}`}
+                aria-current={active ? "step" : undefined}
+              >
+                {done ? (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="h-3.5 w-3.5">
+                    <path d="m6 12.5 4 4L18 8" />
+                  </svg>
+                ) : active ? (
+                  <span className="h-1.5 w-1.5 rounded-full bg-white" aria-hidden="true" />
+                ) : null}
+              </span>
+              <span className={`recharza-segment-label ${done ? "text-emerald-300/90" : active ? "text-cyan-100" : "text-slate-500"}`}>
+                {label}
+              </span>
             </div>
           );
         })}

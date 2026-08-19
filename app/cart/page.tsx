@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
 
 export default function CartRoute() {
   return (
-    <main className="storefront-page min-h-screen overflow-x-clip text-white">
+    <main className="storefront-page recharza-atmo-v2 recharza-atmo-checkout min-h-screen overflow-x-clip text-white">
       <SiteHeader />
 
       <section className="border-b border-white/[0.08] bg-[#0a0c12] px-4 py-5 sm:px-6 lg:px-8">
