@@ -152,3 +152,14 @@ The "mail-send-test" endpoint at app/api/internal/mail-send-test/route.ts still 
 Preview rendering scripts live at /tmp/render_preview.js using bundles in /tmp/bundle_out/ and /tmp/email-bundle-full.cjs (esbuild bundle of both email libs, platform node, external:next). Server-only throws and import.meta patches needed — extraction of lifecycle renderHtml failed (wrong brace scope due to nested strings); workaround available.
 User message: received the test email but "it isn't how you described" — because the send-test route uses the old plain template, not the premium one.
 Production URL: https://recharza-platform-2o3wxy8mj-stand-still.vercel.app (commit ea75428). Token + ids in /home/ubuntu/.vercel_api.sh.
+
+## Password Reset + Order Email Template Audit (Aug 18, ~21:30)
+Code audit complete. ALL flows verified to use premium dark templates with the real logo:
+- Password reset: app/api/auth/forgot-password/route.ts → sendPasswordResetEmail → lib/transactional-email.ts renderEmail (kind PASSWORD_RESET, amber accent). Premium dark shell (#08090d body, #11131a card), logo img at line 135 via logoUrl().
+- Order created: checkout/game & checkout/mobile-legends routes → sendOrderCreatedLifecycleEmail → lib/lifecycle-email.ts renderHtml (dark #06060a body, #0f0f17 card, 38px logo at line 103).
+- Order completed/failed: lib/order-email.ts → sendTransactionalEmail (kind ORDER_COMPLETED green accent / ORDER_FAILED) → same transactional premium template with logo.
+- Order cancelled/failed (operator & razorpay webhook & reconciliation): lifecycle-email dark template with logo.
+- Lifecycle emails updated earlier (logoUrl helper added) replacing the plain text R badge.
+- Mail-send-test endpoint updated (commit d733a94 → deployed ntwv812w7) to render same premium template; sent successfully (gmail-smtp, messageId confirmed).
+Current production: https://recharza-platform-ntwv812w7-stand-still.vercel.app (READY). Latest commit on main: d733a94.
+Remaining verification: optionally send live previews of password-reset and order emails to phangchosongja02@gmail.com — but note the forgot-password endpoint rate-limits and only sends when an email+password account exists (test account recharza.mailtest2@gmail.com exists); order emails are triggered by real checkout/payment flows only. Alternative: extend mail-send-test with ?kind=... parameter.
