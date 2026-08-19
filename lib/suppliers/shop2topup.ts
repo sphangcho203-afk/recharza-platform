@@ -51,6 +51,21 @@ export const SHOP2TOPUP_GAME_CONFIG: Record<string, Shop2TopUpGameConfig> = {
   },
 };
 
+// Round-3 extension probe (2026-08-19 night): live-tested sub_category ids
+// 2-119 with fake player ids to find ALL validation-capable items:
+//  - 28-32: FF "Mena Direct Topup" diamond packs — all validate (PLAYER_NOT_FOUND)
+//  - 33-50: FF "Cis Direct Topup" diamonds, Weekly/Monthly Membership,
+//    Level Up packages — all validate
+//  - 101-119: unnamed/hidden items (ids absent from the catalogue list) that
+//    validate numeric player ids and return REGION_MISMATCH for Genshin-style
+//    UIDs — likely hidden Genshin validators, but unpinned and unpublished, so
+//    they are NOT used in production until verified by name/requirements.
+//  - pubg-mobile UC items (subs 2-10, 12-13): NO_PLAYER_VALIDATION_REQUIRED or
+//    INVALID_PRODUCT_CONFIG — their UC products are voucher-redeem based with
+//    no player validation configured on Shop2TopUp's side.
+//  - genshin-impact Genesis Crystals (subs 51-56): all INVALID_PRODUCT_CONFIG.
+//  So MLBB + FF remain the only reliably configurable validators today.
+
 type Shop2TopUpPlayer = {
   player_id: string;
   player_name?: string;
