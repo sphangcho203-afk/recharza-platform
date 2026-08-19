@@ -1,5 +1,6 @@
 import "server-only";
 
+import { EmailMessageKind } from "@/generated/prisma/enums";
 import { sendSystemEmail } from "@/lib/mail-delivery";
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://recharza-platform-2o3wxy8mj-stand-still.vercel.app";
 import { renderEmail } from "@/lib/transactional-email";
@@ -24,9 +25,13 @@ export async function POST(request: Request) {
       (body && typeof body.to === "string" && body.to.trim()) ||
       "phangchosongja02@gmail.com";
 
-    const templateKind =
+    const rawKind =
       (body && typeof body.kind === "string" && body.kind) || "ACCOUNT_CREATED";
-    const isPreview = templateKind !== "ACCOUNT_CREATED";
+    const templateKind: EmailMessageKind =
+      EmailMessageKind[
+        rawKind as keyof typeof EmailMessageKind
+      ] ?? EmailMessageKind.ACCOUNT_CREATED;
+    const isPreview = rawKind !== "ACCOUNT_CREATED";
 
     const templateConfigs: Record<string, { subject: string; eyebrow: string; title: string; message: string; details: Array<{ label: string; value: string }>; action?: { label: string; url: string } }> = {
       ACCOUNT_CREATED: {
@@ -88,7 +93,7 @@ export async function POST(request: Request) {
       },
     };
 
-    const config = templateConfigs[templateKind] ?? templateConfigs.ACCOUNT_CREATED;
+    const config = templateConfigs[rawKind] ?? templateConfigs.ACCOUNT_CREATED;
 
     const html = renderEmail({
       kind: templateKind,
