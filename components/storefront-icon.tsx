@@ -6,6 +6,9 @@ export type StorefrontIconName =
   | "cart"
   | "games"
   | "globe"
+  | "coin"
+  | "id"
+  | "info"
   | "menu"
   | "receipt"
   | "search"
@@ -115,6 +118,28 @@ export function StorefrontIcon({
       {name === "menu" ? (
         <>
           <path d="M4 7h16M4 12h16M4 17h16" />
+        </>
+      ) : null}
+
+      {name === "coin" ? (
+        <>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M14.5 9.2c-.6-.7-1.5-1.1-2.5-1.1-1.9 0-3.4 1.5-3.4 3.4 0 1.2.6 2.1 1.5 2.7.9.6 1.3 1.1 1.3 1.9 0 .9-.7 1.7-1.7 1.7s-1.8-.5-2.2-1.2" />
+        </>
+      ) : null}
+
+      {name === "id" ? (
+        <>
+          <rect x="4" y="5" width="16" height="14" rx="2" />
+          <circle cx="9.5" cy="11" r="2" />
+          <path d="M14.5 9h3M14.5 13h3M6 16.5c.8-.9 2.1-1.5 3.5-1.5s2.7.6 3.5 1.5" />
+        </>
+      ) : null}
+
+      {name === "info" ? (
+        <>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 8.5v.01M12 11.5v5" />
         </>
       ) : null}
     </svg>

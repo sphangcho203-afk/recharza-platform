@@ -89,3 +89,13 @@ REMAINING:
 4. Verify live: curl MLBB landing page for "What the currency is used for" and headline-only pill;
    visual check in browser; report.
 Deployment monitor prints DEPLOY_READY:<url> when done.
+
+## LIVE VERIFICATION (2026-08-20)
+Deployment recharza-platform-igi0vm7je-stand-still.vercel.app (commit 1383389):
+- MLBB landing page curl: "What the currency is used for" x2, "How to find your ID" x2,
+  "How to purchase" x2, headline present, "Learn more" = 0 occurrences (headline-only pill confirmed).
+- Browser screenshot: header pill is compact single line; "About Mobile Legends" section
+  renders below the market grid with 3-column grid (currency/findId/steps) and region note strip.
+- E2E suite: 45/45 passed on new deployment.
+- Market pages (india, ff, etc.) remain auth-gated (307 -> /account) — PRE-EXISTING design
+  (identical on prior deployments per scripts/e2e-suite.py comments), not introduced by this change.

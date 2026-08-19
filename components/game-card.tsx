@@ -42,14 +42,24 @@ export function GameCard({
   const title = isRegional ? game.region?.label ?? game.title : game.title;
   const category = isRegional ? "Mobile Legends" : game.category;
 
+  const accent = game.accent ?? "#9b7cff";
   const card = (
     <article
-      className={`group grid h-full gap-4 rounded-lg border p-3 transition-[border-color,box-shadow,transform,background-color] duration-200 ease-out sm:p-4 ${
+      className={`group grid h-full gap-4 rounded-xl border p-3 transition-[border-color,box-shadow,transform,background-color] duration-200 ease-out overflow-hidden sm:p-4 ${
         interactive
-          ? "fable-surface-raised border-border bg-[linear-gradient(155deg,rgba(30,33,56,.96),rgba(14,16,29,.98))] hover:-translate-y-1 hover:border-primary/70 hover:shadow-elevation-2"
+          ? "fable-surface-raised border-white/[0.08] bg-[linear-gradient(162deg,rgba(30,33,56,.96),rgba(14,16,29,.98))] hover:-translate-y-1 hover:shadow-elevation-2 motion-safe:group-hover:scale-[1.015]"
           : "fable-surface-flat border-border opacity-60"
       }`}
+      style={interactive ? { boxShadow: "0 18px 44px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.06)", border: `1px solid rgba(255,255,255,.08)`, transitionDuration: "200ms" } : undefined}
     >
+      <span aria-hidden="true" className="absolute inset-0 pointer-events-none">
+        <span style={{ position: "absolute", left: "-18%", top: "-22%", width: "76%", height: "84%", borderRadius: "50%", background: `radial-gradient(circle at 35% 30%, ${accent}, transparent 70%)`, filter: "blur(46px)", opacity: 0, transition: "opacity 320ms ease" }} className="motion-safe:group-hover:opacity-[0.18]" />
+        <span style={{ position: "absolute", left: "62%", top: "46%", width: 4, height: 4, borderRadius: "50%", background: accent, boxShadow: `0 0 10px ${accent}`, opacity: 0, transition: "opacity 400ms ease 60ms" }} className="motion-safe:group-hover:opacity-70" />
+        <span style={{ position: "absolute", left: "26%", top: "38%", width: 3, height: 3, borderRadius: "50%", background: accent, boxShadow: `0 0 8px ${accent}`, opacity: 0, transition: "opacity 400ms ease 120ms" }} className="motion-safe:group-hover:opacity-50" />
+      </span>
+      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[1.5px] overflow-hidden opacity-0 transition-opacity duration-300 motion-safe:group-hover:opacity-100">
+        <span style={{ display: "block", width: "55%", height: "100%", background: `linear-gradient(90deg, transparent, ${accent}, transparent)`, boxShadow: `0 0 10px ${accent}`, animation: "recharza-line-sweep 3.6s ease-in-out infinite" }} />
+      </span>
       <div className="relative aspect-[1.16] overflow-hidden rounded-lg border border-[rgba(196,181,253,.18)] bg-surface-sunken shadow-[inset_0_1px_0_rgba(255,255,255,.08)]">
         <StorefrontArtwork
           artworkKey={game.artworkKey}
@@ -72,15 +82,15 @@ export function GameCard({
             <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-200/75">{category}</p>
             <h3 className="min-w-0 truncate text-[1.02rem] font-semibold leading-5 tracking-[-0.02em] text-text-primary sm:text-lg">{title}</h3>
           </div>
-          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-border bg-surface-sunken text-text-muted transition-[border-color,color,background-color] group-hover:border-primary/70 group-hover:bg-primary/10 group-hover:text-primary">
-            <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
+          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-border bg-surface-sunken text-text-muted transition-[border-color,color,background-color,transform,box-shadow] duration-200 group-hover:translate-x-0.5" style={{ borderColor: "transparent", boxShadow: `0 0 16px -6px ${accent}` } as React.CSSProperties}>
+            <StorefrontIcon name="arrow" className="h-3.5 w-3.5 transition-colors duration-200" />
           </span>
         </div>
         {price ? <p className="truncate text-[.72rem] font-medium text-text-secondary">From <DisplayPrice amountInrMinor={price} className="ml-1 text-[.86rem] font-semibold text-violet-100" /></p> : <p className="text-[.72rem] font-medium text-text-secondary">Verified digital delivery</p>}
       </div>
 
       <div className="flex items-center gap-2 border-t border-white/[.09] pt-3">
-        <span className="inline-flex min-h-9 flex-1 items-center justify-center rounded-lg bg-primary px-3 py-2 text-xs font-semibold tracking-[.01em] text-primary-foreground shadow-[0_8px_22px_rgba(155,124,255,.18)] transition-[background-color,box-shadow] group-hover:bg-primary-hover group-hover:shadow-[0_10px_28px_rgba(155,124,255,.28)]">{label}</span>
+        <span className="recharza-electric-btn inline-flex min-h-9 flex-1 items-center justify-center rounded-lg bg-primary px-3 py-2 text-xs font-semibold tracking-[.01em] text-primary-foreground shadow-[0_8px_22px_rgba(155,124,255,.18)] transition-[background-color,box-shadow,transform] duration-200 group-hover:bg-primary-hover group-hover:shadow-[0_10px_28px_rgba(155,124,255,.28)]">{label}</span>
         <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-text-muted">Secure</span>
       </div>
     </article>

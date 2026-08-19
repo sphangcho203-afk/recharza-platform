@@ -16,9 +16,9 @@ import { getPublishedStorefrontContent } from "@/lib/storefront-content";
 export const dynamic = "force-dynamic";
 
 const processItems = [
-  { step: "01", icon: "games" as const, title: "Pick the right market", text: "Browse distinct game and regional cards so your account destination is clear from the start." },
-  { step: "02", icon: "shield" as const, title: "Verify before payment", text: "Confirm the player name, Riot ID, UID, or Zone ID before you commit your order." },
-  { step: "03", icon: "track" as const, title: "Pay, then track", text: "Keep the package, order reference, and support path visible from checkout to delivery." },
+  { step: "01", icon: "games" as const, title: "Pick the right market", accent: "#8d5cff", text: "Every card opens the exact game and account market for your server. Your destination is decided once, correctly, before anything else — so a Saudi account can never be charged through an India catalogue." },
+  { step: "02", icon: "shield" as const, title: "Verify before payment", accent: "#22d3ee", text: "Type your IGN and our cross-region checker returns your in-game username and account region live. Verification works from any country — but payment only unlocks once the name you see is yours." },
+  { step: "03", icon: "track" as const, title: "Pay, then track", accent: "#34d399", text: "Checkout through Razorpay, and diamonds, UC, VP or V-Bucks are credited straight into the verified account. Every order carries its own tracking reference and a direct path back to human support." },
 ];
 
 const popularSlugs = new Set(["mobile-legends-india", "free-fire", "pubg-mobile", "valorant", "genshin-impact"]);
@@ -122,7 +122,28 @@ export default async function Home() {
       </section>
 
       <section id="how-it-works" className="storefront-process-section storefront-motion-section border-y border-white/[0.07] bg-[#090b12] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1240px]"><div className="max-w-2xl"><div className="storefront-section-label">How Recharza works</div><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">Clear steps. Fewer checkout surprises.</h2><p className="mt-3 text-sm leading-6 text-slate-400">The flow is designed around the player destination first, because a correct package is only useful when it reaches the right account.</p></div><div className="mt-8 grid gap-3 md:grid-cols-3">{processItems.map((item) => <article key={item.step} className="storefront-process-card storefront-motion-card"><div className="flex items-start justify-between"><span className="grid h-11 w-11 place-items-center rounded-lg bg-white/[0.055] text-cyan-200 ring-1 ring-white/[0.08]"><StorefrontIcon name={item.icon} className="h-5 w-5" /></span><span className="font-mono text-xs font-bold text-slate-600">{item.step}</span></div><h3 className="mt-6 text-base font-semibold text-white">{item.title}</h3><p className="mt-2 text-sm leading-6 text-slate-400">{item.text}</p></article>)}</div></div>
+        <div className="mx-auto max-w-[1240px]"><div className="max-w-2xl"><div className="storefront-section-label">How Recharza works</div><h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl">Clear steps. Fewer checkout surprises.</h2><p className="mt-3 text-sm leading-6 text-slate-400">The flow is designed around the player destination first, because a correct package is only useful when it reaches the right account.</p></div><div className="mt-8 grid gap-3 md:grid-cols-3">{processItems.map((item, index) => (
+        <article key={item.step} className="group relative storefront-process-card storefront-motion-card overflow-hidden rounded-xl border border-white/[0.07] bg-[linear-gradient(162deg,rgba(30,33,56,.94),rgba(13,15,25,.97))] shadow-[0_18px_44px_rgba(0,0,0,.3)]">
+          <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+            <span style={{ position: "absolute", left: "-10%", top: "-14%", width: "80%", height: "90%", borderRadius: "50%", background: `radial-gradient(circle at 35% 30%, ${item.accent}, transparent 70%)`, filter: "blur(52px)", opacity: .13, animation: `recharza-aurora-drift-a ${13 + index * 2}s ease-in-out ${-index * 4}s infinite alternate`, willChange: "transform, opacity" }} />
+            <span className="recharza-particle" style={{ position: "absolute", left: "74%", top: "18%", width: 4, height: 4, borderRadius: "50%", background: item.accent, boxShadow: `0 0 10px ${item.accent}`, opacity: .7, animation: `recharza-particle-float 9s ease-in-out ${-index * 3}s infinite alternate` }} />
+            <span className="recharza-particle" style={{ position: "absolute", left: "22%", top: "68%", width: 3, height: 3, borderRadius: "50%", background: item.accent, boxShadow: `0 0 8px ${item.accent}`, opacity: .5, animation: `recharza-particle-float 11s ease-in-out ${-index * 5}s infinite alternate` }} />
+          </div>
+          <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[1.5px] overflow-hidden">
+            <span style={{ display: "block", width: "55%", height: "100%", background: `linear-gradient(90deg, transparent, ${item.accent}, transparent)`, boxShadow: `0 0 10px ${item.accent}`, animation: `recharza-line-sweep 4.8s ease-in-out ${-index * 1.4}s infinite`, willChange: "transform" }} />
+          </span>
+          <div className="relative">
+            <div className="flex items-start justify-between">
+              <span className="grid h-12 w-12 place-items-center rounded-xl ring-1 transition-transform duration-200 group-hover:scale-105" style={{ background: `radial-gradient(circle at 30% 22%, ${item.accent}55, ${item.accent}18)`, color: item.accent, boxShadow: `0 0 22px -8px ${item.accent}` } as React.CSSProperties}>
+                <StorefrontIcon name={item.icon} className="h-5.5 w-5.5" />
+              </span>
+              <span className="font-mono text-xs font-bold" style={{ color: `${item.accent}88` }}>{item.step}</span>
+            </div>
+            <h3 className="mt-6 text-base font-semibold text-white">{item.title}</h3>
+            <p className="mt-2 text-sm leading-6 text-slate-400">{item.text}</p>
+          </div>
+        </article>
+      ))}</div></div>
       </section>
 
       <StorefrontAccountPrompt />

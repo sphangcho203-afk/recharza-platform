@@ -83,6 +83,15 @@ async function fetchSnapshot(): Promise<Snapshot> {
   };
 }
 
+function gameAccent(gameSlug: string) {
+  const game = games.find((entry) => entry.slug === gameSlug) ?? games.find((entry) => entry.slug === gameSlug.split("-").slice(0, -1).join("-"));
+  return game?.accent ?? "#9b7cff";
+}
+
+function indexForAccent(accent: string) {
+  return Math.max(0, Math.round(accent.charCodeAt(1) % 6));
+}
+
 function artworkSourcesForGame(gameSlug: string) {
   const game = games.find((entry) => entry.slug === gameSlug) ?? games.find((entry) => entry.slug === gameSlug.split("-").slice(0, -1).join("-"));
   if (!game) return [];
@@ -279,21 +288,27 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
 
         <nav className="grid gap-3 border-t border-white/10 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4" aria-label="Account tools">
           {[
-            ["Cart", "/cart", "Review packages and players", "cart"],
-            ["Start a top-up", "/#games", "Choose a game and market", "games"],
-            ["Orders", "/account/orders", "View your complete order history", "track"],
-            ["Get support", "/support", "Chat or create a request", "support"],
-          ].map(([label, href, note, icon]) => (
+            ["Cart", "/cart", "Review packages and players", "cart", "#a78bfa"],
+            ["Start a top-up", "/#games", "Choose a game and market", "games", "#22d3ee"],
+            ["Orders", "/account/orders", "View your complete order history", "track", "#34d399"],
+            ["Get support", "/support", "Chat or create a request", "support", "#f472b6"],
+          ].map(([label, href, note, icon, accent]) => (
             <Link
               key={label}
-              href={href}
-              className="group relative overflow-hidden rounded-lg border border-white/10 bg-white/[0.03] p-4 transition duration-150 ease-out hover:border-violet-400/40 hover:bg-violet-400/[0.08]"
+              href={href as string}
+              className="recharza-nav-row group relative overflow-hidden rounded-xl border border-white/[0.08] bg-[linear-gradient(160deg,rgba(30,33,56,.9),rgba(13,15,25,.95))] p-4 shadow-[0_12px_32px_rgba(0,0,0,.25)]"
             >
-              <span className="grid h-11 w-11 place-items-center rounded-lg border border-violet-300/20 bg-[radial-gradient(circle_at_30%_20%,rgba(167,139,250,0.34),rgba(124,58,237,0.12))] text-violet-100 transition duration-150 ease-out group-hover:bg-violet-400/20">
+              <span aria-hidden="true" className="pointer-events-none absolute inset-0">
+                <span style={{ position: "absolute", left: "-22%", top: "-34%", width: "96%", height: "108%", borderRadius: "50%", background: `radial-gradient(circle at 34% 30%, ${accent}, transparent 70%)`, filter: "blur(44px)", opacity: 0.1, animation: `recharza-aurora-drift-a ${12 + indexForAccent(accent as string)}s ease-in-out infinite alternate`, willChange: "transform, opacity" }} />
+              </span>
+              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[1.5px] overflow-hidden">
+                <span style={{ display: "block", width: "55%", height: "100%", background: `linear-gradient(90deg, transparent, ${accent}, transparent)`, boxShadow: `0 0 10px ${accent}`, animation: `recharza-line-sweep 5.2s ease-in-out infinite`, willChange: "transform" }} />
+              </span>
+              <span className="relative grid h-11 w-11 place-items-center rounded-xl ring-1 transition-transform duration-200 group-hover:scale-105" style={{ background: `radial-gradient(circle at 30% 22%, ${accent}55, ${accent}18)`, color: accent, boxShadow: `0 0 20px -6px ${accent}` } as React.CSSProperties}>
                 <StorefrontIcon name={icon as Parameters<typeof StorefrontIcon>[0]["name"]} className="h-4 w-4" />
               </span>
-              <strong className="mt-4 block text-sm font-bold text-white">{label}</strong>
-              <span className="mt-1 block text-xs leading-5 text-slate-500">{note}</span>
+              <strong className="relative mt-4 block text-sm font-semibold text-white">{label}</strong>
+              <span className="relative mt-1 block text-xs leading-5 text-slate-500">{note}</span>
             </Link>
           ))}
         </nav>
@@ -303,15 +318,21 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
       {!showOrders ? (
         <>
           <section className="grid gap-3 sm:grid-cols-3" aria-label="Account summary">
-            {[
-              ["Total orders", String(orders.length), "All account-owned orders"],
-              ["Active orders", String(activeOrders), "Still moving through the flow"],
-              ["Saved players", String(savedPlayers.length), "Derived from order history"],
-            ].map(([label, value, note]) => (
-              <article key={label} className="rounded-lg border border-white/10 bg-white/[0.035] p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.13em] text-slate-500">{label}</p>
-                <p className="mt-3 text-3xl font-semibold tracking-tight text-white">{value}</p>
-                <p className="mt-2 text-xs text-slate-600">{note}</p>
+            {            [
+              ["Total orders", String(orders.length), "All account-owned orders", "#8d5cff"],
+              ["Active orders", String(activeOrders), "Still moving through the flow", "#22d3ee"],
+              ["Saved players", String(savedPlayers.length), "Derived from order history", "#34d399"],
+            ].map(([label, value, note, accent], tileIndex) => (
+              <article key={label as string} className="recharza-stat-tile relative overflow-hidden rounded-xl p-5">
+                <span aria-hidden="true" className="pointer-events-none absolute inset-0">
+                  <span style={{ position: "absolute", left: "-20%", top: "-36%", width: "100%", height: "110%", borderRadius: "50%", background: `radial-gradient(circle at 34% 30%, ${accent}, transparent 72%)`, filter: "blur(44px)", opacity: 0.12, animation: `recharza-aurora-drift-a ${13 + tileIndex * 3}s ease-in-out infinite alternate`, willChange: "transform, opacity" }} />
+                </span>
+                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[1.5px] overflow-hidden">
+                  <span style={{ display: "block", width: "55%", height: "100%", background: `linear-gradient(90deg, transparent, ${accent}, transparent)`, boxShadow: `0 0 10px ${accent}`, animation: `recharza-line-sweep ${5 + tileIndex}s ease-in-out infinite`, willChange: "transform" }} />
+                </span>
+                <p className="relative text-xs font-semibold uppercase tracking-[0.13em] text-slate-500">{label}</p>
+                <p className="relative mt-3 text-3xl font-semibold tracking-tight recharza-stat-value">{value}</p>
+                <p className="relative mt-2 text-xs text-slate-600">{note}</p>
               </article>
             ))}
           </section>
@@ -347,11 +368,15 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
           </div>
 
           <div className="mt-4 grid gap-3">
-            {orders.map((order) => (
+            {orders.map((order) => {
+              const accent = gameAccent(order.gameSlug);
+              const pending = ["created", "awaiting_payment", "processing", "pending"].includes(order.status.toLowerCase());
+              return (
               <article
                 key={order.id}
-                className="rounded-lg border border-white/10 bg-white/[0.035] p-4 sm:p-5"
+                className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[linear-gradient(162deg,rgba(30,33,56,.92),rgba(13,15,25,.96))] p-4 shadow-[0_16px_40px_rgba(0,0,0,.28)] sm:p-5"
               >
+                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[2px]" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)`, boxShadow: `0 0 12px ${accent}` }} />
                 <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
                   <div className="min-w-0">
                     <p className="break-all font-mono text-xs font-medium uppercase tracking-[0.12em] text-violet-300">
@@ -372,7 +397,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                     </p>
                   </div>
                   <span
-                    className={`w-fit rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wider ${statusClassName(order.status)}`}
+                    className={`w-fit rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wider ${statusClassName(order.status)}${pending ? " recharza-status-ring" : ""}`}
                   >
                     {order.status.replaceAll("_", " ")}
                   </span>
@@ -386,13 +411,14 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                   </p>
                   <Link
                     href={`/orders/${encodeURIComponent(order.id)}`}
-                    className="min-h-11 rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-semibold text-violet-100 transition duration-150 ease-out hover:bg-violet-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
+                    className="recharza-electric-btn min-h-11 rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-semibold text-violet-100 transition duration-150 ease-out hover:bg-violet-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
                   >
                     Open tracking
                   </Link>
                 </div>
               </article>
-            ))}
+              );
+            })}
 
             {!orders.length ? (
               <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
@@ -419,11 +445,14 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
             Recent destinations
           </h2>
           <div className="mt-4 grid gap-3">
-            {savedPlayers.map((order) => (
+            {savedPlayers.map((order) => {
+              const accent = gameAccent(order.gameSlug);
+              return (
               <article
                 key={`${order.gameSlug}:${order.player.playerId}:${order.player.zoneId}:${order.market?.code ?? "global"}`}
-                className="rounded-lg border border-white/10 bg-black/20 p-4"
+                className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-[linear-gradient(160deg,rgba(30,33,56,.9),rgba(13,15,25,.95))] p-4 shadow-[0_10px_28px_rgba(0,0,0,.24)]"
               >
+                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[1.5px]" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)`, boxShadow: `0 0 10px ${accent}` }} />
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3">
                     <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-11 w-11 shrink-0 rounded-lg object-cover" fallbackClassName="h-11 w-11 shrink-0 rounded-lg" />
@@ -439,7 +468,8 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                   {order.player.playerId} ({order.player.zoneId})
                 </p>
               </article>
-            ))}
+              );
+            })}
             {!savedPlayers.length ? (
               <p className="rounded-lg border border-dashed border-white/10 px-4 py-5 text-sm leading-6 text-slate-500">
                 Validated player destinations will be collected from your order
