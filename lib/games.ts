@@ -18,6 +18,7 @@ export type Game = {
   family: "moba" | "battle-royale" | "shooter" | "rpg";
   kind: GameKind;
   status: GameStatus;
+  icon?: string;
   logoSources: string[];
   artworkSources: string[];
   artworkKey?: StorefrontArtworkKey;
@@ -53,6 +54,7 @@ const mobileLegendsRegionArtwork: Record<
 };
 
 const mobileLegendsBase = {
+  icon: "/assets/games/mobile-legends/icon.png",
   publisher: "MOONTON",
   category: "MOBA",
   family: "moba" as const,
@@ -120,6 +122,7 @@ export const games: Game[] = [
   ),
   {
     slug: "free-fire",
+    icon: "/assets/games/free-fire/icon.png",
     title: "Free Fire MAX",
     publisher: "Garena",
     category: "Battle Royale",
@@ -149,6 +152,7 @@ export const games: Game[] = [
   },
   {
     slug: "pubg-mobile",
+    icon: "/assets/games/pubg-mobile/icon.png",
     title: "PUBG Mobile",
     publisher: "KRAFTON · Level Infinite",
     category: "Battle Royale",
@@ -178,6 +182,7 @@ export const games: Game[] = [
   },
   {
     slug: "bgmi",
+    icon: "/assets/games/battlegrounds-mobile-india/icon.png",
     title: "Battlegrounds Mobile India",
     publisher: "KRAFTON",
     category: "Battle Royale",
@@ -201,6 +206,7 @@ export const games: Game[] = [
   },
   {
     slug: "call-of-duty-mobile",
+    icon: "/assets/games/call-of-duty-mobile/icon.png",
     title: "Call of Duty: Mobile",
     publisher: "Activision",
     category: "Shooter",
@@ -224,6 +230,7 @@ export const games: Game[] = [
   },
   {
     slug: "valorant",
+    icon: "/assets/games/valorant/icon.png",
     title: "VALORANT",
     publisher: "Riot Games",
     category: "Tactical FPS",
@@ -253,6 +260,7 @@ export const games: Game[] = [
   },
   {
     slug: "genshin-impact",
+    icon: "/assets/games/genshin-impact/icon.png",
     title: "Genshin Impact",
     publisher: "HoYoverse",
     category: "Action RPG",
@@ -282,6 +290,7 @@ export const games: Game[] = [
   },
   {
     slug: "fortnite",
+    icon: "/assets/games/fortnite/icon.png",
     title: "Fortnite",
     publisher: "Epic Games",
     category: "Battle Royale",

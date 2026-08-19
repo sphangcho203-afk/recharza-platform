@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useMemo, useState, type CSSProperties } from "react";
 
 type ResilientImageProps = {
-  sources: string[];
+  sources: (string | undefined)[];
   alt: string;
   className?: string;
   style?: CSSProperties;
@@ -43,7 +43,7 @@ function isSafeImageSource(value: string) {
 
 export function ResilientImage(props: ResilientImageProps) {
   const usableSources = useMemo(
-    () => Array.from(new Set(props.sources.filter(isSafeImageSource))),
+    () => Array.from(new Set(props.sources.filter((source): source is string => typeof source === "string" && isSafeImageSource(source)))),
     [props.sources],
   );
   const sourceKey = usableSources.join("\n") || "no-source";

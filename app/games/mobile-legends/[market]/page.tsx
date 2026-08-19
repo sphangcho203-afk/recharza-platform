@@ -102,9 +102,12 @@ export default async function MobileLegendsMarketPage({
 
           <div className="flex flex-col gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="flex min-w-0 items-center gap-4">
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-white/[0.08] bg-[#151923] sm:h-20 sm:w-20">
+              <div
+                className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/[0.08] sm:h-20 sm:w-20"
+                style={{ background: `linear-gradient(135deg, ${regionalGame.accent}26, ${regionalGame.accent}08)` }}
+              >
                 <ResilientImage
-                  sources={gameLogo ? [gameLogo.url, ...regionalGame.logoSources] : regionalGame.logoSources}
+                  sources={gameLogo ? [gameLogo.url, regionalGame.icon, ...regionalGame.logoSources] : [regionalGame.icon, ...regionalGame.logoSources]}
                   alt={gameLogo?.altText ?? regionalGame.logoAlt}
                   fallbackLabel="ML"
                   fill
@@ -116,12 +119,12 @@ export default async function MobileLegendsMarketPage({
               </div>
               <div className="min-w-0">
                 <h1 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">Mobile Legends: Bang Bang Top Up</h1>
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-slate-500">
-                  <span>{selectedMarket.flag} {selectedMarket.label}</span>
-                  <span>{packages.length} offers</span>
-                  <span>{selectedMarket.defaultCurrency}</span>
-                  <span className="text-emerald-300">Fixed market pricing</span>
-                  <span className="inline-flex items-center gap-1 text-cyan-300"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{selectedMarket.flag} {selectedMarket.label}</span>
+                  <span className="inline-flex whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{packages.length} offers</span>
+                  <span className="inline-flex whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{selectedMarket.defaultCurrency}</span>
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-emerald-300/20 bg-emerald-400/[0.06] px-2 py-0.5 text-[11px] font-medium text-emerald-300/90">Fixed market pricing</span>
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-cyan-300/90"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
                 </div>
               </div>
             </div>

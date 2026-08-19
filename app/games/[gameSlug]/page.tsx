@@ -93,9 +93,12 @@ export default async function GameCheckoutPage({
 
             <div className="flex flex-col gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
               <div className="flex min-w-0 items-center gap-4">
-                <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-white/[0.08] bg-[#151923] sm:h-20 sm:w-20">
+                <div
+                  className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/[0.08] sm:h-20 sm:w-20"
+                  style={{ background: `linear-gradient(135deg, ${game.accent}26, ${game.accent}08)` }}
+                >
                   <ResilientImage
-                    sources={gameLogo ? [gameLogo.url, ...game.logoSources] : game.logoSources}
+                    sources={gameLogo ? [gameLogo.url, game.icon, ...game.logoSources] : [game.icon, ...game.logoSources]}
                     alt={gameLogo?.altText ?? game.logoAlt}
                     fallbackLabel={game.title.slice(0, 2).toUpperCase()}
                     fill
@@ -107,12 +110,12 @@ export default async function GameCheckoutPage({
                 </div>
                 <div className="min-w-0">
                   <h1 className="text-xl font-semibold tracking-[-0.03em] text-white sm:text-2xl">{definition.title} Top Up</h1>
-                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-slate-500">
-                    <span className="text-amber-300">★ 4.9</span>
-                    <span>{packages.length} offers</span>
-                    <span>{marketCount} {marketCount === 1 ? "market" : "markets"}</span>
-                    <span className="inline-flex items-center gap-1 text-emerald-300"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Secure</span>
-                    <span className="inline-flex items-center gap-1 text-cyan-300"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
+                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                    <span className="inline-flex whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{packages.length} offers</span>
+                    <span className="inline-flex whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{marketCount} {marketCount === 1 ? "market" : "markets"}</span>
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-300/20 bg-amber-400/[0.06] px-2 py-0.5 text-[11px] font-medium text-amber-300/90">★ 4.9</span>
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-emerald-300/20 bg-emerald-400/[0.06] px-2 py-0.5 text-[11px] font-medium text-emerald-300/90"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Secure</span>
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-cyan-300/90"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
                   </div>
                 </div>
               </div>
