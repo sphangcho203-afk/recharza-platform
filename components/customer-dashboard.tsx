@@ -88,9 +88,6 @@ function gameAccent(gameSlug: string) {
   return game?.accent ?? "#9b7cff";
 }
 
-function indexForAccent(accent: string) {
-  return Math.max(0, Math.round(accent.charCodeAt(1) % 6));
-}
 
 function artworkSourcesForGame(gameSlug: string) {
   const game = games.find((entry) => entry.slug === gameSlug) ?? games.find((entry) => entry.slug === gameSlug.split("-").slice(0, -1).join("-"));
@@ -298,13 +295,8 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               href={href as string}
               className="recharza-nav-row group relative overflow-hidden rounded-xl border border-white/[0.08] bg-[linear-gradient(160deg,rgba(30,33,56,.9),rgba(13,15,25,.95))] p-4 shadow-[0_12px_32px_rgba(0,0,0,.25)]"
             >
-              <span aria-hidden="true" className="pointer-events-none absolute inset-0">
-                <span style={{ position: "absolute", left: "-22%", top: "-34%", width: "96%", height: "108%", borderRadius: "50%", background: `radial-gradient(circle at 34% 30%, ${accent}, transparent 70%)`, filter: "blur(44px)", opacity: 0.1, animation: `recharza-aurora-drift-a ${12 + indexForAccent(accent as string)}s ease-in-out infinite alternate`, willChange: "transform, opacity" }} />
-              </span>
-              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[1.5px] overflow-hidden">
-                <span style={{ display: "block", width: "55%", height: "100%", background: `linear-gradient(90deg, transparent, ${accent}, transparent)`, boxShadow: `0 0 10px ${accent}`, animation: `recharza-line-sweep 5.2s ease-in-out infinite`, willChange: "transform" }} />
-              </span>
-              <span className="relative grid h-11 w-11 place-items-center rounded-xl ring-1 transition-transform duration-200 group-hover:scale-105" style={{ background: `radial-gradient(circle at 30% 22%, ${accent}55, ${accent}18)`, color: accent, boxShadow: `0 0 20px -6px ${accent}` } as React.CSSProperties}>
+              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px opacity-60 transition-opacity duration-300 motion-safe:group-hover:opacity-100" style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 55%, transparent) 50%, transparent)` }} />
+              <span className="relative grid h-11 w-11 place-items-center rounded-xl bg-white/[0.05] ring-1 ring-white/[0.08] transition-transform duration-200 group-hover:scale-105" style={{ color: accent } as React.CSSProperties}>
                 <StorefrontIcon name={icon as Parameters<typeof StorefrontIcon>[0]["name"]} className="h-4 w-4" />
               </span>
               <strong className="relative mt-4 block text-sm font-semibold text-white">{label}</strong>
@@ -324,12 +316,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               ["Saved players", String(savedPlayers.length), "Derived from order history", "#34d399"],
             ].map(([label, value, note, accent], tileIndex) => (
               <article key={label as string} className="recharza-stat-tile relative overflow-hidden rounded-xl p-5">
-                <span aria-hidden="true" className="pointer-events-none absolute inset-0">
-                  <span style={{ position: "absolute", left: "-20%", top: "-36%", width: "100%", height: "110%", borderRadius: "50%", background: `radial-gradient(circle at 34% 30%, ${accent}, transparent 72%)`, filter: "blur(44px)", opacity: 0.12, animation: `recharza-aurora-drift-a ${13 + tileIndex * 3}s ease-in-out infinite alternate`, willChange: "transform, opacity" }} />
-                </span>
-                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[1.5px] overflow-hidden">
-                  <span style={{ display: "block", width: "55%", height: "100%", background: `linear-gradient(90deg, transparent, ${accent}, transparent)`, boxShadow: `0 0 10px ${accent}`, animation: `recharza-line-sweep ${5 + tileIndex}s ease-in-out infinite`, willChange: "transform" }} />
-                </span>
+                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px opacity-60" style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 50%, transparent) 50%, transparent)` }} />
                 <p className="relative text-xs font-semibold uppercase tracking-[0.13em] text-slate-500">{label}</p>
                 <p className="relative mt-3 text-3xl font-semibold tracking-tight recharza-stat-value">{value}</p>
                 <p className="relative mt-2 text-xs text-slate-600">{note}</p>
@@ -411,7 +398,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                   </p>
                   <Link
                     href={`/orders/${encodeURIComponent(order.id)}`}
-                    className="recharza-electric-btn min-h-11 rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-semibold text-violet-100 transition duration-150 ease-out hover:bg-violet-400/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
+                    className="min-h-11 rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-semibold text-violet-100 transition duration-150 ease-out hover:bg-violet-400/20 hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
                   >
                     Open tracking
                   </Link>

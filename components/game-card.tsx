@@ -52,14 +52,7 @@ export function GameCard({
       }`}
       style={interactive ? { boxShadow: "0 18px 44px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.06)", border: `1px solid rgba(255,255,255,.08)`, transitionDuration: "200ms" } : undefined}
     >
-      <span aria-hidden="true" className="absolute inset-0 pointer-events-none">
-        <span style={{ position: "absolute", left: "-18%", top: "-22%", width: "76%", height: "84%", borderRadius: "50%", background: `radial-gradient(circle at 35% 30%, ${accent}, transparent 70%)`, filter: "blur(46px)", opacity: 0, transition: "opacity 320ms ease" }} className="motion-safe:group-hover:opacity-[0.18]" />
-        <span style={{ position: "absolute", left: "62%", top: "46%", width: 4, height: 4, borderRadius: "50%", background: accent, boxShadow: `0 0 10px ${accent}`, opacity: 0, transition: "opacity 400ms ease 60ms" }} className="motion-safe:group-hover:opacity-70" />
-        <span style={{ position: "absolute", left: "26%", top: "38%", width: 3, height: 3, borderRadius: "50%", background: accent, boxShadow: `0 0 8px ${accent}`, opacity: 0, transition: "opacity 400ms ease 120ms" }} className="motion-safe:group-hover:opacity-50" />
-      </span>
-      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[1.5px] overflow-hidden opacity-0 transition-opacity duration-300 motion-safe:group-hover:opacity-100">
-        <span style={{ display: "block", width: "55%", height: "100%", background: `linear-gradient(90deg, transparent, ${accent}, transparent)`, boxShadow: `0 0 10px ${accent}`, animation: "recharza-line-sweep 3.6s ease-in-out infinite" }} />
-      </span>
+      <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px opacity-60 transition-opacity duration-300 motion-safe:group-hover:opacity-100" style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 55%, transparent) 50%, transparent)` }} />
       <div className="relative aspect-[1.16] overflow-hidden rounded-lg border border-[rgba(196,181,253,.18)] bg-surface-sunken shadow-[inset_0_1px_0_rgba(255,255,255,.08)]">
         <StorefrontArtwork
           artworkKey={game.artworkKey}
@@ -82,7 +75,7 @@ export function GameCard({
             <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-200/75">{category}</p>
             <h3 className="min-w-0 truncate text-[1.02rem] font-semibold leading-5 tracking-[-0.02em] text-text-primary sm:text-lg">{title}</h3>
           </div>
-          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-border bg-surface-sunken text-text-muted transition-[border-color,color,background-color,transform,box-shadow] duration-200 group-hover:translate-x-0.5" style={{ borderColor: "transparent", boxShadow: `0 0 16px -6px ${accent}` } as React.CSSProperties}>
+          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/[0.12] bg-white/[0.03] text-text-muted transition-[color,background-color,transform,border-color] duration-200 group-hover:translate-x-0.5 group-hover:border-white/[0.22] group-hover:text-white">
             <StorefrontIcon name="arrow" className="h-3.5 w-3.5 transition-colors duration-200" />
           </span>
         </div>
@@ -90,8 +83,8 @@ export function GameCard({
       </div>
 
       <div className="flex items-center gap-2 border-t border-white/[.09] pt-3">
-        <span className="recharza-electric-btn inline-flex min-h-9 flex-1 items-center justify-center rounded-lg bg-primary px-3 py-2 text-xs font-semibold tracking-[.01em] text-primary-foreground shadow-[0_8px_22px_rgba(155,124,255,.18)] transition-[background-color,box-shadow,transform] duration-200 group-hover:bg-primary-hover group-hover:shadow-[0_10px_28px_rgba(155,124,255,.28)]">{label}</span>
-        <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-text-muted">Secure</span>
+        <span className="inline-flex min-h-9 flex-1 items-center justify-center rounded-lg bg-primary px-3 py-2 text-xs font-semibold tracking-[.01em] text-primary-foreground transition-[background-color,box-shadow,transform] duration-200 group-hover:bg-primary-hover group-hover:translate-y-[-1px]">{label}</span>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-text-muted">Secure</span>
       </div>
     </article>
   );
