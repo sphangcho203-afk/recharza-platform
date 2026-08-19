@@ -36,3 +36,18 @@
 - MLBB verify POST works (market selection required first — expected pre-existing behaviour).
 - MLBB landing page publicly renders the new delivery-coverage pill: "Global top-up — any region, one account" + Learn more tooltip. Screenshot confirmed clean Fable 5 styling.
 - Auth-gate 307 on /games/[gameSlug] and /games/mobile-legends/[market] is PRE-EXISTING behaviour (same on prior deployment 7cru6uy53). Headlines on those pages verified present in the compiled build (build succeeded 0 errors).
+
+## COPY CORRECTION ROUND 2 (user feedback, 2026-08-20) — COMMITTED
+- User rejected "global — every market delivers to every account" copy. New rule:
+  verification is cross-region; delivery only credits when catalogue region = account server.
+- Commit 0e2e0fb. Deployment READY: recharza-platform-ayo8mb8gn-stand-still.vercel.app.
+- MLBB base now: "Your account region must match the market — verification works from any country"
+  with note on region-scoped catalogues (India catalogue credits India accounts only,
+  Indonesia only Indonesia, Global excludes Indonesia/Brazil/Philippines) and explicit
+  Saudi-Arabia-via-India warning.
+- FF/Valorant/Genshin/PUBG/Fortnite notes rewritten the same way (verify anywhere,
+  credit only matching region's catalogue).
+- Verified live on new deployment: HTTP 200, corrected headline present, old global
+  claim absent. Screenshot confirms clean rendering.
+- Research basis: notes/delivery-region-matrix.md (FazerCards live catalogue regions
+  + supplier docs: moogold ID-only, kinguin Global-except-ID/BR/PH/SG, redxgame).

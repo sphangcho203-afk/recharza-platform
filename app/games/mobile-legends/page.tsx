@@ -6,6 +6,7 @@ import { ResilientImage } from "@/components/resilient-image";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { StorefrontIcon } from "@/components/storefront-icon";
+import { GameEducationSection } from "@/components/game-education-section";
 import { games } from "@/lib/games";
 import { getPublicMediaPlacements } from "@/lib/media-assets";
 import { mobileLegendsMarkets, parseMobileLegendsMarket } from "@/lib/mobile-legends-market";
@@ -64,11 +65,9 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-cyan-300/90"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
                 </div>
                 {mobileLegendsGame.deliveryCoverage && (
-                  <div className="mt-2.5 flex max-w-xl flex-wrap items-center gap-2 rounded-md border border-white/[0.10] bg-white/[0.04] px-2.5 py-1.5">
+                  <div className="mt-2.5 inline-flex max-w-full items-center gap-1.5 rounded-md border border-white/[0.10] bg-white/[0.04] px-2.5 py-1">
                     <StorefrontIcon name="shield" className="h-3.5 w-3.5 shrink-0 text-emerald-300/90" />
-                    <p className="text-[11px] font-medium leading-snug text-white/70">{mobileLegendsGame.deliveryCoverage.headline}</p>
-                    <span title={mobileLegendsGame.deliveryCoverage.note} className="hidden whitespace-nowrap rounded-sm border border-cyan-300/20 bg-cyan-400/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-cyan-300/90 sm:inline">Learn more</span>
-                    <span className="block w-full whitespace-normal text-[11px] leading-relaxed text-white/50 sm:hidden">{mobileLegendsGame.deliveryCoverage.note}</span>
+                    <p className="truncate text-[11px] font-medium leading-snug text-white/70">{mobileLegendsGame.deliveryCoverage.headline}</p>
                   </div>
                 )}
               </div>
@@ -120,6 +119,8 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
         <div className="mt-7 rounded-lg border border-white/[0.08] bg-[#0b0d13] p-4 text-xs leading-5 text-slate-500 sm:p-5">
           Choose a market only when it matches the Mobile Legends account. Recharza does not silently substitute a different region.
         </div>
+
+        <GameEducationSection game={mobileLegendsGame} />
       </section>
 
       <SiteFooter />

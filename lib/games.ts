@@ -50,6 +50,18 @@ export type Game = {
     headline: string;
     note: string;
   };
+  /**
+   * Professional education copy shown below the checkout on the game page:
+   * what the game is, what its currency is used for, how to find the
+   * player ID, and the step-by-step purchase guide.
+   */
+  education?: {
+    about: string;
+    currencyUses: string;
+    findId: string;
+    steps: readonly string[];
+    regionNote?: string;
+  };
 };
 
 export const mobileLegendsRegions = mobileLegendsMarkets;
@@ -96,6 +108,20 @@ const mobileLegendsBase = {
   },
   pricingKey: "mobile-legends",
   startingPriceInPaise: 3_000,
+  education: {
+    about: "Mobile Legends: Bang Bang is a 5v5 mobile MOBA from Moonton, played by over 100 million people worldwide. Two teams of five fight to destroy the enemy base, with regular updates, heroes, and ranked seasons that keep the game fresh.",
+    currencyUses:
+      "Diamonds are the premium currency used to unlock heroes, buy skins and recolors, weekly and twilight passes, emotes and more. The Weekly Pass gives roughly 220 diamonds plus choice boxes over 7 days — far more value than standard packs — while the Twilight Pass bundles a season skin with progressive rewards.",
+    findId: "Tap your avatar in the top-left corner of the main screen. Your numeric User ID sits under your name, followed by the Zone ID in brackets — for example 12345678 (1234). Both numbers together identify your account, so enter them exactly as shown.",
+    steps: [
+      "Choose your account market, then pick the pack you want and add it to your cart.",
+      "Enter your User ID and Zone ID — our live checker shows your in-game username before you pay.",
+      "Complete payment securely via Razorpay (UPI, cards, wallets).",
+      "Diamonds are delivered straight to your in-game account — track the order anytime from Orders.",
+    ],
+    regionNote:
+      "Top-ups are instant and cannot be reversed, so always confirm the username shown by our checker matches your account. Diamonds purchased for one account server cannot be moved to another, which is why your market must match your account region.",
+  },
 };
 
 export const games: Game[] = [
@@ -174,6 +200,20 @@ export const games: Game[] = [
     },
     pricingMode: "live",
     pricingKey: "free-fire",
+    education: {
+      about: "Garena Free Fire MAX is a fast 10-minute battle royale from Garena, built for mobile. Up to 50 players drop onto an island, scavenge weapons, and fight to be the last one standing — with characters, pets and ranked seasons.",
+      currencyUses:
+        "Diamonds are the premium currency used to buy character and weapon skins, the Elite Pass, bundles and emotes. The Weekly and Monthly Memberships stack extra diamonds on top of what you buy, making them the best value for regular players.",
+      findId: "Open Free Fire and tap your avatar in the top-left corner of the main screen. Your numeric Player ID appears right under your name. Enter it exactly as shown — top-ups are instant and go only to the ID you enter.",
+      steps: [
+        "Pick the pack you want and add it to your cart.",
+        "Enter your Player ID — our live checker shows your in-game name before you pay.",
+        "Complete payment securely via Razorpay (UPI, cards, wallets).",
+        "Diamonds are delivered straight to your in-game account — track the order anytime from Orders.",
+      ],
+      regionNote:
+        "Diamonds are credited through region-scoped supplier packs, so your account region must match the pack you buy. Always confirm the username shown by our checker matches your account before paying — top-ups are instant and cannot be reversed.",
+    },
   },
   {
     slug: "pubg-mobile",
@@ -209,6 +249,20 @@ export const games: Game[] = [
     },
     pricingMode: "live",
     pricingKey: "pubg-mobile",
+    education: {
+      about: "PUBG Mobile is one of the world's most-played battle royales from KRAFTON and Level Infinite. 100 players parachute onto a shrinking map, looting and fighting for the last-man-standing title across maps like Erangel, Livik and Miramar.",
+      currencyUses:
+        "Unknown Cash (UC) is the premium currency used to buy the Royale Pass and Prime, premium crates, weapon and character skins, and event bundles. UC is the only way to unlock every cosmetic and seasonal content in the game.",
+      findId: "Open PUBG Mobile, go to Settings → Basic. Your numeric character ID (8–10 digits) is displayed there. Enter it exactly — UC is credited to that ID instantly and cannot be transferred to another account.",
+      steps: [
+        "Pick the UC pack you want and add it to your cart.",
+        "Enter your character ID — our live checker confirms your username before you pay.",
+        "Complete payment securely via Razorpay (UPI, cards, wallets).",
+        "UC is delivered to your account — track the order anytime from Orders.",
+      ],
+      regionNote:
+        "UC is region-locked and delivered as regional vouchers, so buy from the market that matches the server you play on — a different-region purchase will not credit your account. This is a Level Infinite server rule, not a store limitation.",
+    },
   },
   {
     slug: "bgmi",
@@ -237,6 +291,20 @@ export const games: Game[] = [
       mode: "region-scoped",
       headline: "India-only server",
       note: "Battlegrounds Mobile India runs exclusively on the Indian server. Top-ups only work for Indian accounts; international PUBG Mobile accounts cannot be credited.",
+    },
+    education: {
+      about: "Battlegrounds Mobile India (BGMI) is KRAFTON's Indian edition of PUBG Mobile, tailored for India with local content and compliant mechanics. The gameplay is the same battle royale formula — drop, loot, survive.",
+      currencyUses:
+        "Unknown Cash (UC) is the premium currency used to buy the Royale Pass and Prime, premium crates, weapon and character skins, and event bundles. UC is the only way to unlock every cosmetic and seasonal content in the game.",
+      findId: "Open BGMI, go to Settings → Basic. Your numeric character ID (8–10 digits) is displayed there. Enter it exactly — UC is credited to that ID instantly and cannot be transferred to another account.",
+      steps: [
+        "Pick the UC pack you want and add it to your cart.",
+        "Enter your character ID — our live checker confirms your username before you pay.",
+        "Complete payment securely via Razorpay (UPI, cards, wallets).",
+        "UC is delivered to your account — track the order anytime from Orders.",
+      ],
+      regionNote:
+        "BGMI runs exclusively on the Indian server — international PUBG Mobile accounts cannot be credited. Only Indian accounts are supported.",
     },
   },
   {
@@ -267,6 +335,20 @@ export const games: Game[] = [
       note: "COD Points are delivered straight to your Activision account, which is the same everywhere. A CP top-up from any market reaches your account regardless of the country you buy from.",
     },
     pricingMode: "staged",
+    education: {
+      about: "Call of Duty: Mobile is Activision's free-to-play shooter built by TiMi Studios, bringing classic CoD maps, weapons and game modes — Multiplayer and Battle Royale — to mobile.",
+      currencyUses:
+        "COD Points (CP) are the premium currency used to buy the Battle Pass, weapon blueprints, operator skins, and lucky draws. CP unlocks every seasonal cosmetic without grinding.",
+      findId: "Your CoD account is your Activision account, linked through the game's settings. Sign in with the same Activision account you play with — top-ups credit that account.",
+      steps: [
+        "Pick the CP pack you want and add it to your cart.",
+        "Sign in or link the Activision account you play with.",
+        "Complete payment securely via Razorpay (UPI, cards, wallets).",
+        "CP is delivered to your Activision account — track the order anytime from Orders.",
+      ],
+      regionNote:
+        "CP is delivered to your global Activision account from any market.",
+    },
   },
   {
     slug: "valorant",
@@ -302,6 +384,20 @@ export const games: Game[] = [
     },
     pricingMode: "live",
     pricingKey: "valorant",
+    education: {
+      about: "VALORANT is Riot Games' tactical 5v5 FPS, blending precise gunplay with agent abilities. Bomb defusal, one-life rounds and ranked seasons make it one of the most competitive shooters on PC.",
+      currencyUses:
+        "VALORANT Points (VP) are the premium currency used to buy weapon skins, the Battle Pass, Radianite Points, and event bundles. Skin collections in VALORANT are permanent and account-bound, so VP spent today stays with you forever.",
+      findId: "Your Riot ID is your in-game name followed by a #tagline, shown in the top-right of the VALORANT client and on your Riot account page (account.riotgames.com). Enter both parts exactly.",
+      steps: [
+        "Pick the VP pack you want and add it to your cart.",
+        "Enter your Riot ID (name#tagline) — our live checker confirms your account before you pay.",
+        "Complete payment securely via Razorpay (UPI, cards, wallets).",
+        "VP is delivered to your Riot account — track the order anytime from Orders.",
+      ],
+      regionNote:
+        "VP is strictly regional — points bought in one region can never be spent in another. Choose the market whose region matches your account.",
+    },
   },
   {
     slug: "genshin-impact",
@@ -337,6 +433,20 @@ export const games: Game[] = [
     },
     pricingMode: "live",
     pricingKey: "genshin-impact",
+    education: {
+      about: "Genshin Impact is HoYoverse's open-world action RPG set in Teyvat, where you explore seven nations, collect characters, and fight through story quests and weekly bosses. New regions and characters arrive every few weeks.",
+      currencyUses:
+        "Genesis Crystals are the premium currency, converted 1:1 into Primogems — the currency that fuels Wishes for new characters and weapons. The Welkin Moon is the best-value item in the game: 300 crystals instantly plus 90 Primogems every day for 30 days (3,000 total, about 19 Wishes).",
+      findId: "Your UID is shown in the top-right corner of the game screen and on the Paimon profile page. It is server-scoped: the first digit hints at the server — 8 for Asia, 7 for America, 9 for Europe, 6 for TW/HK/MO.",
+      steps: [
+        "Pick the pack you want and add it to your cart.",
+        "Enter your UID and choose the server that matches it — our checker confirms your username before you pay.",
+        "Complete payment securely via Razorpay (UPI, cards, wallets).",
+        "Crystals are delivered to your account — track the order anytime from Orders.",
+      ],
+      regionNote:
+        "Top-ups never cross servers — pick the market matching your UID's server. This is a HoYoverse server rule, not a store limitation.",
+    },
   },
   {
     slug: "fortnite",
@@ -365,6 +475,20 @@ export const games: Game[] = [
       note: "Fortnite accounts live on one Epic ecosystem, so a V-Bucks top-up from any market credits the same account. Any Epic account can be checked from any country. Regional storefront differences apply only to the Epic Games Store, not to console or PC Fortnite.",
     },
     pricingMode: "staged",
+    education: {
+      about: "Fortnite is Epic Games' global battle royale phenomenon with building, zero-build and creative modes, plus constant collaborations with music, film and sport franchises.",
+      currencyUses:
+        "V-Bucks are the premium currency used to buy the Battle Pass, outfit skins, pickaxes, emotes and Crew Packs. Your cosmetic collection follows your Epic account across every platform you play on.",
+      findId: "Your Fortnite account is your Epic Games account. Sign in with the same Epic account you play with — top-ups credit that account.",
+      steps: [
+        "Pick the V-Bucks pack you want and add it to your cart.",
+        "Sign in or link the Epic Games account you play with.",
+        "Complete payment securely via Razorpay (UPI, cards, wallets).",
+        "V-Bucks are delivered to your Epic account — track the order anytime from Orders.",
+      ],
+      regionNote:
+        "V-Bucks are delivered to your global Epic account from any market. Note: V-Bucks purchased on one platform may only be visible there, so buy on the platform you mostly play.",
+    },
   },
 ];
 

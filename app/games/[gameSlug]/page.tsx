@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/site-header";
 import { StorefrontBackButton } from "@/components/storefront-back-button";
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { SupplierGameCheckoutShell } from "@/components/supplier-game-checkout-shell";
+import { GameEducationSection } from "@/components/game-education-section";
 import { getGameCheckoutDefinition } from "@/lib/commerce/game-checkout";
 import { listSavedAddresses } from "@/lib/commerce/saved-addresses";
 import { mainGames } from "@/lib/games";
@@ -118,11 +119,9 @@ export default async function GameCheckoutPage({
                     <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-cyan-300/90"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
                   </div>
                   {game.deliveryCoverage && (
-                    <div className="mt-2.5 flex max-w-xl flex-wrap items-center gap-2 rounded-md border border-white/[0.10] bg-white/[0.04] px-2.5 py-1.5">
+                    <div className="mt-2.5 inline-flex max-w-full items-center gap-1.5 rounded-md border border-white/[0.10] bg-white/[0.04] px-2.5 py-1">
                       <StorefrontIcon name="shield" className="h-3.5 w-3.5 shrink-0 text-emerald-300/90" />
-                      <p className="text-[11px] font-medium leading-snug text-white/70">{game.deliveryCoverage.headline}</p>
-                      <span title={game.deliveryCoverage.note} className="hidden whitespace-nowrap rounded-sm border border-cyan-300/20 bg-cyan-400/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-cyan-300/90 sm:inline">Learn more</span>
-                      <span className="block w-full whitespace-normal text-[11px] leading-relaxed text-white/50 sm:hidden">{game.deliveryCoverage.note}</span>
+                      <p className="truncate text-[11px] font-medium leading-snug text-white/70">{game.deliveryCoverage.headline}</p>
                     </div>
                   )}
                 </div>
@@ -151,6 +150,7 @@ export default async function GameCheckoutPage({
             isAuthenticated={isAuthenticated}
             initialCartItemId={cartItem?.trim() ? cartItem : null}
           />
+          <GameEducationSection game={game} />
         </section>
 
         <SiteFooter />
