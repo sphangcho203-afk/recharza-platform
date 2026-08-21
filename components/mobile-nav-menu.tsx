@@ -150,9 +150,9 @@ export function MobileNavMenu() {
   const menu = open ? (
     <div className="recharza-scrim fixed inset-0 z-[9999] isolate" onMouseDown={(event) => { if (event.target === event.currentTarget) closeMenu(); }}>
       <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby={supportOpen ? "support-chooser-title" : "mobile-navigation-title"} className="recharza-sheet relative h-full w-[min(22rem,88vw)] overflow-hidden">
-        <span aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <span style={{ position: "absolute", left: "-26%", top: "-18%", width: "120%", height: "60%", borderRadius: "50%", background: "radial-gradient(circle at 36% 32%, #8d5cff, transparent 70%)", filter: "blur(60px)", opacity: 0.07, animation: "recharza-aurora-drift-a 14s ease-in-out infinite alternate", willChange: "transform, opacity" }} />
-          <span style={{ position: "absolute", right: "-30%", bottom: "-16%", width: "118%", height: "58%", borderRadius: "50%", background: "radial-gradient(circle at 62% 66%, #22d3ee, transparent 72%)", filter: "blur(64px)", opacity: 0.05, animation: "recharza-aurora-drift-b 17s ease-in-out infinite alternate", willChange: "transform, opacity" }} />
+        <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+          <span className="recharza-atmo-v2 absolute inset-0 opacity-40" />
+          <span style={{ position: "absolute", left: "-10%", top: "-10%", width: "120%", height: "120%", background: "radial-gradient(circle at 20% 20%, rgba(141,92,255,0.15), transparent 50%), radial-gradient(circle at 80% 80%, rgba(34,211,238,0.1), transparent 50%)", filter: "blur(80px)", animation: "recharza-aurora-drift-a 20s ease-in-out infinite alternate" }} />
         </span>
         <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-3">
           <div>
