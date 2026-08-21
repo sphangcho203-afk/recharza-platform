@@ -356,7 +356,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                   <div className="flex min-w-0 items-center gap-3">
                     <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-10 w-10 shrink-0 rounded-lg object-cover" fallbackClassName="h-10 w-10 shrink-0 rounded-lg" />
                     <div className="min-w-0">
-                      <p className="recharza-order-row-title truncate">{order.package.name}</p>
+                      <p className="recharza-order-row-title">{order.package.name}</p>
                       <p className="recharza-order-row-meta">
                         <span className="font-mono text-[.68rem] uppercase tracking-[0.1em] text-violet-300/80">{order.id}</span>
                         {" · "}{gameTitle(order.gameSlug)}
@@ -415,7 +415,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                   <div className="flex min-w-0 items-center gap-3">
                     <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-10 w-10 shrink-0 rounded-lg object-cover" fallbackClassName="h-10 w-10 shrink-0 rounded-lg" />
                     <div className="min-w-0">
-                      <p className="recharza-order-row-title truncate">{order.player.nickname || "Mobile Legends player"}</p>
+                      <p className="recharza-order-row-title">{order.player.nickname || "Mobile Legends player"}</p>
                       <p className="recharza-order-row-meta break-all font-mono text-[.68rem]">
                         {order.player.playerId}{order.player.zoneId ? ` (${order.player.zoneId})` : ""}
                         {" · "}<span style={{ color: accent }}>{gameTitle(order.gameSlug)}</span>
