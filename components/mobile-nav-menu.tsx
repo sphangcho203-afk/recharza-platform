@@ -151,8 +151,8 @@ export function MobileNavMenu() {
     <div className="recharza-scrim fixed inset-0 z-[9999] isolate" onMouseDown={(event) => { if (event.target === event.currentTarget) closeMenu(); }}>
       <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby={supportOpen ? "support-chooser-title" : "mobile-navigation-title"} className="recharza-sheet relative h-full w-[min(22rem,88vw)] overflow-hidden">
         <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <span className="recharza-atmo-v2 absolute inset-0 opacity-40" />
-          <span style={{ position: "absolute", left: "-10%", top: "-10%", width: "120%", height: "120%", background: "radial-gradient(circle at 20% 20%, rgba(141,92,255,0.15), transparent 50%), radial-gradient(circle at 80% 80%, rgba(34,211,238,0.1), transparent 50%)", filter: "blur(80px)", animation: "recharza-aurora-drift-a 20s ease-in-out infinite alternate" }} />
+          <span className="recharza-atmo-v2 absolute inset-0 opacity-[0.45]" />
+          <span style={{ position: "absolute", left: "-20%", top: "-20%", width: "140%", height: "140%", background: "radial-gradient(circle at 30% 30%, rgba(141,92,255,0.18), transparent 60%), radial-gradient(circle at 70% 70%, rgba(34,211,238,0.12), transparent 60%)", filter: "blur(90px)", animation: "recharza-aurora-drift-a 25s ease-in-out infinite alternate" }} />
         </span>
         <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-3">
           <div>

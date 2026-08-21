@@ -831,9 +831,9 @@
   border-bottom: 1px solid rgba(255, 255, 255, .06);
 }
 .recharza-order-row:last-child { border-bottom: none; }
-.recharza-order-row-main { display: grid; gap: .15rem; min-width: 0; }
-.recharza-order-row-title { font-size: .92rem; font-weight: 600; letter-spacing: -0.01em; color: #f1f4fb; white-space: normal !important; word-break: normal !important; overflow-wrap: anywhere !important; display: block !important; width: 100% !important; min-width: 0 !important; }
-.recharza-order-row-meta { font-size: .76rem; line-height: 1.4; color: #7d879a; white-space: normal !important; word-break: normal !important; overflow-wrap: anywhere !important; }
+.recharza-order-row-main { display: flex; flex-direction: column; gap: .15rem; min-width: 0; flex: 1; }
+.recharza-order-row-title { font-size: .92rem; font-weight: 600; line-height: 1.3; letter-spacing: -0.01em; color: #f1f4fb; white-space: normal !important; word-break: normal !important; overflow-wrap: break-word !important; display: block !important; width: 100% !important; min-width: 0 !important; }
+.recharza-order-row-meta { font-size: .76rem; line-height: 1.4; color: #7d879a; white-space: normal !important; word-break: normal !important; overflow-wrap: break-word !important; }
 .recharza-order-row-meta b { color: #b4bdce; font-weight: 600; }
 .recharza-order-row-side { display: flex; align-items: center; gap: .6rem; }
 .recharza-order-row-side .recharza-badge { flex: none; }
