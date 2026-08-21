@@ -832,7 +832,7 @@
 }
 .recharza-order-row:last-child { border-bottom: none; }
 .recharza-order-row-main { display: grid; gap: .15rem; min-width: 0; }
-.recharza-order-row-title { font-size: .92rem; font-weight: 600; letter-spacing: -0.01em; color: #f1f4fb; overflow-wrap: break-word; word-break: normal; }
+.recharza-order-row-title { font-size: .92rem; font-weight: 600; letter-spacing: -0.01em; color: #f1f4fb; white-space: normal; word-break: normal; overflow-wrap: anywhere; display: block; width: 100%; }
 .recharza-order-row-meta { font-size: .76rem; line-height: 1.4; color: #7d879a; }
 .recharza-order-row-meta b { color: #b4bdce; font-weight: 600; }
 .recharza-order-row-side { display: flex; align-items: center; gap: .6rem; }

@@ -187,9 +187,9 @@ export function MobileNavMenu() {
         ) : (
           <nav className="mt-3 space-y-1">
             {links.map((link) => {
-              const base = "recharza-nav-row group relative flex min-h-11 w-full items-center gap-3 rounded-xl border border-white/[0.08] bg-[linear-gradient(160deg,rgba(30,33,56,.9),rgba(13,15,25,.95))] px-3 py-2 text-left text-sm font-semibold text-slate-200 shadow-[0_10px_24px_rgba(0,0,0,.2)] transition duration-150 ease-out hover:border-violet-300/25 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60";
-              const icon = <span aria-hidden="true" className="grid h-9 w-9 shrink-0 place-items-center rounded-xl text-violet-300" style={{ background: "radial-gradient(circle at 30% 24%, rgba(167,139,250,.32), rgba(124,58,237,.1))", boxShadow: "0 0 18px -6px rgba(167,139,250,.45)" }}><StorefrontIcon name={link.icon} className="h-4 w-4" /></span>;
-              const arrow = <StorefrontIcon name="arrow" className="recharza-nav-arrow ml-auto h-4 w-4 shrink-0 text-slate-500 group-hover:text-white" />;
+              const base = "recharza-nav-row group relative flex min-h-[3.75rem] w-full items-center gap-4 rounded-2xl border border-white/[0.03] bg-white/[0.01] px-4 py-2 text-left text-[15px] font-semibold text-slate-200 transition duration-300 ease-out hover:bg-white/[0.04] hover:border-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60";
+              const icon = <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-violet-300 shadow-[0_0_20px_-5px_rgba(167,139,250,0.3)] transition-transform duration-300 group-hover:scale-110" style={{ background: "radial-gradient(circle at 30% 24%, rgba(167,139,250,0.15), rgba(124,58,237,0.05))", border: "1px solid rgba(167,139,250,0.12)" }}><StorefrontIcon name={link.icon} className="h-[18px] w-[18px]" /></span>;
+              const arrow = <StorefrontIcon name="arrow" className="recharza-nav-arrow ml-auto h-4 w-4 shrink-0 opacity-20 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100" />;
               return link.support ? (
                 <button key={link.label} type="button" onClick={() => setSupportOpen(true)} className={base}>
                   {icon}<span className="relative">{link.label}</span>{arrow}
