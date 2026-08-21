@@ -28,7 +28,7 @@ const items: Array<{
     matches: (path) => path === "/cart",
   },
   {
-    label: "Orders",
+    label: "My orders",
     href: "/account/orders",
     icon: "track",
     matches: (path) => path.startsWith("/account/orders"),

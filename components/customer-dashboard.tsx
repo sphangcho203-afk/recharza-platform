@@ -351,30 +351,43 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
 
           <div className="recharza-order-rows mt-4">
             {orders.map((order) => (
-              <div key={order.id} className="recharza-order-row">
-                <div className="recharza-order-row-main min-w-0">
-                  <div className="flex min-w-0 items-center gap-3">
-                    <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-10 w-10 shrink-0 rounded-lg object-cover" fallbackClassName="h-10 w-10 shrink-0 rounded-lg" />
-                    <div className="min-w-0">
-                      <p className="recharza-order-row-title">{order.package.name}</p>
-                      <p className="recharza-order-row-meta">
-                        <span className="font-mono text-[.68rem] uppercase tracking-[0.1em] text-violet-300/80">{order.id}</span>
-                        {" · "}{gameTitle(order.gameSlug)}
-                        {order.market ? ` · ${order.market.label}` : ""}
-                        {" · "}<b>{formatInr(order.package.amountInPaise)}</b>
-                        {" · "}{new Date(order.createdAt).toLocaleDateString("en-IN")}
-                      </p>
+              <div key={order.id} className="recharza-order-card group relative mb-4 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0f111a] p-4 shadow-[0_8px_30px_rgba(0,0,0,0.3)] transition duration-300 hover:border-violet-300/20 hover:bg-[#121522]">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <div className="flex min-w-0 flex-1 items-center gap-4">
+                    <div className="relative shrink-0">
+                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-14 w-14 rounded-xl object-cover shadow-lg" fallbackClassName="h-14 w-14 rounded-xl" />
+                      <div className="absolute -bottom-1 -right-1 grid h-6 w-6 place-items-center rounded-lg border border-white/[0.1] bg-[#0f111a] text-violet-300 shadow-xl">
+                        <StorefrontIcon name="games" className="h-3 w-3" />
+                      </div>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="recharza-order-row-title text-base">{order.package.name}</p>
+                        <StatusBadge state={statusStateFor(order.status)} label={order.status.replaceAll("_", " ")} />
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-slate-400">
+                        <span className="flex items-center gap-1.5"><span className="text-[10px] uppercase tracking-wider text-slate-600">ID:</span><span className="font-mono text-violet-300/90">{order.id.slice(0, 12)}...</span></span>
+                        <span className="flex items-center gap-1.5"><span className="text-[10px] uppercase tracking-wider text-slate-600">Game:</span><span className="text-slate-300">{gameTitle(order.gameSlug)}</span></span>
+                        {order.market ? <span className="flex items-center gap-1.5"><span className="text-[10px] uppercase tracking-wider text-slate-600">Region:</span><span className="text-slate-300">{order.market.label}</span></span> : null}
+                      </div>
                     </div>
                   </div>
+                  <div className="flex items-center justify-between border-t border-white/[0.05] pt-3 sm:border-0 sm:pt-0 sm:text-right">
+                    <div className="sm:mr-6">
+                      <p className="text-[10px] uppercase tracking-widest text-slate-500">Amount Paid</p>
+                      <p className="mt-0.5 text-lg font-bold text-white">{formatInr(order.package.amountInPaise)}</p>
+                    </div>
+                    <Link
+                      href={`/orders/${encodeURIComponent(order.id)}`}
+                      className="inline-flex h-10 items-center rounded-xl bg-white/[0.04] px-5 text-sm font-semibold text-cyan-200 transition hover:bg-white/[0.08] hover:text-white"
+                    >
+                      Details <StorefrontIcon name="arrow" className="ml-2 h-3.5 w-3.5" />
+                    </Link>
+                  </div>
                 </div>
-                <div className="recharza-order-row-side">
-                  <StatusBadge state={statusStateFor(order.status)} label={order.status.replaceAll("_", " ")} />
-                  <Link
-                    href={`/orders/${encodeURIComponent(order.id)}`}
-                    className="text-xs font-semibold text-cyan-200 transition hover:text-white"
-                  >
-                    Open →
-                  </Link>
+                <div className="mt-3 flex items-center justify-between rounded-lg bg-white/[0.02] px-3 py-2 text-[10px] text-slate-500">
+                  <span>Ordered on {new Date(order.createdAt).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                  <span className="flex items-center gap-1"><span className="h-1 w-1 rounded-full bg-emerald-400"></span> Securely processed</span>
                 </div>
               </div>
             ))}

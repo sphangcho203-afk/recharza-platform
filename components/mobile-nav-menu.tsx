@@ -12,6 +12,7 @@ const links = [
   { href: "/#games", label: "All products", icon: "games" as const },
   { label: "Support", icon: "support" as const, support: true },
   { href: "/orders/lookup", label: "Track an order", icon: "track" as const },
+  { href: "/account/orders", label: "My orders", icon: "track" as const },
   { href: "/cart", label: "Cart", icon: "cart" as const },
   { href: "/account", label: "My account", icon: "account" as const },
 ];
