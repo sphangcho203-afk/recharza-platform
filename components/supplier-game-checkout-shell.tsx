@@ -646,102 +646,113 @@ export function SupplierGameCheckoutShell({
 
         {step === 3 ? (
           <>
-            <div id="billing" className="space-y-6">
-              <section className="recharza-checkout-card p-6 sm:p-8">
+            <div id="billing" className="space-y-8">
+              <section className="recharza-checkout-card p-6 sm:p-10">
                 <div className="relative z-10">
-                  <p className="text-[11px] font-black uppercase tracking-[0.3em] text-violet-400">Order Summary</p>
-                  <h2 className="mt-2 text-3xl font-black text-white italic">Order Review</h2>
-                  
-                  <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-white/5 bg-white/5 p-5">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Package</span>
-                      <p className="mt-2 text-lg font-bold text-white">{selectedPackage.name}</p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600/20 border border-violet-500/30 text-violet-400 shadow-lg shadow-violet-500/10">
+                      <StorefrontIcon name="check" className="h-5 w-5" />
                     </div>
-                    <div className="rounded-2xl border border-white/5 bg-white/5 p-5">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Market</span>
-                      <p className="mt-2 text-lg font-bold text-white">{selectedPackage.marketLabel}</p>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-400">Review & Pay</p>
+                      <h2 className="text-2xl font-black text-white italic uppercase">Order Summary</h2>
+                    </div>
+                  </div>
+
+                  <div className="mt-10 grid gap-6 sm:grid-cols-2">
+                    <div className="rounded-[1.5rem] border border-white/5 bg-white/5 p-6">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Product</span>
+                      <p className="mt-2 text-lg font-black text-white italic">{selectedPackage.name}</p>
+                    </div>
+                    <div className="rounded-[1.5rem] border border-white/5 bg-white/5 p-6">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Market</span>
+                      <p className="mt-2 text-lg font-black text-white italic">{selectedPackage.marketLabel}</p>
                     </div>
                     {identity.riotId ? (
-                      <div className="rounded-2xl border border-white/10 bg-white/10 p-5 shadow-lg">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Riot ID</span>
-                        <p className="mt-2 font-mono text-xl font-black text-white tracking-widest">{identity.riotId}</p>
+                      <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-6 shadow-xl">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Riot ID</span>
+                        <p className="mt-2 font-mono text-xl font-black text-white tracking-[0.2em]">{identity.riotId}</p>
                       </div>
                     ) : null}
                     {identity.playerId ? (
-                      <div className="rounded-2xl border border-white/10 bg-white/10 p-5 shadow-lg">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Player ID / UID</span>
-                        <p className="mt-2 font-mono text-xl font-black text-white tracking-widest">{identity.playerId}</p>
+                      <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-6 shadow-xl">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Player ID / UID</span>
+                        <p className="mt-2 font-mono text-xl font-black text-white tracking-[0.2em]">{identity.playerId}</p>
                       </div>
                     ) : null}
                     {identity.serverId ? (
-                      <div className="rounded-2xl border border-white/10 bg-white/10 p-5 shadow-lg">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Server / Zone ID</span>
-                        <p className="mt-2 font-mono text-xl font-black text-white tracking-widest">{identity.serverId}</p>
+                      <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-6 shadow-xl">
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Server / Zone ID</span>
+                        <p className="mt-2 font-mono text-xl font-black text-white tracking-[0.2em]">{identity.serverId}</p>
                       </div>
                     ) : null}
-                    <div className="sm:col-span-2 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400/50">Verified Nickname</span>
-                      <p className="mt-2 text-xl font-black text-emerald-400">{verification?.nickname || "Verified Player"}</p>
+                    <div className="sm:col-span-2 rounded-[1.5rem] border border-emerald-500/20 bg-emerald-500/5 p-6 flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400/50">
+                          Verified Player
+                        </span>
+                        <p className="mt-2 text-xl font-black text-emerald-400 italic">{verification?.nickname || "CONFIRMED"}</p>
+                      </div>
+                      <StorefrontIcon name="check" className="h-8 w-8 text-emerald-500/40" />
                     </div>
-                    <div className="sm:col-span-2 mt-4 pt-6 border-t border-white/5">
-                      <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white/30">Total Amount</span>
-                      <p className="mt-2 text-5xl font-black text-violet-400 tracking-tighter italic">{formatPresentment(selectedPackage.amountInPaise)}</p>
+                    <div className="sm:col-span-2 mt-6 pt-8 border-t border-white/10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                      <div>
+                        <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white/30">Total Payment</span>
+                        <p className="mt-2 text-5xl sm:text-6xl font-black text-violet-400 tracking-tighter italic leading-none">
+                          {formatPresentment(selectedPackage.amountInPaise)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 border border-white/10">
+                        <StorefrontIcon name="shield" className="h-4 w-4 text-emerald-400" />
+                        <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Secure Checkout</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </section>
 
-          {isAuthenticated && savedAddresses.length > 0 ? (
-            <SavedAddressPicker
-              addresses={savedAddresses}
-              selectedAddressId={selectedAddressId}
-              onSelect={applySavedAddress}
-            />
-          ) : null}
+              {isAuthenticated && savedAddresses.length > 0 ? (
+                <SavedAddressPicker
+                  addresses={savedAddresses}
+                  selectedAddressId={selectedAddressId}
+                  onSelect={applySavedAddress}
+                />
+              ) : null}
 
-          <BillingAddressFields
-            value={billing}
-            onChange={(nextBilling) => {
-              setBilling(nextBilling);
-              resetOrder();
-            }}
-            fixedCurrency={marketCurrency}
-            stepNumber="03"
-            stepLabel="Billing address"
-          />
-
-          {isAuthenticated && selectedAddressId === null ? (
-            <label className="flex items-start gap-3 rounded-[1.5rem] border border-white/10 bg-white/5 px-6 py-5 shadow-xl">
-              <input
-                type="checkbox"
-                checked={saveNewAddress}
-                onChange={(event) => setSaveNewAddress(event.target.checked)}
-                className="mt-1 h-5 w-5 rounded-md border-white/20 bg-white/5 text-violet-600 focus:ring-violet-500/50 accent-violet-600"
+              <BillingAddressFields
+                value={billing}
+                onChange={(nextBilling) => {
+                  setBilling(nextBilling);
+                  resetOrder();
+                }}
+                fixedCurrency={marketCurrency}
+                stepNumber="03"
+                stepLabel="Billing address"
               />
-              <span className="text-sm text-white/80">
-                <strong className="font-black uppercase tracking-wider text-white">Save this billing address</strong>
-                <span className="mt-1 block text-xs text-white/40 font-bold">Keep this address for faster checkout on your next top-up.</span>
-              </span>
-            </label>
-          ) : null}
-        </div>
-        <div className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-between">
-          <button 
-            type="button" 
-            onClick={() => setStep(2)} 
-            className="recharza-checkout-secondary h-14 px-8 text-sm tracking-widest"
-          >
-            Back to player
-          </button>
-          <button 
-            type="submit" 
-            disabled={!canSubmit || isSubmitting || Boolean(order)} 
-            className="recharza-checkout-primary h-14 px-10 text-sm tracking-widest"
-          >
-            {isSubmitting ? "Processing…" : "Pay Now"}
-          </button>
-        </div>
-        </> : null}
+
+              {isAuthenticated && selectedAddressId === null ? (
+                <label className="flex items-start gap-3 rounded-[1.5rem] border border-white/10 bg-white/5 px-6 py-5 shadow-xl">
+                  <input
+                    type="checkbox"
+                    checked={saveNewAddress}
+                    onChange={(event) => setSaveNewAddress(event.target.checked)}
+                    className="mt-1 h-5 w-5 rounded-md border-white/20 bg-white/5 text-violet-600 focus:ring-violet-500/50 accent-violet-600"
+                  />
+                  <span className="text-sm text-white/80">
+                    <strong className="font-black uppercase tracking-wider text-white">Save this billing address</strong>
+                    <span className="mt-1 block text-xs text-white/40 font-bold">Keep this address for faster checkout on your next top-up.</span>
+                  </span>
+                </label>
+              ) : null}
+            </div>
+            <StepActions
+              current={step}
+              onBack={() => setStep(2)}
+              onNext={() => advanceStep(3)}
+              nextLabel="Pay Now"
+            />
+          </>
+        ) : null}
 
         {error ? <p className="rounded-[1.5rem] border border-rose-500/30 bg-rose-500/10 px-6 py-4 text-sm font-bold text-rose-400">{error}</p> : null}
         {message && !order ? <p className="rounded-[1.5rem] border border-cyan-500/30 bg-cyan-500/10 px-6 py-4 text-sm font-bold text-cyan-400">{message}</p> : null}
