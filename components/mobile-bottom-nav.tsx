@@ -83,14 +83,14 @@ export function MobileBottomNav() {
               aria-current={active ? "page" : undefined}
               aria-label={showBadge ? `${item.label}, ${count} items` : item.label}
               className={`flex min-h-[4.5rem] flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-0 text-[9px] font-black transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 ${
-                active ? "text-violet-700" : "text-slate-400 hover:text-slate-900"
+                active ? "text-violet-700" : "text-slate-900 hover:text-black"
               }`}
             >
               <span
                 className={`relative grid h-8 w-8 place-items-center rounded-xl transition-all duration-300 ${
                   active
                     ? "bg-violet-600 text-white shadow-lg shadow-violet-200"
-                    : "text-slate-400"
+                    : "text-slate-900"
                 }`}
               >
                 <StorefrontIcon name={item.icon} className="h-4 w-4" />

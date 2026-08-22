@@ -31,7 +31,7 @@ export const initialBillingForm: BillingFormState = {
 };
 
 const inputClassName =
-  "mt-2 min-h-12 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-base font-normal text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-600 focus:ring-2 focus:ring-violet-600/10";
+  "mt-2 min-h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-5 text-base font-bold text-white outline-none transition placeholder:text-white/20 focus:border-violet-500 focus:bg-white/10 focus:ring-4 focus:ring-violet-500/20";
 
 export function BillingAddressFields({
   value,
@@ -56,52 +56,50 @@ export function BillingAddressFields({
   }
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
-      <div className="grid border-b border-slate-100 lg:grid-cols-[18rem_minmax(0,1fr)]">
-        <div className="border-b border-slate-100 bg-slate-50/50 p-5 lg:border-b-0 lg:border-r lg:border-slate-100 lg:p-6">
+    <section className="overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#161722] shadow-2xl">
+      <div className="grid border-b border-white/5 lg:grid-cols-[20rem_minmax(0,1fr)]">
+        <div className="border-b border-white/5 bg-white/5 p-6 lg:border-b-0 lg:border-r lg:p-8">
           <div className="flex items-center gap-3">
-            <span className="grid h-9 w-9 place-items-center rounded-lg border border-violet-100 bg-violet-50 text-sm font-bold text-violet-600 shadow-sm">
+            <span className="grid h-10 w-10 place-items-center rounded-2xl bg-violet-600/20 text-sm font-black text-violet-400">
               {stepNumber}
             </span>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-600">
+            <p className="text-[11px] font-black uppercase tracking-[0.25em] text-violet-400">
               {stepLabel}
             </p>
           </div>
-          <h2 className="mt-5 text-2xl font-bold tracking-tight text-slate-900">
-            Billing and payment identity
+          <h2 className="mt-6 text-2xl font-black tracking-tight text-white italic">
+            Billing & Identity
           </h2>
-          <p className="mt-3 text-sm leading-6 text-slate-500 font-medium">
-            Used for payment processing, receipts, and support verification. The selected game market controls the storefront currency.
+          <p className="mt-4 text-sm leading-relaxed text-white/40 font-bold">
+            Used for payment processing, receipts, and support verification. The selected market controls the currency.
           </p>
-          <div className="mt-5 rounded-lg border border-slate-200 bg-white px-3 py-3 text-xs leading-5 text-slate-500 font-medium">
+          <div className="mt-6 rounded-2xl border border-white/5 bg-white/5 px-4 py-4 text-xs leading-relaxed text-white/30 font-bold">
             Billing details never change the selected game-account market.
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-4 p-5 lg:p-6">
+        <div className="flex items-center justify-between gap-4 p-6 lg:p-8">
           <div>
-            <p className="text-sm font-bold text-slate-900">Complete billing details</p>
-            <p className="mt-1 text-xs leading-5 text-slate-400 font-medium">
+            <p className="text-base font-black text-white italic">Complete Billing Details</p>
+            <p className="mt-1 text-xs leading-relaxed text-white/40 font-bold">
               Keep the information consistent with the payment account.
             </p>
           </div>
           <span
-            className={`shrink-0 rounded-full border px-3 py-1 text-[11px] font-bold ${
-              "border-emerald-100 bg-emerald-50 text-emerald-600 shadow-sm"
-            }`}
+            className={`shrink-0 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-400 shadow-lg shadow-emerald-500/10`}
           >
-            {fixedCurrency} market pricing
+            {fixedCurrency} market
           </span>
         </div>
       </div>
 
-      <div className="grid gap-7 p-5 sm:p-6 lg:grid-cols-2 lg:p-7">
-        <fieldset className="grid content-start gap-4">
-          <legend className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-violet-600">
+      <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-2 lg:p-10">
+        <fieldset className="grid content-start gap-6">
+          <legend className="mb-2 text-[11px] font-black uppercase tracking-[0.3em] text-violet-400 italic">
             Contact and receipt
           </legend>
-          <label className="text-sm font-bold text-slate-900">
-            Full billing name
+          <label className="flex flex-col gap-1">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">Full billing name</span>
             <input
               required
               autoComplete="name"
@@ -112,8 +110,8 @@ export function BillingAddressFields({
               placeholder="Name on the payment account"
             />
           </label>
-          <label className="text-sm font-bold text-slate-900">
-            Receipt email
+          <label className="flex flex-col gap-1">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">Receipt email</span>
             <input
               required
               type="email"
@@ -125,8 +123,8 @@ export function BillingAddressFields({
               placeholder="billing@example.com"
             />
           </label>
-          <label className="text-sm font-bold text-slate-900">
-            Phone number
+          <label className="flex flex-col gap-1">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">Phone number</span>
             <input
               required
               type="tel"
@@ -138,9 +136,9 @@ export function BillingAddressFields({
               placeholder="+91 98765 43210"
             />
           </label>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-bold text-slate-900">
-              Country
+          <div className="grid gap-6 sm:grid-cols-2">
+            <label className="flex flex-col gap-1">
+              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">Country</span>
               <CountryPicker
                 value={value.countryCode}
                                   onChange={(countryCode) =>
@@ -154,20 +152,19 @@ export function BillingAddressFields({
 
               />
             </label>
-            <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-900">
-              <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Market currency</span>
-              <span className="mt-1 block text-base font-bold text-slate-900">{fixedCurrency}</span>
-              <span className="mt-1 block text-xs leading-5 text-slate-500 font-medium">Prices are fixed by the selected game market. Billing country does not change them.</span>
+            <div className="rounded-2xl border border-white/5 bg-white/5 px-5 py-4">
+              <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-white/20">Market currency</span>
+              <span className="mt-1 block text-lg font-black text-white italic">{fixedCurrency}</span>
             </div>
           </div>
         </fieldset>
 
-        <fieldset className="grid content-start gap-4 rounded-xl border border-slate-100 bg-slate-50/50 p-4 sm:p-5">
-          <legend className="px-2 text-xs font-bold uppercase tracking-[0.16em] text-violet-600">
+        <fieldset className="grid content-start gap-6 rounded-[2rem] border border-white/5 bg-white/5 p-6 sm:p-8">
+          <legend className="px-4 text-[11px] font-black uppercase tracking-[0.3em] text-violet-400 italic">
             Billing address
           </legend>
-          <label className="text-sm font-bold text-slate-900">
-            Address line 1
+          <label className="flex flex-col gap-1">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">Address line 1</span>
             <input
               required
               autoComplete="address-line1"
@@ -178,8 +175,8 @@ export function BillingAddressFields({
               placeholder="House, building and street"
             />
           </label>
-          <label className="text-sm font-bold text-slate-900">
-            Address line 2 <span className="font-normal text-slate-400">(optional)</span>
+          <label className="flex flex-col gap-1">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">Address line 2 <span className="font-bold text-white/10">(optional)</span></span>
             <input
               autoComplete="address-line2"
               maxLength={180}
@@ -189,9 +186,9 @@ export function BillingAddressFields({
               placeholder="Apartment, landmark or district"
             />
           </label>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-bold text-slate-900">
-              City
+          <div className="grid gap-6 sm:grid-cols-2">
+            <label className="flex flex-col gap-1">
+              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">City</span>
               <input
                 required
                 autoComplete="address-level2"
@@ -201,24 +198,24 @@ export function BillingAddressFields({
                 className={inputClassName}
               />
             </label>
-            <label className="text-sm font-bold text-slate-900">
-              State or province
+            <label className="flex flex-col gap-1">
+              <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">State or province</span>
               <select
                 required
                 autoComplete="address-level1"
                 value={value.state}
                 onChange={(event) => update("state", event.target.value)}
-                className={inputClassName}
+                className="mt-2 min-h-14 w-full rounded-2xl border border-white/10 bg-[#1a1b2e] px-5 text-base font-bold text-white outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/20"
               >
-                {states.length ? <option value="" className="bg-white">Choose a state or province</option> : <option value="N/A" className="bg-white">Not applicable</option>}
+                {states.length ? <option value="" className="bg-[#1a1b2e]">Choose state</option> : <option value="N/A" className="bg-[#1a1b2e]">N/A</option>}
                 {states.map((state) => (
-                  <option key={`${state.countryCode}-${state.isoCode}`} value={state.name} className="bg-white">{state.name}</option>
+                  <option key={`${state.countryCode}-${state.isoCode}`} value={state.name} className="bg-[#1a1b2e]">{state.name}</option>
                 ))}
               </select>
             </label>
           </div>
-          <label className="text-sm font-bold text-slate-900">
-            Postal code
+          <label className="flex flex-col gap-1">
+            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">Postal code</span>
             <input
               required
               autoComplete="postal-code"

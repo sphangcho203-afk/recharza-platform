@@ -78,92 +78,76 @@ export default async function GameCheckoutPage({
     const marketCount = new Set(packages.map((item) => item.marketCode)).size;
 
     return (
-      <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-slate-900 bg-white">
+      <main className="storefront-page min-h-screen bg-[#05060a] text-white overflow-x-hidden">
         <SiteHeader />
 
-        <section className="recharza-atmosphere-game border-b border-slate-200/60 bg-slate-50 px-4 py-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-[1240px]">
-            <StorefrontBackButton />
-            <nav className="recharza-breadcrumb mb-4 mt-4 text-slate-500 text-[11px] font-bold uppercase tracking-widest" aria-label="Page path">
-              <Link href="/" className="hover:text-slate-900 transition-colors">Home</Link>
-              <span className="mx-2 text-slate-300">/</span>
-              <Link href="/#games" className="hover:text-slate-900 transition-colors">Top Up</Link>
-              <span className="mx-2 text-slate-300">/</span>
-              <span aria-current="page" className="text-violet-600">{definition.title}</span>
-            </nav>
+        {/* Immersive Framed Hero Section */}
+        <section className="relative pt-8 pb-12 sm:pt-12 sm:pb-16 overflow-hidden">
+          {/* Vibrant Atmosphere Gradients */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[500px] bg-gradient-to-b from-violet-600/20 via-blue-600/10 to-transparent blur-[120px] opacity-60 pointer-events-none" />
+          <div className="absolute top-20 left-1/4 w-64 h-64 bg-purple-600/20 blur-[100px] rounded-full pointer-events-none" />
+          <div className="absolute top-40 right-1/4 w-80 h-80 bg-blue-600/20 blur-[120px] rounded-full pointer-events-none" />
 
-            <div className="flex flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-lg sm:flex-row sm:items-center sm:justify-between sm:p-6">
-              <div className="flex min-w-0 items-center gap-5 sm:gap-6">
-                <div
-                  className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm sm:h-20 sm:w-20"
-                >
+          <div className="relative z-10 mx-auto max-w-[1240px] px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col items-center text-center">
+              <StorefrontBackButton className="self-start mb-8 text-white/60 hover:text-white" />
+              
+              {/* Centered Framed Game Icon */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500 to-blue-500 blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-500" />
+                <div className="relative h-32 w-32 sm:h-40 sm:w-40 rounded-[2.5rem] border-4 border-white/10 bg-[#161722] p-4 shadow-2xl overflow-hidden">
                   <ResilientImage
                     sources={gameLogo ? [gameLogo.url, game.icon, ...game.logoSources] : [game.icon, ...game.logoSources]}
                     alt={gameLogo?.altText ?? game.logoAlt}
                     fallbackLabel={game.title.slice(0, 2).toUpperCase()}
                     fill
                     priority
-                    sizes="80px"
+                    sizes="(max-width: 640px) 128px, 160px"
                     className="object-contain p-2"
-                    fallbackClassName="absolute inset-0 h-full w-full"
                   />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Instant delivery</p>
-                  <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-3xl leading-tight">{definition.title} Top Up</h1>
-                  <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 shadow-sm">
-                      <span className="text-[10px] font-bold text-slate-600">{packages.length} offers</span>
-                      <span className="h-1 w-1 rounded-full bg-slate-200" />
-                      <span className="text-[10px] font-bold text-slate-600">{marketCount} {marketCount === 1 ? "market" : "markets"}</span>
-                    </div>
-                    <div className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 shadow-sm">
-                      <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
-                        Verified
-                      </span>
-                      <span className="h-1 w-1 rounded-full bg-slate-100" />
-                      <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
-                        Support
-                      </span>
-                    </div>
-                  </div>
                 </div>
               </div>
 
-              <div className="relative hidden h-20 w-44 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 md:block shadow-lg">
-                <ResilientImage
-                  sources={gameArtwork ? [gameArtwork.url, ...game.artworkSources] : game.artworkSources}
-                  alt={gameArtwork?.altText ?? game.artworkAlt}
-                  fallbackLabel={game.title}
-                  fill
-                  sizes="176px"
-                  className="object-cover"
-                  fallbackClassName="absolute inset-0 h-full w-full"
-                />
+	              {/* High-Impact Title & Badges */}
+	              <h1 className="mt-8 text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter text-white uppercase italic leading-[0.9]">
+	                {definition.title}
+	              </h1>
+
+	              <div className="mt-6 flex flex-wrap items-center justify-center gap-6">
+	                <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-white/60">
+	                  <StorefrontIcon name="globe" className="h-4 w-4 text-blue-400" />
+	                  <span>Global</span>
+	                </div>
+	                <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-[#f59e0b]">
+	                  <StorefrontIcon name="track" className="h-4 w-4" />
+	                  <span>Instant Delivery</span>
+	                </div>
+	              </div>
+
+              {/* Service Alert Box */}
+              <div className="mt-10 w-full max-w-2xl rounded-[2rem] border-2 border-amber-500/20 bg-amber-500/5 p-6 text-left shadow-xl backdrop-blur-sm">
+                <div className="flex gap-4">
+                  <StorefrontIcon name="info" className="h-6 w-6 shrink-0 text-amber-400" />
+                  <div className="space-y-1">
+                    <p className="text-sm font-black uppercase tracking-widest text-amber-400">Important Service Notice</p>
+                    <p className="text-sm font-bold leading-relaxed text-amber-100/80">
+                      This top-up service is optimized for <span className="text-white">{game.title}</span> players. 
+                      Instant Delivery enabled — ensure your <span className="text-white">Player ID</span> is correct to avoid any delays in fulfillment.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
-          <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50/50 p-4 sm:p-5 shadow-sm">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <StorefrontIcon name="globe" className="h-4 w-4 shrink-0 text-slate-500" />
-                <p className="text-[11px] font-medium leading-relaxed text-slate-600">
-                  <strong className="font-bold text-slate-900">{game.title} Global Delivery:</strong> Secure account confirmation and immediate delivery to your profile.
-                </p>
-              </div>
-              {game.deliveryCoverage && (
-                <div className="flex items-center justify-between gap-4 border-t border-slate-100 pt-3 sm:border-none sm:pt-0">
-                  <p className="text-[11px] font-bold text-slate-500">{game.deliveryCoverage.headline}</p>
-                  <div className="flex items-center gap-1.5 rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-1 shadow-sm">
-                    <StorefrontIcon name="shield" className="h-3.5 w-3.5 text-emerald-600" />
-                    <span className="text-[10px] font-bold text-emerald-600">Secure Checkout</span>
-                  </div>
-                </div>
-              )}
+        {/* Main Content Area */}
+        <section className="relative z-10 mx-auto max-w-[1240px] px-4 pb-20 sm:px-6 lg:px-8">
+          <div className="mb-10 flex items-center gap-4">
+            <div className="h-10 w-10 rounded-xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-400 shadow-lg shadow-violet-500/10">
+              <StorefrontIcon name="coin" className="h-5 w-5" />
             </div>
+            <h2 className="text-2xl font-black text-white uppercase italic tracking-tight">Available Packs</h2>
           </div>
 
           <SupplierGameCheckoutShell

@@ -189,7 +189,7 @@ export function MobileNavMenu() {
 
   return (
     <>
-      <button ref={triggerRef} type="button" aria-expanded={open} aria-controls="mobile-navigation" onClick={() => { setOpen((value) => !value); setSupportOpen(false); }} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-slate-200 bg-white text-slate-400 transition duration-150 ease-out hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60">
+      <button ref={triggerRef} type="button" aria-expanded={open} aria-controls="mobile-navigation" onClick={() => { setOpen((value) => !value); setSupportOpen(false); }} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-slate-300 bg-white text-slate-900 transition duration-150 ease-out hover:bg-slate-50 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60">
         <span className="sr-only">{open ? "Close navigation menu" : "Open navigation menu"}</span>
         <StorefrontIcon name="menu" className="h-[18px] w-[18px]" />
       </button>

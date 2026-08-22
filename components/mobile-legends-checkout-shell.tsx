@@ -337,240 +337,298 @@ export function MobileLegendsCheckoutShell({
 
   return (
     <form onSubmit={submitCheckout} className="grid gap-5">
-      <div className="min-w-0 space-y-5">
+      <div className="min-w-0 space-y-8">
         <CheckoutProgress step={step} onStepChange={setStep} />
 
-        {step === 2 ? <>
-        <section className="storefront-checkout-surface p-4 sm:p-5 border border-slate-200 bg-white shadow-lg rounded-2xl">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-base font-bold text-slate-900">Account Details</h2>
-              <p className="mt-1 text-xs text-slate-600">Confirm your account to ensure accurate delivery.</p>
-            </div>
-          </div>
-
-          <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_0.7fr_auto] sm:items-end">
-            <label className="text-xs font-bold text-slate-600">
-              Player ID
-              <input
-                required
-                inputMode="numeric"
-                autoComplete="off"
-                value={playerId}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                  setPlayerId(event.target.value.replace(/\D/g, ""));
-                  resetVerification();
-                }}
-                placeholder="123456789"
-                className={inputClassName}
-              />
-            </label>
-            <label className="text-xs font-bold text-slate-600">
-              Zone ID
-              <input
-                required
-                inputMode="numeric"
-                autoComplete="off"
-                value={zoneId}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                  setZoneId(event.target.value.replace(/\D/g, ""));
-                  resetVerification();
-                }}
-                placeholder="2045"
-                className={inputClassName}
-              />
-            </label>
-            <button
-              type="button"
-              onClick={() => void verifyPlayer()}
-              disabled={verification.status === "loading" || !playerId || !zoneId}
-              className="storefront-checkout-primary px-4 text-xs disabled:cursor-not-allowed"
-            >
-              {verification.status === "loading" ? "Checking…" : "Verify"}
-            </button>
-          </div>
-
-          <div
-            aria-live="polite"
-            className={`mt-3 rounded-xl border px-4 py-3 text-xs font-medium leading-relaxed transition-all ${
-              verification.status === "success"
-                ? "border-emerald-100 bg-emerald-50 text-emerald-700"
-                : verification.status === "error"
-                  ? "border-rose-100 bg-rose-50 text-rose-700"
-                  : "border-slate-100 bg-slate-50 text-slate-500"
-            }`}
-          >
-            {verification.message}
-            {verification.nickname ? <strong className="ml-1.5 font-bold text-slate-900">{verification.nickname}</strong> : null}
-          </div>
-
-          {restoredFromCart ? (
-            <p className="mt-3 rounded-xl border border-cyan-100 bg-cyan-50 px-4 py-3 text-xs font-medium leading-relaxed text-cyan-700">
-              Your selected package has been restored. Please confirm your account details to continue.
-            </p>
-          ) : null}
-        </section>
-        <StepActions current={step} onBack={() => setStep(1)} onNext={() => advanceStep(3)} nextLabel="Continue to payment" />
-        </> : null}
-
-        {step === 1 ? <>
-        <section>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-lg font-bold tracking-tight text-slate-900">Select Package</h2>
-              <p className="mt-1 text-xs font-medium text-slate-500">{packages.length} items available · {market.flag} {market.label}</p>
-            </div>
-            <div className="flex items-center gap-3">
-            </div>
-          </div>
-
-          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
-            {visiblePackages.map((item) => {
-              const selected = item.id === selectedPackage.id;
-              const badge = getMerchandisingBadge(item);
-              const quantity = splitBonusQuantity(item.name);
-              const badgeClass = badge?.tone === "rose"
-                ? "border-rose-100 bg-rose-50 text-rose-700"
-                : badge?.tone === "emerald"
-                  ? "border-emerald-100 bg-emerald-50 text-emerald-700"
-                  : "border-violet-100 bg-violet-50 text-violet-700";
-              return (
-                <div
-                  key={item.id}
-                    className={`group overflow-hidden rounded-2xl border transition-all duration-200 ${
-                    selected
-                      ? "border-violet-600 bg-violet-50 shadow-md"
-                      : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 hover:shadow-lg"
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPackageId(item.id);
-                      resetVerification();
-                    }}
-                    aria-pressed={selected}
-                    className="block w-full text-left"
-                  >
-                    <span className="relative block aspect-[16/9] overflow-hidden bg-slate-50">
-                      <StorefrontArtwork
-                        sources={item.media.sources}
-                        alt={item.media.alt}
-                        fallbackLabel={item.name.slice(0, 2).toUpperCase()}
-                        className="h-full w-full p-4 sm:p-5 transition-transform duration-300 group-hover:scale-105"
-                        objectFit="contain"
-                        sizes="(max-width: 640px) 45vw, 190px"
-                        fallbackClassName="absolute inset-0 h-full w-full"
-                      />
-                    </span>
-                    <span className="block p-4">
-                      {badge ? (
-                        <span className={`mb-2 inline-flex w-fit items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${badgeClass}`}>
-                          <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
-                          {badge.label}
-                        </span>
-                      ) : null}
-                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-tight text-slate-900 sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-bold text-emerald-600">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
-                      <span className="mt-3 block text-lg font-bold tracking-tight text-violet-600">{formatPresentment(item.amountInPaise)}</span>
-                      <span className="mt-1.5 block text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.source === "fazercards-live" ? "Instant delivery" : "Digital delivery"}</span>
-                    </span>
-                  </button>
-                  <div className="px-4 pb-4">
-                    <AddToCartButton
-                      gameSlug="mobile-legends"
-                      marketCode={market.code}
-                      packageId={item.id}
-                      packageName={item.name}
-                      playerId={playerId || null}
-                      zoneId={zoneId || null}
-                      disabled={verification.status === "loading"}
-                    />
+        {step === 2 ? (
+          <>
+            <section className="recharza-checkout-card p-6 sm:p-8">
+              <div className="flex flex-col gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-600/20 text-violet-400">
+                    <StorefrontIcon name="account" className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Account Details</h2>
+                    <p className="text-sm text-white/50">Enter your IDs to confirm your account.</p>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-          {visiblePackages.length === 0 ? <p className="mt-4 rounded-2xl border border-dashed border-white/10 bg-white/5 p-12 text-center text-sm font-medium text-slate-400">No packages are currently available.</p> : null}
-        </section>
-        {step === 1 ? <StepActions current={step} onNext={() => advanceStep(2)} nextLabel="Continue to player info" /> : null}
-        </> : null}
 
-        {step === 3 ? <>
-        <div id="billing" className="space-y-5">
-          <section className="storefront-checkout-surface p-4 sm:p-5 border border-slate-200 bg-white shadow-xl rounded-2xl">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">Order Summary</p>
-            <h2 className="mt-1 text-xl font-bold text-slate-900">Order Review</h2>
-            <p className="mt-1 text-sm text-slate-500 font-medium">Please review your purchase details and provide billing information to complete your order.</p>
-            
-            <dl className="mt-5 grid gap-4 rounded-xl border border-slate-100 bg-slate-50/50 p-4 text-sm sm:grid-cols-2">
-              <div><dt className="text-xs font-bold text-slate-400">Package</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
-              <div><dt className="text-xs font-bold text-slate-400">Market</dt><dd className="mt-1 font-bold text-slate-900">{market.flag} {market.label}</dd></div>
-              <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-400">Player ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{playerId || "—"}</dd></div>
-              <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-400">Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{zoneId || "—"}</dd></div>
-              <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:col-span-2"><dt className="text-xs font-bold text-slate-400">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-600">{verification.nickname || "Verified player"}</dd></div>
-              <div className="border-t border-slate-200 pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-400">Total</dt><dd className="mt-1 text-3xl font-bold text-violet-600 tracking-tight">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
-            </dl>
-          </section>
+                <div className="grid gap-4 sm:grid-cols-[1fr_0.7fr_auto] sm:items-end">
+                  <label className="flex flex-col gap-2">
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">Player ID</span>
+                    <input
+                      required
+                      inputMode="numeric"
+                      autoComplete="off"
+                      value={playerId}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        setPlayerId(event.target.value.replace(/\D/g, ""));
+                        resetVerification();
+                      }}
+                      placeholder="1548126076"
+                      className="recharza-checkout-input h-14 px-5 font-bold outline-none"
+                    />
+                  </label>
+                  <label className="flex flex-col gap-2">
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">Zone ID</span>
+                    <input
+                      required
+                      inputMode="numeric"
+                      autoComplete="off"
+                      value={zoneId}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                        setZoneId(event.target.value.replace(/\D/g, ""));
+                        resetVerification();
+                      }}
+                      placeholder="1234"
+                      className="recharza-checkout-input h-14 px-5 font-bold outline-none"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => void verifyPlayer()}
+                    disabled={verification.status === "loading" || !playerId || !zoneId}
+                    className="recharza-checkout-button h-14 px-8 text-sm tracking-widest"
+                  >
+                    {verification.status === "loading" ? "Checking…" : "Verify"}
+                  </button>
+                </div>
 
-          {isAuthenticated && savedAddresses.length > 0 ? (
-            <SavedAddressPicker
-              addresses={savedAddresses}
-              selectedAddressId={selectedAddressId}
-              onSelect={applySavedAddress}
-            />
-          ) : null}
+                <div
+                  aria-live="polite"
+                  className={`rounded-2xl border p-5 text-sm font-bold leading-relaxed transition-all ${
+                    verification.status === "success"
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                      : verification.status === "error"
+                        ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
+                        : "border-white/5 bg-white/5 text-white/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <StorefrontIcon
+                      name={verification.status === "success" ? "check" : verification.status === "error" ? "close" : "info"}
+                      className="h-5 w-5 shrink-0"
+                    />
+                    <span>
+                      {verification.message}
+                      {verification.nickname ? <strong className="ml-2 text-white">{verification.nickname}</strong> : null}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <StepActions current={step} onBack={() => setStep(1)} onNext={() => advanceStep(3)} nextLabel="Continue to payment" />
+          </>
+        ) : null}
 
-          <BillingAddressFields
-            value={billing}
-            onChange={(nextBilling) => {
-              setBilling({ ...nextBilling, presentmentCurrency: marketCurrency });
-              resetCreatedOrder();
-            }}
-            fixedCurrency={marketCurrency}
-            stepNumber="03"
-            stepLabel="Billing address"
-          />
+        {step === 1 ? (
+          <>
+            <section className="space-y-8">
+              <div className="flex items-center gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600/20 border border-violet-500/30 text-violet-400 shadow-lg shadow-violet-500/10">
+                  <StorefrontIcon name="diamond" className="h-5 w-5" />
+                </div>
+                <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">Diamond Packs</h2>
+              </div>
 
-          {isAuthenticated && selectedAddressId === null ? (
-            <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm">
-              <input
-                type="checkbox"
-                checked={saveNewAddress}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => setSaveNewAddress(event.target.checked)}
-                className="mt-0.5 h-4 w-4 accent-violet-600"
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+                {visiblePackages.map((item) => {
+                  const selected = item.id === selectedPackage.id;
+                  const badge = getMerchandisingBadge(item);
+                  const quantity = splitBonusQuantity(item.name);
+
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        setPackageId(item.id);
+                        resetVerification();
+                      }}
+                      className={`group relative flex flex-col items-start p-6 rounded-[2rem] border-2 transition-all duration-300 text-left ${
+                        selected
+                          ? "border-violet-500 bg-[#1a1b2e] shadow-2xl shadow-violet-500/20 -translate-y-1"
+                          : "border-white/5 bg-[#161722] hover:border-white/20 hover:bg-[#1a1b2e]"
+                      }`}
+                    >
+                      {/* Selection Indicator */}
+                      <div
+                        className={`absolute top-5 left-5 h-6 w-6 rounded-full border-2 transition-all flex items-center justify-center ${
+                          selected ? "bg-violet-500 border-violet-500" : "bg-transparent border-white/20"
+                        }`}
+                      >
+                        {selected && <div className="h-2.5 w-2.5 rounded-full bg-white" />}
+                      </div>
+
+                      {badge && (
+                        <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-orange-500 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg shadow-orange-500/20">
+                          <StorefrontIcon name="bolt" className="h-3 w-3" />
+                          {badge.label}
+                        </div>
+                      )}
+
+                      <div className="mt-8 flex flex-col w-full">
+                        <div className="flex items-baseline gap-1.5 flex-wrap">
+                          <span className="text-xl font-black text-white italic">{quantity.base}</span>
+                          {quantity.bonus && (
+                            <span className="recharza-package-bonus text-lg italic">
+                              +{quantity.plus} {quantity.bonus}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-white/40 font-bold text-[11px] mt-1">
+                          <StorefrontIcon name="diamond" className="h-3 w-3 text-blue-400/50" />
+                          <span>{quantity.base} gems</span>
+                          <StorefrontIcon name="bolt" className="h-3 w-3 ml-1 text-amber-500/50" />
+                        </div>
+                      </div>
+
+                      <div className="mt-6 flex flex-col w-full">
+                        <span className="recharza-package-price text-2xl italic">
+                          {formatPresentment(item.amountInPaise)}
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+            <StepActions current={step} onNext={() => advanceStep(2)} nextLabel="Continue to player info" />
+          </>
+        ) : null}
+
+        {step === 3 ? (
+          <>
+            <div id="billing" className="space-y-8">
+              <section className="recharza-checkout-card p-6 sm:p-10">
+                <div className="relative z-10">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600/20 border border-violet-500/30 text-violet-400 shadow-lg shadow-violet-500/10">
+                      <StorefrontIcon name="check" className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-[0.3em] text-violet-400">Review & Pay</p>
+                      <h2 className="text-2xl font-black text-white italic uppercase">Order Summary</h2>
+                    </div>
+                  </div>
+
+                  <div className="mt-10 grid gap-6 sm:grid-cols-2">
+                    <div className="rounded-[1.5rem] border border-white/5 bg-white/5 p-6">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Product</span>
+                      <p className="mt-2 text-lg font-black text-white italic">{selectedPackage.name}</p>
+                    </div>
+                    <div className="rounded-[1.5rem] border border-white/5 bg-white/5 p-6">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Region</span>
+                      <p className="mt-2 text-lg font-black text-white italic">
+                        {market.flag} {market.label}
+                      </p>
+                    </div>
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-6 shadow-xl">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Player ID</span>
+                      <p className="mt-2 font-mono text-xl font-black text-white tracking-[0.2em]">{playerId || "—"}</p>
+                    </div>
+                    <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-6 shadow-xl">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/30">Zone ID</span>
+                      <p className="mt-2 font-mono text-xl font-black text-white tracking-[0.2em]">{zoneId || "—"}</p>
+                    </div>
+                    <div className="sm:col-span-2 rounded-[1.5rem] border border-emerald-500/20 bg-emerald-500/5 p-6 flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400/50">
+                          Verified Player
+                        </span>
+                        <p className="mt-2 text-xl font-black text-emerald-400 italic">{verification.nickname || "CONFIRMED"}</p>
+                      </div>
+                      <StorefrontIcon name="check" className="h-8 w-8 text-emerald-500/40" />
+                    </div>
+                    <div className="sm:col-span-2 mt-6 pt-8 border-t border-white/10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                      <div>
+                        <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white/30">Total Payment</span>
+                        <p className="mt-2 text-5xl sm:text-6xl font-black text-violet-400 tracking-tighter italic leading-none">
+                          {formatPresentment(selectedPackage.amountInPaise)}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-2 border border-white/10">
+                        <StorefrontIcon name="shield" className="h-4 w-4 text-emerald-400" />
+                        <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Secure Checkout</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {isAuthenticated && savedAddresses.length > 0 ? (
+                <SavedAddressPicker addresses={savedAddresses} selectedAddressId={selectedAddressId} onSelect={applySavedAddress} />
+              ) : null}
+
+              <BillingAddressFields
+                value={billing}
+                onChange={(nextBilling) => {
+                  setBilling({ ...nextBilling, presentmentCurrency: marketCurrency });
+                  resetCreatedOrder();
+                }}
+                fixedCurrency={marketCurrency}
+                stepNumber="03"
+                stepLabel="Billing address"
               />
-              <span className="text-sm text-slate-900">
-                <strong className="font-bold text-slate-900">Save this billing address</strong>
-                <span className="mt-0.5 block text-xs text-slate-600">Keep this address for faster checkout on your next top-up.</span>
-              </span>
-            </label>
-          ) : null}
-        </div>
-        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-          <button type="button" onClick={() => setStep(2)} className="storefront-checkout-secondary px-4 text-sm">Back to player</button>
-          <button type="submit" disabled={isSubmitting || !canCreateOrder || Boolean(order)} className="min-h-11 rounded-lg bg-violet-600 px-6 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60">{isSubmitting ? "Processing order…" : "Pay Now"}</button>
-        </div>
-        </> : null}
 
-        {checkoutError ? <p aria-live="assertive" className="rounded-lg border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-600">{checkoutError}</p> : null}
-        {checkoutMessage && !order ? <p className="rounded-lg border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm font-bold text-cyan-700">{checkoutMessage}</p> : null}
+              {isAuthenticated && selectedAddressId === null ? (
+                <label className="flex items-start gap-3 rounded-[1.5rem] border border-white/10 bg-white/5 px-6 py-5 shadow-xl">
+                  <input
+                    type="checkbox"
+                    checked={saveNewAddress}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => setSaveNewAddress(event.target.checked)}
+                    className="mt-1 h-5 w-5 rounded-md border-white/20 bg-white/5 text-violet-600 focus:ring-violet-500/50 accent-violet-600"
+                  />
+                  <span className="text-sm text-white/80">
+                    <strong className="font-black uppercase tracking-wider text-white">Save this billing address</strong>
+                    <span className="mt-1 block text-xs text-white/40 font-bold">
+                      Keep this address for faster checkout on your next top-up.
+                    </span>
+                  </span>
+                </label>
+              ) : null}
+            </div>
+            <div className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-between">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="recharza-checkout-secondary h-14 px-8 text-sm tracking-widest"
+              >
+                Back to player
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting || !canCreateOrder || Boolean(order)}
+                className="recharza-checkout-primary h-14 px-10 text-sm tracking-widest"
+              >
+                {isSubmitting ? "Processing…" : "Pay Now"}
+              </button>
+            </div>
+          </>
+        ) : null}
+
+        {checkoutError ? <p aria-live="assertive" className="rounded-[1.5rem] border border-rose-500/30 bg-rose-500/10 px-6 py-4 text-sm font-bold text-rose-400">{checkoutError}</p> : null}
+        {checkoutMessage && !order ? <p className="rounded-[1.5rem] border border-cyan-500/30 bg-cyan-500/10 px-6 py-4 text-sm font-bold text-cyan-400">{checkoutMessage}</p> : null}
 
         {step === 4 && order ? (
-          <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+          <section className="rounded-[2.5rem] border border-emerald-500/30 bg-emerald-500/5 p-8 shadow-2xl">
+            <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-start">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">{duplicate ? "Order Found" : "Order Confirmed"}</p>
-                <h3 className="mt-1 break-all text-lg font-bold tracking-tight text-slate-900">{order.id}</h3>
-                <p className="mt-2 text-xs font-medium leading-relaxed text-emerald-800/80">{checkoutMessage}</p>
-                {addressSaveNote ? <p className="mt-2 text-xs font-medium leading-relaxed text-amber-700/80">{addressSaveNote}</p> : null}
+                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-400">{duplicate ? "Order Found" : "Order Confirmed"}</p>
+                <h3 className="mt-3 break-all text-2xl font-black tracking-tight text-white italic uppercase leading-none">{order.id}</h3>
+                <p className="mt-4 text-sm font-bold leading-relaxed text-emerald-100/60">{checkoutMessage}</p>
+                {addressSaveNote ? <p className="mt-2 text-xs font-bold leading-relaxed text-amber-400/80 italic">{addressSaveNote}</p> : null}
               </div>
-              <span className="w-fit rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-600 shadow-sm">{order.ownership.accountLinked ? "Linked account" : "Guest checkout"}</span>
+              <span className="w-fit rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/60 shadow-lg">{order.ownership.accountLinked ? "Linked account" : "Guest checkout"}</span>
             </div>
 
-            <PrivateOrderTokenCard token={order.tracking.accessToken} />
+            <div className="mt-8">
+              <PrivateOrderTokenCard token={order.tracking.accessToken} />
+            </div>
 
             {paymentVerified ? (
-              <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-100/50 p-4 text-sm font-bold text-emerald-800">Payment confirmed. You can track your order status in real-time.</div>
+              <div className="mt-8 rounded-[1.5rem] border border-emerald-500/30 bg-emerald-500/10 p-5 text-sm font-black uppercase tracking-wider text-emerald-400 text-center">Payment confirmed. Fulfillment in progress.</div>
             ) : (
               <RazorpayTestCheckout
                 orderId={order.id}
@@ -612,8 +670,26 @@ function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
 }
 
 function StepActions({ current, onBack, onNext, nextLabel }: StepActionsProps) {
-  return <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-    {current > 1 ? <button type="button" onClick={onBack} className="storefront-checkout-secondary px-4 text-sm">Back</button> : <span />}
-    {current < 4 ? <button type="button" onClick={onNext} className="storefront-checkout-primary px-5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
-  </div>;
+  return (
+    <div className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-between">
+      {current > 1 ? (
+        <button
+          type="button"
+          onClick={onBack}
+          className="recharza-checkout-secondary h-14 px-10 text-sm tracking-[0.15em]"
+        >
+          Back
+        </button>
+      ) : <div />}
+      {current < 4 ? (
+        <button
+          type="button"
+          onClick={onNext}
+          className="recharza-checkout-primary h-14 px-12 text-sm tracking-[0.15em]"
+        >
+          {nextLabel}
+        </button>
+      ) : null}
+    </div>
+  );
 }

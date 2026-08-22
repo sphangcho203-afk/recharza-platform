@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { RecharzaMark } from "@/components/recharza-mark";
+import { StorefrontIcon } from "@/components/storefront-icon";
 import { SupportChannelIcon, type SupportChannelIconName } from "@/components/support-channel-icon";
 import {
   getPublishedPolicy,
@@ -91,20 +92,23 @@ export async function SiteFooter() {
 
         {publishedPolicies.length > 0 ? (
           <section aria-labelledby="footer-legal-heading" className="mt-16 border-t border-slate-200 pt-10">
-            <h2 id="footer-legal-heading" className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-900">Legal Policies</h2>
-            <nav aria-label="Legal policies" className="mt-6">
-              <div className="flex flex-wrap gap-x-8 gap-y-3">
-                {publishedPolicies.map((policy) => (
-                  <Link
-                    key={policy.key}
-                    href={`/policies/${policy.key}`}
-                    className="text-[13px] font-black uppercase tracking-widest text-slate-500 transition-all duration-200 hover:text-violet-600"
-                  >
-                    {policy.title}
-                  </Link>
-                ))}
-              </div>
-            </nav>
+            <div className="flex flex-col gap-6">
+              <h2 id="footer-legal-heading" className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-900">Legal Policies</h2>
+              <nav aria-label="Legal policies">
+                <ul className="flex flex-col gap-3">
+                  {publishedPolicies.map((policy) => (
+                    <li key={policy.key}>
+                      <Link
+                        href={`/policies/${policy.key}`}
+                        className="text-[12px] font-black uppercase tracking-widest text-slate-500 transition-colors hover:text-violet-600"
+                      >
+                        {policy.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
           </section>
         ) : null}
 

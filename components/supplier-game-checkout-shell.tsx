@@ -402,247 +402,294 @@ export function SupplierGameCheckoutShell({
   return (
     <form
       onSubmit={submitCheckout}
-      className="space-y-5"
+      className="space-y-8"
     >
-      <div className="min-w-0 space-y-5">
-        <header className="flex items-center justify-between gap-3 border-b border-white/[0.08] pb-4">
-          <Link href="/#games" className="inline-flex shrink-0 items-center gap-1.5 text-xs font-bold text-slate-400 transition hover:text-white">
-            <StorefrontIcon name="arrow" className="h-3.5 w-3.5 rotate-180" />
-            <span className="hidden sm:inline">Back to games</span>
-            <span className="sm:hidden">Back</span>
-          </Link>
-          <div className="min-w-0 text-right">
-            <h1 className="truncate text-base font-bold tracking-tight text-slate-900 sm:text-lg">{gameLabel}</h1>
-            <p className="truncate text-[11px] font-bold text-slate-400 uppercase tracking-wider">{selectedMarketLabel}</p>
-          </div>
-        </header>
-        {false && markets.length > 1 && gameSlug !== "free-fire" ? (
-          <section className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <div className="flex min-w-max gap-2">
-              {markets.map((market) => (
-                <button
-                  key={market.code}
-                  type="button"
-                  onClick={() => chooseMarket(market.code)}
-                  className={`min-h-9 rounded-lg border px-3 text-xs font-bold transition ${
-                    market.code === marketCode
-                      ? "border-violet-600 bg-violet-50 text-violet-700"
-                      : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-900"
-                  }`}
-                >
-                  {market.label}
-                </button>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
+      <div className="min-w-0 space-y-8">
         <CheckoutProgress step={step} onStepChange={setStep} />
 
-        {step === 2 ? <>
-        <section className="storefront-checkout-surface p-4 sm:p-5 border border-slate-200 bg-white shadow-lg rounded-2xl">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-base font-bold text-slate-900">Account Details</h2>
-              <p className="mt-1 text-xs text-slate-500 font-medium">Enter your account details exactly as shown in-game.</p>
-            </div>
-          </div>
-
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {gameSlug === "valorant" ? (
-              <label className="text-xs font-semibold text-slate-400 sm:col-span-2">
-                Riot ID
-                <input
-                  required
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  spellCheck={false}
-                  maxLength={32}
-                  value={identity.riotId}
-                  onChange={(event) => {
-                    setIdentity({ ...identity, riotId: event.target.value.slice(0, 32) });
-                    resetVerification();
-                    resetOrder();
-                  }}
-                  placeholder="PlayerName#TAG"
-                  className={fieldClassName}
-                />
-              </label>
-            ) : (
-                <label className="text-xs font-bold text-slate-500">
-                {gameSlug === "genshin-impact" ? "UID" : "Player ID"}
-                {gameSlug === "free-fire" ? <span className="ml-2 font-normal text-slate-400">works across supported regions</span> : null}
-                <input
-                  required
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={20}
-                  value={identity.playerId}
-                  onChange={(event) => {
-                    const playerId = event.target.value.replace(/\D/g, "").slice(0, 20);
-                    setIdentity({ ...identity, playerId });
-                    resetVerification();
-                    resetOrder();
-                  }}
-                  placeholder={gameSlug === "genshin-impact" ? "9 or 10 digit UID" : "Numeric player ID"}
-                  className={fieldClassName}
-                />
-              </label>
-            )}
-
-            {gameSlug === "genshin-impact" ? (
-              <label className="text-xs font-bold text-slate-500">
-                Server
-                <select
-                  required
-                  value={identity.serverId}
-                  onChange={(event) => {
-                    setIdentity({ ...identity, serverId: event.target.value });
-                    resetVerification();
-                    resetOrder();
-                  }}
-                  className={fieldClassName}
-                >
-                  <option value="">Choose server</option>
-                  {serverOptions.map((option) => (
-                    <option key={option.value} value={option.value}>{option.label}</option>
-                  ))}
-                </select>
-              </label>
-            ) : null}
-          </div>
-
-          <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className={`text-xs font-bold ${verification?.confirmed ? "text-emerald-600" : identityResult?.valid ? "text-slate-600" : "text-slate-400"}`}>
-              {verification?.confirmed && verification.nickname
-                ? `Verified IGN: ${verification.nickname}${verification.region ? ` — ${verification.region} account` : ""}`
-                : identityResult?.valid
-                  ? `Format confirmed for ${selectedPackage.marketLabel}. Verify before continuing.`
-                  : identityResult?.message ?? "Enter the account details to continue."}
-            </p>
-            <button
-              type="button"
-              onClick={() => void verifyIdentity()}
-              disabled={!identityResult?.valid || isVerifying}
-              className="storefront-checkout-primary px-4 text-xs disabled:cursor-not-allowed disabled:opacity-45"
-            >
-              {isVerifying ? "Verifying…" : verification?.valid ? "Verify again" : "Verify account"}
-            </button>
-          </div>
-        </section>
-        <StepActions current={step} onBack={() => setStep(1)} onNext={() => advanceStep(3)} nextLabel="Continue to payment" />
-        </> : null}
-
-        {step === 1 ? <>
-        <section>
-          <div className="flex items-end justify-between gap-3">
-            <div>
-              <h2 className="text-lg font-bold tracking-tight text-slate-900">Choose a package</h2>
-              <p className="mt-1 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                {marketPackages.length} published offers{gameSlug === "free-fire" ? " across supported regions" : ` for ${selectedPackage.marketLabel}`}.
-              </p>
-            </div>
-          </div>
-
-          {restoredFromCart ? (
-            <p className="mt-3 rounded-lg border border-cyan-100 bg-cyan-50 px-3 py-2.5 text-xs font-bold leading-5 text-cyan-700">
-              Package restored from your cart. Confirm the destination details
-              before paying for this order.
-            </p>
-          ) : null}
-
-          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-4">
-            {marketPackages.map((item) => {
-              const selected = item.id === selectedPackage.id;
-              const badge = getMerchandisingBadge(item);
-              const quantity = splitBonusQuantity(item.name);
-              const badgeClass = badge?.tone === "rose"
-                ? "border-rose-100 bg-rose-50 text-rose-700 shadow-sm"
-                : badge?.tone === "emerald"
-                  ? "border-emerald-100 bg-emerald-50 text-emerald-700 shadow-sm"
-                  : "border-violet-100 bg-violet-50 text-violet-700 shadow-sm";
-              return (
-                <div
-                  key={item.id}
-                    className={`group overflow-hidden rounded-2xl border text-left transition duration-200 ${
-                    selected
-                      ? "border-violet-600 bg-violet-50 shadow-md"
-                      : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 hover:shadow-lg"
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPackageId(item.id);
-                      setRestoredFromCart(false);
-                      resetVerification();
-                      resetOrder();
-                    }}
-                    aria-pressed={selected}
-                    className="block w-full text-left"
-                  >
-                    <span className="relative block aspect-[16/9] overflow-hidden bg-slate-50">
-                      <ResilientImage
-                        sources={item.media.sources}
-                        alt={item.media.alt}
-                        fallbackLabel={item.name.slice(0, 2).toUpperCase()}
-                        fill
-                        sizes="(max-width: 640px) 45vw, 190px"
-                        className="object-contain p-4 sm:p-5 transition duration-300 group-hover:scale-[1.025]"
-                        fallbackClassName="absolute inset-0 h-full w-full"
-                      />
-                    </span>
-                    <span className="block p-3 sm:p-4">
-                      {badge ? (
-                        <span className={`mb-2 inline-flex w-fit items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${badgeClass}`}>
-                          <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
-                          {badge.label}
-                        </span>
-                      ) : null}
-                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-tight text-slate-900 sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-bold text-emerald-600">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
-                      {gameSlug === "free-fire" && item.marketLabel ? (
-                        <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{item.marketLabel}</span>
-                      ) : null}
-                      <span className="mt-3 block text-lg font-bold tracking-tight text-violet-600">{formatPresentment(item.amountInPaise)}</span>
-                      {selected ? <span className="mt-1 block text-[10px] font-bold text-emerald-600">Selected</span> : null}
-                    </span>
-                  </button>
-                  <div className="px-3 pb-3 sm:px-4 sm:pb-4">
-                    <AddToCartButton
-                      gameSlug={gameSlug}
-                      marketCode={item.marketCode}
-                      packageId={item.id}
-                      packageName={item.name}
-                    />
+        {step === 2 ? (
+          <>
+            <section className="recharza-checkout-card p-6 sm:p-8">
+              <div className="flex flex-col gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-600/20 text-violet-400">
+                    <StorefrontIcon name="account" className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-white">Account Details</h2>
+                    <p className="text-sm text-white/50">Confirm your identity for instant delivery.</p>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </section>
-        {step === 1 ? <StepActions current={step} onNext={() => advanceStep(2)} nextLabel="Continue to player info" /> : null}
-        </> : null}
 
-        {step === 3 ? <>
-        <div id="billing" className="space-y-5">
-          <section className="storefront-checkout-surface p-5 sm:p-6 border border-slate-200 bg-white shadow-xl rounded-2xl">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">Final review</p>
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Review & Billing</h2>
-                <p className="mt-2 max-w-xl text-sm font-bold leading-6 text-slate-500">Check your top-up details and provide billing information for the payment.</p>
+                <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {gameSlug === "valorant" ? (
+                      <label className="flex flex-col gap-2 sm:col-span-2">
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">Riot ID</span>
+                        <input
+                          required
+                          autoCapitalize="none"
+                          autoCorrect="off"
+                          spellCheck={false}
+                          maxLength={32}
+                          value={identity.riotId}
+                          onChange={(event) => {
+                            setIdentity({ ...identity, riotId: event.target.value.slice(0, 32) });
+                            resetVerification();
+                            resetOrder();
+                          }}
+                          placeholder="PlayerName#TAG"
+                          className="recharza-checkout-input h-14 px-5 font-bold outline-none"
+                        />
+                      </label>
+                    ) : (
+                      <label className="flex flex-col gap-2">
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">
+                          {gameSlug === "genshin-impact" ? "UID" : "Player ID"}
+                        </span>
+                        <input
+                          required
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          maxLength={20}
+                          value={identity.playerId}
+                          onChange={(event) => {
+                            const playerId = event.target.value.replace(/\D/g, "").slice(0, 20);
+                            setIdentity({ ...identity, playerId });
+                            resetVerification();
+                            resetOrder();
+                          }}
+                          placeholder={gameSlug === "genshin-impact" ? "9 or 10 digit UID" : "Numeric player ID"}
+                          className="recharza-checkout-input h-14 px-5 font-bold outline-none"
+                        />
+                      </label>
+                    )}
+
+                    {gameSlug === "genshin-impact" ? (
+                      <label className="flex flex-col gap-2">
+                        <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 ml-1">Select Server</span>
+                        <select
+                          required
+                          value={identity.serverId}
+                          onChange={(event) => {
+                            setIdentity({ ...identity, serverId: event.target.value });
+                            resetVerification();
+                            resetOrder();
+                          }}
+                          className="recharza-checkout-input h-14 px-5 font-bold outline-none appearance-none"
+                        >
+                          <option value="" className="bg-[#1a1b2e]">Choose server</option>
+                          {serverOptions.map((opt) => (
+                            <option key={opt.value} value={opt.value} className="bg-[#1a1b2e]">
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    ) : null}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => void verifyIdentity()}
+                    disabled={!identityResult?.valid || isVerifying}
+                    className="recharza-checkout-button h-14 px-8 text-sm tracking-widest"
+                  >
+                    {isVerifying ? "Checking…" : verification?.valid ? "Verify again" : "Verify account"}
+                  </button>
+                </div>
+
+                <div
+                  aria-live="polite"
+                  className={`rounded-2xl border p-5 text-sm font-bold leading-relaxed transition-all ${
+                    verification?.valid
+                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+                      : error
+                        ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
+                        : "border-white/5 bg-white/5 text-white/40"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <StorefrontIcon name={verification?.valid ? "check" : error ? "close" : "info"} className="h-5 w-5 shrink-0" />
+                    <span>{message || error || "Verification status pending."}</span>
+                  </div>
+                </div>
+
+                {restoredFromCart ? (
+                  <p className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-5 text-sm font-bold text-cyan-400">
+                    Your selected package has been restored. Please confirm your account details to continue.
+                  </p>
+                ) : null}
               </div>
-            </div>
-            <dl className="mt-6 grid gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 text-sm sm:grid-cols-2">
-              <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pack</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
-              <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Market</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.marketLabel}</dd></div>
-              {identity.riotId ? <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.riotId}</dd></div> : null}
-              {identity.playerId ? <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Player ID / UID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.playerId}</dd></div> : null}
-              {identity.serverId ? <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.serverId}</dd></div> : null}
-              <div className="sm:col-span-2"><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-600">{verification?.nickname ?? "Verified player"}{verification?.region ? <span className="ml-2 rounded-md border border-cyan-100 bg-cyan-50 px-2 py-0.5 text-[10px] font-bold text-cyan-600">{verification.region}</span> : null}</dd></div>
-              <div className="border-t border-slate-200 pt-4 sm:col-span-2"><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total</dt><dd className="mt-1 text-3xl font-bold tracking-tight text-violet-600">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
-            </dl>
-          </section>
+            </section>
+            <StepActions
+              current={step}
+              onBack={() => setStep(1)}
+              onNext={() => advanceStep(3)}
+              nextLabel="Continue to payment"
+            />
+          </>
+        ) : null}
+
+        {step === 1 ? (
+          <>
+            <section className="space-y-6">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="h-8 w-1 bg-violet-500 rounded-full" />
+                  <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">
+                    Select Package
+                  </h2>
+                </div>
+
+                {markets.length > 1 && gameSlug !== "free-fire" ? (
+                  <label className="flex flex-col gap-2">
+                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">Market Region</span>
+                    <select
+                      value={marketCode}
+                      onChange={(event) => chooseMarket(event.target.value)}
+                      className="h-12 rounded-xl border border-white/10 bg-[#1a1b2e] px-4 text-sm font-bold text-white outline-none transition focus:border-violet-500 focus:ring-4 focus:ring-violet-500/20"
+                    >
+                      {markets.map((market) => (
+                        <option key={market.code} value={market.code} className="bg-[#1a1b2e]">
+                          {market.label}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ) : null}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
+                {marketPackages.map((item) => {
+                  const selected = item.id === selectedPackage.id;
+                  const badge = getMerchandisingBadge(item);
+                  const quantity = splitBonusQuantity(item.name);
+                  
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        setPackageId(item.id);
+                        setRestoredFromCart(false);
+                        resetVerification();
+                        resetOrder();
+                      }}
+                      className={`group relative flex flex-col items-start p-6 rounded-[2.5rem] border-2 transition-all duration-300 text-left ${
+                        selected
+                          ? "border-violet-500 bg-[#1a1b2e] shadow-2xl shadow-violet-500/20 -translate-y-1"
+                          : "border-white/5 bg-[#161722] hover:border-white/20 hover:bg-[#1a1b2e]"
+                      }`}
+                    >
+                      {/* Selection Indicator */}
+                      <div
+                        className={`absolute top-5 left-5 h-6 w-6 rounded-full border-2 transition-all flex items-center justify-center ${
+                          selected ? "bg-violet-500 border-violet-500" : "bg-transparent border-white/20"
+                        }`}
+                      >
+                        {selected && <div className="h-2 w-2 rounded-full bg-white" />}
+                      </div>
+
+                      {badge && (
+                        <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-orange-500 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-orange-500/20">
+                          <StorefrontIcon name="coin" className="h-3 w-3" />
+                          {badge.label}
+                        </div>
+                      )}
+
+                      <div className="mt-8 flex flex-col w-full">
+                        <div className="flex items-baseline gap-1.5 flex-wrap">
+                          <span className="text-xl font-black text-white italic">{quantity.base}</span>
+                          {quantity.bonus && (
+                            <span className="recharza-package-bonus text-lg italic">
+                              +{quantity.plus} {quantity.bonus}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1.5 text-white/40 font-bold text-xs mt-1">
+                          <StorefrontIcon name="coin" className="h-3.5 w-3.5" />
+                          <span>{item.name}</span>
+                          <StorefrontIcon name="track" className="h-3.5 w-3.5 ml-1 text-orange-500/50" />
+                        </div>
+                      </div>
+
+                      <div className="mt-6 flex flex-col w-full">
+                        <div className="flex items-end justify-between">
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">Price</span>
+                            <span className="recharza-package-price text-2xl italic">
+                              {formatPresentment(item.amountInPaise)}
+                            </span>
+                          </div>
+                          <div
+                            className={`h-8 w-8 rounded-xl flex items-center justify-center transition-colors ${
+                              selected ? "bg-violet-600 text-white" : "bg-white/5 text-white/20 group-hover:bg-white/10"
+                            }`}
+                          >
+                            <StorefrontIcon name="track" className="h-4 w-4" />
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+            <StepActions
+              current={step}
+              onNext={() => advanceStep(2)}
+              nextLabel="Continue to player info"
+            />
+          </>
+        ) : null}
+
+        {step === 3 ? (
+          <>
+            <div id="billing" className="space-y-6">
+              <section className="recharza-checkout-card p-6 sm:p-8">
+                <div className="relative z-10">
+                  <p className="text-[11px] font-black uppercase tracking-[0.3em] text-violet-400">Order Summary</p>
+                  <h2 className="mt-2 text-3xl font-black text-white italic">Order Review</h2>
+                  
+                  <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-white/5 bg-white/5 p-5">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Package</span>
+                      <p className="mt-2 text-lg font-bold text-white">{selectedPackage.name}</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/5 bg-white/5 p-5">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Market</span>
+                      <p className="mt-2 text-lg font-bold text-white">{selectedPackage.marketLabel}</p>
+                    </div>
+                    {identity.riotId ? (
+                      <div className="rounded-2xl border border-white/10 bg-white/10 p-5 shadow-lg">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Riot ID</span>
+                        <p className="mt-2 font-mono text-xl font-black text-white tracking-widest">{identity.riotId}</p>
+                      </div>
+                    ) : null}
+                    {identity.playerId ? (
+                      <div className="rounded-2xl border border-white/10 bg-white/10 p-5 shadow-lg">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Player ID / UID</span>
+                        <p className="mt-2 font-mono text-xl font-black text-white tracking-widest">{identity.playerId}</p>
+                      </div>
+                    ) : null}
+                    {identity.serverId ? (
+                      <div className="rounded-2xl border border-white/10 bg-white/10 p-5 shadow-lg">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-white/30">Server / Zone ID</span>
+                        <p className="mt-2 font-mono text-xl font-black text-white tracking-widest">{identity.serverId}</p>
+                      </div>
+                    ) : null}
+                    <div className="sm:col-span-2 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400/50">Verified Nickname</span>
+                      <p className="mt-2 text-xl font-black text-emerald-400">{verification?.nickname || "Verified Player"}</p>
+                    </div>
+                    <div className="sm:col-span-2 mt-4 pt-6 border-t border-white/5">
+                      <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white/30">Total Amount</span>
+                      <p className="mt-2 text-5xl font-black text-violet-400 tracking-tighter italic">{formatPresentment(selectedPackage.amountInPaise)}</p>
+                    </div>
+                  </div>
+                </div>
+              </section>
 
           {isAuthenticated && savedAddresses.length > 0 ? (
             <SavedAddressPicker
@@ -664,42 +711,61 @@ export function SupplierGameCheckoutShell({
           />
 
           {isAuthenticated && selectedAddressId === null ? (
-            <label className="flex items-start gap-3 rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm">
+            <label className="flex items-start gap-3 rounded-[1.5rem] border border-white/10 bg-white/5 px-6 py-5 shadow-xl">
               <input
                 type="checkbox"
                 checked={saveNewAddress}
                 onChange={(event) => setSaveNewAddress(event.target.checked)}
-                className="mt-0.5 h-4 w-4 accent-violet-600"
+                className="mt-1 h-5 w-5 rounded-md border-white/20 bg-white/5 text-violet-600 focus:ring-violet-500/50 accent-violet-600"
               />
-              <span className="text-sm text-slate-900">
-                <strong className="font-bold text-slate-900">Save this billing address</strong>
-                <span className="mt-0.5 block text-xs text-slate-600">Keep this address for faster checkout on your next top-up.</span>
+              <span className="text-sm text-white/80">
+                <strong className="font-black uppercase tracking-wider text-white">Save this billing address</strong>
+                <span className="mt-1 block text-xs text-white/40 font-bold">Keep this address for faster checkout on your next top-up.</span>
               </span>
             </label>
           ) : null}
         </div>
-        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-          <button type="button" onClick={() => setStep(2)} className="storefront-checkout-secondary px-4 text-sm">Back to player</button>
-          <button type="submit" disabled={!canSubmit || isSubmitting || Boolean(order)} className="min-h-11 rounded-xl bg-violet-600 px-8 text-xs font-bold text-white shadow-lg shadow-violet-200 transition-all hover:bg-violet-700 hover:-translate-y-0.5 disabled:opacity-50">{isSubmitting ? "Preparing payment…" : "Pay Now"}</button>
+        <div className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-between">
+          <button 
+            type="button" 
+            onClick={() => setStep(2)} 
+            className="recharza-checkout-secondary h-14 px-8 text-sm tracking-widest"
+          >
+            Back to player
+          </button>
+          <button 
+            type="submit" 
+            disabled={!canSubmit || isSubmitting || Boolean(order)} 
+            className="recharza-checkout-primary h-14 px-10 text-sm tracking-widest"
+          >
+            {isSubmitting ? "Processing…" : "Pay Now"}
+          </button>
         </div>
         </> : null}
 
-        {error ? <p className="rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-600">{error}</p> : null}
-        {message ? <p className="rounded-xl border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm font-bold text-cyan-700">{message}</p> : null}
+        {error ? <p className="rounded-[1.5rem] border border-rose-500/30 bg-rose-500/10 px-6 py-4 text-sm font-bold text-rose-400">{error}</p> : null}
+        {message && !order ? <p className="rounded-[1.5rem] border border-cyan-500/30 bg-cyan-500/10 px-6 py-4 text-sm font-bold text-cyan-400">{message}</p> : null}
 
         {step === 4 && order ? (
-          <section className="rounded-2xl border border-emerald-200 bg-emerald-50/30 p-4 shadow-lg shadow-emerald-100/50 sm:p-5">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <section className="rounded-[2.5rem] border border-emerald-500/30 bg-emerald-500/5 p-8 shadow-2xl">
+            <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-start">
               <div>
-                <h2 className="text-sm font-bold text-emerald-700">Order Ready</h2>
-                <h3 className="mt-1 break-all text-lg font-bold tracking-tight text-slate-900">{order.id}</h3>
-                <p className="mt-1 text-xs font-medium text-emerald-600/70">Review your order details and proceed to payment.</p>
-                {addressSaveNote ? <p className="mt-2 text-xs font-medium leading-5 text-amber-600">{addressSaveNote}</p> : null}
+                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-emerald-400">Order Confirmed</p>
+                <h3 className="mt-3 break-all text-2xl font-black tracking-tight text-white italic uppercase leading-none">{order.id}</h3>
+                <p className="mt-4 text-sm font-bold leading-relaxed text-emerald-100/60">Review your order details and proceed to payment.</p>
+                {addressSaveNote ? <p className="mt-2 text-xs font-bold leading-relaxed text-amber-400/80 italic">{addressSaveNote}</p> : null}
               </div>
-              <Link href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`} className="text-xs font-bold text-emerald-600 underline hover:text-emerald-700">Open tracking</Link>
+              <Link 
+                href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`} 
+                className="w-fit rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.2em] text-white/60 shadow-lg hover:text-white hover:bg-white/10 transition-all"
+              >
+                Open tracking
+              </Link>
             </div>
-            <div className="mt-4"><PrivateOrderTokenCard token={order.tracking.accessToken} /></div>
-            <div className="mt-4">
+            <div className="mt-8">
+              <PrivateOrderTokenCard token={order.tracking.accessToken} />
+            </div>
+            <div className="mt-8">
               <RazorpayTestCheckout
                 orderId={order.id}
                 orderStatus={order.status}
@@ -712,7 +778,9 @@ export function SupplierGameCheckoutShell({
                 }}
               />
             </div>
-            {paymentVerified ? <p className="mt-4 text-sm font-bold text-emerald-600">Payment verification completed for this order.</p> : null}
+            {paymentVerified ? (
+              <div className="mt-8 rounded-[1.5rem] border border-emerald-500/30 bg-emerald-500/10 p-5 text-sm font-black uppercase tracking-wider text-emerald-400 text-center">Payment confirmed. Fulfillment in progress.</div>
+            ) : null}
           </section>
         ) : null}
       </div>
@@ -726,15 +794,33 @@ type StepActionsProps = { current: number; onBack?: () => void; onNext: () => vo
 
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
   return (
-    <nav aria-label="Checkout progress" className="mb-6">
+    <nav aria-label="Checkout progress" className="mb-10">
       <CheckoutProgressRail current={step} />
     </nav>
   );
 }
 
 function StepActions({ current, onBack, onNext, nextLabel }: StepActionsProps) {
-  return <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-    {current > 1 ? <button type="button" onClick={onBack} className="recharza-btn recharza-btn-secondary px-4 text-sm">Back</button> : <span />}
-    {current < 4 ? <button type="button" onClick={onNext} className="recharza-btn recharza-btn-primary px-5 text-sm">{nextLabel}</button> : null}
-  </div>;
+  return (
+    <div className="mt-10 flex flex-col-reverse gap-4 sm:flex-row sm:justify-between">
+      {current > 1 ? (
+        <button
+          type="button"
+          onClick={onBack}
+          className="recharza-checkout-secondary h-14 px-10 text-sm tracking-[0.15em]"
+        >
+          Back
+        </button>
+      ) : <div />}
+      {current < 4 ? (
+        <button
+          type="button"
+          onClick={onNext}
+          className="recharza-checkout-primary h-14 px-12 text-sm tracking-[0.15em]"
+        >
+          {nextLabel}
+        </button>
+      ) : null}
+    </div>
+  );
 }
