@@ -92,10 +92,10 @@ export default async function GameCheckoutPage({
               <span aria-current="page">{definition.title}</span>
             </nav>
 
-            <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5 shadow-sm">
-              <div className="flex min-w-0 items-center gap-4">
+            <div className="flex flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
+              <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center sm:gap-6">
                 <div
-                  className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 sm:h-20 sm:w-20 shadow-sm"
+                  className="relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-100 shadow-sm"
                   style={{ background: `linear-gradient(135deg, ${game.accent}15, ${game.accent}05)` }}
                 >
                   <ResilientImage
@@ -110,21 +110,24 @@ export default async function GameCheckoutPage({
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="recharza-eyebrow">Instant delivery</p>
-                  <h1 className="recharza-section-head mt-1 text-slate-900">{definition.title} Top Up</h1>
-                  <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                    <span className="inline-flex whitespace-nowrap rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-bold text-slate-600">{packages.length} offers</span>
-                    <span className="inline-flex whitespace-nowrap rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-bold text-slate-600">{marketCount} {marketCount === 1 ? "market" : "markets"}</span>
-                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700">★ 4.9</span>
-                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Secure</span>
-                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-bold text-violet-600"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
-                  </div>
-                  {game.deliveryCoverage && (
-                    <div className="mt-2.5 inline-flex max-w-full items-center gap-1.5 rounded-md border border-slate-100 bg-slate-50 px-2.5 py-1">
-                      <StorefrontIcon name="shield" className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
-                      <p className="truncate text-[11px] font-bold leading-snug text-slate-600">{game.deliveryCoverage.headline}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600/80">Instant delivery</p>
+                  <h1 className="mt-1.5 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">{definition.title} Top Up</h1>
+                  <div className="mt-4 flex flex-wrap items-center gap-2">
+                    <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 shadow-sm">
+                      <span className="text-[11px] font-bold text-slate-700">{packages.length} offers</span>
+                      <span className="h-1 w-1 rounded-full bg-slate-300" />
+                      <span className="text-[11px] font-bold text-slate-700">{marketCount} {marketCount === 1 ? "market" : "markets"}</span>
                     </div>
-                  )}
+                    <div className="flex items-center gap-3 rounded-lg border border-emerald-100 bg-emerald-50/50 px-3 py-1.5 shadow-sm">
+                      <span className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-700">
+                        <StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Verified
+                      </span>
+                      <span className="h-1 w-1 rounded-full bg-emerald-200" />
+                      <span className="flex items-center gap-1.5 text-[11px] font-bold text-emerald-700">
+                        <StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -144,6 +147,25 @@ export default async function GameCheckoutPage({
         </section>
 
         <section className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
+          <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <span className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-50 text-emerald-600">
+                  <StorefrontIcon name="shield" className="h-4 w-4" />
+                </span>
+                <p className="text-xs font-medium text-slate-600">
+                  <strong className="font-bold text-slate-900">{game.title} Global Delivery:</strong> Secure account confirmation and immediate delivery.
+                </p>
+              </div>
+              {game.deliveryCoverage && (
+                <div className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-1.5 border border-slate-100">
+                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  <span className="text-[11px] font-bold text-slate-700">{game.deliveryCoverage.headline}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
           <SupplierGameCheckoutShell
             gameSlug={gameSlug}
             packages={packages}

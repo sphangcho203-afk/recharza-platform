@@ -84,25 +84,25 @@ export function CartItemRow({
               <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
                 {itemContextLabel(item)}
               </p>
-              <h3 className="mt-1 line-clamp-2 text-sm font-bold leading-5 text-slate-900 sm:text-[15px]">
+              <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-5 text-slate-900 sm:text-[15px] break-words">
                 {item.package.name}
               </h3>
-              <p className="mt-1 text-xs font-bold text-slate-400">
+              <p className="mt-1 text-xs font-bold text-slate-500">
                 <DisplayPrice amountInrMinor={item.package.amountInPaise} />{" "}
-                <span className="font-medium text-slate-500">each</span>
+                <span className="font-medium text-slate-600">each</span>
               </p>
-              <p className="mt-2 text-[11px] font-bold text-emerald-600">
+              <div className="mt-2 text-[11px] font-bold text-emerald-600 leading-normal break-words">
                 Delivers {deliveredAmountLabel(item.package.name)}
                 {item.quantity > 1 ? ` · ${item.quantity} packages` : ""}
-              </p>
+              </div>
             </div>
-            <button
-              type="button"
-              disabled={busy}
-              onClick={() => onRemove(item.id)}
-              aria-label={`Remove ${item.package.name} from cart`}
-              className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 text-[11px] font-bold text-slate-500 transition duration-300 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
-            >
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => onRemove(item.id)}
+                aria-label={`Remove ${item.package.name} from cart`}
+                className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-[11px] font-bold text-slate-600 transition duration-300 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm sm:min-h-9 sm:px-2.5"
+              >
               <svg
                 aria-hidden="true"
                 viewBox="0 0 24 24"
@@ -133,7 +133,7 @@ export function CartItemRow({
                   disabled={busy || item.quantity <= 1}
                   onClick={() => onQuantityChange(item.id, item.quantity - 1)}
                   aria-label={`Decrease quantity of ${item.package.name}`}
-                  className="grid min-h-9 min-w-9 place-items-center rounded-l-lg text-slate-400 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35"
+                  className="grid min-h-11 min-w-11 place-items-center rounded-l-lg text-slate-500 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35 sm:min-h-9 sm:min-w-9"
                 >
                   <svg
                     aria-hidden="true"
@@ -155,7 +155,7 @@ export function CartItemRow({
                   disabled={busy || item.quantity >= CART_MAX_QUANTITY}
                   onClick={() => onQuantityChange(item.id, item.quantity + 1)}
                   aria-label={`Increase quantity of ${item.package.name}`}
-                  className="grid min-h-9 min-w-9 place-items-center rounded-r-lg text-slate-400 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35"
+                  className="grid min-h-11 min-w-11 place-items-center rounded-r-lg text-slate-500 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35 sm:min-h-9 sm:min-w-9"
                 >
                   <svg
                     aria-hidden="true"

@@ -108,7 +108,7 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
               <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-slate-100 bg-slate-50 text-2xl shadow-sm" aria-hidden="true">{market.flag}</span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-2">
-                  <strong className="truncate text-sm font-bold text-slate-900">{market.label}</strong>
+                  <strong className="text-sm font-bold text-slate-900 break-words">{market.label}</strong>
                   <span className="rounded-md border border-slate-100 bg-slate-50 px-1.5 py-0.5 text-[9px] font-bold text-slate-500">{market.defaultCurrency}</span>
                 </span>
                 <span className="mt-1.5 line-clamp-2 block text-xs leading-5 text-slate-500 font-medium">{market.note}</span>
