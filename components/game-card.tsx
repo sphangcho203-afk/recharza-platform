@@ -74,7 +74,7 @@ export function GameCard({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="text-[9px] font-black uppercase tracking-[0.25em] text-violet-600">{category}</p>
-            <h3 className="mt-1 truncate text-[1rem] font-black leading-tight tracking-tight text-slate-900">{title}</h3>
+            <h3 className="mt-1 truncate text-[1rem] font-bold leading-tight tracking-tight text-slate-900">{title}</h3>
           </div>
           <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-400 ring-1 ring-slate-200/60 transition-all duration-500 cubic-bezier(0.23, 1, 0.32, 1) group-hover:bg-violet-600 group-hover:text-white group-hover:ring-violet-600 group-hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] group-hover:rotate-[360deg]">
             <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />

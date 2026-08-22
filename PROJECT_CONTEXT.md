@@ -47,6 +47,7 @@ These rules must NEVER be broken during future development:
 
 ## 5. Known Issues & Technical Debt
 
+*   **Visibility Fix (Aug 2026):** Resolved a critical regression where dark game checkout pages were unreadable due to global white gradients. Fixed via `.recharza-dark-atmosphere` in `app/storefront-redesign.css` and dark-theme overrides for `SavedAddressPicker` and `CountryPicker`.
 *   **Prisma Security Pin:** A `deepmerge-ts` vulnerability in Prisma 7 is currently resolved via a `package.json` override. Do not upgrade to Prisma 8 without a full migration audit.
 *   **MLBB India Auth-Gate:** The Mobile Legends India market page is intentionally auth-gated to ensure regional compliance; this is a design choice, not a bug.
 *   **Volsever Mapping:** Some generic games rely on Volsever fallback; always verify the endpoint slug in `lib/volsever.ts` when adding new games.

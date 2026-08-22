@@ -84,16 +84,16 @@ export function CartItemRow({
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-600">
                 {itemContextLabel(item)}
               </p>
-              <h3 className="mt-1.5 line-clamp-2 text-[15px] font-black leading-tight text-slate-900 sm:text-[17px] break-words tracking-tight">
+              <h3 className="mt-1.5 line-clamp-2 text-[15px] font-bold leading-tight text-slate-900 sm:text-[17px] break-words tracking-tight">
                 {item.package.name}
               </h3>
               <p className="mt-1.5 text-xs font-bold text-slate-500">
                 <DisplayPrice amountInrMinor={item.package.amountInPaise} />{" "}
                 <span className="font-medium text-slate-400">each</span>
               </p>
-              <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 ring-1 ring-emerald-100">
-                <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
+              <div className="mt-2.5 inline-flex min-w-0 max-w-full items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 ring-1 ring-emerald-100">
+                <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+                <span className="truncate text-[10px] font-bold uppercase tracking-widest text-emerald-700">
                   Delivers {deliveredAmountLabel(item.package.name)}
                   {item.quantity > 1 ? ` · ${item.quantity} units` : ""}
                 </span>

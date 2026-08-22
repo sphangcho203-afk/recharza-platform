@@ -118,7 +118,7 @@ export default async function MobileLegendsMarketPage({
             </div>
 
             {/* High-Impact Title & Badges */}
-            <h1 className="mt-8 text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter text-white uppercase italic leading-[0.9]">
+            <h1 className="mt-8 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tighter text-white uppercase italic leading-[1.1]">
               Mobile Legends:<br />
               <span className="text-white/90 italic">Bang Bang</span>
             </h1>

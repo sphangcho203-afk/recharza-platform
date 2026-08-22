@@ -109,9 +109,9 @@ export default async function GameCheckoutPage({
               </div>
 
 	              {/* High-Impact Title & Badges */}
-	              <h1 className="mt-8 text-4xl sm:text-5xl lg:text-6xl font-black tracking-tighter text-white uppercase italic leading-[0.9]">
-	                {definition.title}
-	              </h1>
+<h1 className="mt-8 text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tighter text-white uppercase italic leading-[1.1]">
+		                {definition.title}
+		              </h1>
 
 	              <div className="mt-6 flex flex-wrap items-center justify-center gap-6">
 	                <div className="flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-white/60">
