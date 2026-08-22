@@ -161,7 +161,9 @@ export async function POST(
         zoneId: identity.zoneId,
         marketCode: selectedPackage.marketCode,
       });
-      if (outcome.status !== "unavailable") {
+      
+      // If Shop2TopUp confirms the account, return it immediately.
+      if (outcome.status === "valid") {
         return Response.json(
           {
             valid: outcome.result.valid,
@@ -175,9 +177,11 @@ export async function POST(
             packageId: selectedPackage.id,
             message: outcome.result.message,
           },
-          { status: outcome.result.valid ? 200 : 400, headers: rateHeaders },
+          { status: 200, headers: rateHeaders },
         );
       }
+      
+      // If Shop2TopUp is unavailable or failed to find the account, try Volsever as a strong backup.
       s2sUnavailable = true;
     }
 
@@ -188,8 +192,10 @@ export async function POST(
       marketCode: selectedPackage.marketCode,
     });
 
-    if (s2sUnavailable && result.valid) {
+    if (result.valid) {
       result.message = "Account confirmed successfully.";
+    } else {
+      result.message = "We could not verify your account details. Please ensure your Player ID and Zone ID are correct.";
     }
 
     return Response.json(

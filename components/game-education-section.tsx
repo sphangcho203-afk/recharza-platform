@@ -2,7 +2,7 @@
 
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { StorefrontArtwork } from "@/components/storefront-artwork";
-import type { Game } from "@/lib/games";
+import type { Game, GameEducation } from "@/lib/games";
 
 function Tile({
   game,
@@ -38,8 +38,9 @@ export function GameEducationSection({
 }: {
   game: Game;
 }) {
-  if (!game.education) return null;
-  const { about, currencyUses, findId, steps, regionNote } = game.education;
+  const education = game.education as GameEducation | undefined;
+  if (!education) return null;
+  const { about, currencyUses, findId, steps, regionNote } = education;
   const accent = game.accent ?? "#9b7cff";
 
   return (

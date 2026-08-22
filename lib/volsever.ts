@@ -18,6 +18,10 @@ const volseverGameAliases: Record<string, string> = {
   "pubg-mobile": "pubg-mobile-global",
   valorant: "valorant-indonesia",
   "genshin-impact": "genshin-impact",
+  "call-of-duty-mobile": "call-of-duty-mobile-global",
+  "league-of-legends-wild-rift": "league-of-legends-wild-rift-global",
+  "clash-of-clans": "clash-of-clans-global",
+  "clash-royale": "clash-royale-global",
 };
 
 /**
@@ -35,6 +39,10 @@ const VOLSEVER_ENDPOINT_REGION_LABELS: Record<string, string> = {
   "pubg-mobile-global": "Global",
   "valorant-indonesia": "Indonesia",
   "genshin-impact": "Global",
+  "call-of-duty-mobile-global": "Global",
+  "league-of-legends-wild-rift-global": "Global",
+  "clash-of-clans-global": "Global",
+  "clash-royale-global": "Global",
 };
 
 function getVolseverGameCandidates(value: unknown, marketCode?: unknown) {

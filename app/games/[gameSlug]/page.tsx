@@ -151,6 +151,9 @@ export default async function GameCheckoutPage({
             isAuthenticated={isAuthenticated}
             initialCartItemId={cartItem?.trim() ? cartItem : null}
           />
+        </section>
+
+        <section className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
           <GameEducationSection game={game} />
         </section>
 

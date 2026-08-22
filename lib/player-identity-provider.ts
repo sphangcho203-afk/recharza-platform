@@ -82,6 +82,7 @@ export async function validateMobileLegendsIdentity(input: {
     }
 
     // If Shop2TopUp is unavailable or says the player is invalid, try Volsever as a strong backup.
+    // Volsever is often more reliable for global accounts and region-agnostic lookups.
     const volsever = await lookupVolseverGameIdentity({
       gameSlug: "mobile-legends",
       playerId,
@@ -93,9 +94,10 @@ export async function validateMobileLegendsIdentity(input: {
     }
 
     // If both providers failed to find the account, return a professional error.
+    // Use the message from Volsever if available, otherwise a generic professional message.
     return {
       ...volsever,
-      message: "We could not verify your account details. Please ensure your Player ID and Zone ID are correct.",
+      message: volsever.message || "We could not verify your account details. Please ensure your Player ID and Zone ID are correct.",
     };
   }
 
