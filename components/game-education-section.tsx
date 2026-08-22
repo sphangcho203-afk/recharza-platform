@@ -44,63 +44,100 @@ export function GameEducationSection({
   const accent = game.accent ?? "#9b7cff";
 
   return (
-    <section className="mt-10" aria-label={`About ${game.title}`}>
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
-        <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1.5 opacity-20" style={{ background: accent }} />
-
-        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
-              <StorefrontIcon name="info" className="h-5 w-5" style={{ color: accent } as React.CSSProperties} />
-            </span>
-            <div>
-              <p className="recharza-eyebrow" style={{ color: accent }}>Know the game</p>
-              <h2 className="recharza-section-head mt-2 text-slate-900">About {game.title}</h2>
+    <section className="w-full bg-white border-t border-slate-100 pt-20 pb-32" aria-label={`About ${game.title}`}>
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-16">
+          {/* Header */}
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="flex items-center gap-5">
+              <div className="h-24 w-24 shrink-0 overflow-hidden rounded-3xl border border-slate-100 bg-white p-4 shadow-sm">
+                <StorefrontArtwork
+                  artworkKey={game.artworkKey}
+                  sources={game.logoSources}
+                  alt={`${game.title} logo`}
+                  fallbackLabel={game.title.slice(0, 2)}
+                  className="h-full w-full"
+                  objectFit="contain"
+                />
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: accent }}>Store Guide</p>
+                <h2 className="mt-2 text-4xl font-black tracking-tight text-slate-900">{game.title}</h2>
+              </div>
             </div>
           </div>
-          <div className="h-16 w-16 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-2 shadow-sm">
-            <StorefrontArtwork
-              artworkKey={game.artworkKey}
-              sources={game.logoSources}
-              alt={`${game.title} logo`}
-              fallbackLabel={game.title.slice(0, 2)}
-              className="h-full w-full"
-              objectFit="contain"
-            />
-          </div>
-        </div>
-        <div className="relative mt-6 text-[14px] leading-[1.8] text-slate-600 font-medium whitespace-pre-wrap">{about}</div>
 
-        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Tile game={game} icon="coin" label="What it buys" seed={1}>
-            <div className="whitespace-pre-wrap">{currencyUses}</div>
-          </Tile>
-          <Tile game={game} icon="id" label="Find your ID" seed={2}>
-            <div className="whitespace-pre-wrap">{findId}</div>
-          </Tile>
-          <Tile game={game} icon="cart" label="How to purchase" seed={3}>
-            <ol className="space-y-3">
-              {steps.map((step, index) => (
-                <li key={index} className="relative flex gap-3">
-                  <span className="flex flex-col items-center">
-                    <span className="grid h-5 w-5 place-items-center rounded-full text-[10px] font-bold text-white shadow-sm" style={{ backgroundColor: accent }}>{index + 1}</span>
-                    {index < steps.length - 1 && <span className="mt-1 w-px flex-1 bg-slate-200" aria-hidden="true" />}
+          {/* Main Content Grid */}
+          <div className="grid gap-12 lg:grid-cols-12">
+            {/* Left Column: About & Region */}
+            <div className="lg:col-span-5 space-y-10">
+              <div className="prose prose-slate max-w-none">
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-3">
+                  <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: accent }} />
+                  About the game
+                </h3>
+                <p className="mt-5 text-[16px] leading-[1.8] text-slate-600 font-medium whitespace-pre-wrap">{about}</p>
+              </div>
+
+              {regionNote && (
+                <div className="rounded-3xl border border-amber-100 bg-amber-50/50 p-8 shadow-sm">
+                  <div className="flex gap-4">
+                    <span className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-white border border-amber-200 text-amber-600 shadow-sm">
+                      <StorefrontIcon name="shield" className="h-4 w-4" />
+                    </span>
+                    <div>
+                      <h4 className="text-sm font-bold text-amber-900 uppercase tracking-wider">Regional Policy</h4>
+                      <p className="mt-2 text-[14px] leading-[1.7] text-amber-800/80 font-medium">{regionNote}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column: Currency & ID */}
+            <div className="lg:col-span-7 grid gap-8 sm:grid-cols-2">
+              <div className="rounded-3xl border border-slate-100 bg-slate-50/30 p-8 shadow-sm transition-colors hover:bg-slate-50/50">
+                <div className="flex items-center gap-4">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white border border-slate-100 shadow-sm" style={{ color: accent }}>
+                    <StorefrontIcon name="coin" className="h-6 w-6" />
                   </span>
-                  <span className="min-w-0 pb-0.5 leading-[1.65] text-slate-700 font-medium">{step}</span>
-                </li>
-              ))}
-            </ol>
-          </Tile>
-        </div>
+                  <h3 className="text-xl font-bold text-slate-900">What it buys</h3>
+                </div>
+                <div className="mt-6 text-[15px] leading-[1.8] text-slate-600 font-medium whitespace-pre-wrap">{currencyUses}</div>
+              </div>
 
-        {regionNote ? (
-          <div className="relative mt-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3.5 text-[12.5px] leading-[1.7] text-amber-900 font-medium">
-            <div className="relative flex gap-3">
-              <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-lg bg-white border border-amber-200 text-amber-600 shadow-sm"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /></span>
-              <p>{regionNote}</p>
+              <div className="rounded-3xl border border-slate-100 bg-slate-50/30 p-8 shadow-sm transition-colors hover:bg-slate-50/50">
+                <div className="flex items-center gap-4">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white border border-slate-100 shadow-sm" style={{ color: accent }}>
+                    <StorefrontIcon name="id" className="h-6 w-6" />
+                  </span>
+                  <h3 className="text-xl font-bold text-slate-900">Find your ID</h3>
+                </div>
+                <div className="mt-6 text-[15px] leading-[1.8] text-slate-600 font-medium whitespace-pre-wrap">{findId}</div>
+              </div>
+
+              {/* Purchase Steps: Full Width */}
+              <div className="sm:col-span-2 rounded-3xl border border-slate-100 bg-slate-50/30 p-8 sm:p-10 shadow-sm transition-colors hover:bg-slate-50/50">
+                <div className="flex items-center gap-4">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white border border-slate-100 shadow-sm" style={{ color: accent }}>
+                    <StorefrontIcon name="cart" className="h-6 w-6" />
+                  </span>
+                  <h3 className="text-xl font-bold text-slate-900">How to purchase</h3>
+                </div>
+                <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                  {steps.map((step, index) => (
+                    <div key={index} className="flex flex-col gap-4">
+                      <span className="grid h-10 w-10 place-items-center rounded-2xl text-base font-black text-white shadow-md" style={{ backgroundColor: accent }}>
+                        {index + 1}
+                      </span>
+                      <p className="text-[15px] leading-[1.6] text-slate-700 font-semibold">{step}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-        ) : null}
+        </div>
       </div>
     </section>
   );

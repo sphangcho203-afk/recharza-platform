@@ -130,6 +130,14 @@ export async function POST(
     }
 
     const provider = process.env.IGN_LOOKUP_PROVIDER?.trim().toLowerCase() ?? "";
+    
+    // Normalize game slug for provider lookup
+    let lookupSlug = slug;
+    if (slug === "mobile-legends") {
+      const market = selectedPackage.marketCode?.toLowerCase() || "";
+      if (market === "tr") lookupSlug = "mobile-legends-tr";
+      else if (market === "br") lookupSlug = "mobile-legends-br";
+    }
 
     if (provider !== "volsever" && provider !== "shop2topup") {
       return Response.json(
@@ -156,7 +164,7 @@ export async function POST(
 
     if (provider === "shop2topup") {
       const outcome = await lookupShop2TopUpPlayerIdentity({
-        gameSlug: slug,
+        gameSlug: lookupSlug,
         playerId: identity.playerId,
         zoneId: identity.zoneId,
         marketCode: selectedPackage.marketCode,
@@ -186,7 +194,7 @@ export async function POST(
     }
 
     result = await lookupVolseverGameIdentity({
-      gameSlug: slug,
+      gameSlug: lookupSlug,
       playerId: identity.playerId,
       zoneId: identity.zoneId,
       marketCode: selectedPackage.marketCode,

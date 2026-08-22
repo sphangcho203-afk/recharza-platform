@@ -691,8 +691,9 @@ export function SupplierGameCheckoutShell({
           <section className="rounded-2xl border border-emerald-200 bg-emerald-50/30 p-4 shadow-lg shadow-emerald-100/50 sm:p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-sm font-bold text-emerald-700">Order {order.id} created</h2>
-                <p className="mt-1 text-xs font-medium text-emerald-600/70">The order is saved and recoverable before payment.</p>
+                <h2 className="text-sm font-bold text-emerald-700">Order Ready</h2>
+                <h3 className="mt-1 break-all text-lg font-bold tracking-tight text-slate-900">{order.id}</h3>
+                <p className="mt-1 text-xs font-medium text-emerald-600/70">Review your order details and proceed to payment.</p>
                 {addressSaveNote ? <p className="mt-2 text-xs font-medium leading-5 text-amber-600">{addressSaveNote}</p> : null}
               </div>
               <Link href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`} className="text-xs font-bold text-emerald-600 underline hover:text-emerald-700">Open tracking</Link>
@@ -707,7 +708,7 @@ export function SupplierGameCheckoutShell({
                 packageName={order.package.name}
                 onVerified={() => {
                   setPaymentVerified(true);
-                  setMessage("Payment verified. Order processing has started.");
+                  setMessage("Payment successful. You can track your order status below.");
                 }}
               />
             </div>

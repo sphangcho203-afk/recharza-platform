@@ -84,11 +84,11 @@ type CheckoutResponse = {
 
 const initialVerification: VerificationState = {
   status: "idle",
-  message: "Enter the player and zone IDs, then validate the destination.",
+  message: "Enter your player and zone IDs to confirm your account.",
   nickname: null,
 };
 
-const stageLabels = ["Package", "Player", "Billing", "Payment"] as const;
+const stageLabels = ["Package", "Account", "Billing", "Payment"] as const;
 
 function createIdempotencyKey() {
   if (globalThis.crypto?.randomUUID) {
@@ -208,7 +208,7 @@ export function MobileLegendsCheckoutFlow({
 
     setVerification({
       status: "loading",
-      message: `Checking ${market.label} player details against the selected package...`,
+      message: "Confirming your account details...",
       nickname: null,
     });
     resetCreatedOrder();
@@ -236,7 +236,7 @@ export function MobileLegendsCheckoutFlow({
           status: "error",
           message:
             result.message ??
-            "The player destination could not be validated for this package.",
+            "We could not verify your account details. Please check your IDs.",
           nickname: null,
         });
         return;
@@ -246,7 +246,7 @@ export function MobileLegendsCheckoutFlow({
         status: "success",
         message:
           result.message ??
-          `Player destination confirmed for ${market.label}.`,
+          "Account confirmed successfully.",
         nickname: result.nickname ?? null,
       });
     } catch {
@@ -286,7 +286,7 @@ export function MobileLegendsCheckoutFlow({
 
     setIsSubmitting(true);
     setCheckoutError("");
-    setCheckoutMessage("Creating the order and preparing the payment handoff...");
+    setCheckoutMessage("Preparing your order...");
     setOrder(null);
     setPaymentVerified(false);
 
@@ -316,7 +316,7 @@ export function MobileLegendsCheckoutFlow({
 
       if (!response.ok || !result.ok || !result.order) {
         setCheckoutError(
-          result.message ?? "The checkout could not create an order.",
+          result.message ?? "We could not process your order. Please try again.",
         );
         setCheckoutMessage("");
         return;
@@ -341,7 +341,7 @@ export function MobileLegendsCheckoutFlow({
       }, 80);
     } catch {
       setCheckoutError(
-        "The checkout service could not be reached. Retry safely with the same details.",
+        "Our checkout service is temporarily unavailable. Please try again shortly.",
       );
       setCheckoutMessage("");
     } finally {
@@ -352,8 +352,7 @@ export function MobileLegendsCheckoutFlow({
   if (!selectedPackage) {
     return (
       <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-700 font-bold shadow-lg shadow-amber-100">
-        No approved packages are available for this market. Run the reviewed supplier
-        sync or choose another region.
+        No packages are currently available for this region. Please try another market or contact support.
       </div>
     );
   }
@@ -377,7 +376,7 @@ export function MobileLegendsCheckoutFlow({
           ))}
         </div>
         <p className="mt-2 text-center text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-          One interface · Secure billing · Private tracking
+          Secure Checkout · Worldwide Support · Real-time Tracking
         </p>
       </section>
 
@@ -386,14 +385,13 @@ export function MobileLegendsCheckoutFlow({
           <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
-                01 · Package
+                Step 01 · Selection
               </p>
               <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
-                Choose the top-up
+                Select Package
               </h2>
               <p className="mt-2 text-sm font-medium text-slate-500">
-                Search the approved {market.label} catalogue. The selected package
-                remains visible while you finish the flow.
+                Browse available top-ups for {market.label}. Your selection will be saved as you continue.
               </p>
             </div>
             <label className="block w-full max-w-sm text-xs font-bold text-slate-500 uppercase tracking-wider">
@@ -530,8 +528,8 @@ export function MobileLegendsCheckoutFlow({
           className="mt-4 min-h-12 w-full rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm font-bold text-violet-700 transition-all hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {verification.status === "loading"
-            ? "Validating player..."
-            : `Validate ${market.label} player`}
+            ? "Confirming..."
+            : "Confirm Account"}
         </button>
 
         <div
@@ -566,15 +564,13 @@ export function MobileLegendsCheckoutFlow({
         <div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
-              04 · Review and payment
+              Step 04 · Final Review
             </p>
             <h2 className="mt-2 text-2xl font-bold text-slate-900">
-              Create once, then pay here
+              Review and Pay
             </h2>
             <p className="mt-2 max-w-2xl text-sm font-medium text-slate-500">
-              The server resolves the current package, validates billing and player
-              details, saves the order, and returns a private recovery token. Login is
-              optional instead of blocking checkout.
+              Review your purchase details below. Once confirmed, you can proceed to secure payment.
             </p>
             <div className="mt-6 grid gap-2 text-[11px] sm:grid-cols-2">
               <div className="rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2.5">
@@ -596,7 +592,7 @@ export function MobileLegendsCheckoutFlow({
                 </strong>
               </div>
               <div className="rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2.5">
-                <span className="font-bold text-slate-400 uppercase tracking-wider">Recovery email</span>
+                <span className="font-bold text-slate-400 uppercase tracking-wider">Contact Email</span>
                 <strong className="float-right max-w-[58%] truncate text-slate-900 font-bold">
                   {billing.email || "Required"}
                 </strong>
@@ -626,13 +622,13 @@ export function MobileLegendsCheckoutFlow({
             className="min-h-13 w-full rounded-xl bg-violet-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-violet-200 transition-all hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:translate-y-0"
           >
             {isSubmitting
-              ? "Creating order..."
-              : "Create order and continue to payment"}
+              ? "Processing..."
+              : "Continue to Payment"}
           </button>
 
           {!canCreateOrder && !order ? (
             <p className="mt-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
-              Complete player validation and billing to unlock payment.
+              Confirm your account and billing to continue.
             </p>
           ) : null}
 
@@ -663,8 +659,8 @@ export function MobileLegendsCheckoutFlow({
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-700">
                   {duplicate
-                    ? "Existing order safely recovered"
-                    : "Order created"}
+                    ? "Order Recovered"
+                    : "Order Ready"}
                 </p>
                 <h2 className="mt-2 break-all text-2xl font-bold text-slate-900">
                   {order.id}
@@ -697,8 +693,7 @@ export function MobileLegendsCheckoutFlow({
 
             {paymentVerified ? (
               <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-100 p-4 text-sm font-bold text-emerald-900 shadow-sm">
-                Payment response verified. The order remains in this interface and can
-                also be recovered from secure tracking.
+                Payment successful. You can track your order status below.
               </div>
             ) : (
               <RazorpayTestCheckout

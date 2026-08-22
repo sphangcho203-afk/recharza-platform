@@ -14,6 +14,8 @@ export const VOLSEVER_VERIFICATION_MODE = "volsever-lookup";
 
 const volseverGameAliases: Record<string, string> = {
   "mobile-legends": "mobile-legends-wr",
+  "mobile-legends-tr": "mobile-legends-wr",
+  "mobile-legends-br": "mobile-legends-wr",
   "free-fire": "free-fire-asia",
   "pubg-mobile": "pubg-mobile-global",
   valorant: "valorant-indonesia",
