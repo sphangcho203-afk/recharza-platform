@@ -42,22 +42,22 @@ export function GameEducationSection({
           <div className="grid gap-12 lg:grid-cols-12">
             {/* Left Column: About & Region */}
             <div className="lg:col-span-5 space-y-10">
-              <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-white/[0.02] p-8">
-                <div className="absolute top-0 left-0 w-1 h-full bg-violet-500/50" />
+              <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-[#161722] p-8 shadow-2xl">
+                <div className="absolute top-0 left-0 w-1 h-full bg-violet-500" />
                 <h3 className="text-lg font-black text-white uppercase italic tracking-wider flex items-center gap-3">
                   <StorefrontIcon name="info" className="h-5 w-5 text-violet-400" />
                   About the game
                 </h3>
-                <p className="mt-6 text-[15px] leading-relaxed text-white/60 font-bold whitespace-pre-wrap">{about}</p>
+                <p className="mt-6 text-[15px] leading-relaxed text-white/80 font-bold whitespace-pre-wrap">{about}</p>
               </div>
 
               {regionNote && (
-                <div className="rounded-[2.5rem] border-2 border-amber-500/20 bg-amber-500/5 p-8 shadow-xl shadow-amber-500/5">
+                <div className="rounded-[2.5rem] border-2 border-amber-500/40 bg-[#1c1917] p-8 shadow-2xl">
                   <div className="flex items-start gap-4">
                     <StorefrontIcon name="shield" className="mt-1 h-6 w-6 shrink-0 text-amber-400" />
                     <div>
                       <h4 className="text-[11px] font-black text-amber-400 uppercase tracking-[0.25em]">Regional Policy</h4>
-                      <p className="mt-3 text-sm leading-relaxed text-amber-100/70 font-bold italic">{regionNote}</p>
+                      <p className="mt-3 text-sm leading-relaxed text-amber-400 font-black italic">{regionNote}</p>
                     </div>
                   </div>
                 </div>
@@ -73,17 +73,17 @@ export function GameEducationSection({
                   </div>
                   <h3 className="text-[13px] font-black text-white uppercase tracking-[0.2em]">What it buys</h3>
                 </div>
-                <div className="mt-6 text-sm leading-relaxed text-white/50 font-bold whitespace-pre-wrap">{currencyUses}</div>
+                <div className="mt-6 text-sm leading-relaxed text-white/80 font-bold whitespace-pre-wrap">{currencyUses}</div>
               </div>
 
-              <div className="rounded-[2.5rem] border border-white/5 bg-[#161722] p-8 shadow-xl transition-all hover:bg-[#1a1b2e] hover:border-white/10 group">
+              <div className="rounded-[2.5rem] border border-white/10 bg-[#161722] p-8 shadow-xl transition-all hover:bg-[#1a1b2e] hover:border-white/20 group">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
                     <StorefrontIcon name="id" className="h-5 w-5" />
                   </div>
                   <h3 className="text-[13px] font-black text-white uppercase tracking-[0.2em]">Find your ID</h3>
                 </div>
-                <div className="mt-6 text-sm leading-relaxed text-white/50 font-bold whitespace-pre-wrap">{findId}</div>
+                <div className="mt-6 text-sm leading-relaxed text-white/80 font-bold whitespace-pre-wrap">{findId}</div>
               </div>
 
               {/* Purchase Steps: Immersive Layout */}

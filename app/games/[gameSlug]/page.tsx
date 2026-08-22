@@ -78,7 +78,7 @@ export default async function GameCheckoutPage({
     const marketCount = new Set(packages.map((item) => item.marketCode)).size;
 
     return (
-      <main className="storefront-page min-h-screen bg-[#05060a] text-white overflow-x-hidden">
+      <main className="storefront-page recharza-dark-atmosphere min-h-screen overflow-x-hidden">
         <SiteHeader />
 
         {/* Immersive Framed Hero Section */}
@@ -125,12 +125,12 @@ export default async function GameCheckoutPage({
 	              </div>
 
               {/* Service Alert Box */}
-              <div className="mt-10 w-full max-w-2xl rounded-[2rem] border-2 border-amber-500/20 bg-amber-500/5 p-6 text-left shadow-xl backdrop-blur-sm">
+              <div className="mt-10 w-full max-w-2xl rounded-[2rem] border-2 border-amber-500/30 bg-[#1c1917] p-6 text-left shadow-2xl backdrop-blur-md">
                 <div className="flex gap-4">
                   <StorefrontIcon name="info" className="h-6 w-6 shrink-0 text-amber-400" />
                   <div className="space-y-1">
                     <p className="text-sm font-black uppercase tracking-widest text-amber-400">Important Service Notice</p>
-                    <p className="text-sm font-bold leading-relaxed text-amber-100/80">
+                    <p className="text-sm font-bold leading-relaxed text-amber-100/90">
                       This top-up service is optimized for <span className="text-white">{game.title}</span> players. 
                       Instant Delivery enabled — ensure your <span className="text-white">Player ID</span> is correct to avoid any delays in fulfillment.
                     </p>

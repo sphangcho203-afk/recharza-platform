@@ -39,8 +39,15 @@
 
 /* Recharza Immersive Dark Theme Utilities */
 .recharza-dark-atmosphere {
-  background-color: #05060a;
-  color: #ffffff;
+  background: #05060a !important;
+  background-color: #05060a !important;
+  background-image: none !important;
+  color: #ffffff !important;
+}
+
+.recharza-dark-atmosphere::before,
+.recharza-dark-atmosphere::after {
+  display: none !important;
 }
 
 .recharza-framed-hero {

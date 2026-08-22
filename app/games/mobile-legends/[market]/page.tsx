@@ -87,7 +87,7 @@ export default async function MobileLegendsMarketPage({
   }
 
   return (
-    <main className="storefront-page min-h-screen bg-[#05060a] text-white overflow-x-hidden">
+    <main className="storefront-page recharza-dark-atmosphere min-h-screen overflow-x-hidden">
       <SiteHeader />
 
       {/* Immersive Framed Hero Section */}
@@ -135,7 +135,7 @@ export default async function MobileLegendsMarketPage({
             </div>
 
             {/* Service Alert Box */}
-            <div className="mt-10 w-full max-w-2xl rounded-[2rem] border-2 border-amber-500/20 bg-amber-500/5 p-6 text-left shadow-xl backdrop-blur-sm">
+            <div className="mt-10 w-full max-w-2xl rounded-[2rem] border-2 border-amber-500/30 bg-[#1c1917] p-6 text-left shadow-2xl backdrop-blur-md">
               <div className="flex gap-4">
                 <StorefrontIcon name="info" className="h-6 w-6 shrink-0 text-amber-400" />
                 <div className="space-y-1">

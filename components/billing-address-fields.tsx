@@ -141,7 +141,7 @@ export function BillingAddressFields({
               <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white/30 ml-1">Country</span>
               <CountryPicker
                 value={value.countryCode}
-                                  onChange={(countryCode) =>
+                onChange={(countryCode) =>
                   onChange({
                     ...value,
                     countryCode,
@@ -149,7 +149,6 @@ export function BillingAddressFields({
                     presentmentCurrency: fixedCurrency,
                   })
                 }
-
               />
             </label>
             <div className="rounded-2xl border border-white/5 bg-white/5 px-5 py-4">

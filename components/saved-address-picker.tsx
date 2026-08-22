@@ -17,10 +17,10 @@ export function SavedAddressPicker({
   onSelect: (address: SavedAddressView | null) => void;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="mt-10 rounded-[2.5rem] border-2 border-white/10 bg-[#161722] p-8 shadow-2xl">
       <div>
-        <h3 className="text-base font-bold text-slate-900">Saved billing addresses</h3>
-        <p className="mt-1 text-xs font-medium text-slate-500">
+        <h3 className="text-xl font-black tracking-tight text-white uppercase italic">Saved Addresses</h3>
+        <p className="mt-1 text-sm font-bold text-white/40">
           Pick a saved address or choose a new one to enter below.
         </p>
       </div>
@@ -38,30 +38,30 @@ export function SavedAddressPicker({
               type="button"
               onClick={() => onSelect(address)}
               aria-pressed={selected}
-              className={`flex min-h-12 items-start gap-3 rounded-xl border px-4 py-4 text-left transition-all ${
+              className={`flex min-h-12 items-start gap-3 rounded-[1.5rem] border-2 px-6 py-6 text-left transition-all duration-300 ${
                 selected
-                  ? "border-violet-600 bg-violet-50 shadow-sm"
-                  : "border-slate-100 bg-slate-50 hover:border-slate-200 hover:bg-slate-100"
+                  ? "border-violet-500 bg-[#1a1b2e] shadow-lg shadow-violet-500/20"
+                  : "border-white/5 bg-white/5 hover:border-white/20 hover:bg-[#1a1b2e]"
               }`}
             >
-              <span className={`mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full border ${selected ? 'border-violet-600' : 'border-slate-300'}`}>
-                {selected ? <span className="h-2.5 w-2.5 rounded-full bg-violet-600" /> : null}
+              <span className={`mt-1 grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition-all ${selected ? 'border-violet-500 bg-violet-500' : 'border-white/20'}`}>
+                {selected ? <span className="h-2.5 w-2.5 rounded-full bg-white" /> : null}
               </span>
               <span className="min-w-0">
                 <span className="flex flex-wrap items-center gap-2">
-                  <strong className="text-sm font-bold text-slate-900">{address.fullName}</strong>
+                  <strong className="text-sm font-black text-white uppercase tracking-wider">{address.fullName}</strong>
                   {address.isDefault ? (
-                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700">
+                    <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-emerald-400 border border-emerald-500/30">
                       Default
                     </span>
                   ) : null}
                 </span>
-                <span className="mt-1 block text-xs font-medium leading-relaxed text-slate-600">
+                <span className="mt-1 block text-xs font-bold leading-relaxed text-white/60">
                   {address.line1}
                   {address.line2 ? `, ${address.line2}` : ""}, {address.city}, {address.state}{" "}
                   {address.postalCode}, {countryLabel(address.countryCode)}
                 </span>
-                <span className="mt-1 block text-[11px] font-bold text-slate-400">
+                <span className="mt-1 block text-[11px] font-bold text-white/40">
                   {address.email} · {address.phone}
                 </span>
               </span>
@@ -73,10 +73,10 @@ export function SavedAddressPicker({
           type="button"
           onClick={() => onSelect(null)}
           aria-pressed={selectedAddressId === null}
-          className={`flex min-h-12 items-center gap-3 rounded-xl border border-dashed px-4 py-4 text-left text-sm font-bold transition-all ${
+          className={`flex min-h-12 items-center justify-center gap-3 rounded-[1.5rem] border-2 border-dashed p-6 text-left text-sm font-black uppercase tracking-widest transition-all duration-300 ${
             selectedAddressId === null
-              ? "border-violet-600 bg-violet-50 text-violet-700 shadow-sm"
-              : "border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-700"
+              ? "border-violet-500 bg-[#1a1b2e] text-violet-400 shadow-lg shadow-violet-500/10"
+              : "border-white/10 bg-transparent text-white/40 hover:border-white/20 hover:text-white/60"
           }`}
         >
           <span className="text-lg">+</span> Use a new address
