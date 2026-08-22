@@ -608,9 +608,9 @@ export function SupplierGameCheckoutShell({
                           )}
                         </div>
                         <div className="flex items-center gap-1.5 text-white/40 font-bold text-xs mt-1">
-                          <StorefrontIcon name="coin" className="h-3.5 w-3.5" />
+                          <StorefrontIcon name="coin" className="h-3.5 w-3.5 text-blue-400/50" />
                           <span>{item.name}</span>
-                          <StorefrontIcon name="track" className="h-3.5 w-3.5 ml-1 text-orange-500/50" />
+                          <StorefrontIcon name="info" className="h-3.5 w-3.5 ml-1 text-amber-500/50" />
                         </div>
                       </div>
 
@@ -627,7 +627,7 @@ export function SupplierGameCheckoutShell({
                               selected ? "bg-violet-600 text-white" : "bg-white/5 text-white/20 group-hover:bg-white/10"
                             }`}
                           >
-                            <StorefrontIcon name="track" className="h-4 w-4" />
+                            <StorefrontIcon name="arrow" className="h-4 w-4" />
                           </div>
                         </div>
                       </div>

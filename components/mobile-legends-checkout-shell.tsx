@@ -427,7 +427,7 @@ export function MobileLegendsCheckoutShell({
             <section className="space-y-8">
               <div className="flex items-center gap-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600/20 border border-violet-500/30 text-violet-400 shadow-lg shadow-violet-500/10">
-                  <StorefrontIcon name="diamond" className="h-5 w-5" />
+                  <StorefrontIcon name="coin" className="h-5 w-5" />
                 </div>
                 <h2 className="text-2xl font-black tracking-tight text-white uppercase italic">Diamond Packs</h2>
               </div>
@@ -463,7 +463,7 @@ export function MobileLegendsCheckoutShell({
 
                       {badge && (
                         <div className="absolute top-4 right-4 flex items-center gap-1.5 rounded-full bg-orange-500 px-3 py-1 text-[9px] font-black uppercase tracking-widest text-white shadow-lg shadow-orange-500/20">
-                          <StorefrontIcon name="bolt" className="h-3 w-3" />
+                          <StorefrontIcon name="info" className="h-3 w-3" />
                           {badge.label}
                         </div>
                       )}
@@ -478,9 +478,9 @@ export function MobileLegendsCheckoutShell({
                           )}
                         </div>
                         <div className="flex items-center gap-1.5 text-white/40 font-bold text-[11px] mt-1">
-                          <StorefrontIcon name="diamond" className="h-3 w-3 text-blue-400/50" />
+                          <StorefrontIcon name="coin" className="h-3 w-3 text-blue-400/50" />
                           <span>{quantity.base} gems</span>
-                          <StorefrontIcon name="bolt" className="h-3 w-3 ml-1 text-amber-500/50" />
+                          <StorefrontIcon name="info" className="h-3 w-3 ml-1 text-amber-500/50" />
                         </div>
                       </div>
 

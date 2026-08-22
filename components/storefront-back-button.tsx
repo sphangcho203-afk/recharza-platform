@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-export function StorefrontBackButton({ fallbackHref = "/#games" }: { fallbackHref?: string }) {
+export function StorefrontBackButton({ fallbackHref = "/#games", className = "" }: { fallbackHref?: string; className?: string }) {
   const router = useRouter();
 
   function goBack() {
@@ -21,7 +21,7 @@ export function StorefrontBackButton({ fallbackHref = "/#games" }: { fallbackHre
     <button
       type="button"
       onClick={goBack}
-      className="storefront-back-button"
+      className={`storefront-back-button ${className}`}
       aria-label="Go back to the previous store page"
     >
       <span aria-hidden="true" className="text-base leading-none">←</span>
