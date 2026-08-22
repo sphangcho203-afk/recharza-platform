@@ -47,26 +47,26 @@ export async function SiteFooter() {
     : [];
 
   return (
-    <footer className="border-t border-white/5 bg-[#0d0f16] px-4 pb-6 pt-9 sm:px-6 lg:px-8">
+    <footer className="border-t border-white/5 bg-[#020306] px-4 pb-8 pt-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1240px]">
-        <div className="grid gap-8 md:grid-cols-[1.4fr_0.7fr_0.8fr_0.9fr]">
+        <div className="grid gap-12 md:grid-cols-[1.4fr_0.7fr_0.8fr_0.9fr]">
           <div className="max-w-sm">
             <RecharzaMark />
-            <p className="mt-3 text-sm leading-6 text-slate-400">
+            <p className="mt-4 text-[0.95rem] leading-7 text-slate-400 font-medium">
               Game top-ups with published pricing, secure checkout, recoverable order tracking and connected support.
             </p>
-            <div className="mt-5 flex gap-2" aria-label="Support channels">
+            <div className="mt-6 flex gap-3" aria-label="Support channels">
               {channels.map((channel) => {
                 const icon = channelIcons[channel.id];
                 if (!icon) return null;
-                const className = "grid h-9 w-9 place-items-center rounded-lg border border-white/10 bg-white/5 text-slate-400 transition hover:border-white/20 hover:bg-white/10 hover:text-white";
+                const className = "grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-400 transition-all duration-300 hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-white hover:shadow-[0_0_15px_rgba(124,58,237,0.2)]";
                 return channel.href && channel.available ? (
                   <a key={channel.id} href={channel.href} target={channel.id === "email" ? undefined : "_blank"} rel={channel.id === "email" ? undefined : "noreferrer"} aria-label={channel.label} className={className}>
-                    <SupportChannelIcon name={icon} className="h-4.5 w-4.5" />
+                    <SupportChannelIcon name={icon} className="h-5 w-5" />
                   </a>
                 ) : (
-                  <span key={channel.id} aria-label={`${channel.label} unavailable`} className={`${className} opacity-40`}>
-                    <SupportChannelIcon name={icon} className="h-4.5 w-4.5" />
+                  <span key={channel.id} aria-label={`${channel.label} unavailable`} className={`${className} opacity-30 grayscale`}>
+                    <SupportChannelIcon name={icon} className="h-5 w-5" />
                   </span>
                 );
               })}
@@ -77,28 +77,28 @@ export async function SiteFooter() {
           <FooterColumn title="Support" links={supportLinks} />
 
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-white">Payments</h2>
-            <div className="mt-3 flex flex-wrap items-center gap-2.5" aria-label="Accepted payment methods">
+            <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-white text-shadow-sm">Payments</h2>
+            <div className="mt-4 flex flex-wrap items-center gap-3" aria-label="Accepted payment methods">
               {paymentMarks.map((mark) => (
-                <span key={mark.label} title={mark.label} className="grid h-10 min-w-11 place-items-center rounded-lg border border-white/10 bg-white/5 px-2.5 shadow-2xl">
-                  <img src={mark.src} alt={mark.label} className={`${mark.className} object-contain opacity-95 brightness-0 invert`} />
+                <span key={mark.label} title={mark.label} className="grid h-11 min-w-12 place-items-center rounded-xl border border-white/10 bg-white/5 px-3 shadow-2xl transition-all duration-300 hover:border-white/20 hover:bg-white/8">
+                  <img src={mark.src} alt={mark.label} className={`${mark.className} object-contain opacity-90 brightness-0 invert`} />
                 </span>
               ))}
             </div>
-            <p className="mt-4 text-xs leading-5 text-slate-500">Payment availability depends on the active checkout configuration and market.</p>
+            <p className="mt-5 text-[11px] leading-5 text-slate-500 font-medium">Payment availability depends on the active checkout configuration and market.</p>
           </div>
         </div>
 
         {publishedPolicies.length > 0 ? (
-          <section aria-labelledby="footer-legal-heading" className="mt-8 border-t border-white/10 pt-5">
-            <h2 id="footer-legal-heading" className="text-xs font-bold uppercase tracking-[0.14em] text-white">Legal</h2>
-            <nav aria-label="Legal policies" className="mt-3 max-w-md">
-              <div className="grid gap-1.5">
+          <section aria-labelledby="footer-legal-heading" className="mt-12 border-t border-white/10 pt-8">
+            <h2 id="footer-legal-heading" className="text-xs font-extrabold uppercase tracking-[0.2em] text-white">Legal</h2>
+            <nav aria-label="Legal policies" className="mt-4 max-w-md">
+              <div className="grid gap-2">
                 {publishedPolicies.map((policy) => (
                   <Link
                     key={policy.key}
                     href={`/policies/${policy.key}`}
-                    className="group flex min-h-9 items-center rounded-lg px-2 py-1.5 text-sm font-bold text-slate-400 transition hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60"
+                    className="group flex min-h-10 items-center rounded-xl px-3 py-2 text-[0.9rem] font-bold text-slate-400 transition-all duration-200 hover:bg-white/5 hover:text-white hover:translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60"
                   >
                     {policy.title}
                   </Link>
@@ -108,9 +108,9 @@ export async function SiteFooter() {
           </section>
         ) : null}
 
-        <div className="mt-4 flex flex-col gap-1 text-[10px] leading-4 text-slate-500 sm:flex-row sm:justify-between">
+        <div className="mt-8 flex flex-col gap-2 text-[11px] font-medium leading-5 text-slate-500 sm:flex-row sm:justify-between border-t border-white/5 pt-6">
           <p>© 2026 Recharza.</p>
-          <p>Game names and artwork belong to their respective publishers.</p>
+          <p className="text-slate-600">Game names and artwork belong to their respective publishers.</p>
         </div>
       </div>
     </footer>
