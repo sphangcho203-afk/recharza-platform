@@ -729,25 +729,9 @@ type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4 
 type StepActionsProps = { current: number; onBack?: () => void; onNext: () => void; nextLabel: string };
 
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
-  const labels = ["Package", "Player", "Billing", "Review", "Payment"];
   return (
-    <nav aria-label="Checkout progress" className="mb-5 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-      <ol className="grid grid-cols-5 gap-1">
-        {labels.map((label, index) => {
-          const number = index + 1;
-          const active = number === step;
-          const complete = number < step;
-          return <li key={label}>
-            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} aria-current={active ? "step" : undefined} aria-label={`${label} step${active ? ", current step" : complete ? ", completed" : ", locked"}`} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-50 text-violet-600" : complete ? "text-emerald-600 hover:bg-slate-50" : "text-slate-400"}`}>
-              <span className={`grid h-7 w-7 place-items-center rounded-full border text-[10px] font-bold transition-all duration-300 ${active ? "border-violet-600 bg-violet-600 text-white shadow-lg shadow-violet-200" : complete ? "border-emerald-600 bg-emerald-600 text-white shadow-lg shadow-emerald-100" : "border-slate-200 bg-slate-50"}`}>{complete ? "✓" : number}</span>
-              <span className="text-[9px] font-bold uppercase tracking-widest sm:text-[10px]">{label}</span>
-            </button>
-          </li>;
-        })}
-      </ol>
-      <div className="mt-3 px-1 pt-1">
-        <CheckoutProgressRail current={step} />
-      </div>
+    <nav aria-label="Checkout progress" className="mb-6">
+      <CheckoutProgressRail current={step} />
     </nav>
   );
 }

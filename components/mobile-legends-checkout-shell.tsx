@@ -611,7 +611,7 @@ type StepActionsProps = { current: number; onBack?: () => void; onNext: () => vo
 
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
   return (
-    <nav aria-label="Checkout progress" className="storefront-checkout-surface mb-5 p-4">
+    <nav aria-label="Checkout progress" className="mb-6">
       <CheckoutProgressRail current={step} />
     </nav>
   );
