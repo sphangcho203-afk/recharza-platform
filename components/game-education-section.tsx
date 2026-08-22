@@ -60,7 +60,7 @@ export function GameEducationSection({
           <div className="h-16 w-16 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-2 shadow-sm">
             <StorefrontArtwork
               artworkKey={game.artworkKey}
-              sources={game.media.sources}
+              sources={game.logoSources}
               alt={`${game.title} logo`}
               fallbackLabel={game.title.slice(0, 2)}
               className="h-full w-full"
