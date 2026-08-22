@@ -277,7 +277,7 @@ export function sendAccountCreatedEmail(input: {
     eyebrow: "Account created",
     title: `Welcome, ${input.displayName}.`,
     message:
-      "Your Recharza account is active. Orders, saved player details, billing information, account security, and support now live in one protected workspace.",
+      "Your Recharza account is now active. You can now manage your orders, saved player details, and billing information all in one place.",
     details: [
       { label: "Username", value: input.username },
       { label: "Email", value: input.email },
@@ -305,7 +305,7 @@ export function sendPasswordResetEmail(input: {
     eyebrow: "Password reset requested",
     title: "Create a new password.",
     message:
-      "A password reset was requested for your Recharza account. The secure link is single-use and expires after 20 minutes.",
+      "We received a request to reset your Recharza account password. This link will expire in 20 minutes for your security.",
     details: [
       { label: "Requested", value: formatTimestamp(input.requestedAt) },
       { label: "Expires", value: formatTimestamp(input.expiresAt) },
@@ -329,7 +329,7 @@ export function sendPasswordChangedEmail(input: {
     eyebrow: "Security update",
     title: "Password changed successfully.",
     message:
-      "Your account password was changed and existing account sessions were revoked. Sign in again with the new password.",
+      "Your account password has been updated successfully. Please sign in again with your new password.",
     details: [{ label: "Changed", value: formatTimestamp(input.changedAt) }],
     action: {
       label: "Sign in to Recharza",

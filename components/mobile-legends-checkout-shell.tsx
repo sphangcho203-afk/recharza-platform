@@ -559,7 +559,7 @@ export function MobileLegendsCheckoutShell({
           <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">{duplicate ? "Order retrieved" : "Order confirmed"}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">{duplicate ? "Order Found" : "Order Confirmed"}</p>
                 <h3 className="mt-1 break-all text-lg font-bold tracking-tight text-slate-900">{order.id}</h3>
                 <p className="mt-2 text-xs font-medium leading-relaxed text-emerald-800/80">{checkoutMessage}</p>
                 {addressSaveNote ? <p className="mt-2 text-xs font-medium leading-relaxed text-amber-700/80">{addressSaveNote}</p> : null}
@@ -570,7 +570,7 @@ export function MobileLegendsCheckoutShell({
             <PrivateOrderTokenCard token={order.tracking.accessToken} />
 
             {paymentVerified ? (
-              <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-100/50 p-4 text-sm font-bold text-emerald-800">Payment response verified. Fulfilment status remains available through secure tracking.</div>
+              <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-100/50 p-4 text-sm font-bold text-emerald-800">Payment confirmed. You can track your order status in real-time.</div>
             ) : (
               <RazorpayTestCheckout
                 orderId={order.id}

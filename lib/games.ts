@@ -101,11 +101,11 @@ const mobileLegendsBase = {
   artworkPosition: "center",
   accent: "#5b7cff",
   packages: ["Diamonds", "Weekly Pass", "Twilight Pass"],
-  deliveryCoverage: {
-    mode: "region-scoped" as const,
-    headline: "Your account region must match the market — verification works from any country",
-    note: "You can check any MLBB username from any country — the ID check is cross-region. But diamonds are delivered through region-scoped supplier catalogues: each market only credits the account server it is licensed for (e.g. the India catalogue credits India accounts only, Indonesia catalogue credits Indonesia accounts only, Global catalogue excludes Indonesia/Brazil/Philippines). Moonton blocks cross-region recharges, so choose the market whose region matches your account — a Saudi Arabia account must not be topped up via the India catalogue.",
-  },
+    deliveryCoverage: {
+      mode: "region-scoped" as const,
+      headline: "Global account verification with region-specific delivery",
+      note: "Our account verification service works globally, allowing you to confirm your nickname regardless of your location. However, game currency is delivered through regional catalogues. To ensure successful delivery, please select the market that matches your game account's registered region. For example, an account registered in India should be topped up using the India market.",
+    },
   pricingKey: "mobile-legends",
   startingPriceInPaise: 3_000,
   education: {
@@ -195,11 +195,11 @@ export const games: Game[] = [
     available: true,
     href: "/games/free-fire",
     packages: ["Diamonds", "Weekly Membership", "Monthly Membership"],
-    deliveryCoverage: {
-      mode: "global-id",
-      headline: "Global Garena ID — delivery follows your region's catalogue",
-      note: "Any Garena ID can be checked from any country — verification is cross-region. Delivery, however, runs through region-scoped supplier packs (Indonesia, Philippines, Malaysia/Singapore, Bangladesh catalogues and more). Only the catalogue matching your account's region can credit it, so pick the market whose region matches your Free Fire account — a Saudi Arabia account cannot be topped up from the Indonesia catalogue.",
-    },
+      deliveryCoverage: {
+        mode: "global-id",
+        headline: "Global account verification with region-specific delivery",
+        note: "You can verify your Garena ID from any country using our integrated lookup service. For successful top-up delivery, please ensure you select the market that corresponds to your game account's region. Regional restrictions apply to the delivery of game currency, and matching your account region is essential for a successful transaction.",
+      },
     pricingMode: "live",
     pricingKey: "free-fire",
     education: {
@@ -244,11 +244,11 @@ export const games: Game[] = [
     available: true,
     href: "/games/pubg-mobile",
     packages: ["Unknown Cash", "Elite Pass", "Prime Plus"],
-    deliveryCoverage: {
-      mode: "region-scoped",
-      headline: "Region-locked UC — match your account region",
-      note: "UC is bound to your PUBG Mobile account region and redeemed as regional vouchers. Our catalogue serves one approved UC line, so you must buy from the market that matches the server you play on — a different-region purchase will not credit your account. This is a Level Infinite server rule, not a store limitation.",
-    },
+      deliveryCoverage: {
+        mode: "region-scoped",
+        headline: "Region-specific currency delivery",
+        note: "Game currency is bound to your specific account region. To ensure your top-up is credited correctly, please choose the market that matches your game server. Transactions made for a different region cannot be credited to your account due to publisher restrictions.",
+      },
     pricingMode: "live",
     pricingKey: "pubg-mobile",
     education: {

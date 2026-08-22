@@ -33,7 +33,7 @@ export function sendOrderCompletedEmail(input: OrderEmailInput) {
     eyebrow: "Order completed",
     title: "Your top-up is complete.",
     message:
-      "The order finished successfully and its final status is stored in your Recharza account.",
+      "Your order has been completed successfully. You can view the details in your Recharza account.",
     details: [
       { label: "Order", value: input.orderId },
       { label: "Game", value: input.gameLabel },
@@ -61,7 +61,7 @@ export function sendOrderFailedEmail(
     eyebrow: "Order failed",
     title: "The order was not completed.",
     message:
-      "No successful fulfilment was recorded. Review the order status before retrying payment.",
+      "Your order could not be completed. Please review the order status in your account for more details.",
     details: [
       { label: "Order", value: input.orderId },
       { label: "Game", value: input.gameLabel },
