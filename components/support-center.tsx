@@ -110,7 +110,7 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">What do you need help with?</h2>
           <p className="mt-1.5 max-w-2xl text-sm leading-6 text-slate-500 font-medium">Pick an issue to create a trackable request, or contact the channel that works best for you.</p>
         </div>
-        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4" aria-label="Direct support channels">
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" aria-label="Direct support channels">
           {channels.map((channel) => {
             const icon = channelIcons[channel.id];
             const available = Boolean(channel.href && channel.available);
@@ -120,8 +120,8 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
                   <SupportChannelIcon name={icon} className="h-5 w-5" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <strong className="block text-sm font-bold text-slate-900">{channel.label}</strong>
-                  <span className="mt-0.5 block text-[11px] text-slate-500 font-medium">{available ? "Open direct channel" : "Currently unavailable"}</span>
+                  <strong className="block text-sm font-bold text-slate-900 leading-tight">{channel.label}</strong>
+                  <span className="mt-0.5 block text-[10px] text-slate-500 font-medium">{available ? "Open direct channel" : "Currently unavailable"}</span>
                 </span>
                 {available ? <StorefrontIcon name="arrow" className="recharza-nav-arrow h-4 w-4 shrink-0 text-slate-400 group-hover:text-slate-900" /> : null}
               </>
@@ -132,12 +132,12 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
                 href={channel.href ?? undefined}
                 target={channel.id === "email" ? undefined : "_blank"}
                 rel={channel.id === "email" ? undefined : "noreferrer"}
-                className="group flex min-h-[4.5rem] items-center gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50"
+                className="group flex min-h-[4rem] items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50"
               >
                 {content}
               </a>
             ) : (
-              <div key={channel.id} aria-disabled="true" className="flex min-h-[4.5rem] items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-3 opacity-50">
+              <div key={channel.id} aria-disabled="true" className="flex min-h-[4rem] items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5 opacity-50">
                 {content}
               </div>
             );

@@ -34,13 +34,13 @@ const items: Array<{
     matches: (path) => path.startsWith("/account/orders"),
   },
   {
-    label: "Support",
+    label: "Help",
     href: "/support",
     icon: "support",
     matches: (path) => path.startsWith("/support"),
   },
   {
-    label: "Account",
+    label: "Profile",
     href: "/account",
     icon: "account",
     matches: (path) => path.startsWith("/account"),
@@ -82,28 +82,28 @@ export function MobileBottomNav() {
               href={item.href}
               aria-current={active ? "page" : undefined}
               aria-label={showBadge ? `${item.label}, ${count} items` : item.label}
-              className={`flex min-h-12 flex-1 flex-col items-center justify-center gap-1 rounded-xl px-0.5 text-[10px] font-black transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 ${
-                active ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
+              className={`flex min-h-[4.25rem] flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-0 text-[9px] font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 ${
+                active ? "text-slate-900" : "text-slate-500 hover:text-slate-700"
               }`}
             >
               <span
-                className={`relative grid h-8 w-8 place-items-center rounded-lg transition-all duration-300 ${
+                className={`relative grid h-7 w-7 place-items-center rounded-lg transition-all duration-300 ${
                   active
                     ? "bg-violet-50 text-violet-600"
                     : "text-slate-400"
                 }`}
               >
-                <StorefrontIcon name={item.icon} className="h-4.5 w-4.5" />
+                <StorefrontIcon name={item.icon} className="h-3.5 w-3.5" />
                 {showBadge ? (
                   <span
                     aria-hidden="true"
-                    className="absolute -right-1.5 -top-1 grid min-h-[1rem] min-w-[1rem] place-items-center rounded-full bg-violet-600 px-1 text-[8px] font-black leading-none text-white shadow-sm"
+                    className="absolute -right-1.5 -top-1 grid min-h-[0.75rem] min-w-[0.75rem] place-items-center rounded-full bg-violet-600 px-0.5 text-[7px] font-black leading-none text-white shadow-sm"
                   >
                     {count > 99 ? "99+" : count}
                   </span>
                 ) : null}
               </span>
-              <span className="whitespace-nowrap uppercase tracking-tighter">{item.label}</span>
+              <span className="whitespace-nowrap uppercase tracking-[0.02em] text-[7px] sm:text-[9px]">{item.label}</span>
             </Link>
           );
         })}

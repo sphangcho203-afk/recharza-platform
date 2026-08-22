@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { StorefrontIcon } from "@/components/storefront-icon";
+import { getPublicSupportChannels } from "@/lib/support-config";
 
 const links = [
   { href: "/", label: "Home", icon: "games" as const },
@@ -17,56 +18,15 @@ const links = [
   { href: "/account", label: "My account", icon: "account" as const },
 ];
 
-const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "recherzatopup@gmail.com";
-const telegramBotUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME || "recherzaSupportbot";
-const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_SUPPORT_NUMBER?.replace(/\D/g, "") || "";
-const instagramUsername = process.env.NEXT_PUBLIC_INSTAGRAM_USERNAME || "recharza";
-
-const supportChannels = [
-  {
-    key: "telegram-group",
-    label: "Telegram live group",
-    description: "Talk with the Recharza support community.",
-    icon: "group",
-    href: "https://t.me/supprtrz",
-    external: true,
-  },
-  {
-    key: "telegram-bot",
-    label: "Private Telegram bot",
-    description: "Get private help with orders and top-ups.",
-    icon: "bot",
-    href: `https://t.me/${telegramBotUsername}?start=recharza_support`,
-    external: true,
-  },
-  {
-    key: "whatsapp",
-    label: "WhatsApp support",
-    description: whatsappNumber ? "Chat with Recharza on WhatsApp." : "WhatsApp contact is being configured.",
-    icon: "whatsapp",
-    href: whatsappNumber ? `https://wa.me/${whatsappNumber}` : "",
-    external: true,
-    disabled: !whatsappNumber,
-  },
-  {
-    key: "email",
-    label: "Gmail support",
-    description: `Email ${supportEmail} for account or order help.`,
-    icon: "email",
-    href: `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(supportEmail)}&su=${encodeURIComponent("Recharza support request")}`,
-    external: true,
-  },
-  {
-    key: "instagram",
-    label: "Instagram support",
-    description: `Follow @${instagramUsername} for updates and announcements.`,
-    icon: "instagram",
-    href: `https://www.instagram.com/${encodeURIComponent(instagramUsername)}/`,
-    external: true,
-  },
-] as const;
-
-type SupportChannel = (typeof supportChannels)[number];
+type SupportChannel = {
+  key: string;
+  label: string;
+  description: string;
+  icon: string;
+  href: string | null;
+  external: boolean;
+  disabled?: boolean;
+};
 
 function ChannelMark({ channel }: { channel: SupportChannel }) {
   const icon = channel.icon;
@@ -148,6 +108,27 @@ export function MobileNavMenu() {
     setOpen(false);
   };
 
+  const publicChannels = getPublicSupportChannels();
+  const supportChannels: SupportChannel[] = [
+    {
+      key: "telegram-group",
+      label: "Telegram live group",
+      description: "Talk with the Recharza support community.",
+      icon: "group",
+      href: "https://t.me/supprtrz",
+      external: true,
+    },
+    ...publicChannels.map((c) => ({
+      key: c.id,
+      label: c.label,
+      description: c.detail,
+      icon: c.id,
+      href: c.href,
+      external: true,
+      disabled: !c.available,
+    })),
+  ];
+
   const menu = open ? (
     <div className="recharza-scrim fixed inset-0 z-[9999] isolate" onMouseDown={(event) => { if (event.target === event.currentTarget) closeMenu(); }}>
       <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby={supportOpen ? "support-chooser-title" : "mobile-navigation-title"} className="recharza-sheet absolute left-0 top-0 h-auto max-h-[92vh] w-[min(20rem,85vw)] overflow-hidden rounded-br-[3rem] shadow-[20px_20px_80px_rgba(0,0,0,0.08)]">
@@ -181,7 +162,7 @@ export function MobileNavMenu() {
                 const isDisabled = "disabled" in channel && channel.disabled;
                 const className = `recharza-nav-row group relative flex min-h-[4.5rem] items-center gap-3 rounded-xl border border-slate-100 bg-white px-3 py-2 text-left shadow-[0_4px_16px_rgba(0,0,0,.03)] transition duration-150 ease-out hover:border-violet-300/25 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${isDisabled ? "cursor-not-allowed opacity-55" : ""}`;
                 if (isDisabled) return <div key={channel.key} aria-disabled="true" className={className}>{content}</div>;
-                return <a key={channel.key} href={channel.href} target={channel.external ? "_blank" : undefined} rel={channel.external ? "noopener noreferrer" : undefined} onClick={() => { setSupportOpen(false); setOpen(false); }} className={className}>{content}</a>;
+                return <a key={channel.key} href={channel.href ?? undefined} target={channel.external ? "_blank" : undefined} rel={channel.external ? "noopener noreferrer" : undefined} onClick={() => { setSupportOpen(false); setOpen(false); }} className={className}>{content}</a>;
               })}
             </nav>
           </div>

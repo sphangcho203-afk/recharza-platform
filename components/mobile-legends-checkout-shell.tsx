@@ -43,7 +43,7 @@ type CreatedOrder = {
   tracking: { path: string; accessToken: string };
 };
 
-type CheckoutStep = 1 | 2 | 3 | 4 | 5;
+type CheckoutStep = 1 | 2 | 3 | 4;
 
 type CheckoutResponse = {
   ok: boolean;
@@ -158,10 +158,9 @@ export function MobileLegendsCheckoutShell({
   );
   const visiblePackages = packages;
 
-  const canConvert = billing.presentmentCurrency === marketCurrency;
   const billingComplete = billingIsComplete(billing);
   const playerComplete = verification.status === "success";
-  const canCreateOrder = Boolean(selectedPackage && playerComplete && billingComplete && canConvert);
+  const canCreateOrder = Boolean(selectedPackage && playerComplete && billingComplete);
 
   function formatPresentment(amountInPaise: number) {
     return formatDisplayMinor(amountInPaise, displayCurrency, displayRates);
@@ -305,7 +304,7 @@ export function MobileLegendsCheckoutShell({
       sessionStorage.setItem(`recharza-order:${result.order.id}`, result.order.tracking.accessToken);
       setOrder(result.order);
       setDuplicate(Boolean(result.duplicate));
-      setStep(5);
+      setStep(4);
       setCheckoutMessage(result.paymentSession?.message ?? "Order saved. Continue to payment below.");
 
       if (isAuthenticated && saveNewAddress && selectedAddressId === null) {
@@ -326,8 +325,7 @@ export function MobileLegendsCheckoutShell({
   function advanceStep(nextStep: CheckoutStep) {
     if (nextStep === 2 && !selectedPackage) { setCheckoutError("Choose a package before continuing."); return; }
     if (nextStep === 3 && verification.status !== "success") { setCheckoutError("Verify the player destination before continuing."); return; }
-    if (nextStep === 4 && (!billingComplete || !canConvert)) { setCheckoutError("Complete the billing details before continuing."); return; }
-    if (nextStep === 5 && (!canCreateOrder || order)) { setCheckoutError("Review the verified player and billing details before payment."); return; }
+    if (nextStep === 4 && !billingComplete) { setCheckoutError("Complete the billing details before continuing."); return; }
     setCheckoutError("");
     setStep(nextStep);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -346,7 +344,7 @@ export function MobileLegendsCheckoutShell({
         <section className="storefront-checkout-surface p-4 sm:p-5 border border-slate-200 bg-white shadow-sm rounded-2xl">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Order information</h2>
+              <h2 className="text-base font-bold text-slate-900">Player information</h2>
               <p className="mt-1 text-xs text-slate-600">Verify the Mobile Legends destination before creating an order.</p>
             </div>
           </div>
@@ -413,7 +411,7 @@ export function MobileLegendsCheckoutShell({
             </p>
           ) : null}
         </section>
-        <StepActions current={step} onBack={() => setStep(1)} onNext={() => advanceStep(3)} nextLabel="Continue to billing" />
+        <StepActions current={step} onBack={() => setStep(1)} onNext={() => advanceStep(3)} nextLabel="Continue to payment" />
         </> : null}
 
         {step === 1 ? <>
@@ -500,6 +498,21 @@ export function MobileLegendsCheckoutShell({
 
         {step === 3 ? <>
         <div id="billing" className="space-y-5">
+          <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">Final review</p>
+            <h2 className="mt-1 text-xl font-bold text-slate-900">Review & Billing</h2>
+            <p className="mt-1 text-sm text-slate-600">Check your top-up details and provide billing information for the payment.</p>
+            
+            <dl className="mt-5 grid gap-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm sm:grid-cols-2">
+              <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
+              <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-bold text-slate-900">{market.flag} {market.label}</dd></div>
+              <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Player ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{playerId || "—"}</dd></div>
+              <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{zoneId || "—"}</dd></div>
+              <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-600">{verification.nickname || "Verified player"}</dd></div>
+              <div className="border-t border-slate-200 pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-bold text-violet-600">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+            </dl>
+          </section>
+
           {isAuthenticated && savedAddresses.length > 0 ? (
             <SavedAddressPicker
               addresses={savedAddresses}
@@ -516,7 +529,7 @@ export function MobileLegendsCheckoutShell({
             }}
             fixedCurrency={marketCurrency}
             stepNumber="03"
-            stepLabel="Billing and currency"
+            stepLabel="Billing address"
           />
 
           {isAuthenticated && selectedAddressId === null ? (
@@ -534,34 +547,16 @@ export function MobileLegendsCheckoutShell({
             </label>
           ) : null}
         </div>
-        <StepActions current={step} onBack={() => setStep(2)} onNext={() => advanceStep(4)} nextLabel="Review order" />
-        </> : null}
-
-        {step === 4 ? <>
-        <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
-          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">Review before payment</p>
-          <h2 className="mt-1 text-xl font-bold text-slate-900">Confirm your top-up</h2>
-          <p className="mt-1 text-sm text-slate-600">Check the verified player, package, market, and billing details before creating the order.</p>
-          <dl className="mt-5 grid gap-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm sm:grid-cols-2">
-            <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-bold text-slate-900">{market.flag} {market.label}</dd></div>
-            <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Player ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{playerId || "—"}</dd></div>
-            <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{zoneId || "—"}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-600">{verification.nickname || "Verified player"}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-bold text-slate-900">{billing.presentmentCurrency}</dd></div>
-            <div className="border-t border-slate-200 pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-bold text-violet-600">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
-          </dl>
-          <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-            <button type="button" onClick={() => setStep(3)} className="storefront-checkout-secondary px-4 text-sm">Back to billing</button>
-            <button type="submit" disabled={isSubmitting || !canCreateOrder || Boolean(order)} className="min-h-11 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45">{isSubmitting ? "Creating protected order…" : "Continue to payment"}</button>
-          </div>
-        </section>
+        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+          <button type="button" onClick={() => setStep(2)} className="storefront-checkout-secondary px-4 text-sm">Back to player</button>
+          <button type="submit" disabled={isSubmitting || !canCreateOrder || Boolean(order)} className="min-h-11 rounded-lg bg-violet-600 px-6 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60">{isSubmitting ? "Creating protected order…" : "Pay Now"}</button>
+        </div>
         </> : null}
 
         {checkoutError ? <p aria-live="assertive" className="rounded-lg border border-rose-400/20 bg-rose-400/[0.07] px-4 py-3 text-sm text-rose-200">{checkoutError}</p> : null}
         {checkoutMessage && !order ? <p className="rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-4 py-3 text-sm text-cyan-100">{checkoutMessage}</p> : null}
 
-        {step === 5 && order ? (
+        {step === 4 && order ? (
           <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <div>
@@ -606,7 +601,7 @@ export function MobileLegendsCheckoutShell({
 }
 
 
-type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4 | 5) => void };
+type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4) => void };
 type StepActionsProps = { current: number; onBack?: () => void; onNext: () => void; nextLabel: string };
 
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
@@ -620,6 +615,6 @@ function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
 function StepActions({ current, onBack, onNext, nextLabel }: StepActionsProps) {
   return <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
     {current > 1 ? <button type="button" onClick={onBack} className="storefront-checkout-secondary px-4 text-sm">Back</button> : <span />}
-    {current < 5 ? <button type="button" onClick={onNext} className="storefront-checkout-primary px-5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
+    {current < 4 ? <button type="button" onClick={onNext} className="storefront-checkout-primary px-5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{nextLabel}</button> : null}
   </div>;
 }

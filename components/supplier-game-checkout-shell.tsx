@@ -79,7 +79,7 @@ type IdentityState = {
   serverId: string;
 };
 
-type CheckoutStep = 1 | 2 | 3 | 4 | 5;
+type CheckoutStep = 1 | 2 | 3 | 4;
 
 const initialIdentity: IdentityState = { playerId: "", riotId: "", serverId: "" };
 const fieldClassName = "storefront-checkout-field mt-2 w-full px-3.5 text-sm placeholder:text-slate-600";
@@ -359,7 +359,7 @@ export function SupplierGameCheckoutShell({
 
       sessionStorage.setItem(`recharza-order:${result.order.id}`, result.order.tracking.accessToken);
       setOrder(result.order);
-      setStep(5);
+      setStep(4);
       setMessage(result.paymentSession?.message ?? "Order saved. Complete payment in the secure checkout below.");
 
       if (isAuthenticated && saveNewAddress && selectedAddressId === null) {
@@ -379,8 +379,9 @@ export function SupplierGameCheckoutShell({
 
   function advanceStep(nextStep: CheckoutStep) {
     if (nextStep === 2 && !selectedPackage) { setError("Choose a package before continuing."); return; }
-    if (nextStep === 3 && (!identityResult?.valid || !verification?.valid)) { setError("Verify the player destination before continuing."); return; }
-    if (nextStep === 4 && (!billingIsComplete(billing) || !canConvert)) { setError("Complete the billing details before continuing."); return; }
+    if (nextStep === 3 && !verification?.confirmed) { setError("Verify the player destination before continuing."); return; }
+    const billingComplete = billingIsComplete(billing);
+    if (nextStep === 4 && !billingComplete) { setError("Complete the billing details before continuing."); return; }
     setError("");
     setStep(nextStep);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -439,13 +440,12 @@ export function SupplierGameCheckoutShell({
         <CheckoutProgress step={step} onStepChange={setStep} />
 
         {step === 2 ? <>
-        <section className="rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:p-5">
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-base font-semibold text-white">Order information</h2>
-              <p className="mt-1 text-xs text-slate-500">Enter the destination exactly as shown in-game.</p>
+              <h2 className="text-base font-bold text-slate-900">Player information</h2>
+              <p className="mt-1 text-xs text-slate-600">Enter the destination exactly as shown in-game.</p>
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-violet-300">Step 3</span>
           </div>
 
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -469,9 +469,9 @@ export function SupplierGameCheckoutShell({
                 />
               </label>
             ) : (
-                <label className="text-xs font-semibold text-slate-400">
+                <label className="text-xs font-bold text-slate-500">
                 {gameSlug === "genshin-impact" ? "UID" : "Player ID"}
-                {gameSlug === "free-fire" ? <span className="ml-2 font-normal text-slate-600">works across supported regions</span> : null}
+                {gameSlug === "free-fire" ? <span className="ml-2 font-normal text-slate-400">works across supported regions</span> : null}
                 <input
                   required
                   inputMode="numeric"
@@ -491,7 +491,7 @@ export function SupplierGameCheckoutShell({
             )}
 
             {gameSlug === "genshin-impact" ? (
-              <label className="text-xs font-semibold text-slate-400">
+              <label className="text-xs font-bold text-slate-500">
                 Server
                 <select
                   required
@@ -513,7 +513,7 @@ export function SupplierGameCheckoutShell({
           </div>
 
           <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className={`text-xs ${verification?.confirmed ? "text-emerald-300" : identityResult?.valid ? "text-slate-300" : "text-slate-600"}`}>
+            <p className={`text-xs font-medium ${verification?.confirmed ? "text-emerald-600" : identityResult?.valid ? "text-slate-600" : "text-slate-400"}`}>
               {verification?.confirmed && verification.nickname
                 ? `Verified IGN: ${verification.nickname}${verification.region ? ` — ${verification.region} account` : ""}`
                 : identityResult?.valid
@@ -524,21 +524,21 @@ export function SupplierGameCheckoutShell({
               type="button"
               onClick={() => void verifyIdentity()}
               disabled={!identityResult?.valid || isVerifying}
-              className="min-h-10 shrink-0 rounded-lg border border-emerald-300/25 bg-emerald-300/[0.08] px-4 text-xs font-semibold text-emerald-200 transition hover:border-emerald-300/45 hover:bg-emerald-300/[0.14] disabled:cursor-not-allowed disabled:opacity-45"
+              className="storefront-checkout-primary px-4 text-xs disabled:cursor-not-allowed disabled:opacity-45"
             >
               {isVerifying ? "Verifying…" : verification?.valid ? "Verify again" : "Verify account"}
             </button>
           </div>
         </section>
-        <StepActions current={step} onBack={() => setStep(1)} onNext={() => advanceStep(3)} nextLabel="Continue to billing" />
+        <StepActions current={step} onBack={() => setStep(1)} onNext={() => advanceStep(3)} nextLabel="Continue to payment" />
         </> : null}
 
         {step === 1 ? <>
         <section>
           <div className="flex items-end justify-between gap-3">
             <div>
-              <h2 className="text-lg font-semibold tracking-[-0.025em] text-white">Choose a package</h2>
-              <p className="mt-1 text-xs text-slate-500">
+              <h2 className="text-lg font-bold tracking-tight text-slate-900">Choose a package</h2>
+              <p className="mt-1 text-xs font-medium text-slate-500">
                 {marketPackages.length} published offers{gameSlug === "free-fire" ? " across supported regions" : ` for ${selectedPackage.marketLabel}`}.
               </p>
             </div>
@@ -564,10 +564,10 @@ export function SupplierGameCheckoutShell({
               return (
                 <div
                   key={item.id}
-                    className={`group overflow-hidden rounded-[1.1rem] border text-left transition duration-200 ${
+                    className={`group overflow-hidden rounded-2xl border text-left transition duration-200 ${
                     selected
-                      ? "border-violet-400/55 bg-violet-500/[0.08] shadow-[0_0_0_1px_rgba(139,92,246,0.15)]"
-                      : "border-white/[0.08] bg-[#0d0f16] hover:border-white/[0.17]"
+                      ? "border-violet-600 bg-violet-50 shadow-sm"
+                      : "border-slate-100 bg-white hover:border-slate-200 hover:shadow-md"
                   }`}
                 >
                   <button
@@ -581,7 +581,7 @@ export function SupplierGameCheckoutShell({
                     aria-pressed={selected}
                     className="block w-full text-left"
                   >
-                    <span className="relative block aspect-[16/9] overflow-hidden bg-[#141821]">
+                    <span className="relative block aspect-[16/9] overflow-hidden bg-slate-50">
                       <ResilientImage
                         sources={item.media.sources}
                         alt={item.media.alt}
@@ -594,17 +594,17 @@ export function SupplierGameCheckoutShell({
                     </span>
                     <span className="block p-3 sm:p-4">
                       {badge ? (
-                        <span className={`mb-2 inline-flex w-fit items-center gap-1.5 rounded-md border px-2 py-1 text-[10px] font-semibold tracking-wide ${badgeClass}`}>
+                        <span className={`mb-2 inline-flex w-fit items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${badgeClass}`}>
                           <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
                           {badge.label}
                         </span>
                       ) : null}
-                      <strong className="line-clamp-2 min-h-10 text-[13px] font-semibold leading-5 tracking-[-0.01em] text-white sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-semibold text-emerald-300">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
+                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-tight text-slate-900 sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-bold text-emerald-600">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
                       {gameSlug === "free-fire" && item.marketLabel ? (
                         <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{item.marketLabel}</span>
                       ) : null}
-                      <span className="mt-3 block text-lg font-semibold tracking-[-0.025em] text-violet-200">{formatPresentment(item.amountInPaise)}</span>
-                      {selected ? <span className="mt-1 block text-[10px] font-semibold text-emerald-300">Selected</span> : null}
+                      <span className="mt-3 block text-lg font-bold tracking-tight text-violet-600">{formatPresentment(item.amountInPaise)}</span>
+                      {selected ? <span className="mt-1 block text-[10px] font-bold text-emerald-600">Selected</span> : null}
                     </span>
                   </button>
                   <div className="px-3 pb-3 sm:px-4 sm:pb-4">
@@ -625,6 +625,25 @@ export function SupplierGameCheckoutShell({
 
         {step === 3 ? <>
         <div id="billing" className="space-y-5">
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">Final review</p>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Review & Billing</h2>
+                <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-slate-500">Check your top-up details and provide billing information for the payment.</p>
+              </div>
+            </div>
+            <dl className="mt-6 grid gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 text-sm sm:grid-cols-2">
+              <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pack</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
+              <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Market</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.marketLabel}</dd></div>
+              {identity.riotId ? <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.riotId}</dd></div> : null}
+              {identity.playerId ? <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Player ID / UID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.playerId}</dd></div> : null}
+              {identity.serverId ? <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.serverId}</dd></div> : null}
+              <div className="sm:col-span-2"><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-600">{verification?.nickname ?? "Verified player"}{verification?.region ? <span className="ml-2 rounded-md border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-[10px] font-bold text-cyan-700">{verification.region}</span> : null}</dd></div>
+              <div className="border-t border-slate-200 pt-4 sm:col-span-2"><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total</dt><dd className="mt-1 text-3xl font-bold tracking-tight text-violet-600">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+            </dl>
+          </section>
+
           {isAuthenticated && savedAddresses.length > 0 ? (
             <SavedAddressPicker
               addresses={savedAddresses}
@@ -641,58 +660,34 @@ export function SupplierGameCheckoutShell({
             }}
             fixedCurrency={marketCurrency}
             stepNumber="03"
-            stepLabel="Billing and currency"
+            stepLabel="Billing address"
           />
 
           {isAuthenticated && selectedAddressId === null ? (
-            <label className="flex items-start gap-3 rounded-lg border border-white/[0.08] bg-white/[0.025] px-4 py-3">
+            <label className="flex items-start gap-3 rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm">
               <input
                 type="checkbox"
                 checked={saveNewAddress}
                 onChange={(event) => setSaveNewAddress(event.target.checked)}
-                className="mt-0.5 h-4 w-4 accent-violet-500"
+                className="mt-0.5 h-4 w-4 accent-violet-600"
               />
-              <span className="text-sm text-slate-200">
-                <strong className="font-semibold text-white">Save this billing address</strong>
-                <span className="mt-0.5 block text-xs text-slate-500">Keep this address for faster checkout on your next top-up.</span>
+              <span className="text-sm text-slate-900">
+                <strong className="font-bold text-slate-900">Save this billing address</strong>
+                <span className="mt-0.5 block text-xs text-slate-600">Keep this address for faster checkout on your next top-up.</span>
               </span>
             </label>
           ) : null}
         </div>
-        <StepActions current={step} onBack={() => setStep(2)} onNext={() => advanceStep(4)} nextLabel="Review order" />
-        </> : null}
-
-        {step === 4 ? <>
-        <section className="rounded-2xl border border-violet-200 bg-white p-5 shadow-xl shadow-violet-100/50 sm:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">Step 4 · Final review</p>
-              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Review your order</h2>
-              <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-slate-500">Confirm the player destination, package, market, currency, and total before continuing to secure payment.</p>
-            </div>
-            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-emerald-700">Ready for payment</span>
-          </div>
-          <dl className="mt-6 grid gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 text-sm sm:grid-cols-2">
-            <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pack</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
-            <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Market</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.marketLabel}</dd></div>
-            {identity.riotId ? <div className="rounded-xl border border-violet-100 bg-violet-50/50 p-3"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.riotId}</dd></div> : null}
-            {identity.playerId ? <div className="rounded-xl border border-violet-100 bg-violet-50/50 p-3"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Player ID / UID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.playerId}</dd></div> : null}
-            {identity.serverId ? <div className="rounded-xl border border-violet-100 bg-violet-50/50 p-3"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.serverId}</dd></div> : null}
-            <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-600">{verification?.nickname ?? "Verified player"}{verification?.region ? <span className="ml-2 rounded-md border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-[10px] font-bold text-cyan-700">{verification.region}</span> : null}</dd></div>
-            <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Currency</dt><dd className="mt-1 font-bold text-slate-900">{billing.presentmentCurrency}</dd></div>
-            <div className="border-t border-slate-200 pt-4 sm:col-span-2"><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total</dt><dd className="mt-1 text-3xl font-bold tracking-tight text-violet-600">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
-          </dl>
-          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
-            <button type="button" onClick={() => setStep(3)} className="min-h-11 rounded-xl border border-slate-200 bg-white px-6 text-xs font-bold text-slate-600 transition hover:bg-slate-50">Back to billing</button>
-            <button type="submit" disabled={!canSubmit || isSubmitting || Boolean(order)} className="min-h-11 rounded-xl bg-violet-600 px-8 text-xs font-bold text-white shadow-lg shadow-violet-200 transition-all hover:bg-violet-700 hover:-translate-y-0.5 disabled:opacity-50">{isSubmitting ? "Preparing payment…" : "Continue to payment"}</button>
-          </div>
-        </section>
+        <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+          <button type="button" onClick={() => setStep(2)} className="storefront-checkout-secondary px-4 text-sm">Back to player</button>
+          <button type="submit" disabled={!canSubmit || isSubmitting || Boolean(order)} className="min-h-11 rounded-xl bg-violet-600 px-8 text-xs font-bold text-white shadow-lg shadow-violet-200 transition-all hover:bg-violet-700 hover:-translate-y-0.5 disabled:opacity-50">{isSubmitting ? "Preparing payment…" : "Pay Now"}</button>
+        </div>
         </> : null}
 
         {error ? <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">{error}</p> : null}
         {message ? <p className="rounded-xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm font-bold text-cyan-700">{message}</p> : null}
 
-        {step === 5 && order ? (
+        {step === 4 && order ? (
           <section className="rounded-2xl border border-emerald-200 bg-emerald-50/30 p-4 shadow-lg shadow-emerald-100/50 sm:p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -725,7 +720,7 @@ export function SupplierGameCheckoutShell({
 }
 
 
-type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4 | 5) => void };
+type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4) => void };
 type StepActionsProps = { current: number; onBack?: () => void; onNext: () => void; nextLabel: string };
 
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {

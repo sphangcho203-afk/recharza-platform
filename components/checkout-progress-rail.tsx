@@ -1,4 +1,4 @@
-const STEP_LABELS = ["Package", "Player", "Billing", "Review", "Payment"] as const;
+const STEP_LABELS = ["Package", "Player", "Payment", "Status"] as const;
 
 type CheckoutProgressRailProps = {
   current: number;
