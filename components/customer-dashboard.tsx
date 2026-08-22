@@ -113,9 +113,21 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
   const [orders, setOrders] = useState<CustomerOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [message, setMessage] = useState("Loading your account...");
   const [error, setError] = useState(false);
+  const [message, setMessage] = useState("");
   const [sessionEnded, setSessionEnded] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "completed" | "failed">("all");
+
+  const filteredOrders = useMemo(() => {
+    if (statusFilter === "all") return orders;
+    return orders.filter((order) => {
+      const status = order.status.toLowerCase();
+      if (statusFilter === "pending") return !["completed", "failed", "cancelled"].includes(status);
+      if (statusFilter === "completed") return status === "completed";
+      if (statusFilter === "failed") return status === "failed" || status === "cancelled";
+      return true;
+    });
+  }, [orders, statusFilter]);
 
   const savedPlayers = useMemo(() => {
     const unique = new Map<string, CustomerOrder>();
@@ -349,8 +361,34 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
             </button>
           </div>
 
+          <div className="mt-6 flex items-center gap-1.5 overflow-x-auto pb-2 scrollbar-hide">
+            {[
+              { id: "all", label: "All Orders", count: orders.length },
+              { id: "pending", label: "Pending", count: orders.filter(o => !["completed", "failed", "cancelled"].includes(o.status.toLowerCase())).length },
+              { id: "completed", label: "Completed", count: orders.filter(o => o.status.toLowerCase() === "completed").length },
+              { id: "failed", label: "Failed", count: orders.filter(o => ["failed", "cancelled"].includes(o.status.toLowerCase())).length },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setStatusFilter(tab.id as any)}
+                className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold tracking-wide transition-all duration-200 ${
+                  statusFilter === tab.id
+                    ? "bg-violet-500 text-white shadow-[0_4px_16px_rgba(139,92,246,0.3)]"
+                    : "border border-white/[0.08] bg-white/[0.03] text-slate-400 hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white"
+                }`}
+              >
+                {tab.label}
+                <span className={`grid h-5 min-w-[1.25rem] place-items-center rounded-lg px-1.5 text-[10px] ${
+                  statusFilter === tab.id ? "bg-white/20 text-white" : "bg-white/10 text-slate-500"
+                }`}>
+                  {tab.count}
+                </span>
+              </button>
+            ))}
+          </div>
+
           <div className="mt-6 space-y-4">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <div key={order.id} className="recharza-surface-raised relative overflow-hidden rounded-[1.25rem] border border-white/[0.08] bg-[#121422]/60 p-5 shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-white/[0.15] hover:bg-[#16192a]/80">
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-5">
@@ -410,9 +448,11 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               </div>
             ))}
 
-            {!orders.length ? (
+            {!filteredOrders.length ? (
               <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
-                <p className="text-base font-semibold text-slate-300">No orders yet.</p>
+                <p className="text-base font-semibold text-slate-300">
+                  {statusFilter === "all" ? "No orders yet." : `No ${statusFilter} orders.`}
+                </p>
                 <p className="mt-2 text-sm text-slate-500">
                   Your completed and active purchases will appear here.
                 </p>
