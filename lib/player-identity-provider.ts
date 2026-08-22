@@ -69,25 +69,33 @@ export async function validateMobileLegendsIdentity(input: {
   // the item Shop2TopUp pins for a game has no validation API configured,
   // when the provider is misconfigured, or when it is rate limited.
   if (provider === "shop2topup") {
+    // Try Shop2TopUp first.
     const outcome = await lookupShop2TopUpPlayerIdentity({
       gameSlug: "mobile-legends",
       playerId,
       zoneId,
     });
-    if (outcome.status !== "unavailable") {
+    
+    // If Shop2TopUp confirms the player, return it.
+    if (outcome.status === "valid") {
       return outcome.result;
     }
+
+    // If Shop2TopUp is unavailable or says the player is invalid, try Volsever as a strong backup.
     const volsever = await lookupVolseverGameIdentity({
       gameSlug: "mobile-legends",
       playerId,
       zoneId,
     });
-    if (volsever.valid || !volsever.message.includes("temporarily disabled")) {
+    
+    if (volsever.valid) {
       return volsever;
     }
+
+    // If both providers failed to find the account, return a professional error.
     return {
       ...volsever,
-            message: "The account lookup service is currently busy. " + (volsever.message || "Please try again in a few moments."),
+      message: "We could not verify your account details. Please ensure your Player ID and Zone ID are correct.",
     };
   }
 

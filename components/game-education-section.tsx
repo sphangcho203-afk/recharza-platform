@@ -44,7 +44,7 @@ export function GameEducationSection({
 
   return (
     <section className="mt-10" aria-label={`About ${game.title}`}>
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 max-h-[600px] overflow-y-auto storefront-scrollbar">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
         <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1.5 opacity-20" style={{ background: accent }} />
 
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -68,7 +68,7 @@ export function GameEducationSection({
             />
           </div>
         </div>
-        <div className="recharza-body relative mt-4 text-slate-600 font-medium whitespace-pre-wrap">{about}</div>
+        <div className="relative mt-6 text-[14px] leading-[1.8] text-slate-600 font-medium whitespace-pre-wrap">{about}</div>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           <Tile game={game} icon="coin" label="What it buys" seed={1}>
