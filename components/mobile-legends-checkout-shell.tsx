@@ -610,22 +610,8 @@ type CheckoutProgressProps = { step: number; onStepChange: (step: 1 | 2 | 3 | 4 
 type StepActionsProps = { current: number; onBack?: () => void; onNext: () => void; nextLabel: string };
 
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
-  const labels = ["Package", "Player", "Billing", "Review", "Payment"];
   return (
-    <nav aria-label="Checkout progress" className="storefront-checkout-surface mb-5 p-3">
-      <ol className="grid grid-cols-5 gap-1">
-        {labels.map((label, index) => {
-          const number = index + 1;
-          const active = number === step;
-          const complete = number < step;
-          return <li key={label}>
-            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} className={`flex w-full flex-col items-center gap-1 rounded-lg px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-500"}`}>
-              <span className="grid h-7 w-7 place-items-center rounded-full border border-current text-[10px] font-semibold">{complete ? "\u2713" : number}</span>
-              <span className="text-[9px] font-semibold uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
-            </button>
-          </li>;
-        })}
-      </ol>
+    <nav aria-label="Checkout progress" className="storefront-checkout-surface mb-5 p-4">
       <CheckoutProgressRail current={step} />
     </nav>
   );
