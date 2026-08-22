@@ -349,36 +349,62 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
             </button>
           </div>
 
-          <div className="recharza-order-rows mt-4">
+          <div className="mt-6 space-y-4">
             {orders.map((order) => (
-              <div key={order.id} className="recharza-order-row">
-                <div className="recharza-order-row-main min-w-0">
-                  <div className="flex min-w-0 items-center gap-4">
+              <div key={order.id} className="recharza-surface-raised relative overflow-hidden rounded-[1.25rem] border border-white/[0.08] bg-[#121422]/60 p-5 shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-white/[0.15] hover:bg-[#16192a]/80">
+                <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-5">
                     <div className="relative shrink-0">
-                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-14 w-14 shrink-0 rounded-xl object-cover shadow-[0_4px_20px_rgba(0,0,0,0.4)]" fallbackClassName="h-14 w-14 shrink-0 rounded-xl" />
-                      <div className="absolute -bottom-1.5 -right-1.5 grid h-6 w-6 place-items-center rounded-lg border border-white/[0.12] bg-[#07080e] text-violet-300 shadow-xl">
-                        <StorefrontIcon name="games" className="h-3.5 w-3.5" />
+                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-16 w-16 shrink-0 rounded-2xl object-cover shadow-[0_4px_24px_rgba(0,0,0,0.5)]" fallbackClassName="h-16 w-16 shrink-0 rounded-2xl" />
+                      <div className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-xl border border-white/[0.12] bg-[#07080e] text-violet-300 shadow-2xl">
+                        <StorefrontIcon name="games" className="h-4 w-4" />
                       </div>
                     </div>
                     <div className="min-w-0">
-                      <p className="recharza-order-row-title">{order.package.name}</p>
-                      <p className="recharza-order-row-meta">
-                        <span className="font-mono text-[.68rem] uppercase tracking-[0.1em] text-violet-300/80">{order.id}</span>
-                        {" · "}{gameTitle(order.gameSlug)}
-                        {order.market ? ` · ${order.market.label}` : ""}
-                        {" · "}<b>{formatInr(order.package.amountInPaise)}</b>
-                        {" · "}{new Date(order.createdAt).toLocaleDateString("en-IN")}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-violet-300/60">Purchase Item</span>
+                        <div className="h-px w-8 bg-white/[0.08]" />
+                      </div>
+                      <p className="mt-1 text-lg font-bold tracking-tight text-white">{order.package.name}</p>
+                      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span className="font-mono text-[11px] font-medium text-slate-400">ID: <span className="text-violet-200">{order.id}</span></span>
+                        <span className="h-1 w-1 rounded-full bg-white/10" />
+                        <span className="text-[11px] font-medium text-slate-400">{gameTitle(order.gameSlug)}</span>
+                        {order.market && (
+                          <>
+                            <span className="h-1 w-1 rounded-full bg-white/10" />
+                            <span className="text-[11px] font-medium text-slate-400">{order.market.label}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-white/[0.06] pt-4 sm:flex-col sm:items-end sm:border-none sm:pt-0">
+                    <div className="flex flex-col sm:items-end">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">Order Status</span>
+                      <div className="mt-1.5">
+                        <StatusBadge state={statusStateFor(order.status)} label={order.status.replaceAll("_", " ")} />
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end text-right sm:mt-4">
+                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">Transaction</span>
+                      <p className="mt-0.5 text-base font-bold text-white">{formatInr(order.package.amountInPaise)}</p>
                     </div>
                   </div>
                 </div>
-                <div className="recharza-order-row-side">
-                  <StatusBadge state={statusStateFor(order.status)} label={order.status.replaceAll("_", " ")} />
+                
+                <div className="mt-5 flex items-center justify-between rounded-xl bg-white/[0.03] px-4 py-3 border border-white/[0.03]">
+                  <div className="flex items-center gap-2">
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
+                    <span className="text-[11px] font-medium text-slate-400">Securely processed · {new Date(order.createdAt).toLocaleDateString("en-IN")}</span>
+                  </div>
                   <Link
                     href={`/orders/${encodeURIComponent(order.id)}`}
-                    className="text-xs font-semibold text-cyan-200 transition hover:text-white"
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cyan-300 transition-all hover:text-white hover:gap-2"
                   >
-                    Open →
+                    View Details
+                    <StorefrontIcon name="arrow" className="h-3 w-3" />
                   </Link>
                 </div>
               </div>
