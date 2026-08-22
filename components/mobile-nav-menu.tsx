@@ -150,12 +150,12 @@ export function MobileNavMenu() {
 
   const menu = open ? (
     <div className="recharza-scrim fixed inset-0 z-[9999] isolate" onMouseDown={(event) => { if (event.target === event.currentTarget) closeMenu(); }}>
-      <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby={supportOpen ? "support-chooser-title" : "mobile-navigation-title"} className="recharza-sheet absolute left-4 top-16 max-h-[calc(100vh-80px)] w-[min(20rem,88vw)] overflow-hidden rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+      <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby={supportOpen ? "support-chooser-title" : "mobile-navigation-title"} className="recharza-sheet absolute left-0 top-0 h-auto max-h-[92vh] w-[min(20rem,85vw)] overflow-hidden rounded-br-[3rem] shadow-[20px_20px_80px_rgba(0,0,0,0.7)]">
         <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
           <span className="recharza-atmo-v2 absolute inset-0 opacity-[0.45]" />
-          <span style={{ position: "absolute", left: "-20%", top: "-20%", width: "140%", height: "140%", background: "radial-gradient(circle at 30% 30%, rgba(141,92,255,0.18), transparent 60%), radial-gradient(circle at 70% 70%, rgba(34,211,238,0.12), transparent 60%)", filter: "blur(90px)", animation: "recharza-aurora-drift-a 25s ease-in-out infinite alternate" }} />
+          <span style={{ position: "absolute", left: "-20%", top: "-20%", width: "140%", height: "140%", background: "radial-gradient(circle at 30% 30%, rgba(141,92,255,0.22), transparent 60%), radial-gradient(circle at 70% 70%, rgba(34,211,238,0.15), transparent 60%)", filter: "blur(90px)", animation: "recharza-aurora-drift-a 25s ease-in-out infinite alternate" }} />
         </span>
-        <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] px-5 py-4">
+        <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] px-6 py-5">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-300">Recharza</p>
             {supportOpen ? (
@@ -173,7 +173,7 @@ export function MobileNavMenu() {
         </div>
 
         {supportOpen ? (
-          <div className="mt-4 overflow-y-auto px-5 pb-6">
+          <div className="mt-4 overflow-y-auto px-6 pb-8">
             <p className="px-1 text-sm leading-6 text-slate-400">Choose the channel that works best for your question.</p>
             <nav aria-label="Support channels" className="mt-4 space-y-2">
               {supportChannels.map((channel) => {
@@ -186,7 +186,7 @@ export function MobileNavMenu() {
             </nav>
           </div>
         ) : (
-          <nav className="mt-3 space-y-1.5 overflow-y-auto px-4 pb-6">
+          <nav className="mt-4 space-y-2 overflow-y-auto px-6 pb-8">
             {links.map((link) => {
               const base = "recharza-nav-row group relative flex min-h-[3.75rem] w-full items-center gap-4 rounded-2xl border border-white/[0.03] bg-white/[0.01] px-4 py-2 text-left text-[15px] font-semibold text-slate-200 transition duration-300 ease-out hover:bg-white/[0.04] hover:border-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60";
               const icon = <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-violet-300 shadow-[0_0_20px_-5px_rgba(167,139,250,0.3)] transition-transform duration-300 group-hover:scale-110" style={{ background: "radial-gradient(circle at 30% 24%, rgba(167,139,250,0.15), rgba(124,58,237,0.05))", border: "1px solid rgba(167,139,250,0.12)" }}><StorefrontIcon name={link.icon} className="h-[18px] w-[18px]" /></span>;
