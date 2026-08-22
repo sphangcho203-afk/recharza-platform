@@ -165,7 +165,7 @@ export function CartWorkspace({
     if (!draft) return;
     setBusyItem(itemId);
     setError(false);
-    setMessage("Validating the player destination...");
+    setMessage("Checking account details...");
 
     try {
       const response = await fetch(
@@ -183,14 +183,14 @@ export function CartWorkspace({
       };
       if (!response.ok || !result.ok || !result.cart) {
         setError(true);
-        setMessage(result.message ?? "The player could not be validated.");
+        setMessage(result.message ?? "We could not find a game account with those details. Double-check the IDs.");
         return;
       }
       applyCart(result.cart);
-      setMessage(result.message ?? "Account validated successfully.");
+      setMessage(result.message ?? "Account confirmed successfully.");
     } catch {
       setError(true);
-      setMessage("Player validation could not reach the cart service.");
+      setMessage("The verification service is temporarily unavailable. Please retry shortly.");
     } finally {
       setBusyItem("");
     }
@@ -298,7 +298,7 @@ export function CartWorkspace({
                 Cart items
               </p>
               <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
-                Player destinations
+                Account Confirmation
               </h2>
             </div>
             {cart.items.length ? (
@@ -411,8 +411,8 @@ export function CartWorkspace({
                     {busyItem === item.id
                       ? "Validating..."
                       : validated
-                        ? "Revalidate account"
-                        : "Validate account"}
+                        ? "Reconfirm account"
+                        : "Confirm account"}
                   </button>
 
                   {validated ? (
@@ -420,7 +420,7 @@ export function CartWorkspace({
                       <span className="text-emerald-900">
                         {item.player.nickname}
                       </span>{" "}
-                      · Account validated successfully.
+                      · Account confirmed successfully.
                     </div>
                   ) : null}
                 </article>
@@ -440,7 +440,7 @@ export function CartWorkspace({
             <strong className="text-white">{cart.itemCount}</strong>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-slate-500">Validated</span>
+            <span className="text-slate-500">Confirmed</span>
             <strong className="text-white">
               {validatedCount}/{cart.items.length}
             </strong>
@@ -464,7 +464,7 @@ export function CartWorkspace({
 	          Continue to checkout
 	        </Link>
         <p className="mt-3 text-xs leading-5 text-slate-500">
-          Validate every player destination before continuing. Guest carts merge
+          Please confirm all account details before continuing. Guest carts merge
           automatically after login.
         </p>
 

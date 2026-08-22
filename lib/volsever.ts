@@ -273,7 +273,7 @@ export async function lookupVolseverGameIdentity(
           nickname: username,
           region: VOLSEVER_ENDPOINT_REGION_LABELS[slug] ?? null,
           verificationMode: VOLSEVER_VERIFICATION_MODE,
-          message: "Account validated successfully.",
+          message: "Account confirmed successfully.",
         };
       }
     }
@@ -303,6 +303,6 @@ export async function lookupVolseverGameIdentity(
     nickname: null,
     region: null,
     verificationMode: VOLSEVER_VERIFICATION_MODE,
-    message: "Game account validation could not be completed.",
+    message: "Account confirmation is temporarily unavailable.",
   };
 }

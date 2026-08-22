@@ -15,11 +15,11 @@ const CHANNEL_EXPLAINER: ExplainerChannel[] = [
     id: "telegram-bot",
     logo: "/assets/brand/support-telegram.png",
     name: "Telegram support bot",
-    tagline: "The guided, step-by-step option — recommended first.",
+    tagline: "Instant support through our Telegram channel.",
     bestFor:
-      "The fastest way to reach a real team member. The bot walks you through four quick steps and your ticket is tracked with a unique number.",
+      "Quick assistance and real-time updates on your support requests.",
     howItWorks:
-      "Open the bot, tap the issue that matches yours (top-up missing, payment failed, money deducted, and more), give it a short title, and describe what happened. You can attach your Order ID or skip it. The bot sends a confirmation with your ticket number. Our team answers inside the same chat, so you can reply naturally until it is solved. You can also type /status to check an existing ticket anytime.",
+      "Connect with our support team on Telegram for fast and personalized help. Simply send a message to start a conversation with our dedicated support staff.",
     whatToBring: "Your Order ID (from the confirmation email or order page), the player ID used, and a short description.",
     accent: "cyan",
   },
@@ -39,11 +39,11 @@ const CHANNEL_EXPLAINER: ExplainerChannel[] = [
     id: "website-chat",
     logo: "/assets/brand/recharza-line-electric-mark.png",
     name: "Website chat (this page)",
-    tagline: "An AI assistant that answers instantly, right here on the store.",
+    tagline: "Instant help directly on our website.",
     bestFor:
-      "Immediate answers about games, packages, prices, regions, top-up steps, order tracking, and how the store works — without leaving the website.",
+      "Quick answers to common questions about our services and items.",
     howItWorks:
-      "Type your question in the chat box on this page and the assistant answers using the store's published information. For order status, it asks only for the Order ID and the private access token from your confirmation — it never repeats the token. If your question needs a human, it points you to the ticket form or Telegram.",
+      "Use our on-site chat for immediate assistance. Our helpful assistant can provide information about our products and guide you through the store.",
     whatToBring: "Your Order ID and access token only when you want an order status check.",
     accent: "emerald",
   },
@@ -51,11 +51,11 @@ const CHANNEL_EXPLAINER: ExplainerChannel[] = [
     id: "email",
     logo: "/assets/brand/support-gmail.png",
     name: "Email",
-    tagline: "The formal channel for written records and longer issues.",
+    tagline: "Direct support via email.",
     bestFor:
-      "Detailed requests, refund or cancellation reviews under the published policy, and cases where you want everything documented in writing.",
+      "Detailed inquiries and formal requests.",
     howItWorks:
-      "Send your request to the support address shown below. A real team member reads it and answers at the same address. Each ticket is recorded in our system and matched to your order history when you include your Order ID.",
+      "Send us an email with your query, and our support team will get back to you with a comprehensive response.",
     whatToBring: "Your Order ID, the email used at checkout, and clear details of the issue.",
     accent: "amber",
   },

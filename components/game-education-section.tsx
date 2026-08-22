@@ -1,6 +1,7 @@
 "use client";
 
 import { StorefrontIcon } from "@/components/storefront-icon";
+import { StorefrontArtwork } from "@/components/storefront-artwork";
 import type { Game } from "@/lib/games";
 
 function Tile({
@@ -43,26 +44,38 @@ export function GameEducationSection({
 
   return (
     <section className="mt-10" aria-label={`About ${game.title}`}>
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7">
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-7 max-h-[600px] overflow-y-auto storefront-scrollbar">
         <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1.5 opacity-20" style={{ background: accent }} />
 
-        <div className="relative flex items-center gap-3">
-          <span className="grid h-11 w-11 place-items-center rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
-            <StorefrontIcon name="info" className="h-5 w-5" style={{ color: accent } as React.CSSProperties} />
-          </span>
-          <div>
-            <p className="recharza-eyebrow" style={{ color: accent }}>Know the game</p>
-            <h2 className="recharza-section-head mt-2 text-slate-900">About {game.title}</h2>
+        <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <span className="grid h-11 w-11 place-items-center rounded-xl bg-slate-50 border border-slate-100 shadow-sm">
+              <StorefrontIcon name="info" className="h-5 w-5" style={{ color: accent } as React.CSSProperties} />
+            </span>
+            <div>
+              <p className="recharza-eyebrow" style={{ color: accent }}>Know the game</p>
+              <h2 className="recharza-section-head mt-2 text-slate-900">About {game.title}</h2>
+            </div>
+          </div>
+          <div className="h-16 w-16 overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 p-2 shadow-sm">
+            <StorefrontArtwork
+              artworkKey={game.artworkKey}
+              sources={game.media.sources}
+              alt={`${game.title} logo`}
+              fallbackLabel={game.title.slice(0, 2)}
+              className="h-full w-full"
+              objectFit="contain"
+            />
           </div>
         </div>
-        <p className="recharza-body relative mt-4 text-slate-600 font-medium">{about}</p>
+        <div className="recharza-body relative mt-4 text-slate-600 font-medium whitespace-pre-wrap">{about}</div>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           <Tile game={game} icon="coin" label="What it buys" seed={1}>
-            {currencyUses}
+            <div className="whitespace-pre-wrap">{currencyUses}</div>
           </Tile>
           <Tile game={game} icon="id" label="Find your ID" seed={2}>
-            {findId}
+            <div className="whitespace-pre-wrap">{findId}</div>
           </Tile>
           <Tile game={game} icon="cart" label="How to purchase" seed={3}>
             <ol className="space-y-3">

@@ -227,7 +227,7 @@ export function SupplierGameCheckoutShell({
     setIsVerifying(true);
     setVerification(null);
     setError("");
-    setMessage("Checking the game account...");
+    setMessage("Checking account details...");
 
     try {
       const response = await fetch(`/api/games/${gameSlug}/verify`, {
@@ -241,7 +241,7 @@ export function SupplierGameCheckoutShell({
       });
       const result = (await response.json()) as IdentityVerification;
       if (!response.ok || !result.valid) {
-        setError(result.message ?? "We could not verify that game account.");
+        setError(result.message ?? "We could not find a game account with those details. Double-check the IDs.");
         setMessage("");
         return;
       }
@@ -253,7 +253,7 @@ export function SupplierGameCheckoutShell({
           : "Player details verified. Live account lookup is not enabled.",
       );
     } catch {
-      setError("The account verification service could not be reached. Please retry.");
+      setError("The verification service is temporarily unavailable. Please retry shortly.");
       setMessage("");
     } finally {
       setIsVerifying(false);
@@ -314,7 +314,7 @@ export function SupplierGameCheckoutShell({
       setError(
         identityResult && !identityResult.valid
           ? identityResult.message
-          : "Complete the player, package and billing details before continuing.",
+          : "Please confirm your account and complete billing details before payment.",
       );
       return;
     }
@@ -328,7 +328,7 @@ export function SupplierGameCheckoutShell({
 
     setIsSubmitting(true);
     setError("");
-    setMessage("Creating the protected order...");
+    setMessage("Preparing your order...");
     setOrder(null);
     setPaymentVerified(false);
 
@@ -360,7 +360,7 @@ export function SupplierGameCheckoutShell({
       sessionStorage.setItem(`recharza-order:${result.order.id}`, result.order.tracking.accessToken);
       setOrder(result.order);
       setStep(4);
-      setMessage(result.paymentSession?.message ?? "Order saved. Complete payment in the secure checkout below.");
+      setMessage(result.paymentSession?.message ?? "Order confirmed. Please proceed to payment.");
 
       if (isAuthenticated && saveNewAddress && selectedAddressId === null) {
         void saveBillingAddress().then((saved) => {
@@ -370,7 +370,7 @@ export function SupplierGameCheckoutShell({
         });
       }
     } catch {
-      setError("The checkout service could not be reached. Retrying uses the same protected order key.");
+      setError("The checkout service is temporarily unavailable. Please retry shortly.");
       setMessage("");
     } finally {
       setIsSubmitting(false);
@@ -379,7 +379,7 @@ export function SupplierGameCheckoutShell({
 
   function advanceStep(nextStep: CheckoutStep) {
     if (nextStep === 2 && !selectedPackage) { setError("Choose a package before continuing."); return; }
-    if (nextStep === 3 && !verification?.confirmed) { setError("Verify the player destination before continuing."); return; }
+    if (nextStep === 3 && !verification?.confirmed) { setError("Please confirm your account details before continuing."); return; }
     const billingComplete = billingIsComplete(billing);
     if (nextStep === 4 && !billingComplete) { setError("Complete the billing details before continuing."); return; }
     setError("");
@@ -443,8 +443,8 @@ export function SupplierGameCheckoutShell({
         <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Player information</h2>
-              <p className="mt-1 text-xs text-slate-600">Enter the destination exactly as shown in-game.</p>
+              <h2 className="text-base font-bold text-slate-900">Account Details</h2>
+              <p className="mt-1 text-xs text-slate-600">Enter your account details exactly as shown in-game.</p>
             </div>
           </div>
 

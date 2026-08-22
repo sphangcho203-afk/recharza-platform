@@ -30,7 +30,7 @@ export default function SupportPage() {
           <div className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">Recharza Support</h1>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 font-medium">Choose the issue, create a ticket, or jump directly into one of the connected support apps.</p>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 font-medium">Get assistance with your orders, account, or any other questions. Our support team is here to help.</p>
             </div>
             <Link href="/orders/lookup" className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-900 transition hover:bg-slate-50 shadow-sm">
               <StorefrontIcon name="track" className="h-4 w-4" />
@@ -45,7 +45,7 @@ export default function SupportPage() {
           <div className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6 shadow-sm">
             <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-600">Instant help</p>
             <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Chat with Recharza support</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-500 font-medium">Ask about games, top-ups, player verification, checkout, delivery, or the safest next step for your order.</p>
+            <p className="mt-2 text-sm leading-6 text-slate-500 font-medium">Have a question? Our support team is available to assist with your purchases and account queries.</p>
             <p className="mt-4 text-xs leading-5 text-slate-400 font-medium">For order access, never share passwords, OTPs, card details, UPI PINs, or private access tokens.</p>
             <div className="mt-5 flex flex-wrap items-center gap-2">
               <TelegramGroupLauncher className="inline-flex min-h-11 items-center justify-center rounded-xl bg-cyan-600 px-4 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-cyan-700 hover:-translate-y-0.5 hover:shadow-lg">Open live support in Telegram</TelegramGroupLauncher>

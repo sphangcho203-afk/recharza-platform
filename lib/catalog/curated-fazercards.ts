@@ -309,6 +309,7 @@ const mobileLegendsCategoryMarkets: Record<
   mobile_legends_philippines: ["philippines"],
   mobile_legends_malaysia: ["malaysia"],
   mobile_legends_singapore: ["singapore"],
+  mobile_legends_global: ["india", "brazil", "turkey", "united-states"],
 };
 
 const mobileLegendsOfferMarketOverrides = new Map<

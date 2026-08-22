@@ -56,7 +56,7 @@ type CheckoutResponse = {
 
 const initialVerification: VerificationState = {
   status: "idle",
-  message: "Enter the player and zone IDs, then verify the destination.",
+  message: "Enter your Player ID and Zone ID to confirm your account.",
   nickname: null,
 };
 
@@ -220,7 +220,7 @@ export function MobileLegendsCheckoutShell({
     if (!selectedPackage || !playerId || !zoneId) return;
     setVerification({
       status: "loading",
-      message: `Checking ${market.label} player details for ${selectedPackage.name}...`,
+      message: `Checking account details for ${selectedPackage.name}...`,
       nickname: null,
     });
     resetCreatedOrder();
@@ -235,20 +235,20 @@ export function MobileLegendsCheckoutShell({
       if (!response.ok || !result.valid) {
         setVerification({
           status: "error",
-          message: result.message ?? "The player destination could not be validated for this package.",
+          message: result.message ?? "We could not find a game account with those details. Double-check the IDs.",
           nickname: null,
         });
         return;
       }
       setVerification({
         status: "success",
-        message: result.message ?? `Player destination confirmed for ${market.label}.`,
+        message: result.message ?? `Account confirmed for ${market.label}.`,
         nickname: result.nickname ?? null,
       });
     } catch {
       setVerification({
         status: "error",
-        message: "The verification service could not be reached. Check the server and retry.",
+        message: "The verification service is temporarily unavailable. Please retry shortly.",
         nickname: null,
       });
     }
@@ -257,7 +257,7 @@ export function MobileLegendsCheckoutShell({
   async function submitCheckout(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!canCreateOrder || !selectedPackage) {
-      setCheckoutError("Verify the player and complete billing details before payment.");
+      setCheckoutError("Please confirm your account and complete billing details before payment.");
       return;
     }
 
@@ -271,7 +271,7 @@ export function MobileLegendsCheckoutShell({
 
     setIsSubmitting(true);
     setCheckoutError("");
-    setCheckoutMessage("Creating the protected order...");
+    setCheckoutMessage("Preparing your order...");
     setOrder(null);
     setPaymentVerified(false);
 
@@ -305,7 +305,7 @@ export function MobileLegendsCheckoutShell({
       setOrder(result.order);
       setDuplicate(Boolean(result.duplicate));
       setStep(4);
-      setCheckoutMessage(result.paymentSession?.message ?? "Order saved. Continue to payment below.");
+      setCheckoutMessage(result.paymentSession?.message ?? "Order confirmed. Please proceed to payment.");
 
       if (isAuthenticated && saveNewAddress && selectedAddressId === null) {
         void saveBillingAddress().then((saved) => {
@@ -324,7 +324,7 @@ export function MobileLegendsCheckoutShell({
 
   function advanceStep(nextStep: CheckoutStep) {
     if (nextStep === 2 && !selectedPackage) { setCheckoutError("Choose a package before continuing."); return; }
-    if (nextStep === 3 && verification.status !== "success") { setCheckoutError("Verify the player destination before continuing."); return; }
+    if (nextStep === 3 && verification.status !== "success") { setCheckoutError("Please confirm your account details before continuing."); return; }
     if (nextStep === 4 && !billingComplete) { setCheckoutError("Complete the billing details before continuing."); return; }
     setCheckoutError("");
     setStep(nextStep);
@@ -344,8 +344,8 @@ export function MobileLegendsCheckoutShell({
         <section className="storefront-checkout-surface p-4 sm:p-5 border border-slate-200 bg-white shadow-sm rounded-2xl">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Player information</h2>
-              <p className="mt-1 text-xs text-slate-600">Verify the Mobile Legends destination before creating an order.</p>
+              <h2 className="text-base font-bold text-slate-900">Account Details</h2>
+              <p className="mt-1 text-xs text-slate-600">Confirm your account to ensure accurate delivery.</p>
             </div>
           </div>
 
@@ -418,8 +418,8 @@ export function MobileLegendsCheckoutShell({
         <section>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-lg font-bold tracking-tight text-slate-900">Choose a package</h2>
-              <p className="mt-1 text-xs font-medium text-slate-500">{packages.length} offers · {market.flag} {market.label}</p>
+              <h2 className="text-lg font-bold tracking-tight text-slate-900">Select Package</h2>
+              <p className="mt-1 text-xs font-medium text-slate-500">{packages.length} items available · {market.flag} {market.label}</p>
             </div>
             <div className="flex items-center gap-3">
             </div>
@@ -499,12 +499,12 @@ export function MobileLegendsCheckoutShell({
         {step === 3 ? <>
         <div id="billing" className="space-y-5">
           <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">Final review</p>
-            <h2 className="mt-1 text-xl font-bold text-slate-900">Review & Billing</h2>
-            <p className="mt-1 text-sm text-slate-600">Check your top-up details and provide billing information for the payment.</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">Order Summary</p>
+            <h2 className="mt-1 text-xl font-bold text-slate-900">Order Review</h2>
+            <p className="mt-1 text-sm text-slate-600">Please review your purchase details and provide billing information to complete your order.</p>
             
             <dl className="mt-5 grid gap-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm sm:grid-cols-2">
-              <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
+              <div><dt className="text-xs font-bold text-slate-500">Package</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
               <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-bold text-slate-900">{market.flag} {market.label}</dd></div>
               <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Player ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{playerId || "—"}</dd></div>
               <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{zoneId || "—"}</dd></div>
@@ -549,7 +549,7 @@ export function MobileLegendsCheckoutShell({
         </div>
         <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
           <button type="button" onClick={() => setStep(2)} className="storefront-checkout-secondary px-4 text-sm">Back to player</button>
-          <button type="submit" disabled={isSubmitting || !canCreateOrder || Boolean(order)} className="min-h-11 rounded-lg bg-violet-600 px-6 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60">{isSubmitting ? "Creating protected order…" : "Pay Now"}</button>
+          <button type="submit" disabled={isSubmitting || !canCreateOrder || Boolean(order)} className="min-h-11 rounded-lg bg-violet-600 px-6 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60">{isSubmitting ? "Processing order…" : "Pay Now"}</button>
         </div>
         </> : null}
 
@@ -560,7 +560,7 @@ export function MobileLegendsCheckoutShell({
           <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">{duplicate ? "Existing order recovered" : "Order created"}</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">{duplicate ? "Order retrieved" : "Order confirmed"}</p>
                 <h3 className="mt-1 break-all text-lg font-bold tracking-tight text-slate-900">{order.id}</h3>
                 <p className="mt-2 text-xs font-medium leading-relaxed text-emerald-800/80">{checkoutMessage}</p>
                 {addressSaveNote ? <p className="mt-2 text-xs font-medium leading-relaxed text-amber-700/80">{addressSaveNote}</p> : null}

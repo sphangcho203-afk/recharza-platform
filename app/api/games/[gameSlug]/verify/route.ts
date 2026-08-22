@@ -58,7 +58,7 @@ export async function POST(
       return Response.json(
         {
           valid: false,
-          message: "Too many validation attempts. Wait before retrying.",
+          message: "Too many validation attempts. Please wait before retrying.",
         },
         { status: 429, headers: rateHeaders },
       );
@@ -105,7 +105,7 @@ export async function POST(
         {
           valid: false,
           message:
-            "That package changed or is unavailable. Refresh the catalogue and choose again.",
+            "This item is currently unavailable. Please refresh and try again.",
         },
         { status: 409, headers: rateHeaders },
       );
@@ -144,7 +144,7 @@ export async function POST(
           marketCode: selectedPackage.marketCode,
           packageId: selectedPackage.id,
           message:
-            "Player details are valid. Live account lookup is temporarily disabled.",
+            "Account details are valid. Live confirmation is temporarily disabled.",
         },
         { status: 200, headers: rateHeaders },
       );
@@ -189,7 +189,7 @@ export async function POST(
     });
 
     if (s2sUnavailable && result.valid) {
-      result.message = "Account validated with our backup lookup service.";
+      result.message = "Account confirmed successfully.";
     }
 
     return Response.json(
@@ -215,7 +215,7 @@ export async function POST(
       return Response.json(
         {
           valid: false,
-          message: "Account validation is not configured correctly.",
+          message: "Account confirmation is temporarily unavailable.",
         },
         { status: 503, headers: rateHeaders },
       );
@@ -225,7 +225,7 @@ export async function POST(
       return Response.json(
         {
           valid: false,
-          message: "Account validation is temporarily unavailable.",
+          message: "Account confirmation is temporarily unavailable.",
         },
         { status: 502, headers: rateHeaders },
       );

@@ -17,9 +17,9 @@ import { getPublishedStorefrontContent } from "@/lib/storefront-content";
 export const dynamic = "force-dynamic";
 
 const processItems = [
-  { step: "01", icon: "games" as const, title: "Pick the right market", accent: "#8d5cff", text: "Every card opens the exact game and account market for your server. Your destination is decided once, correctly, before anything else — so a Saudi account can never be charged through an India catalogue." },
-  { step: "02", icon: "shield" as const, title: "Verify before payment", accent: "#22d3ee", text: "Type your IGN and our cross-region checker returns your in-game username and account region live. Verification works from any country — but payment only unlocks once the name you see is yours." },
-  { step: "03", icon: "track" as const, title: "Pay, then track", accent: "#34d399", text: "Checkout through Razorpay, and diamonds, UC, VP or V-Bucks are credited straight into the verified account. Every order carries its own tracking reference and a direct path back to human support." },
+    { step: "01", icon: "games" as const, title: "Select Your Market", accent: "#8d5cff", text: "Choose the game and region that matches your account. Our system ensures you access the correct catalogue for your specific server, providing a seamless top-up experience." },
+    { step: "02", icon: "shield" as const, title: "Confirm Your Account", accent: "#22d3ee", text: "Enter your account details and our live system will instantly confirm your in-game nickname. This ensures your purchase is delivered to the correct account every time." },
+    { step: "03", icon: "track" as const, title: "Secure Checkout", accent: "#34d399", text: "Complete your purchase securely through our integrated payment partners. Your game currency is credited instantly, and you can track your order status in real-time." },
 ];
 
 const popularSlugs = new Set(["mobile-legends-india", "free-fire", "pubg-mobile", "valorant", "genshin-impact"]);
@@ -79,41 +79,41 @@ export default async function Home() {
           <div className="max-w-3xl">
             <div className="storefront-motion-reveal"><span className="recharza-eyebrow">The player-first top-up store</span></div>
             <h1 className="recharza-display storefront-motion-reveal mt-5 max-w-4xl text-slate-900">Your games.<br /><span className="storefront-gradient-text">Your market.</span><br />Your next move.</h1>
-            <p className="recharza-body storefront-motion-reveal mt-6 max-w-2xl text-[1.02rem] text-slate-600 sm:text-base">Buy game currency with the context that matters: the right region, the right package, and a verified player destination before payment.</p>
+            <p className="recharza-body storefront-motion-reveal mt-6 max-w-2xl text-[1.02rem] text-slate-600 sm:text-base">Experience a seamless and secure way to top up your favorite games. We provide regional pricing, instant account confirmation, and dedicated support for every purchase.</p>
             <div className="storefront-motion-reveal mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="#games" className="recharza-btn recharza-btn-primary"><StorefrontIcon name="games" className="h-4 w-4" /> Browse games <StorefrontIcon name="arrow" className="h-4 w-4" /></Link>
               <Link href="/orders/lookup" className="recharza-btn recharza-btn-secondary"><StorefrontIcon name="track" className="h-4 w-4" /> Track an order</Link>
             </div>
             <div className="storefront-motion-reveal mt-8 grid grid-cols-2 gap-x-4 gap-y-3 text-xs font-bold text-slate-500 sm:flex sm:flex-wrap sm:items-center sm:gap-x-5 sm:gap-y-3">
-              <span className="inline-flex items-center gap-2"><StorefrontIcon name="shield" className="h-4 w-4 text-emerald-600" /> Identity check before pay</span>
-              <span className="inline-flex items-center gap-2"><StorefrontIcon name="receipt" className="h-4 w-4 text-cyan-600" /> Regional pricing</span>
+              <span className="inline-flex items-center gap-2"><StorefrontIcon name="shield" className="h-4 w-4 text-emerald-600" /> Instant account confirmation</span>
+              <span className="inline-flex items-center gap-2"><StorefrontIcon name="receipt" className="h-4 w-4 text-cyan-600" /> Competitive regional rates</span>
               <span className="col-span-2 inline-flex items-center gap-2 sm:col-span-1"><StorefrontIcon name="support" className="h-4 w-4 text-violet-600" /> Human support</span>
             </div>
           </div>
 
           <div className="storefront-hero-console storefront-motion-console border border-slate-200 bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600">Live storefront</p><p className="mt-1 text-sm font-bold text-slate-900">Checkout, without guesswork.</p></div><span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm"><StorefrontIcon name="shield" className="h-4 w-4" /></span></div>
+            <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4"><div><p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600">Secure Storefront</p><p className="mt-1 text-sm font-bold text-slate-900">Simple and reliable checkout.</p></div><span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm"><StorefrontIcon name="shield" className="h-4 w-4" /></span></div>
             <div className="grid gap-3 p-5">
-              <div className="storefront-console-line storefront-motion-console-line border-slate-100 bg-slate-50/50"><span className="storefront-console-icon bg-violet-50 text-violet-600 shadow-sm"><StorefrontIcon name="games" className="h-4 w-4" /></span><span><b className="text-slate-900">Choose a title</b><small className="text-slate-500">Game and market stay visible</small></span><strong className="text-slate-300">01</strong></div>
-              <div className="storefront-console-line storefront-motion-console-line border-slate-100 bg-slate-50/50"><span className="storefront-console-icon bg-cyan-50 text-cyan-600 shadow-sm"><StorefrontIcon name="shield" className="h-4 w-4" /></span><span><b className="text-slate-900">Verify the player</b><small className="text-slate-500">Nickname returned before payment</small></span><strong className="text-slate-300">02</strong></div>
-              <div className="storefront-console-line storefront-motion-console-line border-slate-100 bg-slate-50/50"><span className="storefront-console-icon bg-amber-50 text-amber-600 shadow-sm"><StorefrontIcon name="receipt" className="h-4 w-4" /></span><span><b className="text-slate-900">Review the package</b><small className="text-slate-500">Currency and total are clear</small></span><strong className="text-slate-300">03</strong></div>
+              <div className="storefront-console-line storefront-motion-console-line border-slate-100 bg-slate-50/50"><span className="storefront-console-icon bg-violet-50 text-violet-600 shadow-sm"><StorefrontIcon name="games" className="h-4 w-4" /></span><span><b className="text-slate-900">Select Package</b><small className="text-slate-500">Choose your game and region</small></span><strong className="text-slate-300">01</strong></div>
+              <div className="storefront-console-line storefront-motion-console-line border-slate-100 bg-slate-50/50"><span className="storefront-console-icon bg-cyan-50 text-cyan-600 shadow-sm"><StorefrontIcon name="shield" className="h-4 w-4" /></span><span><b className="text-slate-900">Confirm Account</b><small className="text-slate-500">Verify your in-game nickname</small></span><strong className="text-slate-300">02</strong></div>
+              <div className="storefront-console-line storefront-motion-console-line border-slate-100 bg-slate-50/50"><span className="storefront-console-icon bg-amber-50 text-amber-600 shadow-sm"><StorefrontIcon name="receipt" className="h-4 w-4" /></span><span><b className="text-slate-900">Review Order</b><small className="text-slate-500">Confirm details and complete payment</small></span><strong className="text-slate-300">03</strong></div>
             </div>
-            <div className="mx-5 mb-5 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-xs text-emerald-800"><span className="font-bold text-emerald-600">Protected flow</span><span className="ml-2">No payment is submitted before verification.</span></div>
+            <div className="mx-5 mb-5 rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-xs text-emerald-800"><span className="font-bold text-emerald-600">Secure Process</span><span className="ml-2">All orders are confirmed before payment is processed.</span></div>
           </div>
         </div>
       </section>
 
       <section className="storefront-trust-section storefront-motion-section border-b border-slate-100 bg-white/50 px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
         <div className="mx-auto max-w-[1240px] sm:grid sm:grid-cols-3 sm:gap-3">
-          <div className="storefront-trust-cell storefront-motion-card recharza-surface-flat rounded-xl px-4 py-3.5 border border-slate-100 shadow-sm"><span className="storefront-trust-number text-violet-600">8+</span><span><b className="text-slate-900">Regional markets</b><small className="text-slate-500">MLBB paths built for the account region</small></span></div>
-          <div className="storefront-trust-cell storefront-motion-card recharza-surface-flat mt-3 rounded-xl px-4 py-3.5 sm:mt-0 border border-slate-100 shadow-sm"><span className="storefront-trust-number text-violet-600">{visibleGames.length}</span><span><b className="text-slate-900">Game paths</b><small className="text-slate-500">Published titles and regional destinations</small></span></div>
+          <div className="storefront-trust-cell storefront-motion-card recharza-surface-flat rounded-xl px-4 py-3.5 border border-slate-100 shadow-sm"><span className="storefront-trust-number text-violet-600">8+</span><span><b className="text-slate-900">Global Regions</b><small className="text-slate-500">Optimized for your specific account region</small></span></div>
+          <div className="storefront-trust-cell storefront-motion-card recharza-surface-flat mt-3 rounded-xl px-4 py-3.5 sm:mt-0 border border-slate-100 shadow-sm"><span className="storefront-trust-number text-violet-600">{visibleGames.length}</span><span><b className="text-slate-900">Supported Games</b><small className="text-slate-500">Popular titles with instant delivery</small></span></div>
           <div className="storefront-trust-cell storefront-motion-card recharza-surface-flat mt-3 rounded-xl px-4 py-3.5 sm:mt-0 border border-slate-100 shadow-sm"><span className="storefront-trust-number text-violet-600">4</span><span><b className="text-slate-900">Clear checkout stages</b><small className="text-slate-500">Package, player, billing, and payment</small></span></div>
         </div>
       </section>
 
       <section id="games" className="storefront-catalogue-section storefront-motion-section mx-auto max-w-[1240px] scroll-mt-32 px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div><div className="recharza-eyebrow">The catalogue</div><h2 className="recharza-section-head mt-3 text-slate-900">Top up what you play.</h2><p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">Every card takes you to the exact market and package flow for that game. No hidden regional guesswork.</p></div>
+          <div><div className="recharza-eyebrow">Game Catalogue</div><h2 className="recharza-section-head mt-3 text-slate-900">Select your game.</h2><p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">Browse our selection of popular titles and choose the regional market that matches your account.</p></div>
           <Link href="/support" className="storefront-inline-link">Need help choosing? <StorefrontIcon name="arrow" className="h-3.5 w-3.5" /></Link>
         </div>
 
@@ -124,7 +124,7 @@ export default async function Home() {
       </section>
 
       <section id="how-it-works" className="storefront-process-section storefront-motion-section border-y border-slate-100 bg-slate-50/30 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1240px]"><div className="max-w-2xl"><div className="recharza-eyebrow">How Recharza works</div><h2 className="recharza-section-head mt-3 text-slate-900">Clear steps. Fewer checkout surprises.</h2><p className="mt-3 text-sm leading-6 text-slate-600">The flow is designed around the player destination first, because a correct package is only useful when it reaches the right account.</p></div><div className="mt-8 grid gap-3 md:grid-cols-3">{processItems.map((item, index) => (
+        <div className="mx-auto max-w-[1240px]">          <div className="max-w-2xl"><div className="recharza-eyebrow">How it works</div><h2 className="recharza-section-head mt-3 text-slate-900">Simple and secure top-ups.</h2><p className="mt-3 text-sm leading-6 text-slate-600">Our process ensures that every purchase is accurately delivered to your specific game account.</p></div><div className="mt-8 grid gap-3 md:grid-cols-3">{processItems.map((item, index) => (
         <article key={item.step} className="group relative storefront-process-card storefront-motion-card overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-300 motion-safe:group-hover:translate-y-[-4px] motion-safe:group-hover:shadow-md">
           <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1 opacity-20 transition-opacity duration-300 motion-safe:group-hover:opacity-100" style={{ background: item.accent }} />
           <div className="relative p-6">
@@ -138,7 +138,7 @@ export default async function Home() {
             <p className="mt-2 text-sm leading-6 text-slate-600">{item.text}</p>
           </div>
         </article>
-      ))}</div><p className="recharza-trust-note text-slate-500"><StorefrontIcon name="shield" className="h-4 w-4 text-emerald-600" /><span><strong className="text-slate-900">Protected checkout</strong> — Razorpay handles payment, orders are tracked by reference, and human support is one tap away.</span></p></div>
+      ))}</div>        <p className="recharza-trust-note text-slate-500"><StorefrontIcon name="shield" className="h-4 w-4 text-emerald-600" /><span><strong className="text-slate-900">Secure Checkout</strong> — All payments are processed through verified partners, with real-time tracking and dedicated support.</span></p></div>
       </section>
 
       <StorefrontAccountPrompt />

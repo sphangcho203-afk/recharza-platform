@@ -91,9 +91,9 @@ function mapSupplierProduct(product: SupplierProductView): MobileLegendsPackage 
   return {
     id: product.id,
     name: displayName,
-    description: `FazerCards live offer for ${supplierLabel}. Confirm the player's account region before checkout.`,
+    description: `Official top-up for ${supplierLabel}. Please ensure your account region matches before proceeding.`,
     amountInPaise: product.retailPriceInPaise,
-    deliveryLabel: "Live supplier catalogue",
+    deliveryLabel: "Instant Delivery",
     source: "fazercards-live",
     supplierProductId: product.id,
     supplierCategoryId: product.categoryId,

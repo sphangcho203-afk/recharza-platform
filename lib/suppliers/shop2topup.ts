@@ -245,7 +245,7 @@ export async function lookupShop2TopUpPlayerIdentity(
             nickname: result.player.player_name,
             region: result.player.region || resolvedRegion,
             verificationMode: "shop2topup",
-            message: "Account validated successfully.",
+            message: "Account confirmed successfully.",
           },
         };
       }

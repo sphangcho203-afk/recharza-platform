@@ -109,18 +109,20 @@ const mobileLegendsBase = {
   pricingKey: "mobile-legends",
   startingPriceInPaise: 3_000,
   education: {
-    about: "Mobile Legends: Bang Bang is a 5v5 mobile MOBA from Moonton, played by over 100 million people worldwide. Two teams of five fight to destroy the enemy base, with regular updates, heroes, and ranked seasons that keep the game fresh.",
+    about: "Mobile Legends: Bang Bang is a premier 5v5 mobile MOBA developed by Moonton. With over 100 million active players globally, it offers high-speed tactical combat where two teams compete to destroy the enemy's base. The game is known for its diverse roster of heroes, frequent balance updates, and competitive ranked seasons that provide a fresh experience for every match.\n\nPlayers can choose from various roles including Tank, Fighter, Assassin, Mage, Marksman, and Support to build the perfect team composition. Mastering hero abilities and map strategy is key to climbing the ranks from Warrior to Mythical Glory.",
     currencyUses:
-      "Diamonds are the premium currency used to unlock heroes, buy skins and recolors, weekly and twilight passes, emotes and more. The Weekly Pass gives roughly 220 diamonds plus choice boxes over 7 days — far more value than standard packs — while the Twilight Pass bundles a season skin with progressive rewards.",
-    findId: "Tap your avatar in the top-left corner of the main screen. Your numeric User ID sits under your name, followed by the Zone ID in brackets — for example 12345678 (1234). Both numbers together identify your account, so enter them exactly as shown.",
+      "Diamonds are the essential premium currency in Mobile Legends, used to enhance your gaming experience. You can use them to:\n\n• Unlock New Heroes: Gain immediate access to the latest heroes to diversify your playstyle.\n• Exclusive Skins: Purchase skins to change your hero's appearance and add unique skill effects.\n• Weekly Diamond Pass: The best value top-up, providing 220 diamonds and additional rewards over 7 days.\n• Twilight Pass: Unlock a progressive reward track that includes exclusive skins and items as you level up your account.\n• Emotes & Effects: Personalize your presence on the battlefield with custom recall effects and battle emotes.\n• Starlight Membership: Access a monthly subscription for exclusive skins, hero fragments, and other premium perks.",
+    findId: "Locating your account details is simple:\n\n1. Open Mobile Legends on your device.\n2. Tap your Avatar in the top-left corner of the home screen to open your Profile.\n3. Your User ID and Zone ID are displayed under your nickname.\n   • The User ID is the longer number (e.g., 12345678).\n   • The Zone ID is the shorter number in brackets (e.g., 1234).\n\nMake sure to note both numbers accurately, as they are both required to identify your account for a successful top-up.",
     steps: [
-      "Choose your account market, then pick the pack you want and add it to your cart.",
-      "Enter your User ID and Zone ID — our live checker shows your in-game username before you pay.",
-      "Complete payment securely via Razorpay (UPI, cards, wallets).",
-      "Diamonds are delivered straight to your in-game account — track the order anytime from Orders.",
+      "Select your preferred account market (e.g., India, Global, Indonesia).",
+      "Choose the diamond pack or membership you wish to purchase.",
+      "Enter your User ID and Zone ID in the player information section.",
+      "Confirm your account using our live checker to ensure the username matches your profile.",
+      "Complete the payment securely using our integrated payment methods.",
+      "Your diamonds will be credited to your account instantly. You can track your order status in the 'Orders' section.",
     ],
     regionNote:
-      "Top-ups are instant and cannot be reversed, so always confirm the username shown by our checker matches your account. Diamonds purchased for one account server cannot be moved to another, which is why your market must match your account region.",
+      "Account confirmation is vital: Always ensure the username displayed by our checker matches your in-game profile before proceeding to payment. Please note that top-ups are processed instantly and are non-refundable. Additionally, diamonds are server-specific; ensure the market you select matches your account's registered region to avoid delivery issues.",
   },
 };
 

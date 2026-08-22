@@ -61,9 +61,9 @@ export const fallbackMobileLegendsPackages: MobileLegendsPackage[] = indicativeP
     id,
     name,
     description:
-      "Preview catalogue price. Recharza confirms the final supplier availability and rate before payment.",
+      "Standard top-up price. Final availability and rates are confirmed before you complete your purchase.",
     amountInPaise,
-    deliveryLabel: "Preview catalogue",
+    deliveryLabel: "Standard Delivery",
     featured,
     source: "fazercards-indicative",
     supplierOfferId,
