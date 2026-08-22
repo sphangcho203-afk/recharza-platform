@@ -45,13 +45,12 @@ export function GameCard({
   const accent = game.accent ?? "#9b7cff";
   const card = (
     <article
-      className={`recharza-bleed-card group relative h-full overflow-hidden ${
+      className={`recharza-premium-card group relative h-full overflow-hidden rounded-[1.5rem] bg-white p-2.5 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.04),0_0_0_1px_rgba(15,23,42,0.03)] transition-all duration-500 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08),0_0_0_1px_rgba(124,58,237,0.08)] hover:-translate-y-1.5 ${
         interactive ? "" : "opacity-60"
       }`}
     >
-      <span aria-hidden="true" className="absolute inset-x-0 top-0 z-10 h-1 opacity-0 transition-opacity duration-300 motion-safe:group-hover:opacity-100" style={{ background: accent }} />
-      {/* Tall portrait artwork bleeding to the card edges (1.16, taller than offer cards). */}
-      <div className="recharza-bleed-media relative aspect-[1.16] bg-surface-sunken">
+      {/* Artwork container with improved shape and foundation */}
+      <div className="relative aspect-square overflow-hidden rounded-[1.1rem] bg-slate-50 ring-1 ring-slate-900/5">
         <StorefrontArtwork
           artworkKey={game.artworkKey}
           sources={preferredArtworkSources(game)}
@@ -60,25 +59,41 @@ export function GameCard({
           priority={priority}
           loading={priority ? "eager" : "lazy"}
           sizes="(max-width: 639px) 44vw, (max-width: 1023px) 29vw, (max-width: 1279px) 18vw, 15vw"
-          className="h-full w-full object-cover brightness-[.94] saturate-[1.08] transition-[transform,filter] duration-300 ease-out motion-safe:group-hover:scale-[1.06] motion-safe:group-hover:brightness-100"
+          className="h-full w-full object-cover brightness-[.98] saturate-[1.02] transition-all duration-700 cubic-bezier(0.23, 1, 0.32, 1) group-hover:scale-110 group-hover:brightness-105"
           fallbackClassName="h-full w-full"
           objectPosition={game.artworkPosition}
           objectFit="cover"
         />
+        {/* Premium overlay for artwork depth */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/5 opacity-40 transition-opacity duration-500 group-hover:opacity-20" />
+        <div className="pointer-events-none absolute inset-0 shadow-[inset_0_0_60px_rgba(0,0,0,0.03)]" />
       </div>
 
-      {/* Compact base strip — no price/CTA chip, only category + title + arrow. */}
-      <div className="relative flex min-h-[5.4rem] flex-col justify-between gap-1.5 bg-white p-3.5">
-        <div className="flex min-w-0 items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">{category}</p>
-            <h3 className="recharza-card-title mt-1 min-w-0 truncate text-slate-900">{title}</h3>
+      {/* Content area with premium typography and layout */}
+      <div className="relative flex flex-col px-2 pb-2.5 pt-4">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[9px] font-black uppercase tracking-[0.25em] text-violet-600/80">{category}</p>
+            <h3 className="mt-1 truncate text-[1rem] font-black leading-tight tracking-tight text-slate-900">{title}</h3>
           </div>
-          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-slate-50 text-slate-400 transition-all duration-300 group-hover:translate-x-1 group-hover:border-violet-200 group-hover:bg-violet-50 group-hover:text-violet-600 shadow-sm">
+          <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-400 ring-1 ring-slate-200/60 transition-all duration-500 cubic-bezier(0.23, 1, 0.32, 1) group-hover:bg-violet-600 group-hover:text-white group-hover:ring-violet-600 group-hover:shadow-[0_8px_20px_rgba(124,58,237,0.3)] group-hover:rotate-[360deg]">
             <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
-          </span>
+          </div>
         </div>
-        {price ? <p className="truncate text-[.72rem] font-bold text-slate-500">From <DisplayPrice amountInrMinor={price} className="ml-1 text-[.86rem] font-bold text-violet-600" /></p> : <p className="text-[.72rem] font-bold text-slate-400">Verified digital delivery</p>}
+        
+        <div className="mt-3.5 flex items-end justify-between gap-2">
+          {price ? (
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">From</span>
+              <DisplayPrice amountInrMinor={price} className="text-[0.92rem] font-black text-violet-600 leading-none" />
+            </div>
+          ) : (
+            <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 ring-1 ring-emerald-500/10">
+              <div className="h-1 w-1 rounded-full bg-emerald-500" />
+              <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Verified</span>
+            </div>
+          )}
+        </div>
       </div>
     </article>
   );

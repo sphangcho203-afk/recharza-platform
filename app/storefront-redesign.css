@@ -187,14 +187,14 @@
 .storefront-popular-rail { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; }
 .storefront-popular-item { min-width: 0; }
 .storefront-popular-item .mt-6 { margin-top: 0; }
-.storefront-popular-item .mt-5 { margin-top: .55rem; }
+.storefront-popular-item .mt-5 { margin-top: 0.25rem; }
 .storefront-popular-item .grid { grid-template-columns: minmax(0,1fr); }
 .storefront-popular-item .grid > a { min-width: 0; }
-.storefront-popular-item .grid > a article { padding: .8rem; background: #ffffff; border: 1px solid rgba(15,23,42,.06); }
-.storefront-popular-item .grid > a article > div:first-child { aspect-ratio: 1.14 / 1; border-color: rgba(15,23,42,.08); box-shadow: inset 0 1px 0 rgba(255,255,255,1); }
-.storefront-popular-item .grid > a article h3 { font-size: .78rem; color: #0f172a; }
-.storefront-popular-item .grid > a article p { font-size: .68rem; color: #64748b; }
-.storefront-popular-item .grid > a article > div:last-child { display: none; }
+.storefront-popular-item .grid > a article { padding: 0.5rem; background: #ffffff; border: 1px solid rgba(15,23,42,.06); border-radius: 1.1rem; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+.storefront-popular-item .grid > a article > div:first-child { aspect-ratio: 1 / 1; border-radius: 0.85rem; border: 1px solid rgba(15,23,42,.04); overflow: hidden; }
+.storefront-popular-item .grid > a article h3 { font-size: 0.85rem; font-weight: 800; color: #0f172a; margin-top: 0.4rem; }
+.storefront-popular-item .grid > a article p { font-size: 0.7rem; color: #64748b; }
+.storefront-popular-item .grid > a article > div:last-child { display: flex; padding-top: 0.25rem; }
 .storefront-process-card { min-height: 12rem; border: 1px solid rgba(15,23,42,.08); border-radius: .75rem; padding: 1.15rem; background: #ffffff; transition: transform 180ms var(--ease-out), border-color 180ms var(--ease-out), background-color 180ms var(--ease-out); }
 .storefront-process-card:hover { transform: translateY(-3px); border-color: rgba(124,58,237,.2); background: #f8fafc; }
 .storefront-support-panel { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; border: 1px solid rgba(15,23,42,.08); border-radius: .75rem; padding: 1.5rem; background: #ffffff; box-shadow: 0 20px 70px rgba(0,0,0,.04); }
