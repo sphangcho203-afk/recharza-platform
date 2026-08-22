@@ -132,12 +132,7 @@ export async function POST(
     const provider = process.env.IGN_LOOKUP_PROVIDER?.trim().toLowerCase() ?? "";
     
     // Normalize game slug for provider lookup
-    let lookupSlug: string = slug;
-    if (slug === "mobile-legends") {
-      const market = selectedPackage.marketCode?.toLowerCase() || "";
-      if (market === "tr") lookupSlug = "mobile-legends-tr";
-      else if (market === "br") lookupSlug = "mobile-legends-br";
-    }
+    const lookupSlug: string = slug;
 
     if (provider !== "volsever" && provider !== "shop2topup") {
       return Response.json(

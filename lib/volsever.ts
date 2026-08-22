@@ -14,16 +14,10 @@ export const VOLSEVER_VERIFICATION_MODE = "volsever-lookup";
 
 const volseverGameAliases: Record<string, string> = {
   "mobile-legends": "mobile-legends-wr",
-  "mobile-legends-tr": "mobile-legends-wr",
-  "mobile-legends-br": "mobile-legends-wr",
   "free-fire": "free-fire-asia",
   "pubg-mobile": "pubg-mobile-global",
   valorant: "valorant-indonesia",
   "genshin-impact": "genshin-impact",
-  "call-of-duty-mobile": "call-of-duty-mobile-global",
-  "league-of-legends-wild-rift": "league-of-legends-wild-rift-global",
-  "clash-of-clans": "clash-of-clans-global",
-  "clash-royale": "clash-royale-global",
 };
 
 /**

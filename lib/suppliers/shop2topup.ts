@@ -57,18 +57,6 @@ export const SHOP2TOPUP_GAME_CONFIG: Record<string, Shop2TopUpGameConfig> = {
     requiresZoneId: true,
     regionLabels: { default: "Global" },
   },
-  "mobile-legends-tr": {
-    categoryId: 474,
-    validateSubCategoryIds: [28],
-    requiresZoneId: true,
-    regionLabels: { default: "Global" },
-  },
-  "mobile-legends-br": {
-    categoryId: 474,
-    validateSubCategoryIds: [28],
-    requiresZoneId: true,
-    regionLabels: { default: "Global" },
-  },
   "free-fire": {
     categoryId: 4,
     // MENA packs (28-32) and CIS packs (33-50) both validate. Trying both

@@ -104,7 +104,7 @@ const mobileLegendsBase = {
     deliveryCoverage: {
       mode: "region-scoped" as const,
       headline: "Global account verification with region-specific delivery",
-      note: "Our account verification service works globally, allowing you to confirm your nickname regardless of your location. However, game currency is delivered through regional catalogues. To ensure successful delivery, please select the market that matches your game account's registered region. For example, an account registered in India should be topped up using the India market.",
+      note: "Our account verification service works globally, allowing you to confirm your nickname regardless of your location. However, game currency is delivered through regional markets. To ensure successful delivery, please select the market that matches your game account's registered region. For example, an account registered in India should be topped up using the India market.",
     },
   pricingKey: "mobile-legends",
   startingPriceInPaise: 3_000,
@@ -198,7 +198,7 @@ export const games: Game[] = [
       deliveryCoverage: {
         mode: "global-id",
         headline: "Global account verification with region-specific delivery",
-        note: "You can verify your Garena ID from any country using our integrated lookup service. For successful top-up delivery, please ensure you select the market that corresponds to your game account's region. Regional restrictions apply to the delivery of game currency, and matching your account region is essential for a successful transaction.",
+        note: "You can verify your Garena ID from any country using our integrated lookup service. For successful top-up delivery, please ensure you select the market that corresponds to your game account's region. Matching your account region is essential for a successful transaction.",
       },
     pricingMode: "live",
     pricingKey: "free-fire",
@@ -247,7 +247,7 @@ export const games: Game[] = [
       deliveryCoverage: {
         mode: "region-scoped",
         headline: "Region-specific currency delivery",
-        note: "Game currency is bound to your specific account region. To ensure your top-up is credited correctly, please choose the market that matches your game server. Transactions made for a different region cannot be credited to your account due to publisher restrictions.",
+        note: "Game currency is bound to your specific account region. To ensure your top-up is credited correctly, please choose the market that matches your game server. Transactions made for a different region cannot be credited to your account.",
       },
     pricingMode: "live",
     pricingKey: "pubg-mobile",
@@ -382,7 +382,7 @@ export const games: Game[] = [
     deliveryCoverage: {
       mode: "global-id",
       headline: "One Riot ID — but VP only credits its own region",
-      note: "Your Riot ID is the same everywhere and can be checked from any country, but VALORANT Points are strictly regional: points bought in one region can never be spent in another. Each market sells only the VP region it is licensed for (ID, PH, MY, SG catalogues), so choose the market whose region matches your account.",
+      note: "Your Riot ID is the same everywhere and can be checked from any country, but VALORANT Points are strictly regional: points bought in one region can never be spent in another. Each market sells only the VP region it is optimized for, so choose the market whose region matches your account.",
     },
     pricingMode: "live",
     pricingKey: "valorant",
@@ -431,7 +431,7 @@ export const games: Game[] = [
     deliveryCoverage: {
       mode: "region-scoped",
       headline: "Server-scoped UID — pick the right server",
-      note: "Your UID belongs to exactly one server: Asia, America, Europe, or TW/HK/MO (hint: UID prefix 8 = Asia, 7 = America, 9 = Europe, 6 = TW/HK/MO). Our Global catalogue credits accounts on the supported server only — top-ups never cross servers. Check your UID before buying; this is a HoYoverse server rule, not a store limitation.",
+      note: "Your UID belongs to exactly one server: Asia, America, Europe, or TW/HK/MO (hint: UID prefix 8 = Asia, 7 = America, 9 = Europe, 6 = TW/HK/MO). Our Global store credits accounts on the supported server only — top-ups never cross servers. Check your UID before buying.",
     },
     pricingMode: "live",
     pricingKey: "genshin-impact",

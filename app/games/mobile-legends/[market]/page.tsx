@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: Promise<{ market: s
   return selectedMarket
     ? {
         title: `Mobile Legends ${selectedMarket.label} Top-Up`,
-        description: `Integrated ${selectedMarket.label} Mobile Legends catalogue, player validation, billing, order creation, and payment.`,
+        description: `Instant ${selectedMarket.label} Mobile Legends top-up. Secure account confirmation and immediate diamond delivery to your profile.`,
       }
     : { title: "Mobile Legends Top-Up" };
 }
@@ -72,7 +72,7 @@ export default async function MobileLegendsMarketPage({
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-700">{selectedMarket.flag} {selectedMarket.label}</p>
                 <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Checkout is not open for this market yet.</h1>
-                <p className="mt-3 text-sm leading-6 text-amber-800/80 font-medium">No approved fulfilment catalogue is published for this region. Recharza will not substitute another market or invent a price.</p>
+                <p className="mt-3 text-sm leading-6 text-amber-800/80 font-medium">This region is currently unavailable for top-up. We only offer markets with verified delivery paths to ensure your diamonds arrive safely.</p>
               </div>
             </div>
             <div className="mt-5 flex flex-wrap gap-2">

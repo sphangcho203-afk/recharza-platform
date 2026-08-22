@@ -93,14 +93,8 @@ export async function validateMobileLegendsIdentity(input: {
       return volsever;
     }
 
-    // If both providers failed to find the account, return a result that allows the user to proceed
-    // but warns them that nickname confirmation was not possible.
-    return {
-      ...volsever,
-      valid: true,
-      confirmed: false,
-      message: "We could not confirm your nickname, but you can still proceed. Please double-check your Player ID and Zone ID to ensure accurate delivery.",
-    };
+    // If both providers failed to find the account, fail closed.
+    return volsever;
   }
 
   if (provider === "volsever") {
