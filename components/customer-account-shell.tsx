@@ -19,7 +19,7 @@ type SignupSuccess = {
 };
 
 const inputClassName =
-  "mt-2 min-h-12 w-full rounded-lg border border-white/[0.12] bg-[#080a10] px-3.5 text-sm text-white outline-none transition duration-150 placeholder:text-slate-600 focus:border-violet-300/70 focus:ring-2 focus:ring-violet-300/15 disabled:cursor-not-allowed disabled:opacity-50";
+  "mt-2 min-h-12 w-full rounded-lg border border-slate-200 bg-white px-3.5 text-sm text-slate-900 outline-none transition duration-150 placeholder:text-slate-400 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10 disabled:cursor-not-allowed disabled:opacity-50";
 
 type GoogleAuthOutcome = "signup" | "login";
 
@@ -29,7 +29,7 @@ function GoogleContinue({ className = "" }: { className?: string }) {
   return (
     <a
       href={`/api/auth/google?returnTo=${encodeURIComponent(GOOGLE_RETURN_TO)}`}
-      className={`flex min-h-12 w-full items-center justify-center gap-3 rounded-lg border border-white/[0.12] bg-white px-5 text-sm font-semibold text-slate-950 transition duration-150 ease-out hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1110] active:scale-[0.99] ${className}`}
+      className={`flex min-h-12 w-full items-center justify-center gap-3 rounded-lg border border-slate-200 bg-white px-5 text-sm font-bold text-slate-900 transition duration-150 ease-out hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:scale-[0.99] shadow-sm ${className}`}
     >
       <span aria-hidden="true" className="grid h-5 w-5 place-items-center rounded-full border border-slate-300 bg-white text-xs font-bold text-blue-600">G</span>
       Continue with Google
@@ -40,9 +40,9 @@ function GoogleContinue({ className = "" }: { className?: string }) {
 function Divider({ label, className = "" }: { label: string; className?: string }) {
   return (
     <div className={`relative flex items-center ${className}`} aria-hidden="true">
-      <span className="flex-1 border-t border-white/[0.1]" />
+      <span className="flex-1 border-t border-slate-200" />
       <span className="px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">{label}</span>
-      <span className="flex-1 border-t border-white/[0.1]" />
+      <span className="flex-1 border-t border-slate-200" />
     </div>
   );
 }
@@ -61,17 +61,17 @@ function GoogleOutcomeBanner({ outcome, returnTo }: { outcome: GoogleAuthOutcome
           message: "You were signed in with your Google account. Your dashboard is ready.",
         };
   return (
-    <div role="status" className="rounded-lg border border-emerald-300/25 bg-emerald-300/[0.08] px-4 py-3.5">
+    <div role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3.5 shadow-sm">
       <div className="flex items-center gap-2.5">
-        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-emerald-300/30 bg-emerald-300/[0.12] text-emerald-200" aria-hidden="true">
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-emerald-200 bg-white text-emerald-600 shadow-sm" aria-hidden="true">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
         </span>
         <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-200">{content.badge}</p>
-          <p className="text-sm font-semibold text-white">{content.title}</p>
+          <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-600">{content.badge}</p>
+          <p className="text-sm font-bold text-slate-900">{content.title}</p>
         </div>
       </div>
-      <p className="mt-2 text-sm leading-6 text-emerald-100/80">{content.message}</p>
+      <p className="mt-2 text-sm leading-6 text-emerald-800/80">{content.message}</p>
     </div>
   );
 }
@@ -192,25 +192,25 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
   }
 
   if (loading) {
-    return <div className="min-h-[30rem] animate-pulse rounded-lg border border-white/[0.1] bg-[#0b0d13]" aria-label="Loading account" />;
+    return <div className="min-h-[30rem] animate-pulse rounded-2xl border border-slate-200 bg-slate-50" aria-label="Loading account" />;
   }
 
   if (authenticated && !signupSuccess) return <CustomerDashboard showOrders={showOrders} />;
 
   if (signupSuccess) {
     return (
-      <section className="mx-auto max-w-2xl rounded-lg border border-emerald-300/20 bg-[#0b1110] p-6 shadow-elevation-1 sm:p-8" aria-labelledby="account-created-heading">
+      <section className="mx-auto max-w-2xl rounded-2xl border border-emerald-200 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="account-created-heading">
         <div className="flex items-start gap-4">
-          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-emerald-400/10 text-emerald-300">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 shadow-sm">
             <StorefrontIcon name="shield" className="h-5 w-5" />
           </span>
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">Your account is ready</p>
-            <h2 id="account-created-heading" className="mt-2 text-2xl font-semibold tracking-tight text-white">Welcome to Recharza, {signupSuccess.name}.</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">Your account is ready for checkout, order tracking, receipts, and support.</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-600">Your account is ready</p>
+            <h2 id="account-created-heading" className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Welcome to Recharza, {signupSuccess.name}.</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">Your account is ready for checkout, order tracking, receipts, and support.</p>
           </div>
         </div>
-        <dl className="mt-6 grid gap-px overflow-hidden rounded-lg border border-white/[0.1] bg-white/[0.1] sm:grid-cols-2">
+        <dl className="mt-6 grid gap-px overflow-hidden rounded-xl border border-slate-200 bg-slate-200 sm:grid-cols-2 shadow-sm">
           <Info label="Username" value={`@${signupSuccess.username}`} />
           <Info label="Email" value={signupSuccess.email} />
           <Info label="Created" value={new Date(signupSuccess.createdAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })} />
@@ -222,7 +222,7 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
             setSignupSuccess(null);
             setAuthenticated(true);
           }}
-          className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1110] active:scale-[0.99]"
+          className="mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 text-sm font-bold text-white transition duration-150 ease-out hover:bg-violet-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white active:scale-[0.99] shadow-md"
         >
           Open my account
           <StorefrontIcon name="arrow" className="h-4 w-4" />
@@ -232,21 +232,21 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
   }
 
   return (
-    <section className="overflow-hidden rounded-lg border border-white/[0.1] bg-[#0b0d13] shadow-elevation-2">
+    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
       <div className="grid lg:grid-cols-[0.78fr_1.22fr]">
-        <aside className="relative hidden overflow-hidden border-r border-white/[0.1] bg-[#090b10] p-8 lg:block">
-          <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/10 blur-3xl" aria-hidden="true" />
+        <aside className="relative hidden overflow-hidden border-r border-slate-100 bg-slate-50 p-8 lg:block">
+          <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/5 blur-3xl" aria-hidden="true" />
           <div className="relative">
             <RecharzaMark />
-            <p className="mt-7 text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">{showOrders ? "Secure order history" : "Your top-up workspace"}</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white">{showOrders ? "Sign in to view your purchases." : "Everything tied to one account."}</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-400">{showOrders ? "Only the signed-in customer can access order history, player destinations, and delivery status." : "Keep checkout, orders, receipts, and support together wherever you play."}</p>
+            <p className="mt-7 text-xs font-bold uppercase tracking-[0.18em] text-violet-600">{showOrders ? "Secure order history" : "Your top-up workspace"}</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">{showOrders ? "Sign in to view your purchases." : "Everything tied to one account."}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">{showOrders ? "Only the signed-in customer can access order history, player destinations, and delivery status." : "Keep checkout, orders, receipts, and support together wherever you play."}</p>
             <div className="mt-8 grid gap-5">
               {showOrders ? <Benefit icon="track" title="Private purchase timeline" text="Review your purchases and delivery status after sign-in." /> : <Benefit icon="track" title="Order history" text="Review purchases and recover receipts in one place." />}
               <Benefit icon="shield" title="Protected access" text="Secure sessions and recovery controls for your account." />
               <Benefit icon="support" title="Connected support" text="Keep support linked to the right order when you need help." />
             </div>
-            <p className="mt-10 text-xs leading-5 text-slate-600">Never share your password, OTP, UPI PIN, or card PIN with support.</p>
+            <p className="mt-10 text-xs leading-5 text-slate-500">Never share your password, OTP, UPI PIN, or card PIN with support.</p>
           </div>
         </aside>
 
@@ -254,18 +254,18 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
           <div className="flex items-center gap-3 lg:hidden">
             <RecharzaMark compact />
             <div>
-              <p className="text-sm font-semibold text-white">Recharza</p>
+              <p className="text-sm font-bold text-slate-900">Recharza</p>
               <p className="text-xs text-slate-500">Top-up, track, play.</p>
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-2 gap-1 rounded-lg border border-white/[0.1] bg-[#07090e] p-1 lg:mt-0" role="tablist" aria-label="Account access mode">
+          <div className="mt-6 grid grid-cols-2 gap-1 rounded-xl border border-slate-200 bg-slate-100 p-1 lg:mt-0 shadow-inner" role="tablist" aria-label="Account access mode">
             <button
               type="button"
               role="tab"
               aria-selected={mode === "login"}
               onClick={() => switchMode("login")}
-              className={`min-h-11 rounded-lg px-3 text-sm font-semibold transition duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 ${mode === "login" ? "bg-white text-slate-950 shadow-elevation-1" : "text-slate-500 hover:text-white"}`}
+              className={`min-h-11 rounded-lg px-3 text-sm font-bold transition duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 ${mode === "login" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"}`}
             >
               Sign in
             </button>
@@ -274,7 +274,7 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
               role="tab"
               aria-selected={mode === "signup"}
               onClick={() => switchMode("signup")}
-              className={`min-h-11 rounded-lg px-3 text-sm font-semibold transition duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 ${mode === "signup" ? "bg-white text-slate-950 shadow-elevation-1" : "text-slate-500 hover:text-white"}`}
+              className={`min-h-11 rounded-lg px-3 text-sm font-bold transition duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 ${mode === "signup" ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-900"}`}
             >
               Create account
             </button>
@@ -287,9 +287,9 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
           ) : null}
 
           <div className="mt-7">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">{showOrders ? "Order history access" : mode === "login" ? "Welcome back" : "Start with Recharza"}</p>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">{showOrders ? "Open your purchases." : mode === "login" ? "Pick up where you left off." : "Create your account."}</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">{showOrders ? "Sign in to see your account-owned orders. Guest orders remain available through secure order lookup." : mode === "login" ? "Sign in to checkout, track orders, and keep support connected." : "One account for checkout, tracking, receipts, and support."}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-600">{showOrders ? "Order history access" : mode === "login" ? "Welcome back" : "Start with Recharza"}</p>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">{showOrders ? "Open your purchases." : mode === "login" ? "Pick up where you left off." : "Create your account."}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">{showOrders ? "Sign in to see your account-owned orders. Guest orders remain available through secure order lookup." : mode === "login" ? "Sign in to checkout, track orders, and keep support connected." : "One account for checkout, tracking, receipts, and support."}</p>
           </div>
 
           {mode === "login" ? (
@@ -301,10 +301,10 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
                 <PasswordInput id="login-password" value={loginPassword} onChange={setLoginPassword} visible={showLoginPassword} onToggle={() => setShowLoginPassword((value) => !value)} autoComplete="current-password" />
               </Field>
               <div className="flex items-center justify-between gap-4">
-                <span className="text-xs text-slate-600">Secure sign-in for your Recharza account.</span>
-                <Link href="/forgot-password" className="shrink-0 text-sm font-semibold text-violet-300 underline-offset-4 transition hover:text-violet-200 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70">Forgot password?</Link>
+                <span className="text-xs text-slate-500">Secure sign-in for your Recharza account.</span>
+                <Link href="/forgot-password" className="shrink-0 text-sm font-bold text-violet-600 underline-offset-4 transition hover:text-violet-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white">Forgot password?</Link>
               </div>
-              <button disabled={submitting} className="min-h-12 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d13] disabled:cursor-wait disabled:opacity-60">
+              <button disabled={submitting} className="min-h-12 rounded-xl bg-violet-600 px-5 text-sm font-bold text-white transition duration-150 ease-out hover:bg-violet-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-wait disabled:opacity-60 shadow-md">
                 {submitting ? "Signing in…" : "Sign in"}
               </button>
               <Divider label="or continue with" />
@@ -328,7 +328,7 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
                 <PasswordInput id="confirm-password" value={confirmPassword} onChange={setConfirmPassword} visible={showConfirmPassword} onToggle={() => setShowConfirmPassword((value) => !value)} autoComplete="new-password" placeholder="Repeat password" />
               </Field>
               <p className="text-xs leading-5 text-slate-600 sm:col-span-2">Use at least 10 characters and a password you do not reuse elsewhere.</p>
-              <button disabled={submitting} className="min-h-12 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b0d13] disabled:cursor-wait disabled:opacity-60 sm:col-span-2">
+              <button disabled={submitting} className="min-h-12 rounded-xl bg-violet-600 px-5 text-sm font-bold text-white transition duration-150 ease-out hover:bg-violet-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-wait disabled:opacity-60 sm:col-span-2 shadow-md">
                 {submitting ? "Creating account…" : "Create account"}
               </button>
               <Divider label="or continue with" className="sm:col-span-2" />
@@ -337,12 +337,12 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
           )}
 
           {message ? (
-            <p role={error ? "alert" : "status"} aria-live="polite" className={`mt-5 rounded-lg border px-3.5 py-3 text-sm leading-5 ${error ? "border-rose-300/25 bg-rose-300/[0.07] text-rose-100" : "border-emerald-300/25 bg-emerald-300/[0.07] text-emerald-100"}`}>
+            <p role={error ? "alert" : "status"} aria-live="polite" className={`mt-5 rounded-xl border px-3.5 py-3 text-sm leading-5 shadow-sm ${error ? "border-rose-200 bg-rose-50 text-rose-800" : "border-emerald-200 bg-emerald-50 text-emerald-800"}`}>
               {message}
             </p>
           ) : null}
 
-          <p className="mt-6 text-center text-xs leading-5 text-slate-600">By continuing, you agree to Recharza’s <Link href="/policies/terms" className="text-slate-400 underline underline-offset-4 hover:text-white">Terms</Link> and <Link href="/policies/privacy" className="text-slate-400 underline underline-offset-4 hover:text-white">Privacy Policy</Link>.</p>
+          <p className="mt-6 text-center text-xs leading-5 text-slate-500">By continuing, you agree to Recharza’s <Link href="/policies/terms" className="text-slate-600 underline underline-offset-4 hover:text-slate-900">Terms</Link> and <Link href="/policies/privacy" className="text-slate-600 underline underline-offset-4 hover:text-slate-900">Privacy Policy</Link>.</p>
         </div>
       </div>
     </section>
@@ -351,7 +351,7 @@ export function CustomerAccountShell({ showOrders = false, returnTo = "/account"
 
 function Field({ id, label, children, className = "" }: { id: string; label: string; children: React.ReactNode; className?: string }) {
   return (
-    <label htmlFor={id} className={`text-sm font-semibold text-slate-300 ${className}`}>
+    <label htmlFor={id} className={`text-sm font-bold text-slate-900 ${className}`}>
       {label}
       {children}
     </label>
@@ -362,7 +362,7 @@ function PasswordInput({ id, value, onChange, visible, onToggle, autoComplete, p
   return (
     <span className="relative block">
       <input id={id} required aria-required="true" type={visible ? "text" : "password"} autoComplete={autoComplete} value={value} onChange={(event) => onChange(event.target.value)} className={`${inputClassName} pr-20`} placeholder={placeholder} />
-      <button type="button" onClick={onToggle} aria-label={visible ? "Hide password" : "Show password"} className="absolute right-2 top-1/2 min-h-9 -translate-y-1/2 rounded-lg px-2.5 text-xs font-semibold text-slate-500 transition hover:bg-white/[0.06] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70">
+      <button type="button" onClick={onToggle} aria-label={visible ? "Hide password" : "Show password"} className="absolute right-2 top-1/2 min-h-9 -translate-y-1/2 rounded-lg px-2.5 text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500">
         {visible ? "Hide" : "Show"}
       </button>
     </span>
@@ -372,12 +372,12 @@ function PasswordInput({ id, value, onChange, visible, onToggle, autoComplete, p
 function Benefit({ icon, title, text }: { icon: Parameters<typeof StorefrontIcon>[0]["name"]; title: string; text: string }) {
   return (
     <div className="flex gap-3">
-      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-violet-500/10 text-violet-300"><StorefrontIcon name={icon} className="h-4 w-4" /></span>
-      <div><p className="font-semibold text-white">{title}</p><p className="mt-0.5 text-xs leading-5 text-slate-500">{text}</p></div>
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-50 text-violet-600 border border-violet-100 shadow-sm"><StorefrontIcon name={icon} className="h-4 w-4" /></span>
+      <div><p className="font-bold text-slate-900">{title}</p><p className="mt-0.5 text-xs leading-5 text-slate-600">{text}</p></div>
     </div>
   );
 }
 
 function Info({ label, value }: { label: string; value: string }) {
-  return <div className="bg-[#0c100f] p-3.5"><dt className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-600">{label}</dt><dd className="mt-1 break-all text-sm font-semibold text-slate-200">{value}</dd></div>;
+  return <div className="bg-white p-3.5 border-r border-slate-100 last:border-r-0"><dt className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">{label}</dt><dd className="mt-1 break-all text-sm font-bold text-slate-900">{value}</dd></div>;
 }

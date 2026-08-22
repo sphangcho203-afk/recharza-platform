@@ -195,29 +195,29 @@ export function AdminCatalogueConsole() {
           ["Available", String(availableCount), "Eligible for checkout"],
           ["Supplier media", String(supplierMediaCount), "Products with upstream artwork"],
         ].map(([label, value, note]) => (
-          <article key={label} className="system-card p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+          <article key={label} className="system-card p-4 border border-slate-200 bg-white shadow-sm rounded-2xl">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
               {label}
             </p>
-            <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
-            <p className="mt-1 text-xs text-slate-600">{note}</p>
+            <p className="mt-2 text-2xl font-bold text-slate-900">{value}</p>
+            <p className="mt-1 text-xs font-medium text-slate-500">{note}</p>
           </article>
         ))}
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(20rem,0.65fr)]">
-        <section className="system-panel overflow-hidden">
-          <div className="grid gap-3 border-b border-white/10 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+        <section className="system-panel overflow-hidden border border-slate-200 bg-white shadow-sm rounded-2xl">
+          <div className="grid gap-3 border-b border-slate-100 p-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center bg-slate-50/50">
             <div>
-              <h3 className="text-lg font-semibold text-white">Product catalogue</h3>
-              <p className="mt-1 text-sm text-slate-500">
+              <h3 className="text-lg font-bold text-slate-900">Product catalogue</h3>
+              <p className="mt-1 text-sm font-medium text-slate-500">
                 Publish, pause, inspect and open the media editor.
               </p>
             </div>
             <button
               type="button"
               onClick={() => void load()}
-              className="min-h-11 rounded-lg border border-white/10 px-3 text-xs font-semibold text-slate-300 hover:bg-white/5"
+              className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 shadow-sm hover:bg-slate-50"
             >
               Refresh
             </button>
@@ -226,17 +226,17 @@ export function AdminCatalogueConsole() {
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search products, regions or offer IDs"
-              className="min-h-12 rounded-lg border border-white/10 bg-black/20 px-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400 sm:col-span-2"
+              className="min-h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-violet-500 shadow-sm sm:col-span-2"
             />
           </div>
 
-          <div className="max-h-[46rem] divide-y divide-white/8 overflow-y-auto">
+          <div className="max-h-[46rem] divide-y divide-slate-100 overflow-y-auto">
             {visibleProducts.map((product) => (
               <article
                 key={product.id}
                 className="grid gap-4 p-4 sm:grid-cols-[4.5rem_minmax(0,1fr)_auto] sm:items-center"
               >
-                <div className="aspect-square overflow-hidden rounded-lg border border-white/10 bg-black/25">
+                <div className="aspect-square overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
                   <ResilientImage
                     sources={product.media.sources}
                     alt={product.media.alt}
@@ -247,15 +247,15 @@ export function AdminCatalogueConsole() {
                 </div>
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <h4 className="truncate font-semibold text-white">{product.name}</h4>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[9px] font-bold uppercase text-slate-400">
+                    <h4 className="truncate font-bold text-slate-900">{product.name}</h4>
+                    <span className="rounded-full border border-slate-100 bg-slate-50 px-2 py-1 text-[9px] font-bold uppercase text-slate-500">
                       {product.region ?? "Global"}
                     </span>
                   </div>
-                  <p className="mt-1 text-sm font-bold text-violet-200">
+                  <p className="mt-1 text-sm font-bold text-violet-600">
                     {formatInr(product.retailPriceInPaise)}
                   </p>
-                  <p className="mt-1 truncate font-mono text-[10px] text-slate-600">
+                  <p className="mt-1 truncate font-mono text-[10px] font-medium text-slate-400">
                     {product.offerId}
                   </p>
                 </div>
@@ -270,10 +270,10 @@ export function AdminCatalogueConsole() {
                         product.published ? "Product unpublished." : "Product published.",
                       )
                     }
-                    className={`min-h-10 rounded-lg border px-3 text-[11px] font-semibold ${
+                    className={`min-h-10 rounded-xl border px-3 text-[11px] font-bold transition-all shadow-sm ${
                       product.published
-                        ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-200"
-                        : "border-white/10 bg-white/5 text-slate-400"
+                        ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                        : "border-slate-200 bg-white text-slate-400"
                     }`}
                   >
                     {product.published ? "Published" : "Unpublished"}
@@ -288,10 +288,10 @@ export function AdminCatalogueConsole() {
                         product.available ? "Product paused." : "Product activated.",
                       )
                     }
-                    className={`min-h-10 rounded-lg border px-3 text-[11px] font-semibold ${
+                    className={`min-h-10 rounded-xl border px-3 text-[11px] font-bold transition-all shadow-sm ${
                       product.available
-                        ? "border-cyan-300/20 bg-cyan-300/10 text-cyan-100"
-                        : "border-rose-300/20 bg-rose-300/10 text-rose-200"
+                        ? "border-cyan-200 bg-cyan-50 text-cyan-700"
+                        : "border-rose-200 bg-rose-50 text-rose-700"
                     }`}
                   >
                     {product.available ? "Available" : "Paused"}
@@ -299,7 +299,7 @@ export function AdminCatalogueConsole() {
                   <button
                     type="button"
                     onClick={() => openEditor(product)}
-                    className="min-h-10 rounded-lg bg-white px-3 text-[11px] font-semibold text-slate-950 hover:bg-violet-200"
+                    className="min-h-10 rounded-xl bg-violet-600 px-3 text-[11px] font-bold text-white shadow-md transition hover:bg-violet-700 hover:-translate-y-0.5"
                   >
                     Edit media
                   </button>
@@ -314,13 +314,13 @@ export function AdminCatalogueConsole() {
           </div>
         </section>
 
-        <aside className="system-panel h-fit p-5 xl:sticky xl:top-24">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-300">
+        <aside className="system-panel h-fit p-5 xl:sticky xl:top-24 border border-slate-200 bg-white shadow-sm rounded-2xl">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-600">
             Media and display override
           </p>
           {selected ? (
             <div className="mt-4 grid gap-4">
-              <div className="aspect-[16/10] overflow-hidden rounded-lg border border-white/10 bg-black/25">
+              <div className="aspect-[16/10] overflow-hidden rounded-xl border border-slate-100 bg-slate-50">
                 <ResilientImage
                   sources={selected.media.sources}
                   alt={selected.media.alt}
@@ -329,7 +329,7 @@ export function AdminCatalogueConsole() {
                   fallbackClassName="h-full w-full"
                 />
               </div>
-              <label className="text-xs font-bold text-slate-300">
+              <label className="text-xs font-bold text-slate-500">
                 Storefront name
                 <input
                   value={edit.storefrontName}
@@ -339,10 +339,10 @@ export function AdminCatalogueConsole() {
                       storefrontName: event.target.value,
                     }))
                   }
-                  className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
+                  className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-500 shadow-sm"
                 />
               </label>
-              <label className="text-xs font-bold text-slate-300">
+              <label className="text-xs font-bold text-slate-500">
                 Primary image URL
                 <input
                   value={edit.imageUrl}
@@ -350,17 +350,17 @@ export function AdminCatalogueConsole() {
                     setEdit((current) => ({ ...current, imageUrl: event.target.value }))
                   }
                   placeholder="https://reviewed-cdn.example/product.png"
-                  className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
+                  className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-500 shadow-sm"
                 />
               </label>
-              <label className="text-xs font-bold text-slate-300">
+              <label className="text-xs font-bold text-slate-500">
                 Image description
                 <input
                   value={edit.imageAlt}
                   onChange={(event) =>
                     setEdit((current) => ({ ...current, imageAlt: event.target.value }))
                   }
-                  className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none focus:border-violet-400"
+                  className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none focus:border-violet-500 shadow-sm"
                 />
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -370,7 +370,7 @@ export function AdminCatalogueConsole() {
                   onClick={() =>
                     void patchProduct(selected.id, edit, "Storefront media updated.")
                   }
-                  className="min-h-11 rounded-lg bg-violet-500 px-3 text-xs font-semibold text-white hover:bg-violet-400 disabled:opacity-50"
+                  className="min-h-11 rounded-xl bg-violet-600 px-3 text-xs font-bold text-white shadow-md transition hover:bg-violet-700 hover:-translate-y-0.5 disabled:opacity-50"
                 >
                   Save override
                 </button>
@@ -384,7 +384,7 @@ export function AdminCatalogueConsole() {
                       "Overrides cleared.",
                     )
                   }
-                  className="min-h-11 rounded-lg border border-white/10 px-3 text-xs font-semibold text-slate-300 hover:bg-white/5 disabled:opacity-50"
+                  className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 shadow-sm hover:bg-slate-50 disabled:opacity-50"
                 >
                   Clear override
                 </button>

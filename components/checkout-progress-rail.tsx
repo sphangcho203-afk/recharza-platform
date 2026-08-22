@@ -16,8 +16,8 @@ export function CheckoutProgressRail({ current }: CheckoutProgressRailProps) {
   return (
     <div className="w-full">
       <div className="mb-2.5 flex items-center justify-between">
-        <p className="text-[.68rem] font-semibold uppercase tracking-[0.18em] text-cyan-200/80">Checkout</p>
-        <p className="text-[.72rem] font-semibold text-slate-300">
+        <p className="text-[.68rem] font-bold uppercase tracking-[0.18em] text-violet-600/80">Checkout</p>
+        <p className="text-[.72rem] font-bold text-slate-900">
           {STEP_LABELS[Math.min(current, total) - 1]} · <span className="text-slate-500">Step {Math.min(current, total)} of {total}</span>
         </p>
       </div>
@@ -43,7 +43,7 @@ export function CheckoutProgressRail({ current }: CheckoutProgressRailProps) {
                   <span className="h-1.5 w-1.5 rounded-full bg-white" aria-hidden="true" />
                 ) : null}
               </span>
-              <span className={`recharza-segment-label ${done ? "text-emerald-300/90" : active ? "text-cyan-100" : "text-slate-500"}`}>
+              <span className={`recharza-segment-label ${done ? "text-emerald-600" : active ? "text-violet-900" : "text-slate-400"}`}>
                 {label}
               </span>
             </div>

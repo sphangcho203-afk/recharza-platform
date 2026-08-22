@@ -60,7 +60,7 @@ const initialVerification: VerificationState = {
   nickname: null,
 };
 
-const inputClassName = "storefront-checkout-field mt-2 w-full px-3.5 text-sm placeholder:text-slate-600";
+const inputClassName = "storefront-checkout-field mt-2 w-full px-3.5 text-sm placeholder:text-slate-400 border-slate-200 focus:border-violet-600 focus:ring-violet-600/10";
 
 function createIdempotencyKey() {
   if (globalThis.crypto?.randomUUID) return `rz_${globalThis.crypto.randomUUID()}`;
@@ -343,16 +343,16 @@ export function MobileLegendsCheckoutShell({
         <CheckoutProgress step={step} onStepChange={setStep} />
 
         {step === 2 ? <>
-        <section className="storefront-checkout-surface p-4 sm:p-5">
+        <section className="storefront-checkout-surface p-4 sm:p-5 border border-slate-200 bg-white shadow-sm rounded-2xl">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-base font-semibold text-white">Order information</h2>
-              <p className="mt-1 text-xs text-slate-500">Verify the Mobile Legends destination before creating an order.</p>
+              <h2 className="text-base font-bold text-slate-900">Order information</h2>
+              <p className="mt-1 text-xs text-slate-600">Verify the Mobile Legends destination before creating an order.</p>
             </div>
           </div>
 
           <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_0.7fr_auto] sm:items-end">
-            <label className="text-xs font-semibold text-slate-400">
+            <label className="text-xs font-bold text-slate-500">
               Player ID
               <input
                 required
@@ -367,7 +367,7 @@ export function MobileLegendsCheckoutShell({
                 className={inputClassName}
               />
             </label>
-            <label className="text-xs font-semibold text-slate-400">
+            <label className="text-xs font-bold text-slate-500">
               Zone ID
               <input
                 required
@@ -394,20 +394,20 @@ export function MobileLegendsCheckoutShell({
 
           <div
             aria-live="polite"
-            className={`mt-3 rounded-lg border px-3 py-2.5 text-xs leading-5 ${
+            className={`mt-3 rounded-xl border px-4 py-3 text-xs font-medium leading-relaxed transition-all ${
               verification.status === "success"
-                ? "border-emerald-400/20 bg-emerald-400/[0.07] text-emerald-200"
+                ? "border-emerald-100 bg-emerald-50 text-emerald-700"
                 : verification.status === "error"
-                  ? "border-rose-400/20 bg-rose-400/[0.07] text-rose-200"
-                  : "border-white/[0.08] bg-black/10 text-slate-600"
+                  ? "border-rose-100 bg-rose-50 text-rose-700"
+                  : "border-slate-100 bg-slate-50 text-slate-500"
             }`}
           >
             {verification.message}
-            {verification.nickname ? <strong className="ml-1 text-white">{verification.nickname}</strong> : null}
+            {verification.nickname ? <strong className="ml-1.5 font-bold text-slate-900">{verification.nickname}</strong> : null}
           </div>
 
           {restoredFromCart ? (
-            <p className="mt-3 rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-3 py-2.5 text-xs leading-5 text-cyan-100">
+            <p className="mt-3 rounded-xl border border-cyan-100 bg-cyan-50 px-4 py-3 text-xs font-medium leading-relaxed text-cyan-700">
               Package restored from your cart. Verify the player destination
               before paying for this order.
             </p>
@@ -420,30 +420,30 @@ export function MobileLegendsCheckoutShell({
         <section>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold tracking-[-0.025em] text-white">Choose a package</h2>
-              <p className="mt-1 text-xs text-slate-500">{packages.length} offers · {market.flag} {market.label}</p>
+              <h2 className="text-lg font-bold tracking-tight text-slate-900">Choose a package</h2>
+              <p className="mt-1 text-xs font-medium text-slate-500">{packages.length} offers · {market.flag} {market.label}</p>
             </div>
             <div className="flex items-center gap-3">
             </div>
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4">
             {visiblePackages.map((item) => {
               const selected = item.id === selectedPackage.id;
               const badge = getMerchandisingBadge(item);
               const quantity = splitBonusQuantity(item.name);
               const badgeClass = badge?.tone === "rose"
-                ? "border-rose-300/30 bg-rose-400/[0.16] text-rose-100 shadow-[0_8px_24px_rgba(244,63,94,0.18)]"
+                ? "border-rose-100 bg-rose-50 text-rose-700"
                 : badge?.tone === "emerald"
-                  ? "border-emerald-300/30 bg-emerald-400/[0.14] text-emerald-100 shadow-[0_8px_24px_rgba(16,185,129,0.16)]"
-                  : "border-violet-300/30 bg-violet-400/[0.16] text-violet-100 shadow-[0_8px_24px_rgba(139,92,246,0.18)]";
+                  ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                  : "border-violet-100 bg-violet-50 text-violet-700";
               return (
                 <div
                   key={item.id}
-                    className={`group overflow-hidden rounded-[1.1rem] border text-left transition duration-200 ${
+                    className={`group overflow-hidden rounded-2xl border transition-all duration-200 ${
                     selected
-                      ? "border-violet-400/55 bg-violet-500/[0.08] shadow-[0_0_0_1px_rgba(139,92,246,0.15)]"
-                      : "border-white/[0.08] bg-[#0d0f16] hover:border-white/[0.17]"
+                      ? "border-violet-600 bg-violet-50 shadow-sm"
+                      : "border-slate-100 bg-white hover:border-slate-200 hover:shadow-md"
                   }`}
                 >
                   <button
@@ -455,30 +455,30 @@ export function MobileLegendsCheckoutShell({
                     aria-pressed={selected}
                     className="block w-full text-left"
                   >
-                    <span className="relative block aspect-[16/9] overflow-hidden bg-[#141821]">
+                    <span className="relative block aspect-[16/9] overflow-hidden bg-slate-50">
                       <StorefrontArtwork
                         sources={item.media.sources}
                         alt={item.media.alt}
                         fallbackLabel={item.name.slice(0, 2).toUpperCase()}
-                        className="h-full w-full p-4 sm:p-5"
+                        className="h-full w-full p-4 sm:p-5 transition-transform duration-300 group-hover:scale-105"
                         objectFit="contain"
                         sizes="(max-width: 640px) 45vw, 190px"
                         fallbackClassName="absolute inset-0 h-full w-full"
                       />
                     </span>
-                    <span className="block p-3 sm:p-4">
+                    <span className="block p-4">
                       {badge ? (
-                        <span className={`mb-2 inline-flex w-fit items-center gap-1.5 rounded-md border px-2 py-1 text-[10px] font-semibold tracking-wide ${badgeClass}`}>
+                        <span className={`mb-2 inline-flex w-fit items-center gap-1.5 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest ${badgeClass}`}>
                           <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden="true" />
                           {badge.label}
                         </span>
                       ) : null}
-                      <strong className="line-clamp-2 min-h-10 text-[13px] font-semibold leading-5 tracking-[-0.01em] text-white sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-semibold text-emerald-300">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
-                      <span className="mt-3 block text-lg font-semibold tracking-[-0.025em] text-violet-200">{formatPresentment(item.amountInPaise)}</span>
-                      <span className="mt-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-slate-600">{item.source === "fazercards-live" ? "Live delivery" : "Ready to deliver"}</span>
+                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-tight text-slate-900 sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-bold text-emerald-600">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
+                      <span className="mt-3 block text-lg font-bold tracking-tight text-violet-600">{formatPresentment(item.amountInPaise)}</span>
+                      <span className="mt-1.5 block text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.source === "fazercards-live" ? "Instant delivery" : "Digital delivery"}</span>
                     </span>
                   </button>
-                  <div className="px-3 pb-3 sm:px-4 sm:pb-4">
+                  <div className="px-4 pb-4">
                     <AddToCartButton
                       gameSlug="mobile-legends"
                       marketCode={market.code}
@@ -493,7 +493,7 @@ export function MobileLegendsCheckoutShell({
               );
             })}
           </div>
-          {visiblePackages.length === 0 ? <p className="mt-3 rounded-lg border border-dashed border-white/[0.1] p-8 text-center text-sm text-slate-500">No packages are currently available.</p> : null}
+          {visiblePackages.length === 0 ? <p className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-12 text-center text-sm font-medium text-slate-500">No packages are currently available.</p> : null}
         </section>
         {step === 1 ? <StepActions current={step} onNext={() => advanceStep(2)} nextLabel="Continue to player info" /> : null}
         </> : null}
@@ -520,16 +520,16 @@ export function MobileLegendsCheckoutShell({
           />
 
           {isAuthenticated && selectedAddressId === null ? (
-            <label className="flex items-start gap-3 rounded-lg border border-white/[0.08] bg-white/[0.025] px-4 py-3">
+            <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm">
               <input
                 type="checkbox"
                 checked={saveNewAddress}
                 onChange={(event: ChangeEvent<HTMLInputElement>) => setSaveNewAddress(event.target.checked)}
-                className="mt-0.5 h-4 w-4 accent-violet-500"
+                className="mt-0.5 h-4 w-4 accent-violet-600"
               />
-              <span className="text-sm text-slate-200">
-                <strong className="font-semibold text-white">Save this billing address</strong>
-                <span className="mt-0.5 block text-xs text-slate-500">Keep this address for faster checkout on your next top-up.</span>
+              <span className="text-sm text-slate-900">
+                <strong className="font-bold text-slate-900">Save this billing address</strong>
+                <span className="mt-0.5 block text-xs text-slate-600">Keep this address for faster checkout on your next top-up.</span>
               </span>
             </label>
           ) : null}
@@ -538,18 +538,18 @@ export function MobileLegendsCheckoutShell({
         </> : null}
 
         {step === 4 ? <>
-        <section className="rounded-lg border border-violet-300/20 bg-[#0d0f16] p-4 sm:p-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-300">Review before payment</p>
-          <h2 className="mt-1 text-xl font-semibold text-white">Confirm your top-up</h2>
-          <p className="mt-1 text-sm text-slate-500">Check the verified player, package, market, and billing details before creating the order.</p>
-          <dl className="mt-5 grid gap-4 rounded-lg border border-white/[0.08] bg-black/20 p-4 text-sm sm:grid-cols-2">
-            <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-semibold text-white">{selectedPackage.name}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-semibold text-white">{market.flag} {market.label}</dd></div>
-            <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Player ID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{playerId || "—"}</dd></div>
-            <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{zoneId || "—"}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-semibold text-emerald-200">{verification.nickname || "Verified player"}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-semibold text-white">{billing.presentmentCurrency}</dd></div>
-            <div className="border-t border-white/[0.08] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-semibold text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
+          <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">Review before payment</p>
+          <h2 className="mt-1 text-xl font-bold text-slate-900">Confirm your top-up</h2>
+          <p className="mt-1 text-sm text-slate-600">Check the verified player, package, market, and billing details before creating the order.</p>
+          <dl className="mt-5 grid gap-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm sm:grid-cols-2">
+            <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-bold text-slate-900">{market.flag} {market.label}</dd></div>
+            <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Player ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{playerId || "—"}</dd></div>
+            <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{zoneId || "—"}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-600">{verification.nickname || "Verified player"}</dd></div>
+            <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-bold text-slate-900">{billing.presentmentCurrency}</dd></div>
+            <div className="border-t border-slate-200 pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-bold text-violet-600">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
           </dl>
           <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
             <button type="button" onClick={() => setStep(3)} className="storefront-checkout-secondary px-4 text-sm">Back to billing</button>
@@ -562,21 +562,21 @@ export function MobileLegendsCheckoutShell({
         {checkoutMessage && !order ? <p className="rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-4 py-3 text-sm text-cyan-100">{checkoutMessage}</p> : null}
 
         {step === 5 && order ? (
-          <section className="rounded-lg border border-emerald-400/20 bg-[#0c1110] p-4 sm:p-5">
-            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+          <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6 shadow-sm">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-300">{duplicate ? "Existing order recovered" : "Order created"}</p>
-                <h3 className="mt-1 break-all text-lg font-semibold text-white">{order.id}</h3>
-                <p className="mt-1 text-xs leading-5 text-emerald-100/65">{checkoutMessage}</p>
-                {addressSaveNote ? <p className="mt-2 text-xs leading-5 text-amber-200/80">{addressSaveNote}</p> : null}
+                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600">{duplicate ? "Existing order recovered" : "Order created"}</p>
+                <h3 className="mt-1 break-all text-lg font-bold tracking-tight text-slate-900">{order.id}</h3>
+                <p className="mt-2 text-xs font-medium leading-relaxed text-emerald-800/80">{checkoutMessage}</p>
+                {addressSaveNote ? <p className="mt-2 text-xs font-medium leading-relaxed text-amber-700/80">{addressSaveNote}</p> : null}
               </div>
-              <span className="w-fit rounded-md border border-emerald-300/20 bg-emerald-300/[0.07] px-2 py-1 text-[10px] font-semibold text-emerald-200">{order.ownership.accountLinked ? "Linked account" : "Guest checkout"}</span>
+              <span className="w-fit rounded-full bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-600 shadow-sm">{order.ownership.accountLinked ? "Linked account" : "Guest checkout"}</span>
             </div>
 
             <PrivateOrderTokenCard token={order.tracking.accessToken} />
 
             {paymentVerified ? (
-              <div className="mt-4 rounded-lg border border-emerald-300/20 bg-emerald-300/[0.08] p-3 text-sm font-bold text-emerald-50">Payment response verified. Fulfilment status remains available through secure tracking.</div>
+              <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-100/50 p-4 text-sm font-bold text-emerald-800">Payment response verified. Fulfilment status remains available through secure tracking.</div>
             ) : (
               <RazorpayTestCheckout
                 orderId={order.id}
@@ -588,12 +588,12 @@ export function MobileLegendsCheckoutShell({
               />
             )}
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              <Link href={order.tracking.path} className="inline-flex min-h-10 items-center rounded-lg border border-emerald-300/20 px-3 text-xs font-semibold text-emerald-200">Open tracking</Link>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link href={order.tracking.path} className="inline-flex min-h-11 items-center rounded-xl bg-emerald-600 px-5 text-[11px] font-bold uppercase tracking-widest text-white shadow-lg shadow-emerald-100 transition-all hover:-translate-y-1 hover:bg-emerald-700">Open tracking</Link>
               <button
                 type="button"
                 onClick={() => resetCreatedOrder()}
-                className="inline-flex min-h-10 items-center rounded-lg border border-white/[0.08] px-3 text-xs font-semibold text-slate-400 hover:text-white"
+                className="inline-flex min-h-11 items-center rounded-xl border border-slate-200 bg-white px-5 text-[11px] font-bold uppercase tracking-widest text-slate-600 shadow-sm transition-all hover:border-slate-300 hover:text-slate-900"
               >
                 Start another order
               </button>

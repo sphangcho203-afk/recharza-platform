@@ -38,20 +38,20 @@ export function OrderLookupForm() {
   return (
     <form
       onSubmit={submit}
-      className="mx-auto max-w-2xl rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 shadow-2xl shadow-black/20 sm:p-8"
+      className="mx-auto max-w-2xl rounded-[2.5rem] border border-slate-200 bg-white p-5 shadow-2xl shadow-slate-200/50 sm:p-8"
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
+      <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-600">
         Secure order lookup
       </p>
-      <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+      <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
         Open your private timeline
       </h2>
-      <p className="mt-3 text-sm leading-6 text-slate-400">
+      <p className="mt-3 text-sm leading-6 text-slate-500 font-medium">
         The order ID locates the record. The private access token unlocks package details,
         masked receipt information and the persisted status timeline.
       </p>
 
-      <label className="mt-7 block text-sm font-semibold text-slate-200">
+      <label className="mt-7 block text-sm font-bold text-slate-900">
         Order ID
         <input
           required
@@ -59,34 +59,34 @@ export function OrderLookupForm() {
           value={orderId}
           onChange={(event) => setOrderId(event.target.value.toUpperCase())}
           placeholder="RZ-12AB34CD56EF"
-          className="mt-2 w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 font-mono text-base font-normal text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10"
+          className="mt-2 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-mono text-base font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-violet-600 focus:ring-4 focus:ring-violet-500/10 shadow-sm"
         />
       </label>
 
-      <label className="mt-4 block text-sm font-semibold text-slate-200">
-        Private token <span className="font-normal text-slate-600">(optional)</span>
+      <label className="mt-4 block text-sm font-bold text-slate-900">
+        Private token <span className="font-medium text-slate-400">(optional)</span>
         <textarea
           rows={4}
           value={accessToken}
           onChange={(event) => setAccessToken(event.target.value)}
           placeholder="Paste the token issued after order creation"
-          className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-black/20 px-4 py-3 font-mono text-sm font-normal text-white outline-none transition placeholder:text-slate-600 focus:border-violet-400 focus:ring-4 focus:ring-violet-500/10"
+          className="mt-2 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-mono text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-violet-600 focus:ring-4 focus:ring-violet-500/10 shadow-sm"
         />
       </label>
 
       <button
         type="submit"
-        className="mt-5 w-full rounded-lg bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500 px-5 py-3.5 text-sm font-semibold text-white shadow-[0_14px_45px_rgba(139,92,246,0.28)] transition hover:-translate-y-0.5"
+        className="mt-5 w-full rounded-xl bg-violet-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200 transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5 hover:shadow-xl"
       >
         Open secure tracking
       </button>
 
       <p
         aria-live="polite"
-        className={`mt-4 rounded-lg border px-4 py-3 text-sm leading-6 ${
+        className={`mt-4 rounded-xl border px-4 py-3 text-sm leading-6 font-medium ${
           isError
-            ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
-            : "border-white/10 bg-black/15 text-slate-400"
+            ? "border-rose-200 bg-rose-50 text-rose-700"
+            : "border-slate-100 bg-slate-50 text-slate-500"
         }`}
       >
         {message}

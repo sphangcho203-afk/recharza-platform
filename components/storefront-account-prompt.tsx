@@ -42,13 +42,13 @@ export function StorefrontAccountPrompt() {
   if (state === "loading") {
     return (
       <section className="mx-auto max-w-[1240px] px-4 py-12 sm:px-6 lg:px-8" aria-label="Checking account status">
-        <div className="storefront-support-panel min-h-44 animate-pulse">
+        <div className="storefront-support-panel min-h-44 animate-pulse border border-slate-100 bg-white shadow-sm">
           <div className="space-y-3">
-            <div className="h-3 w-32 rounded-full bg-white/10" />
-            <div className="h-8 w-full max-w-xl rounded-lg bg-white/10" />
-            <div className="h-4 w-full max-w-2xl rounded bg-white/[0.07]" />
+            <div className="h-3 w-32 rounded-full bg-slate-100" />
+            <div className="h-8 w-full max-w-xl rounded-lg bg-slate-100" />
+            <div className="h-4 w-full max-w-2xl rounded bg-slate-50" />
           </div>
-          <div className="h-12 w-40 rounded-lg bg-white/10" />
+          <div className="h-12 w-40 rounded-lg bg-slate-100" />
         </div>
       </section>
     );
@@ -61,10 +61,10 @@ export function StorefrontAccountPrompt() {
       <div className="storefront-support-panel">
         <div>
           <div className="storefront-section-label">{authenticated ? "Account ready" : "Ready when you are"}</div>
-          <h2 className="mt-3 max-w-xl font-heading text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+          <h2 className="mt-3 max-w-xl font-heading text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
             {authenticated ? `Welcome back, ${displayName}.` : "A cleaner way to keep every top-up in one place."}
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
             {authenticated
               ? "Your account is active. Review orders, saved destinations, billing details, and support from one workspace."
               : "Open an account to keep order history together, or go straight to support if you already have a question."}

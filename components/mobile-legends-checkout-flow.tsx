@@ -114,14 +114,14 @@ function billingIsComplete(billing: BillingFormState) {
 
 function stageTone(state: "complete" | "active" | "waiting") {
   if (state === "complete") {
-    return "border-emerald-400/25 bg-emerald-400/10 text-emerald-100";
+    return "border-emerald-200 bg-emerald-50 text-emerald-700 shadow-sm shadow-emerald-100";
   }
 
   if (state === "active") {
-    return "border-violet-400/35 bg-violet-400/15 text-white";
+    return "border-violet-200 bg-violet-600 text-white shadow-lg shadow-violet-200";
   }
 
-  return "border-white/10 bg-white/[0.035] text-slate-500";
+  return "border-slate-100 bg-slate-50/50 text-slate-400";
 }
 
 export function MobileLegendsCheckoutFlow({
@@ -351,7 +351,7 @@ export function MobileLegendsCheckoutFlow({
 
   if (!selectedPackage) {
     return (
-      <div className="rounded-lg border border-amber-300/20 bg-amber-300/10 p-6 text-amber-100">
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-700 font-bold shadow-lg shadow-amber-100">
         No approved packages are available for this market. Run the reviewed supplier
         sync or choose another region.
       </div>
@@ -360,51 +360,50 @@ export function MobileLegendsCheckoutFlow({
 
   return (
     <form onSubmit={submitCheckout} className="grid gap-5">
-      <section className="sticky top-0 z-20 -mx-4 border-y border-white/10 bg-[#080810]/92 px-4 py-3 backdrop-blur-xl sm:mx-0 sm:rounded-lg sm:border">
+      <section className="sticky top-0 z-20 -mx-4 border-y border-slate-200 bg-white/95 px-4 py-3 backdrop-blur-xl sm:mx-0 sm:rounded-2xl sm:border shadow-lg shadow-slate-200/50">
         <div className="grid grid-cols-4 gap-2">
           {stageLabels.map((label, index) => (
             <div
               key={label}
-              className={`rounded-lg border px-2 py-2.5 text-center transition ${stageTone(stages[index])}`}
+              className={`rounded-xl border px-2 py-2.5 text-center transition-all ${stageTone(stages[index])}`}
             >
-              <span className="block text-[10px] font-semibold uppercase tracking-[0.14em] opacity-70">
+              <span className="block text-[10px] font-bold uppercase tracking-widest opacity-60">
                 0{index + 1}
               </span>
-              <span className="mt-0.5 block truncate text-xs font-semibold sm:text-sm">
+              <span className="mt-0.5 block truncate text-xs font-bold sm:text-sm">
                 {label}
               </span>
             </div>
           ))}
         </div>
-        <p className="mt-2 text-center text-[11px] text-slate-500">
-          One interface. No account detour. Billing email and the private order token
-          protect recovery.
+        <p className="mt-2 text-center text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+          One interface · Secure billing · Private tracking
         </p>
       </section>
 
-      <section className="overflow-hidden rounded-lg border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(91,124,255,0.15),transparent_42%),rgba(255,255,255,0.04)] shadow-2xl shadow-black/20">
-        <div className="border-b border-white/10 p-4 sm:p-6">
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60">
+        <div className="border-b border-slate-100 p-4 sm:p-6 bg-slate-50/50">
           <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
                 01 · Package
               </p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
                 Choose the top-up
               </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-400">
+              <p className="mt-2 text-sm font-medium text-slate-500">
                 Search the approved {market.label} catalogue. The selected package
                 remains visible while you finish the flow.
               </p>
             </div>
-            <label className="block w-full max-w-sm text-xs font-bold text-slate-300">
+            <label className="block w-full max-w-sm text-xs font-bold text-slate-500 uppercase tracking-wider">
               Find package
               <input
                 type="search"
                 value={packageQuery}
                 onChange={(event) => setPackageQuery(event.target.value)}
                 placeholder="Diamonds, pass, amount..."
-                className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-sm font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400"
+                className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-900 outline-none placeholder:text-slate-400 focus:border-violet-600 focus:ring-4 focus:ring-violet-50 transition-all"
               />
             </label>
           </div>
@@ -433,64 +432,64 @@ export function MobileLegendsCheckoutFlow({
             </div>
 
             {visiblePackages.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-white/10 p-8 text-center text-sm text-slate-500">
+              <div className="rounded-xl border border-dashed border-slate-200 p-8 text-center text-sm font-bold text-slate-400">
                 No package matches that search.
               </div>
             ) : null}
           </div>
 
-          <aside className="h-fit rounded-lg border border-violet-400/20 bg-violet-400/10 p-4 lg:sticky lg:top-24">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-violet-200">
+          <aside className="h-fit rounded-2xl border border-violet-100 bg-violet-50/50 p-5 lg:sticky lg:top-24 shadow-sm">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
               Selected offer
             </p>
-            <p className="mt-2 text-lg font-semibold text-white">
+            <p className="mt-2 text-lg font-bold text-slate-900">
               {selectedPackage.name}
             </p>
-            <p className="mt-2 text-3xl font-semibold text-white">
+            <p className="mt-2 text-3xl font-bold text-slate-900">
               {formatPresentment(selectedPackage.amountInPaise)}
             </p>
             {billing.presentmentCurrency !== "INR" ? (
-              <p className="mt-1 text-xs text-violet-100/65">
+              <p className="mt-1 text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Settlement {formatInr(selectedPackage.amountInPaise)}
               </p>
             ) : null}
-            <div className="mt-4 grid gap-2 text-xs text-violet-100/75">
-              <span>{market.flag} {market.label} account region</span>
-              <span>{packages.length} approved offers loaded</span>
-              <span>
-                {packages.some((item) => item.source === "fazercards-live")
-                  ? "Live supplier catalogue"
-                  : "Protected fallback catalogue"}
+            <div className="mt-6 grid gap-2.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              <span className="flex items-center gap-2">{market.flag} {market.label} Region</span>
+              <span className="flex items-center gap-2">✓ {packages.length} Offers Loaded</span>
+              <span className="flex items-center gap-2">
+                ✓ {packages.some((item) => item.source === "fazercards-live")
+                  ? "Live Supplier"
+                  : "Protected Fallback"}
               </span>
             </div>
           </aside>
         </div>
       </section>
 
-      <section className="rounded-lg border border-white/10 bg-white/[0.04] p-4 shadow-2xl shadow-black/20 sm:p-6">
+      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-xl shadow-slate-200/60 sm:p-6">
         <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
               02 · Player
             </p>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight">
+            <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
               Verify the game destination
             </h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">
+            <p className="mt-2 text-sm font-medium text-slate-500">
               Package and region are sent with the player details so validation cannot
               drift into another catalogue.
             </p>
           </div>
           <Link
             href="/games/mobile-legends"
-            className="w-fit rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-300 hover:text-white"
+            className="w-fit rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 transition-all"
           >
             Change region
           </Link>
         </div>
 
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <label className="text-sm font-semibold text-slate-200">
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
             Player ID
             <input
               required
@@ -502,10 +501,10 @@ export function MobileLegendsCheckoutFlow({
                 resetVerification();
               }}
               placeholder="Example: 123456789"
-              className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
+              className="mt-2 min-h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base font-bold text-slate-900 outline-none focus:border-violet-600 focus:bg-white transition-all"
             />
           </label>
-          <label className="text-sm font-semibold text-slate-200">
+          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">
             Zone ID
             <input
               required
@@ -517,7 +516,7 @@ export function MobileLegendsCheckoutFlow({
                 resetVerification();
               }}
               placeholder="Example: 2045"
-              className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-base font-normal text-white outline-none placeholder:text-slate-600 focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
+              className="mt-2 min-h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-base font-bold text-slate-900 outline-none focus:border-violet-600 focus:bg-white transition-all"
             />
           </label>
         </div>
@@ -528,7 +527,7 @@ export function MobileLegendsCheckoutFlow({
           disabled={
             verification.status === "loading" || !playerId || !zoneId
           }
-          className="mt-4 min-h-12 w-full rounded-lg border border-violet-400/30 bg-violet-400/10 px-4 py-3 text-sm font-semibold text-violet-100 transition hover:bg-violet-400/15 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-4 min-h-12 w-full rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-sm font-bold text-violet-700 transition-all hover:bg-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {verification.status === "loading"
             ? "Validating player..."
@@ -537,17 +536,17 @@ export function MobileLegendsCheckoutFlow({
 
         <div
           aria-live="polite"
-          className={`mt-3 rounded-lg border px-4 py-3 text-sm leading-6 ${
+          className={`mt-3 rounded-xl border px-4 py-3 text-sm font-bold ${
             verification.status === "success"
-              ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-200"
+              ? "border-emerald-100 bg-emerald-50 text-emerald-700"
               : verification.status === "error"
-                ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
-                : "border-white/10 bg-black/15 text-slate-400"
+                ? "border-rose-100 bg-rose-50 text-rose-700"
+                : "border-slate-100 bg-slate-50 text-slate-500"
           }`}
         >
           {verification.message}
           {verification.status === "success" && verification.nickname ? (
-            <strong className="mt-1 block text-white">
+            <strong className="mt-1 block text-slate-900">
               Nickname: {verification.nickname}
             </strong>
           ) : null}
@@ -563,68 +562,68 @@ export function MobileLegendsCheckoutFlow({
         fixedCurrency={marketCurrency}
       />
 
-      <section className="overflow-hidden rounded-lg border border-white/10 bg-[linear-gradient(145deg,rgba(17,17,29,0.98),rgba(8,8,16,0.98))] shadow-2xl shadow-black/30">
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/60">
         <div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
               04 · Review and payment
             </p>
-            <h2 className="mt-2 text-2xl font-semibold">
+            <h2 className="mt-2 text-2xl font-bold text-slate-900">
               Create once, then pay here
             </h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+            <p className="mt-2 max-w-2xl text-sm font-medium text-slate-500">
               The server resolves the current package, validates billing and player
               details, saves the order, and returns a private recovery token. Login is
               optional instead of blocking checkout.
             </p>
-            <div className="mt-4 grid gap-2 text-xs sm:grid-cols-2">
-              <div className="rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5">
-                <span className="text-slate-500">Region</span>
-                <strong className="float-right text-white">
+            <div className="mt-6 grid gap-2 text-[11px] sm:grid-cols-2">
+              <div className="rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2.5">
+                <span className="font-bold text-slate-400 uppercase tracking-wider">Region</span>
+                <strong className="float-right text-slate-900 font-bold">
                   {market.flag} {market.label}
                 </strong>
               </div>
-              <div className="rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5">
-                <span className="text-slate-500">Player</span>
-                <strong className="float-right max-w-[60%] truncate text-white">
+              <div className="rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2.5">
+                <span className="font-bold text-slate-400 uppercase tracking-wider">Player</span>
+                <strong className="float-right max-w-[60%] truncate text-slate-900 font-bold">
                   {verification.nickname || playerId || "Not validated"}
                 </strong>
               </div>
-              <div className="rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5">
-                <span className="text-slate-500">Package</span>
-                <strong className="float-right max-w-[60%] truncate text-white">
+              <div className="rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2.5">
+                <span className="font-bold text-slate-400 uppercase tracking-wider">Package</span>
+                <strong className="float-right max-w-[60%] truncate text-slate-900 font-bold">
                   {selectedPackage.name}
                 </strong>
               </div>
-              <div className="rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2.5">
-                <span className="text-slate-500">Recovery email</span>
-                <strong className="float-right max-w-[58%] truncate text-white">
+              <div className="rounded-xl border border-slate-100 bg-slate-50/50 px-3 py-2.5">
+                <span className="font-bold text-slate-400 uppercase tracking-wider">Recovery email</span>
+                <strong className="float-right max-w-[58%] truncate text-slate-900 font-bold">
                   {billing.email || "Required"}
                 </strong>
               </div>
             </div>
           </div>
 
-          <div className="min-w-56 rounded-lg border border-white/10 bg-black/25 p-4 text-right">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+          <div className="min-w-56 rounded-2xl border border-slate-200 bg-slate-50 p-5 text-right shadow-inner">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
               Total
             </p>
-            <p className="mt-1 text-3xl font-semibold text-white">
+            <p className="mt-1 text-3xl font-bold text-slate-900">
               {formatPresentment(selectedPackage.amountInPaise)}
             </p>
             {billing.presentmentCurrency !== "INR" ? (
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs font-bold text-slate-400 uppercase tracking-wider">
                 Settlement {formatInr(selectedPackage.amountInPaise)}
               </p>
             ) : null}
           </div>
         </div>
 
-        <div className="border-t border-white/10 p-4 sm:p-6">
+        <div className="border-t border-slate-100 p-4 sm:p-6 bg-slate-50/30">
           <button
             type="submit"
             disabled={isSubmitting || !canCreateOrder}
-            className="min-h-13 w-full rounded-lg bg-violet-500 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-45"
+            className="min-h-13 w-full rounded-xl bg-violet-600 px-6 py-4 text-sm font-bold text-white shadow-lg shadow-violet-200 transition-all hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:translate-y-0"
           >
             {isSubmitting
               ? "Creating order..."
@@ -632,7 +631,7 @@ export function MobileLegendsCheckoutFlow({
           </button>
 
           {!canCreateOrder && !order ? (
-            <p className="mt-3 text-center text-xs text-slate-500">
+            <p className="mt-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider">
               Complete player validation and billing to unlock payment.
             </p>
           ) : null}
@@ -640,7 +639,7 @@ export function MobileLegendsCheckoutFlow({
           {checkoutError ? (
             <p
               aria-live="assertive"
-              className="mt-3 rounded-lg border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200"
+              className="mt-3 rounded-xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700"
             >
               {checkoutError}
             </p>
@@ -649,7 +648,7 @@ export function MobileLegendsCheckoutFlow({
           {checkoutMessage && !order ? (
             <p
               aria-live="polite"
-              className="mt-3 rounded-lg border border-white/10 bg-white/[0.035] px-4 py-3 text-sm text-slate-300"
+              className="mt-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-500"
             >
               {checkoutMessage}
             </p>
@@ -659,45 +658,45 @@ export function MobileLegendsCheckoutFlow({
 
       <div ref={paymentSection} className="scroll-mt-24">
         {order ? (
-          <section className="rounded-lg border border-emerald-400/20 bg-emerald-400/10 p-4 shadow-2xl shadow-black/25 sm:p-6">
+          <section className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 shadow-xl shadow-emerald-100 sm:p-6">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-300">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-700">
                   {duplicate
                     ? "Existing order safely recovered"
                     : "Order created"}
                 </p>
-                <h2 className="mt-2 break-all text-2xl font-semibold text-white">
+                <h2 className="mt-2 break-all text-2xl font-bold text-slate-900">
                   {order.id}
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-emerald-100/80">
+                <p className="mt-2 text-sm font-medium text-emerald-800/80">
                   {checkoutMessage}
                 </p>
               </div>
-              <span className="w-fit rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1.5 text-xs font-semibold text-emerald-100">
+              <span className="w-fit rounded-full border border-emerald-200 bg-white/50 px-3 py-1.5 text-xs font-bold text-emerald-700">
                 {order.ownership.accountLinked
                   ? "Linked account"
                   : "Guest checkout"}
               </span>
             </div>
 
-            <div className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-              <div className="rounded-lg border border-emerald-300/15 bg-black/15 px-3 py-3">
-                <span className="text-emerald-100/60">Package</span>
-                <strong className="float-right text-white">
+            <div className="mt-6 grid gap-2 text-[11px] sm:grid-cols-2">
+              <div className="rounded-xl border border-emerald-100 bg-white/40 px-3 py-3">
+                <span className="font-bold text-emerald-700/60 uppercase tracking-wider">Package</span>
+                <strong className="float-right text-slate-900 font-bold">
                   {order.package.name}
                 </strong>
               </div>
-              <div className="rounded-lg border border-emerald-300/15 bg-black/15 px-3 py-3">
-                <span className="text-emerald-100/60">Player</span>
-                <strong className="float-right text-white">
+              <div className="rounded-xl border border-emerald-100 bg-white/40 px-3 py-3">
+                <span className="font-bold text-emerald-700/60 uppercase tracking-wider">Player</span>
+                <strong className="float-right text-slate-900 font-bold">
                   {order.player.nickname || order.player.playerId}
                 </strong>
               </div>
             </div>
 
             {paymentVerified ? (
-              <div className="mt-5 rounded-lg border border-emerald-300/25 bg-emerald-300/15 p-4 text-sm font-bold text-emerald-50">
+              <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-100 p-4 text-sm font-bold text-emerald-900 shadow-sm">
                 Payment response verified. The order remains in this interface and can
                 also be recovered from secure tracking.
               </div>
@@ -712,10 +711,10 @@ export function MobileLegendsCheckoutFlow({
               />
             )}
 
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <Link
                 href={order.tracking.path}
-                className="min-h-12 rounded-lg border border-emerald-300/25 bg-black/15 px-4 py-3 text-center text-sm font-semibold text-emerald-100"
+                className="min-h-12 rounded-xl border border-emerald-200 bg-white/50 px-4 py-3 text-center text-sm font-bold text-emerald-700 hover:bg-white transition-all shadow-sm"
               >
                 Open secure tracking
               </Link>
@@ -725,7 +724,7 @@ export function MobileLegendsCheckoutFlow({
                   resetCreatedOrder();
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className="min-h-12 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white"
+                className="min-h-12 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50 transition-all shadow-sm"
               >
                 Start another order
               </button>

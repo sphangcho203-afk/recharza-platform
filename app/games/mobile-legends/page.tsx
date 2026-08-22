@@ -26,10 +26,10 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
   const gameArtwork = media.get("game.mobile-legends.artwork");
 
   return (
-    <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-white">
+    <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-slate-900">
       <SiteHeader />
 
-      <section className="recharza-atmosphere-game border-b border-white/[0.08] px-4 py-5 sm:px-6 lg:px-8">
+      <section className="recharza-atmosphere-game border-b border-slate-100 bg-slate-50/30 px-4 py-5 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1240px]">
           <nav className="recharza-breadcrumb mb-4" aria-label="Page path">
             <Link href="/">Home</Link>
@@ -39,11 +39,11 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
             <span aria-current="page">Mobile Legends</span>
           </nav>
 
-          <div className="flex flex-col gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
             <div className="flex min-w-0 items-center gap-4">
               <div
-                className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/[0.08] sm:h-20 sm:w-20"
-                style={{ background: `linear-gradient(135deg, ${mobileLegendsGame.accent}26, ${mobileLegendsGame.accent}08)` }}
+                className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-100 sm:h-20 sm:w-20"
+                style={{ background: `linear-gradient(135deg, ${mobileLegendsGame.accent}15, ${mobileLegendsGame.accent}05)` }}
               >
                 <ResilientImage
                   sources={gameLogo ? [gameLogo.url, mobileLegendsGame.icon, ...mobileLegendsGame.logoSources] : [mobileLegendsGame.icon, ...mobileLegendsGame.logoSources]}
@@ -58,22 +58,22 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
               </div>
               <div>
                 <p className="recharza-eyebrow">Instant delivery</p>
-                <h1 className="recharza-section-head mt-1 text-white">Mobile Legends: Bang Bang Top Up</h1>
+                <h1 className="recharza-section-head mt-1 text-slate-900">Mobile Legends: Bang Bang Top Up</h1>
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  <span className="inline-flex whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{mobileLegendsMarkets.length} markets</span>
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-300/20 bg-amber-400/[0.06] px-2 py-0.5 text-[11px] font-medium text-amber-300/90">★ 4.9</span>
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-emerald-300/20 bg-emerald-400/[0.06] px-2 py-0.5 text-[11px] font-medium text-emerald-300/90"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Secure</span>
-                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-cyan-300/90"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
+                  <span className="inline-flex whitespace-nowrap rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-bold text-slate-600">{mobileLegendsMarkets.length} markets</span>
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700">★ 4.9</span>
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Secure</span>
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-[11px] font-bold text-cyan-700"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
                 </div>
                 {mobileLegendsGame.deliveryCoverage && (
-                  <div className="mt-2.5 inline-flex max-w-full items-center gap-1.5 rounded-md border border-white/[0.10] bg-white/[0.04] px-2.5 py-1">
-                    <StorefrontIcon name="shield" className="h-3.5 w-3.5 shrink-0 text-emerald-300/90" />
-                    <p className="truncate text-[11px] font-medium leading-snug text-white/70">{mobileLegendsGame.deliveryCoverage.headline}</p>
+                  <div className="mt-2.5 inline-flex max-w-full items-center gap-1.5 rounded-md border border-emerald-100 bg-emerald-50 px-2.5 py-1">
+                    <StorefrontIcon name="shield" className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                    <p className="truncate text-[11px] font-bold leading-snug text-emerald-800">{mobileLegendsGame.deliveryCoverage.headline}</p>
                   </div>
                 )}
               </div>
             </div>
-            <div className="relative hidden h-20 w-44 overflow-hidden rounded-lg border border-white/[0.08] bg-[#12151d] md:block">
+            <div className="relative hidden h-20 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white md:block shadow-sm">
               <ResilientImage
                 sources={gameArtwork ? [gameArtwork.url, ...mobileLegendsGame.artworkSources] : mobileLegendsGame.artworkSources}
                 alt={gameArtwork?.altText ?? mobileLegendsGame.artworkAlt}
@@ -92,10 +92,10 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
         <div className="flex items-end justify-between gap-4">
           <div>
             <p className="recharza-eyebrow">Step 1</p>
-            <h2 className="recharza-section-head mt-3 text-white">Choose your account market</h2>
-            <p className="recharza-body mt-3">The selected market controls packages, currency, validation and fulfilment.</p>
+            <h2 className="recharza-section-head mt-3 text-slate-900">Choose your account market</h2>
+            <p className="recharza-body mt-3 text-slate-600">The selected market controls packages, currency, validation and fulfilment.</p>
           </div>
-          <Link href="/support" className="hidden text-xs font-semibold text-violet-300 hover:text-violet-200 sm:block">Need help?</Link>
+          <Link href="/support" className="hidden text-xs font-bold text-violet-600 hover:text-violet-900 sm:block">Need help?</Link>
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -103,22 +103,22 @@ export default async function MobileLegendsPage({ searchParams }: { searchParams
             <Link
               key={market.code}
               href={`/games/mobile-legends/${market.code}`}
-              className="group flex min-h-28 items-center gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 transition hover:-translate-y-0.5 hover:border-violet-400/35 hover:shadow-[0_14px_36px_rgba(0,0,0,0.24)]"
+              className="group flex min-h-28 items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-violet-300 hover:shadow-lg"
             >
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025] text-2xl" aria-hidden="true">{market.flag}</span>
+              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-slate-100 bg-slate-50 text-2xl shadow-sm" aria-hidden="true">{market.flag}</span>
               <span className="min-w-0 flex-1">
                 <span className="flex items-center gap-2">
-                  <strong className="truncate text-sm font-semibold text-white">{market.label}</strong>
-                  <span className="rounded-md border border-white/[0.08] px-1.5 py-0.5 text-[9px] font-semibold text-slate-500">{market.defaultCurrency}</span>
+                  <strong className="truncate text-sm font-bold text-slate-900">{market.label}</strong>
+                  <span className="rounded-md border border-slate-100 bg-slate-50 px-1.5 py-0.5 text-[9px] font-bold text-slate-500">{market.defaultCurrency}</span>
                 </span>
-                <span className="mt-1.5 line-clamp-2 block text-xs leading-5 text-slate-500">{market.note}</span>
+                <span className="mt-1.5 line-clamp-2 block text-xs leading-5 text-slate-500 font-medium">{market.note}</span>
               </span>
-              <StorefrontIcon name="arrow" className="h-4 w-4 shrink-0 text-slate-600 transition group-hover:text-white" />
+              <StorefrontIcon name="arrow" className="h-4 w-4 shrink-0 text-slate-300 transition-colors duration-300 group-hover:text-violet-600" />
             </Link>
           ))}
         </div>
 
-        <div className="mt-7 rounded-lg border border-white/[0.08] bg-[#0b0d13] p-4 text-xs leading-5 text-slate-500 sm:p-5">
+        <div className="mt-7 rounded-xl border border-slate-200 bg-slate-50/50 p-4 text-xs leading-5 text-slate-500 font-medium sm:p-5">
           Choose a market only when it matches the Mobile Legends account. Recharza does not silently substitute a different region.
         </div>
 

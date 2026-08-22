@@ -75,15 +75,15 @@ function formatDate(value: string | null) {
 }
 
 function accessTone(status: AccessStatus) {
-  if (status === "ACTIVE") return "border-emerald-300/20 bg-emerald-300/10 text-emerald-200";
-  if (status === "ORDER_RESTRICTED") return "border-amber-300/20 bg-amber-300/10 text-amber-100";
-  return "border-rose-300/20 bg-rose-300/10 text-rose-100";
+  if (status === "ACTIVE") return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  if (status === "ORDER_RESTRICTED") return "border-amber-200 bg-amber-50 text-amber-700";
+  return "border-rose-200 bg-rose-50 text-rose-700";
 }
 
 function roleTone(role: AccountRole) {
-  if (role === "ADMIN") return "border-violet-300/20 bg-violet-300/10 text-violet-200";
-  if (role === "STAFF") return "border-cyan-300/20 bg-cyan-300/10 text-cyan-100";
-  return "border-white/10 bg-white/5 text-slate-300";
+  if (role === "ADMIN") return "border-violet-200 bg-violet-50 text-violet-700";
+  if (role === "STAFF") return "border-cyan-200 bg-cyan-50 text-cyan-700";
+  return "border-slate-200 bg-slate-50 text-slate-600";
 }
 
 export function AdminPeopleConsole({
@@ -242,11 +242,11 @@ export function AdminPeopleConsole({
     <section id="customers" className="mt-10 scroll-mt-24">
       <div className="mb-5 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-600">
             People, roles, sessions, and restrictions
           </p>
-          <h2 className="mt-1 text-2xl font-semibold">People &amp; access authority</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
+          <h2 className="mt-1 text-2xl font-bold text-slate-900">People &amp; access authority</h2>
+          <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-slate-500">
             Inspect every verified account, control customer access, promote trusted staff,
             grant exact operator permissions, and terminate active sessions with a permanent
             audit reason.
@@ -256,7 +256,7 @@ export function AdminPeopleConsole({
           type="button"
           onClick={() => void loadPeople(selectedId)}
           disabled={loading || acting}
-          className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/10 disabled:cursor-wait disabled:opacity-50"
+          className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-900 shadow-sm transition hover:bg-slate-50 disabled:cursor-wait disabled:opacity-50"
         >
           {loading ? "Refreshing..." : "Refresh people database"}
         </button>
@@ -269,38 +269,38 @@ export function AdminPeopleConsole({
           ["Restricted", totals.restricted],
           ["Active sessions", totals.sessions],
         ].map(([label, value]) => (
-          <article key={label} className="system-card p-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{label}</p>
-            <p className="mt-2 text-2xl font-semibold text-white">{value}</p>
+          <article key={label} className="system-card p-4 border border-slate-200 bg-white shadow-sm rounded-2xl">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">{label}</p>
+            <p className="mt-2 text-2xl font-bold text-slate-900">{value}</p>
           </article>
         ))}
       </div>
 
       <p
         aria-live="polite"
-        className={`mt-4 rounded-lg border px-4 py-3 text-sm ${
+        className={`mt-4 rounded-xl border px-4 py-3 text-sm font-medium ${
           isError
-            ? "border-rose-300/20 bg-rose-300/10 text-rose-100"
-            : "border-white/10 bg-black/20 text-slate-400"
+            ? "border-rose-200 bg-rose-50 text-rose-700"
+            : "border-slate-200 bg-slate-50 text-slate-500"
         }`}
       >
         {message}
       </p>
 
       <div className="mt-5 grid min-w-0 gap-5 2xl:grid-cols-[minmax(22rem,0.8fr)_minmax(0,1.2fr)]">
-        <article className="system-panel min-w-0 overflow-hidden">
-          <div className="grid gap-3 border-b border-white/10 p-4 lg:grid-cols-[minmax(0,1fr)_auto_auto]">
+        <article className="system-panel min-w-0 overflow-hidden border border-slate-200 bg-white shadow-sm rounded-2xl">
+          <div className="grid gap-3 border-b border-slate-100 p-4 lg:grid-cols-[minmax(0,1fr)_auto_auto] bg-slate-50/50">
             <input
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search email, name, role, or status"
-              className="min-h-11 min-w-0 rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-violet-400/50"
+              className="min-h-11 min-w-0 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-violet-500 shadow-sm"
             />
             <select
               value={roleFilter}
               onChange={(event) => setRoleFilter(event.target.value as typeof roleFilter)}
-              className="min-h-11 rounded-lg border border-white/10 bg-[#11111a] px-3 text-sm text-white"
+              className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none focus:border-violet-500"
             >
               <option value="ALL">All roles</option>
               <option value="CUSTOMER">Customers</option>
@@ -310,7 +310,7 @@ export function AdminPeopleConsole({
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value as typeof statusFilter)}
-              className="min-h-11 rounded-lg border border-white/10 bg-[#11111a] px-3 text-sm text-white"
+              className="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none focus:border-violet-500"
             >
               <option value="ALL">All access states</option>
               {ACCESS_OPTIONS.map((option) => (
@@ -319,7 +319,7 @@ export function AdminPeopleConsole({
             </select>
           </div>
 
-          <div className="max-h-[44rem] overflow-y-auto p-2">
+          <div className="max-h-[44rem] overflow-y-auto p-2 divide-y divide-slate-50">
             {visiblePeople.map((person) => {
               const active = person.id === selectedId;
               return (
@@ -327,26 +327,26 @@ export function AdminPeopleConsole({
                   key={person.id}
                   type="button"
                   onClick={() => selectPerson(person)}
-                  className={`mb-2 grid w-full min-w-0 gap-3 rounded-lg border p-3 text-left transition sm:grid-cols-[minmax(0,1fr)_auto] ${
+                  className={`mb-2 grid w-full min-w-0 gap-3 rounded-xl border p-3 text-left transition-all duration-300 sm:grid-cols-[minmax(0,1fr)_auto] ${
                     active
-                      ? "border-violet-300/40 bg-violet-300/10"
-                      : "border-white/8 bg-black/15 hover:border-white/15 hover:bg-white/[0.035]"
+                      ? "border-violet-200 bg-violet-50 shadow-sm"
+                      : "border-transparent bg-white hover:bg-slate-50"
                   }`}
                 >
                   <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold text-white">{person.email}</span>
-                    <span className="mt-1 block truncate text-xs text-slate-500">
+                    <span className="block truncate text-sm font-bold text-slate-900">{person.email}</span>
+                    <span className="mt-1 block truncate text-xs font-medium text-slate-500">
                       {person.displayName ?? person.username ?? "No public profile name"}
                     </span>
-                    <span className="mt-2 block text-[10px] text-slate-600">
+                    <span className="mt-2 block text-[10px] font-bold text-slate-400">
                       {person.counts.orders} orders · {person.counts.activeSessions} active sessions
                     </span>
                   </span>
                   <span className="flex flex-wrap items-start gap-1.5 sm:justify-end">
-                    <span className={`rounded-full border px-2 py-1 text-[9px] font-semibold ${roleTone(person.role)}`}>
+                    <span className={`rounded-full border px-2 py-1 text-[9px] font-bold ${roleTone(person.role)}`}>
                       {person.role}
                     </span>
-                    <span className={`rounded-full border px-2 py-1 text-[9px] font-semibold ${accessTone(person.accessStatus)}`}>
+                    <span className={`rounded-full border px-2 py-1 text-[9px] font-bold ${accessTone(person.accessStatus)}`}>
                       {person.accessStatus.replaceAll("_", " ")}
                     </span>
                   </span>
@@ -354,26 +354,26 @@ export function AdminPeopleConsole({
               );
             })}
             {!visiblePeople.length ? (
-              <p className="p-8 text-center text-sm text-slate-500">No account matched those filters.</p>
+              <p className="p-8 text-center text-sm font-medium text-slate-400">No account matched those filters.</p>
             ) : null}
           </div>
         </article>
 
-        <article id="staff" className="system-panel min-w-0 p-5 sm:p-6">
+        <article id="staff" className="system-panel min-w-0 p-5 sm:p-6 border border-slate-200 bg-white shadow-sm rounded-2xl">
           {!selected ? (
-            <p className="py-20 text-center text-sm text-slate-500">Select an account to inspect access.</p>
+            <p className="py-20 text-center text-sm font-medium text-slate-400">Select an account to inspect access.</p>
           ) : (
             <div className="grid gap-6">
-              <div className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0">
-                  <p className="truncate text-xl font-semibold text-white">{selected.email}</p>
-                  <p className="mt-1 font-mono text-[11px] text-slate-600">{selected.id}</p>
-                  <p className="mt-3 text-xs text-slate-500">
+                  <p className="truncate text-xl font-bold text-slate-900">{selected.email}</p>
+                  <p className="mt-1 font-mono text-[11px] font-bold text-slate-400">{selected.id}</p>
+                  <p className="mt-3 text-xs font-medium text-slate-500">
                     Verified {formatDate(selected.verifiedAt)} · Last login {formatDate(selected.lastLoginAt)}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${roleTone(selected.role)}`}>
+                  <span className={`rounded-full border px-3 py-1.5 text-xs font-bold ${roleTone(selected.role)}`}>
                     {selected.role}
                   </span>
                   <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${accessTone(selected.accessStatus)}`}>

@@ -79,24 +79,24 @@ const COMMANDS: AdminCommand[] = [
 ];
 
 function metricClasses(metric: AdminMetric) {
-  if (metric.tone === "positive") return "border-emerald-400/20 bg-emerald-400/[0.055]";
-  if (metric.tone === "warning") return "border-amber-400/20 bg-amber-400/[0.055]";
-  if (metric.tone === "danger") return "border-rose-400/20 bg-rose-400/[0.055]";
-  return "border-white/10 bg-white/[0.025]";
+  if (metric.tone === "positive") return "border-emerald-200 bg-emerald-50 text-emerald-900";
+  if (metric.tone === "warning") return "border-amber-200 bg-amber-50 text-amber-900";
+  if (metric.tone === "danger") return "border-rose-200 bg-rose-50 text-rose-900";
+  return "border-slate-200 bg-white text-slate-900";
 }
 
 function stateClasses(state: CommandState, danger = false) {
-  if (state === "live") return "border-emerald-400/20 bg-emerald-400/[0.055] text-emerald-100";
-  if (state === "beta") return "border-cyan-400/20 bg-cyan-400/[0.055] text-cyan-100";
-  if (danger) return "border-rose-400/15 bg-rose-400/[0.035] text-rose-300/70";
-  if (state === "planned") return "border-white/8 bg-white/[0.015] text-slate-500";
-  return "border-white/8 bg-black/20 text-slate-600";
+  if (state === "live") return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  if (state === "beta") return "border-cyan-200 bg-cyan-50 text-cyan-700";
+  if (danger) return "border-rose-200 bg-rose-50 text-rose-700";
+  if (state === "planned") return "border-slate-100 bg-slate-50 text-slate-400";
+  return "border-slate-100 bg-slate-50 text-slate-400";
 }
 
 function alertClasses(severity: "info" | "warning" | "critical") {
-  if (severity === "critical") return "border-rose-400/20 bg-rose-400/[0.07] text-rose-100";
-  if (severity === "warning") return "border-amber-400/20 bg-amber-400/[0.07] text-amber-100";
-  return "border-cyan-400/20 bg-cyan-400/[0.06] text-cyan-100";
+  if (severity === "critical") return "border-rose-200 bg-rose-50 text-rose-700";
+  if (severity === "warning") return "border-amber-200 bg-amber-50 text-amber-700";
+  return "border-cyan-200 bg-cyan-50 text-cyan-700";
 }
 
 function formatDate(value: AdminTableValue) {
@@ -193,13 +193,13 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
 
   return (
     <section id="control-center" className="mt-8 scroll-mt-24">
-      <div className="overflow-hidden rounded-[2rem] border border-violet-400/20 bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.16),transparent_36%),linear-gradient(145deg,rgba(255,255,255,0.045),rgba(255,255,255,0.012))]">
-        <div className="border-b border-white/10 px-5 py-5 sm:px-7">
+      <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/50">
+        <div className="border-b border-slate-100 px-5 py-5 sm:px-7 bg-slate-50/50">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">Master administration layer</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">Recharza Control Center</h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-600">Master administration layer</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Recharza Control Center</h2>
+              <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-slate-500">
                 Store-wide commands, operational alerts, database records, security evidence, and every existing control surface in one protected workspace.
               </p>
             </div>
@@ -207,42 +207,42 @@ export function AdminControlCenter({ snapshot }: { snapshot: AdminControlSnapsho
               <button
                 type="button"
                 onClick={() => router.refresh()}
-                className="min-h-11 rounded-lg border border-white/10 bg-white/[0.045] px-4 py-2 text-xs font-semibold text-white transition hover:bg-white/[0.08]"
+                className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-900 shadow-sm transition hover:bg-slate-50"
               >
                 Refresh live data
               </button>
               <a
                 href="#database"
-                className="inline-flex min-h-11 items-center rounded-lg bg-white px-4 py-2 text-xs font-semibold text-slate-950 transition hover:bg-violet-200"
+                className="inline-flex min-h-11 items-center rounded-xl bg-violet-600 px-4 py-2 text-xs font-bold text-white shadow-md transition hover:bg-violet-700 hover:-translate-y-0.5"
               >
                 Open database
               </a>
             </div>
           </div>
-          <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-slate-600">
+          <p className="mt-4 font-mono text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
             Snapshot generated {formatDate(snapshot.generatedAt)} · Private admin session · No public deployment control enabled
           </p>
         </div>
 
         <div className="grid gap-3 p-4 sm:grid-cols-2 sm:p-6 xl:grid-cols-4">
           {snapshot.metrics.map((metric) => (
-            <article key={metric.id} className={`rounded-lg border p-4 ${metricClasses(metric)}`}>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{metric.label}</p>
-              <p className="mt-3 text-2xl font-semibold text-white">{metric.value}</p>
-              <p className="mt-2 text-xs leading-5 text-slate-500">{metric.note}</p>
+            <article key={metric.id} className={`rounded-xl border p-4 shadow-sm ${metricClasses(metric)}`}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">{metric.label}</p>
+              <p className="mt-3 text-2xl font-bold text-slate-900">{metric.value}</p>
+              <p className="mt-2 text-xs font-medium leading-5 text-slate-500">{metric.note}</p>
             </article>
           ))}
         </div>
       </div>
 
       <div className="mt-5 grid gap-3 xl:grid-cols-[0.8fr_1.2fr]">
-        <section className="system-panel p-5">
+        <section className="system-panel p-5 border border-slate-200 bg-white shadow-sm rounded-2xl">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-300">Attention rail</p>
-              <h3 className="mt-1 text-lg font-semibold">System alerts</h3>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-amber-600">Attention rail</p>
+              <h3 className="mt-1 text-lg font-bold text-slate-900">System alerts</h3>
             </div>
-            <span className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-xs font-semibold text-slate-400">
+            <span className="rounded-full border border-slate-100 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600">
               {snapshot.alerts.length}
             </span>
           </div>

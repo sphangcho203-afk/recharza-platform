@@ -60,13 +60,13 @@ export function CartItemRow({
 
   return (
     <article
-      className={`rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:p-5 ${
+      className={`rounded-xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-md ${
         busy ? "opacity-60" : ""
       }`}
       aria-busy={busy}
     >
       <div className="flex gap-4">
-        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-white/[0.08] bg-[#151923]">
+        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-slate-100 bg-slate-50 shadow-inner">
           <ResilientImage
             sources={media.sources}
             alt={media.alt}
@@ -81,17 +81,17 @@ export function CartItemRow({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
                 {itemContextLabel(item)}
               </p>
-              <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-5 text-white sm:text-[15px]">
+              <h3 className="mt-1 line-clamp-2 text-sm font-bold leading-5 text-slate-900 sm:text-[15px]">
                 {item.package.name}
               </h3>
-              <p className="mt-1 text-xs font-semibold text-slate-400">
+              <p className="mt-1 text-xs font-bold text-slate-400">
                 <DisplayPrice amountInrMinor={item.package.amountInPaise} />{" "}
-                <span className="font-medium text-slate-600">each</span>
+                <span className="font-medium text-slate-500">each</span>
               </p>
-              <p className="mt-2 text-[11px] font-semibold text-emerald-300">
+              <p className="mt-2 text-[11px] font-bold text-emerald-600">
                 Delivers {deliveredAmountLabel(item.package.name)}
                 {item.quantity > 1 ? ` · ${item.quantity} packages` : ""}
               </p>
@@ -101,7 +101,7 @@ export function CartItemRow({
               disabled={busy}
               onClick={() => onRemove(item.id)}
               aria-label={`Remove ${item.package.name} from cart`}
-              className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-lg border border-white/[0.08] px-2.5 text-[11px] font-semibold text-slate-500 transition duration-150 ease-out hover:border-rose-400/25 hover:bg-rose-400/10 hover:text-rose-200 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 text-[11px] font-bold text-slate-500 transition duration-300 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm"
             >
               <svg
                 aria-hidden="true"
@@ -126,14 +126,14 @@ export function CartItemRow({
               </label>
               <div
                 aria-labelledby={`qty-${item.id}`}
-                className="flex items-center rounded-lg border border-white/[0.08] bg-black/20"
+                className="flex items-center rounded-lg border border-slate-200 bg-slate-50 shadow-inner"
               >
                 <button
                   type="button"
                   disabled={busy || item.quantity <= 1}
                   onClick={() => onQuantityChange(item.id, item.quantity - 1)}
                   aria-label={`Decrease quantity of ${item.package.name}`}
-                  className="grid min-h-9 min-w-9 place-items-center rounded-l-lg text-slate-400 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+                  className="grid min-h-9 min-w-9 place-items-center rounded-l-lg text-slate-400 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35"
                 >
                   <svg
                     aria-hidden="true"
@@ -147,7 +147,7 @@ export function CartItemRow({
                     <path d="M5.5 12h13" />
                   </svg>
                 </button>
-                <span className="min-w-8 text-center text-sm font-semibold text-white">
+                <span className="min-w-8 text-center text-sm font-bold text-slate-900">
                   {item.quantity}
                 </span>
                 <button
@@ -155,7 +155,7 @@ export function CartItemRow({
                   disabled={busy || item.quantity >= CART_MAX_QUANTITY}
                   onClick={() => onQuantityChange(item.id, item.quantity + 1)}
                   aria-label={`Increase quantity of ${item.package.name}`}
-                  className="grid min-h-9 min-w-9 place-items-center rounded-r-lg text-slate-400 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+                  className="grid min-h-9 min-w-9 place-items-center rounded-r-lg text-slate-400 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35"
                 >
                   <svg
                     aria-hidden="true"
@@ -176,11 +176,11 @@ export function CartItemRow({
             </div>
 
             <div className="flex items-center gap-3">
-              <p className="text-right text-[11px] text-slate-600">
+              <p className="text-right text-[11px] text-slate-500 font-bold">
                 Line total
                 <strong
                   aria-live="polite"
-                  className="block text-base font-semibold text-white"
+                  className="block text-base font-bold text-slate-900"
                 >
                   <DisplayPrice amountInrMinor={lineTotalInPaise(item)} />
                 </strong>

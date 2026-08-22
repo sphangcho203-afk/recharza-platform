@@ -72,22 +72,22 @@ function formatDate(value: string | null) {
 function stateTone(value: string) {
   const normalized = value.toUpperCase();
   if (["PROCESSED", "PAID", "COMPLETED", "RESOLVED", "RECONCILED_PAID"].includes(normalized)) {
-    return "border-emerald-300/20 bg-emerald-300/10 text-emerald-100";
+    return "border-emerald-200 bg-emerald-50 text-emerald-700";
   }
   if (["FAILED", "DISMISSED", "PAYMENT_FAILED"].includes(normalized)) {
-    return "border-rose-300/20 bg-rose-300/10 text-rose-100";
+    return "border-rose-200 bg-rose-50 text-rose-700";
   }
   if (["OPEN", "INVESTIGATING", "AWAITING_WEBHOOK", "AWAITING_EVIDENCE", "READY_FOR_APPROVAL"].includes(normalized)) {
-    return "border-amber-300/20 bg-amber-300/10 text-amber-100";
+    return "border-amber-200 bg-amber-50 text-amber-700";
   }
-  return "border-white/10 bg-white/5 text-slate-300";
+  return "border-slate-200 bg-slate-50 text-slate-600";
 }
 
 function metricTone(tone: "neutral" | "positive" | "warning" | "danger") {
-  if (tone === "positive") return "border-emerald-300/20 bg-emerald-300/[0.055]";
-  if (tone === "warning") return "border-amber-300/20 bg-amber-300/[0.055]";
-  if (tone === "danger") return "border-rose-300/20 bg-rose-300/[0.055]";
-  return "border-white/10 bg-white/[0.025]";
+  if (tone === "positive") return "border-emerald-200 bg-emerald-50 shadow-sm";
+  if (tone === "warning") return "border-amber-200 bg-amber-50 shadow-sm";
+  if (tone === "danger") return "border-rose-200 bg-rose-50 shadow-sm";
+  return "border-slate-200 bg-white shadow-sm";
 }
 
 function csvCell(value: unknown) {
@@ -415,17 +415,17 @@ export function AdminPaymentConsole({
 
   return (
     <section id="payments" className="mt-10 scroll-mt-24">
-      <div className="overflow-hidden rounded-[2rem] border border-cyan-300/20 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,0.12),transparent_34%),linear-gradient(145deg,rgba(255,255,255,0.045),rgba(255,255,255,0.012))]">
-        <div className="border-b border-white/10 p-5 sm:p-7">
+      <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/50">
+        <div className="border-b border-slate-100 p-5 sm:p-7 bg-slate-50/50">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-600">
                 Payment evidence, reconciliation, refund review, and disputes
               </p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                 Payment Command Center
               </h2>
-              <p className="mt-2 max-w-4xl text-sm leading-6 text-slate-400">
+              <p className="mt-2 max-w-4xl text-sm font-medium leading-6 text-slate-500">
                 Inspect every stored Checkout session and signed webhook receipt, open append-only payment cases, prepare refund evidence, and track disputes without granting this screen authority to move money.
               </p>
             </div>
@@ -434,14 +434,14 @@ export function AdminPaymentConsole({
                 type="button"
                 onClick={() => void refresh()}
                 disabled={loading}
-                className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white hover:bg-white/10 disabled:cursor-wait disabled:opacity-50"
+                className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900 shadow-sm hover:bg-slate-50 disabled:opacity-50"
               >
                 {loading ? "Working..." : "Refresh ledger"}
               </button>
               <button
                 type="button"
                 onClick={exportCurrentView}
-                className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white hover:bg-white/10"
+                className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900 shadow-sm hover:bg-slate-50"
               >
                 Export current view
               </button>
@@ -450,16 +450,16 @@ export function AdminPaymentConsole({
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             {snapshot.metrics.map((metric) => (
-              <article key={metric.id} className={`rounded-lg border p-4 ${metricTone(metric.tone)}`}>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">{metric.label}</p>
-                <p className="mt-2 text-2xl font-semibold text-white">{metric.value}</p>
-                <p className="mt-2 text-xs leading-5 text-slate-500">{metric.note}</p>
+              <article key={metric.id} className={`rounded-2xl border p-4 ${metricTone(metric.tone)}`}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">{metric.label}</p>
+                <p className="mt-2 text-2xl font-bold text-slate-900">{metric.value}</p>
+                <p className="mt-2 text-xs font-medium leading-5 text-slate-500">{metric.note}</p>
               </article>
             ))}
           </div>
         </div>
 
-        <div className="grid gap-4 border-b border-white/10 p-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center sm:p-7">
+        <div className="grid gap-4 border-b border-slate-100 p-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center sm:p-7 bg-slate-50/50">
           <div className="grid gap-3 sm:grid-cols-4">
             {[
               ["attention", `Attention ${attentionItems.length}`],
@@ -474,10 +474,10 @@ export function AdminPaymentConsole({
                   setView(value as View);
                   setSelection(null);
                 }}
-                className={`min-h-11 rounded-lg border px-3 text-sm font-semibold transition ${
+                className={`min-h-11 rounded-xl border px-3 text-sm font-bold transition-all shadow-sm ${
                   view === value
-                    ? "border-cyan-300/35 bg-cyan-300/10 text-cyan-100"
-                    : "border-white/10 bg-black/20 text-slate-400 hover:bg-white/5 hover:text-white"
+                    ? "border-cyan-200 bg-cyan-50 text-cyan-700"
+                    : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
                 }`}
               >
                 {label}
@@ -489,16 +489,16 @@ export function AdminPaymentConsole({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search orders, provider IDs, events, cases..."
-            className="min-h-11 min-w-0 rounded-lg border border-white/10 bg-black/20 px-4 text-sm text-white outline-none placeholder:text-slate-600 focus:border-cyan-300/40 lg:w-[24rem]"
+            className="min-h-11 min-w-0 rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-cyan-500 shadow-sm lg:w-[24rem]"
           />
         </div>
 
         <p
           aria-live="polite"
-          className={`mx-5 mt-5 rounded-lg border px-4 py-3 text-sm sm:mx-7 ${
+          className={`mx-5 mt-5 rounded-xl border px-4 py-3 text-sm font-medium sm:mx-7 ${
             isError
-              ? "border-rose-300/20 bg-rose-300/10 text-rose-100"
-              : "border-white/10 bg-black/20 text-slate-400"
+              ? "border-rose-200 bg-rose-50 text-rose-700"
+              : "border-slate-200 bg-slate-50 text-slate-500"
           }`}
         >
           {message}

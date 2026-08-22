@@ -82,18 +82,18 @@ const FILTERS: Array<"all" | SupportTicketStatus> = [
 ];
 
 const STATUS_BADGE: Record<string, string> = {
-  OPEN: "bg-white/5 text-slate-300",
-  ASSIGNED: "bg-violet-400/10 text-violet-200",
-  WAITING_CUSTOMER: "bg-cyan-400/10 text-cyan-200",
-  UNDER_REVIEW: "bg-amber-400/10 text-amber-200",
-  RESOLVED: "bg-emerald-400/10 text-emerald-200",
-  CLOSED: "bg-white/5 text-slate-400",
+  OPEN: "bg-slate-100 text-slate-600",
+  ASSIGNED: "bg-violet-100 text-violet-700",
+  WAITING_CUSTOMER: "bg-cyan-100 text-cyan-700",
+  UNDER_REVIEW: "bg-amber-100 text-amber-700",
+  RESOLVED: "bg-emerald-100 text-emerald-700",
+  CLOSED: "bg-slate-100 text-slate-400",
 };
 
 const DELIVERY_BADGE: Record<string, string> = {
-  SENT: "text-emerald-300",
+  SENT: "text-emerald-600",
   SKIPPED: "text-slate-400",
-  FAILED: "text-rose-300",
+  FAILED: "text-rose-600",
 };
 
 function timeAgo(value: string) {
@@ -316,11 +316,11 @@ export function StaffSupportInbox() {
     <section id="support" className="scroll-mt-24">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-600">
             Customer support cases
           </p>
-          <h2 className="mt-1 text-2xl font-semibold">Support inbox</h2>
-          <p className="mt-2 text-sm text-slate-500">
+          <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">Support inbox</h2>
+          <p className="mt-2 text-sm font-medium text-slate-500">
             {message}
           </p>
         </div>
@@ -328,7 +328,7 @@ export function StaffSupportInbox() {
           type="button"
           onClick={() => loadTickets()}
           disabled={loading}
-          className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 text-xs font-bold text-slate-200 transition-colors hover:bg-white/10 disabled:opacity-50"
+          className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-50"
         >
           {loading ? "Refreshing..." : "Refresh"}
         </button>
@@ -343,8 +343,8 @@ export function StaffSupportInbox() {
               onClick={() => setFilter(value)}
               className={`min-h-9 rounded-full px-3 text-xs font-bold transition-colors ${
                 filter === value
-                  ? "bg-cyan-400/15 text-cyan-200 ring-1 ring-cyan-400/30"
-                  : "bg-white/5 text-slate-400 hover:bg-white/10"
+                  ? "bg-cyan-50 text-cyan-700 ring-1 ring-cyan-200"
+                  : "bg-white text-slate-400 border border-slate-200 hover:bg-slate-50 hover:text-slate-600"
               }`}
             >
               {value === "all" ? "All" : supportTicketStatusLabel(value)}
@@ -360,13 +360,13 @@ export function StaffSupportInbox() {
               if (event.key === "Enter") loadTickets(filter, search);
             }}
             placeholder="Search tickets..."
-            className="min-h-11 w-full min-w-0 flex-1 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400/40 lg:w-64"
+            className="min-h-11 w-full min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 lg:w-64"
             aria-label="Search support tickets"
           />
           <button
             type="button"
             onClick={() => loadTickets(filter, search)}
-            className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 text-xs font-bold text-slate-200 transition-colors hover:bg-white/10"
+            className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 shadow-sm transition-colors hover:bg-slate-50"
           >
             Search
           </button>
@@ -374,12 +374,12 @@ export function StaffSupportInbox() {
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
-        <div className="system-panel overflow-hidden">
-          <div className="flex items-center justify-between gap-3 border-b border-white/10 p-4">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+        <div className="system-panel overflow-hidden border border-slate-200 bg-white shadow-xl shadow-slate-200/50 rounded-2xl">
+          <div className="flex items-center justify-between gap-3 border-b border-slate-100 p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
               Tickets · {visibleCount}
             </p>
-            <span className="rounded-full bg-white/5 px-2 py-1 text-[10px] font-bold text-slate-500">
+            <span className="rounded-full bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-500 border border-slate-100">
               {filter === "all" ? "All statuses" : supportTicketStatusLabel(filter)}
             </span>
           </div>
@@ -387,12 +387,12 @@ export function StaffSupportInbox() {
           {isError ? (
             <div className="system-empty-state min-h-56">
               <div>
-                <p className="font-semibold text-slate-300">Support access unavailable</p>
-                <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">{message}</p>
+                <p className="font-bold text-slate-900">Support access unavailable</p>
+                <p className="mt-2 max-w-xs text-sm font-medium leading-6 text-slate-500">{message}</p>
                 <button
                   type="button"
                   onClick={() => loadTickets()}
-                  className="mt-4 min-h-10 rounded-lg border border-white/10 bg-white/5 px-3 text-xs font-bold text-slate-200"
+                  className="mt-4 min-h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 shadow-sm"
                 >
                   Try again
                 </button>
@@ -401,14 +401,14 @@ export function StaffSupportInbox() {
           ) : tickets.length === 0 && !loading ? (
             <div className="system-empty-state min-h-56">
               <div>
-                <p className="font-semibold text-slate-300">No support tickets</p>
-                <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
+                <p className="font-bold text-slate-900">No support tickets</p>
+                <p className="mt-2 max-w-xs text-sm font-medium leading-6 text-slate-500">
                   No tickets match the current filter. New customer requests appear here as they arrive.
                 </p>
               </div>
             </div>
           ) : (
-            <ul className="max-h-[32rem] divide-y divide-white/8 overflow-y-auto">
+            <ul className="max-h-[32rem] divide-y divide-slate-50 overflow-y-auto">
               {tickets.map((ticket) => (
                 <li key={ticket.publicId}>
                   <button
@@ -416,12 +416,12 @@ export function StaffSupportInbox() {
                     onClick={() => selectTicket(ticket.publicId)}
                     className={`w-full p-4 text-left transition-colors ${
                       selected === ticket.publicId
-                        ? "bg-violet-400/[0.06]"
-                        : "hover:bg-white/[0.03]"
+                        ? "bg-violet-50"
+                        : "hover:bg-slate-50"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <span className="font-mono text-[11px] text-slate-500">
+                      <span className="font-mono text-[11px] font-bold text-slate-400">
                         {ticket.publicId}
                       </span>
                       <span
@@ -430,10 +430,10 @@ export function StaffSupportInbox() {
                         {supportTicketStatusLabel(ticket.status)}
                       </span>
                     </div>
-                    <h3 className="mt-2 line-clamp-2 text-sm font-semibold text-white">
+                    <h3 className="mt-2 line-clamp-2 text-sm font-bold text-slate-900">
                       {ticket.subject}
                     </h3>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500">
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] font-bold text-slate-400">
                       <span>{ticket.categoryLabel}</span>
                       <span>{ticket.source.toLowerCase()}</span>
                       <span>
@@ -448,16 +448,16 @@ export function StaffSupportInbox() {
           )}
         </div>
 
-        <div className="system-panel min-h-72 overflow-hidden">
+        <div className="system-panel min-h-72 overflow-hidden border border-slate-200 bg-white shadow-xl shadow-slate-200/50 rounded-2xl">
           {detailLoading ? (
             <div className="system-empty-state min-h-72">
-              <p className="text-sm text-slate-500">Loading ticket details...</p>
+              <p className="text-sm font-bold text-slate-400">Loading ticket details...</p>
             </div>
           ) : !detail ? (
             <div className="system-empty-state min-h-72">
               <div>
-                <p className="font-semibold text-slate-300">Select a ticket</p>
-                <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
+                <p className="font-bold text-slate-900">Select a ticket</p>
+                <p className="mt-2 max-w-sm text-sm font-medium leading-6 text-slate-500">
                   {selected
                     ? "The selected ticket could not be loaded."
                     : "Choose a ticket from the list to review the conversation, assignment, and status controls."}
@@ -466,9 +466,9 @@ export function StaffSupportInbox() {
             </div>
           ) : (
             <div className="flex flex-col">
-              <div className="border-b border-white/10 p-5">
+              <div className="border-b border-slate-100 p-5">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-mono text-xs text-slate-500">
+                  <span className="font-mono text-xs font-bold text-slate-400">
                     {detail.publicId}
                   </span>
                   <span
@@ -476,64 +476,64 @@ export function StaffSupportInbox() {
                   >
                     {supportTicketStatusLabel(detail.status)}
                   </span>
-                  <span className="rounded-full bg-white/5 px-2.5 py-1 text-[10px] font-bold text-slate-400">
+                  <span className="rounded-full bg-slate-50 px-2.5 py-1 text-[10px] font-bold text-slate-400 border border-slate-100">
                     {detail.categoryLabel}
                   </span>
-                  <span className="rounded-full bg-white/5 px-2.5 py-1 text-[10px] font-bold text-slate-400">
+                  <span className="rounded-full bg-slate-50 px-2.5 py-1 text-[10px] font-bold text-slate-400 border border-slate-100">
                     {detail.replyChannel.toLowerCase()} replies
                   </span>
                 </div>
-                <h3 className="mt-3 text-lg font-semibold text-white">{detail.subject}</h3>
+                <h3 className="mt-3 text-lg font-bold tracking-tight text-slate-900">{detail.subject}</h3>
                 <dl className="mt-3 grid gap-x-6 gap-y-1 text-xs text-slate-400 sm:grid-cols-2">
                   <div className="flex justify-between gap-2">
-                    <dt className="text-slate-600">Requester</dt>
-                    <dd className="font-bold text-slate-300">
+                    <dt className="font-bold text-slate-400 uppercase tracking-wider">Requester</dt>
+                    <dd className="font-bold text-slate-900">
                       {detail.requesterName || "Not provided"}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-2">
-                    <dt className="text-slate-600">Contact</dt>
-                    <dd className="font-bold text-slate-300">
+                    <dt className="font-bold text-slate-400 uppercase tracking-wider">Contact</dt>
+                    <dd className="font-bold text-slate-900">
                       {detail.requesterEmail ?? detail.telegramUsername ?? "Not recorded"}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-2">
-                    <dt className="text-slate-600">Source</dt>
-                    <dd className="font-bold text-slate-300">{detail.source}</dd>
+                    <dt className="font-bold text-slate-400 uppercase tracking-wider">Source</dt>
+                    <dd className="font-bold text-slate-900">{detail.source}</dd>
                   </div>
                   <div className="flex justify-between gap-2">
-                    <dt className="text-slate-600">Created</dt>
-                    <dd className="font-bold text-slate-300">
+                    <dt className="font-bold text-slate-400 uppercase tracking-wider">Created</dt>
+                    <dd className="font-bold text-slate-900">
                       {formatTime(detail.createdAt)}
                     </dd>
                   </div>
                   {detail.orderPublicId ? (
                     <div className="flex justify-between gap-2">
-                      <dt className="text-slate-600">Order</dt>
-                      <dd className="font-mono font-bold text-cyan-200">
+                      <dt className="font-bold text-slate-400 uppercase tracking-wider">Order</dt>
+                      <dd className="font-mono font-bold text-cyan-600">
                         {detail.orderPublicId}
                       </dd>
                     </div>
                   ) : null}
                   {detail.gameSlug ? (
                     <div className="flex justify-between gap-2">
-                      <dt className="text-slate-600">Game</dt>
-                      <dd className="font-bold text-slate-300">{detail.gameSlug}</dd>
+                      <dt className="font-bold text-slate-400 uppercase tracking-wider">Game</dt>
+                      <dd className="font-bold text-slate-900">{detail.gameSlug}</dd>
                     </div>
                   ) : null}
                 </dl>
               </div>
 
-              <div className="grid gap-4 border-b border-white/10 p-5 sm:grid-cols-2">
+              <div className="grid gap-4 border-b border-slate-100 p-5 sm:grid-cols-2">
                 <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
                     Assigned staff
                   </span>
                   <select
                     value={detail.assignee?.id ?? ""}
                     onChange={(event) => changeAssignee(event.target.value)}
                     disabled={busy}
-                    className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-400/40 disabled:opacity-50"
+                    className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 disabled:opacity-50"
                   >
                     <option value="">Unassigned</option>
                     {assignees.map((assignee) => (
@@ -544,7 +544,7 @@ export function StaffSupportInbox() {
                   </select>
                 </label>
                 <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
                     Ticket status
                   </span>
                   <select
@@ -553,7 +553,7 @@ export function StaffSupportInbox() {
                       changeStatus(event.target.value as SupportTicketStatus)
                     }
                     disabled={busy}
-                    className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-400/40 disabled:opacity-50"
+                    className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 disabled:opacity-50"
                   >
                     {SUPPORT_TICKET_STATUSES.map((status) => (
                       <option key={status} value={status}>
@@ -563,7 +563,7 @@ export function StaffSupportInbox() {
                   </select>
                 </label>
                 <label className="block sm:col-span-2">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
                     Reason (required for assignment and status changes)
                   </span>
                   <input
@@ -572,36 +572,36 @@ export function StaffSupportInbox() {
                     onChange={(event) => setReason(event.target.value)}
                     maxLength={240}
                     placeholder="Short audit reason, e.g. claiming ticket"
-                    className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                    className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   />
                 </label>
               </div>
 
-              <div className="flex-1 border-b border-white/10 p-5">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <div className="flex-1 border-b border-slate-100 p-5 overflow-y-auto">
+                <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
                   Conversation
                 </p>
                 <ol className="mt-4 space-y-4">
-                  <li className="rounded-lg border border-white/10 bg-white/[0.03] p-4">
+                  <li className="rounded-2xl border border-slate-100 bg-slate-50/50 p-4">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-xs font-bold text-slate-400">
+                      <p className="text-xs font-bold text-slate-500">
                         Customer · {detail.categoryLabel}
                       </p>
-                      <p className="text-[10px] text-slate-600">
+                      <p className="text-[10px] font-bold text-slate-400">
                         {formatTime(detail.createdAt)}
                       </p>
                     </div>
-                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-200">
+                    <p className="mt-2 whitespace-pre-wrap text-sm font-medium leading-6 text-slate-700">
                       {detail.description}
                     </p>
                   </li>
                   {detail.replies.map((replyRecord, index) => (
                     <li
                       key={`${replyRecord.at}-${index}`}
-                      className="rounded-lg border border-cyan-400/15 bg-cyan-400/[0.04] p-4"
+                      className="rounded-2xl border border-cyan-100 bg-cyan-50/50 p-4"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2">
-                        <p className="text-xs font-bold text-cyan-200">
+                        <p className="text-xs font-bold text-cyan-700">
                           {replyRecord.actorLabel ?? "Staff"} reply
                         </p>
                         <div className="flex flex-wrap items-center gap-2">
@@ -611,12 +611,12 @@ export function StaffSupportInbox() {
                             {replyRecord.delivery.toLowerCase()} ·{" "}
                             {replyRecord.channel.toLowerCase()}
                           </span>
-                          <span className="text-[10px] text-slate-600">
+                          <span className="text-[10px] font-bold text-slate-400">
                             {formatTime(replyRecord.at)}
                           </span>
                         </div>
                       </div>
-                      <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-200">
+                      <p className="mt-2 whitespace-pre-wrap text-sm font-medium leading-6 text-slate-700">
                         {replyRecord.text}
                       </p>
                     </li>
@@ -624,9 +624,9 @@ export function StaffSupportInbox() {
                 </ol>
               </div>
 
-              <div className="p-5">
+              <div className="p-5 bg-slate-50/30">
                 <label className="block">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+                  <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-slate-400">
                     Reply to customer
                   </span>
                   <textarea
@@ -635,11 +635,11 @@ export function StaffSupportInbox() {
                     rows={4}
                     maxLength={2000}
                     placeholder="Write a clear reply for the customer..."
-                    className="mt-2 w-full resize-y rounded-lg border border-white/10 bg-white/5 px-3 py-3 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400/40"
+                    className="mt-2 w-full resize-y rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-900 shadow-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                   />
                 </label>
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs font-bold text-slate-400">
                     {detail.replyChannel === "TELEGRAM"
                       ? "Delivered to the customer's connected Telegram chat."
                       : "Delivered to the customer's email."}
@@ -648,7 +648,7 @@ export function StaffSupportInbox() {
                     type="button"
                     onClick={sendReply}
                     disabled={busy || !reply.trim()}
-                    className="min-h-11 rounded-lg bg-cyan-400 px-5 text-xs font-semibold uppercase tracking-[0.1em] text-black transition-colors hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="min-h-11 rounded-xl bg-violet-600 px-5 text-xs font-bold uppercase tracking-[0.1em] text-white shadow-md transition-all hover:bg-violet-700 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {busy ? "Sending..." : "Send reply"}
                   </button>
@@ -658,7 +658,7 @@ export function StaffSupportInbox() {
           )}
 
           {actionNotice ? (
-            <div className="border-t border-white/10 bg-amber-400/[0.05] p-3 text-xs text-amber-200">
+            <div className="border-t border-slate-100 bg-amber-50 p-3 text-xs font-bold text-amber-700">
               {actionNotice}
             </div>
           ) : null}

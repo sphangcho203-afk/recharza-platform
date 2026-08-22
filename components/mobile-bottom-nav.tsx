@@ -71,7 +71,7 @@ export function MobileBottomNav() {
       />
       <nav
         aria-label="Mobile customer navigation"
-        className="fixed inset-x-0 bottom-0 z-[70] grid grid-cols-5 border-t border-white/[0.09] bg-[#05070d]/97 px-1 pt-1 pb-[max(0.35rem,env(safe-area-inset-bottom))] shadow-[0_-12px_35px_rgba(0,0,0,0.42)] backdrop-blur-xl lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-[70] grid grid-cols-5 border-t border-slate-200 bg-white/95 px-1 pt-1 pb-[max(0.35rem,env(safe-area-inset-bottom))] shadow-[0_-12px_35px_rgba(0,0,0,0.08)] backdrop-blur-xl lg:hidden"
       >
         {items.map((item) => {
           const active = item.matches(pathname);
@@ -82,22 +82,22 @@ export function MobileBottomNav() {
               href={item.href}
               aria-current={active ? "page" : undefined}
               aria-label={showBadge ? `${item.label}, ${count} items` : item.label}
-              className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-lg px-1 text-[9px] font-bold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300 ${
-                active ? "text-white" : "text-slate-500 hover:text-white"
+              className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl px-1 text-[9px] font-bold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 ${
+                active ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
               }`}
             >
               <span
-                className={`relative grid h-7 w-7 place-items-center rounded-lg transition ${
+                className={`relative grid h-7 w-7 place-items-center rounded-lg transition-all duration-300 ${
                   active
-                    ? "bg-violet-500/15 text-violet-300"
-                    : "text-slate-500"
+                    ? "bg-violet-50 text-violet-600"
+                    : "text-slate-400"
                 }`}
               >
                 <StorefrontIcon name={item.icon} className="h-4 w-4" />
                 {showBadge ? (
                   <span
                     aria-hidden="true"
-                    className="absolute -right-2 -top-1.5 grid min-h-[1rem] min-w-[1rem] place-items-center rounded-full bg-violet-500 px-1 text-[8px] font-semibold leading-none text-white"
+                    className="absolute -right-2 -top-1.5 grid min-h-[1rem] min-w-[1rem] place-items-center rounded-full bg-violet-600 px-1 text-[8px] font-bold leading-none text-white shadow-sm"
                   >
                     {count > 99 ? "99+" : count}
                   </span>

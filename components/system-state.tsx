@@ -3,10 +3,10 @@ import Link from "next/link";
 export type SystemStateTone = "neutral" | "info" | "warning" | "danger";
 
 const toneStyles: Record<SystemStateTone, string> = {
-  neutral: "border-white/10 bg-white/[0.03] text-slate-300",
-  info: "border-cyan-300/20 bg-cyan-300/[0.07] text-cyan-100",
-  warning: "border-amber-300/20 bg-amber-300/[0.07] text-amber-100",
-  danger: "border-rose-300/20 bg-rose-300/[0.07] text-rose-100",
+  neutral: "border-slate-200 bg-white text-slate-600",
+  info: "border-cyan-200 bg-cyan-50 text-cyan-700",
+  warning: "border-amber-200 bg-amber-50 text-amber-700",
+  danger: "border-rose-200 bg-rose-50 text-rose-700",
 };
 
 export function SystemState({
@@ -29,19 +29,19 @@ export function SystemState({
   secondaryLabel?: string;
 }) {
   return (
-    <section className={`mx-auto w-full max-w-2xl rounded-lg border p-6 shadow-2xl shadow-black/20 sm:p-8 ${toneStyles[tone]}`}>
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] opacity-75">{eyebrow}</p>
-      <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">{title}</h1>
-      <p className="mt-4 text-sm leading-7 opacity-80 sm:text-base">{description}</p>
+    <section className={`mx-auto w-full max-w-2xl rounded-2xl border p-6 shadow-xl shadow-slate-200/50 sm:p-8 ${toneStyles[tone]}`}>
+      <p className="text-xs font-bold uppercase tracking-[0.18em] opacity-70">{eyebrow}</p>
+      <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">{title}</h1>
+      <p className="mt-4 text-sm font-medium leading-7 text-slate-500 sm:text-base">{description}</p>
       {actionHref || secondaryHref ? (
         <div className="mt-6 flex flex-col gap-3 min-[420px]:flex-row">
           {actionHref && actionLabel ? (
-            <Link href={actionHref} className="min-h-12 rounded-lg bg-white px-5 py-3.5 text-center text-sm font-semibold text-slate-950 transition hover:bg-violet-200">
+            <Link href={actionHref} className="min-h-12 rounded-xl bg-violet-600 px-6 py-3.5 text-center text-sm font-bold text-white shadow-lg shadow-violet-200 transition-all hover:bg-violet-700 hover:-translate-y-0.5">
               {actionLabel}
             </Link>
           ) : null}
           {secondaryHref && secondaryLabel ? (
-            <Link href={secondaryHref} className="min-h-12 rounded-lg border border-white/15 bg-black/15 px-5 py-3.5 text-center text-sm font-bold text-white transition hover:bg-white/[0.06]">
+            <Link href={secondaryHref} className="min-h-12 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-center text-sm font-bold text-slate-600 transition-all hover:bg-slate-50 hover:-translate-y-0.5">
               {secondaryLabel}
             </Link>
           ) : null}

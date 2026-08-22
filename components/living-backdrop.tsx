@@ -25,8 +25,8 @@ export function AuroraGradient({
 }) {
   const op = (base: number) => Math.min(1, base * intensity);
   const orbs = [
-    { color: accent, x: "12%", y: "-20%", size: "clamp(280px, 40vw, 620px)", delay: `${-seed * 3}s`, drift: "recharza-aurora-drift-a", opacity: op(0.1) },
-    { color: secondary ?? accent, x: "84%", y: "-30%", size: "clamp(220px, 30vw, 520px)", delay: `${-seed * 3 - 5}s`, drift: "recharza-aurora-drift-b", opacity: op(0.07) },
+    { color: accent, x: "12%", y: "-20%", size: "clamp(280px, 40vw, 620px)", delay: `${-seed * 3}s`, drift: "recharza-aurora-drift-a", opacity: op(0.05) },
+    { color: secondary ?? accent, x: "84%", y: "-30%", size: "clamp(220px, 30vw, 520px)", delay: `${-seed * 3 - 5}s`, drift: "recharza-aurora-drift-b", opacity: op(0.03) },
   ];
   return (
     <div className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`} aria-hidden="true">
@@ -67,12 +67,12 @@ export function LiveGlowCard({
 }) {
   return (
     <span
-      className={`relative block h-full rounded-xl border border-white/[0.07] bg-[linear-gradient(160deg,rgba(28,31,50,.9),rgba(13,15,25,.95))] shadow-[0_14px_36px_rgba(0,0,0,.26)] overflow-hidden ${className}`}
+      className={`relative block h-full rounded-xl border border-slate-200 bg-white shadow-lg shadow-slate-200/50 overflow-hidden transition-all duration-300 hover:shadow-xl ${className}`}
       style={{ ...style, ["--live-accent" as string]: accent }}
     >
       <span
-        className="absolute inset-x-0 top-0 h-px opacity-50 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 55%, transparent) 50%, transparent)` }}
+        className="absolute inset-x-0 top-0 h-[2px] opacity-70 transition-opacity duration-300 group-hover:opacity-100"
+        style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 70%, transparent) 50%, transparent)` }}
         aria-hidden="true"
       />
       {children}

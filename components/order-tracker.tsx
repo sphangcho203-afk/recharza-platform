@@ -160,20 +160,20 @@ export function OrderTracker({ orderId }: { orderId: string }) {
     <div className="grid min-w-0 gap-5 lg:grid-cols-[0.75fr_1.25fr]">
       <form
         onSubmit={submit}
-        className="min-w-0 rounded-lg border border-white/10 bg-white/[0.04] p-4 sm:p-6"
+        className="min-w-0 rounded-[2rem] border border-slate-200 bg-white p-4 shadow-xl shadow-slate-200/50 sm:p-6"
       >
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
           Private order access
         </p>
-        <h2 className="mt-2 break-all text-xl font-semibold tracking-tight text-white sm:text-2xl">
+        <h2 className="mt-2 break-all text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
           {orderId}
         </h2>
-        <p className="mt-3 text-sm leading-6 text-slate-400">
+        <p className="mt-3 text-sm leading-6 text-slate-500 font-medium">
           Your account may list the order. This separate token unlocks its
           sensitive timeline.
         </p>
 
-        <label className="mt-5 block text-sm font-semibold text-slate-200">
+        <label className="mt-5 block text-sm font-bold text-slate-900">
           Access token
           <textarea
             required
@@ -181,83 +181,83 @@ export function OrderTracker({ orderId }: { orderId: string }) {
             value={accessToken}
             onChange={(event) => setAccessToken(event.target.value)}
             placeholder="Paste the token issued after order creation"
-            className="mt-2 w-full resize-none rounded-lg border border-white/10 bg-black/20 px-4 py-3 font-mono text-sm font-normal text-white outline-none transition duration-150 ease-out placeholder:text-slate-600 focus:border-violet-400"
+            className="mt-2 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 font-mono text-sm font-medium text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-violet-600 focus:ring-4 focus:ring-violet-500/10 shadow-sm"
           />
         </label>
 
         <button
           type="button"
           onClick={useSavedToken}
-          className="mt-3 min-h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-slate-200 transition duration-150 ease-out hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="mt-3 min-h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 shadow-sm transition-all duration-300 hover:bg-slate-50 hover:-translate-y-0.5"
         >
           Use saved token from this browser
         </button>
         <button
           type="submit"
           disabled={status === "loading"}
-          className="mt-3 min-h-12 w-full rounded-lg bg-violet-500 px-5 py-3.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70 disabled:cursor-wait disabled:opacity-60"
+          className="mt-3 min-h-12 w-full rounded-xl bg-violet-600 px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-violet-200 transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-wait disabled:opacity-60"
         >
           {status === "loading" ? "Loading order..." : "Open secure order"}
         </button>
 
         <p
           aria-live="polite"
-          className={`mt-4 rounded-lg border px-4 py-3 text-sm leading-6 ${
+          className={`mt-4 rounded-xl border px-4 py-3 text-sm leading-6 font-medium ${
             status === "error"
-              ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
-              : "border-white/10 bg-black/15 text-slate-400"
+              ? "border-rose-200 bg-rose-50 text-rose-700"
+              : "border-slate-100 bg-slate-50 text-slate-500"
           }`}
         >
           {message}
         </p>
       </form>
 
-      <section className="min-w-0 rounded-lg border border-white/10 bg-white/[0.04] p-4 sm:p-6">
+      <section className="min-w-0 rounded-[2rem] border border-slate-200 bg-white p-4 shadow-xl shadow-slate-200/50 sm:p-6">
         {order ? (
           <>
-            <div className="flex flex-col justify-between gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-start">
+            <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-start">
               <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600">
                   {getGameLabel(order.gameSlug)} order
                 </p>
-                <h2 className="mt-2 break-words text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                <h2 className="mt-2 break-words text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                   {order.package.name}
                 </h2>
-                <p className="mt-2 break-words text-sm text-slate-400">
+                <p className="mt-2 break-words text-sm text-slate-500 font-medium">
                   {order.market ? `${getMarketLabel(order)} · ` : ""}
                   {getDestinationLabel(order)}
                 </p>
-                <p className="mt-1 text-xs text-slate-600">
+                <p className="mt-1 text-xs text-slate-400 font-bold">
                   Validation: {order.player.verificationMode.replaceAll("-", " ")}
                 </p>
               </div>
-              <span className="w-fit shrink-0 rounded-md border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-200">
+              <span className="w-fit shrink-0 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-700 shadow-sm">
                 {order.status.replaceAll("_", " ")}
               </span>
             </div>
 
             <dl className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
-              <div className="rounded-lg border border-white/10 bg-black/15 p-4">
-                <dt className="text-xs font-semibold uppercase tracking-wider text-slate-500">Amount</dt>
-                <dd className="mt-1 text-lg font-semibold text-white">
+              <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 shadow-sm">
+                <dt className="text-xs font-bold uppercase tracking-wider text-slate-400">Amount</dt>
+                <dd className="mt-1 text-lg font-bold text-slate-900">
                   {formatInr(order.package.amountInPaise)}
                 </dd>
               </div>
-              <div className="rounded-lg border border-white/10 bg-black/15 p-4">
-                <dt className="text-slate-500">Market</dt>
-                <dd className="mt-1 break-words font-semibold text-white">
+              <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 shadow-sm">
+                <dt className="text-xs font-bold uppercase tracking-wider text-slate-400">Market</dt>
+                <dd className="mt-1 break-words font-bold text-slate-900">
                   {getMarketLabel(order)}
                 </dd>
               </div>
-              <div className="rounded-lg border border-white/10 bg-black/15 p-4">
-                <dt className="text-slate-500">Receipt</dt>
-                <dd className="mt-1 break-words font-semibold text-white">
+              <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 shadow-sm">
+                <dt className="text-xs font-bold uppercase tracking-wider text-slate-400">Receipt</dt>
+                <dd className="mt-1 break-words font-bold text-slate-900">
                   {order.customerEmail}
                 </dd>
               </div>
-              <div className="rounded-lg border border-white/10 bg-black/15 p-4">
-                <dt className="text-slate-500">Supplier product</dt>
-                <dd className="mt-1 font-semibold text-white">
+              <div className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 shadow-sm">
+                <dt className="text-xs font-bold uppercase tracking-wider text-slate-400">Supplier product</dt>
+                <dd className="mt-1 font-bold text-slate-900">
                   {order.supplier.offerAttached
                     ? "Approved offer attached"
                     : "Indicative / not attached"}
@@ -276,8 +276,8 @@ export function OrderTracker({ orderId }: { orderId: string }) {
 
             <div className="mt-7">
               <div className="flex items-end justify-between gap-4">
-                <h3 className="text-lg font-semibold text-white">Fulfilment</h3>
-                <span className="text-xs text-slate-500">
+                <h3 className="text-lg font-bold text-slate-900">Fulfilment</h3>
+                <span className="text-xs text-slate-400 font-bold">
                   {order.fulfilment.length} attempt(s)
                 </span>
               </div>
@@ -285,23 +285,28 @@ export function OrderTracker({ orderId }: { orderId: string }) {
                 {order.fulfilment.map((attempt, index) => (
                   <article
                     key={attempt.id}
-                    className={`rounded-lg border p-4 ${
+                    className={`rounded-xl border p-4 shadow-sm ${
                       attempt.status === "failed"
-                        ? "border-rose-400/20 bg-rose-400/10"
+                        ? "border-rose-200 bg-rose-50"
                         : attempt.mode === "dry_run"
-                          ? "border-amber-300/20 bg-amber-300/10"
-                          : "border-emerald-400/20 bg-emerald-400/10"
+                          ? "border-amber-200 bg-amber-50"
+                          : "border-emerald-200 bg-emerald-50"
                     }`}
                   >
                     <div className="flex flex-col justify-between gap-1 sm:flex-row">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-white">
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-900">
                         Attempt {index + 1} · {attempt.mode.replaceAll("_", " ")}
                       </p>
-                      <span className="text-xs font-semibold uppercase text-slate-300">
+                      <span className={`text-xs font-bold uppercase ${
+                        attempt.status === "failed" ? "text-rose-700" : 
+                        attempt.status === "completed" ? "text-emerald-700" : "text-slate-600"
+                      }`}>
                         {attempt.status.replaceAll("_", " ")}
                       </span>
                     </div>
-                    <p className="mt-2 break-words text-sm leading-6 text-slate-200">
+                    <p className={`mt-2 break-words text-sm leading-6 font-medium ${
+                      attempt.status === "failed" ? "text-rose-700/80" : "text-slate-600"
+                    }`}>
                       {attempt.status === "planned"
                         ? "A safe supplier request plan is stored. No supplier write occurred."
                         : attempt.status === "failed"
@@ -311,13 +316,13 @@ export function OrderTracker({ orderId }: { orderId: string }) {
                             ? `Supplier order ${attempt.providerOrderId}`
                             : "The supplier attempt is being processed."}
                     </p>
-                    <time className="mt-2 block text-xs text-slate-500">
+                    <time className="mt-2 block text-xs text-slate-400 font-bold">
                       {new Date(attempt.updatedAt).toLocaleString()}
                     </time>
                   </article>
                 ))}
                 {!order.fulfilment.length ? (
-                  <div className="rounded-lg border border-dashed border-white/10 bg-black/10 p-4 text-sm text-slate-500">
+                  <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm text-slate-500 font-medium text-center">
                     Fulfilment begins only after a verified paid webhook.
                   </div>
                 ) : null}
@@ -325,22 +330,22 @@ export function OrderTracker({ orderId }: { orderId: string }) {
             </div>
 
             <div className="mt-7">
-              <h3 className="text-lg font-semibold text-white">Order timeline</h3>
+              <h3 className="text-lg font-bold text-slate-900">Order timeline</h3>
               <div className="mt-4 space-y-3">
                 {order.events.map((event) => (
                   <article
                     key={event.id}
-                    className="rounded-lg border border-white/10 bg-black/15 p-4"
+                    className="rounded-xl border border-slate-100 bg-slate-50/50 p-4 shadow-sm"
                   >
                     <div className="flex flex-col justify-between gap-1 sm:flex-row">
-                      <p className="break-words text-xs font-semibold uppercase tracking-wider text-violet-300">
+                      <p className="break-words text-xs font-bold uppercase tracking-wider text-violet-600">
                         {event.type.replaceAll("_", " ")}
                       </p>
-                      <time className="text-xs text-slate-600">
+                      <time className="text-xs text-slate-400 font-bold">
                         {new Date(event.createdAt).toLocaleString()}
                       </time>
                     </div>
-                    <p className="mt-2 break-words text-sm leading-6 text-slate-300">
+                    <p className="mt-2 break-words text-sm leading-6 text-slate-600 font-medium">
                       {event.message}
                     </p>
                   </article>
@@ -349,10 +354,10 @@ export function OrderTracker({ orderId }: { orderId: string }) {
             </div>
           </>
         ) : (
-          <div className="grid min-h-80 place-items-center rounded-lg border border-dashed border-white/10 bg-black/10 p-8 text-center">
+          <div className="grid min-h-80 place-items-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
             <div>
-              <p className="text-4xl font-semibold text-white/15">RZ</p>
-              <p className="mt-3 text-sm leading-6 text-slate-500">
+              <p className="text-4xl font-bold text-slate-200">RZ</p>
+              <p className="mt-3 text-sm leading-6 text-slate-500 font-medium">
                 The persisted order timeline appears here after token
                 verification.
               </p>

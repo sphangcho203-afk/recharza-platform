@@ -49,7 +49,7 @@ export function GameCard({
         interactive ? "" : "opacity-60"
       }`}
     >
-      <span aria-hidden="true" className="absolute inset-x-0 top-0 z-10 h-px opacity-60 transition-opacity duration-300 motion-safe:group-hover:opacity-100" style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 55%, transparent) 50%, transparent)`, boxShadow: `0 0 10px ${accent}` }} />
+      <span aria-hidden="true" className="absolute inset-x-0 top-0 z-10 h-1 opacity-0 transition-opacity duration-300 motion-safe:group-hover:opacity-100" style={{ background: accent }} />
       {/* Tall portrait artwork bleeding to the card edges (1.16, taller than offer cards). */}
       <div className="recharza-bleed-media relative aspect-[1.16] bg-surface-sunken">
         <StorefrontArtwork
@@ -68,17 +68,17 @@ export function GameCard({
       </div>
 
       {/* Compact base strip — no price/CTA chip, only category + title + arrow. */}
-      <div className="relative flex min-h-[5.4rem] flex-col justify-between gap-1.5 bg-gradient-to-b from-[#111321] to-[#0d0e18] p-3.5">
+      <div className="relative flex min-h-[5.4rem] flex-col justify-between gap-1.5 bg-white p-3.5">
         <div className="flex min-w-0 items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-200/75">{category}</p>
-            <h3 className="recharza-card-title mt-1 min-w-0 truncate">{title}</h3>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">{category}</p>
+            <h3 className="recharza-card-title mt-1 min-w-0 truncate text-slate-900">{title}</h3>
           </div>
-          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-white/[0.12] bg-white/[0.03] text-slate-400 transition-[color,background-color,transform,border-color] duration-200 group-hover:translate-x-0.5 group-hover:border-cyan-300/40 group-hover:text-white">
-            <StorefrontIcon name="arrow" className="h-3.5 w-3.5 transition-colors duration-200" />
+          <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-slate-200 bg-slate-50 text-slate-400 transition-all duration-300 group-hover:translate-x-1 group-hover:border-violet-200 group-hover:bg-violet-50 group-hover:text-violet-600 shadow-sm">
+            <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
           </span>
         </div>
-        {price ? <p className="truncate text-[.72rem] font-medium text-slate-400">From <DisplayPrice amountInrMinor={price} className="ml-1 text-[.86rem] font-semibold text-violet-100" /></p> : <p className="text-[.72rem] font-medium text-slate-400">Verified digital delivery</p>}
+        {price ? <p className="truncate text-[.72rem] font-bold text-slate-500">From <DisplayPrice amountInrMinor={price} className="ml-1 text-[.86rem] font-bold text-violet-600" /></p> : <p className="text-[.72rem] font-bold text-slate-400">Verified digital delivery</p>}
       </div>
     </article>
   );

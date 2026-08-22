@@ -46,7 +46,7 @@ const channelIcons: Record<PublicSupportChannel["id"], SupportChannelIconName> =
 };
 
 const inputClassName =
-  "min-h-12 w-full rounded-lg border border-white/[0.09] bg-[#080a10] px-3.5 text-sm text-white outline-none transition placeholder:text-slate-700 focus:border-violet-400/50 focus:ring-2 focus:ring-violet-400/10";
+  "min-h-12 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm text-slate-900 outline-none transition-all placeholder:text-slate-400 focus:border-violet-600 focus:ring-4 focus:ring-violet-500/10 shadow-sm";
 
 export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }) {
   const formRef = useRef<HTMLDivElement>(null);
@@ -105,10 +105,10 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
   return (
     <div className="space-y-8">
       <section>
-        <div className="border-b border-white/[0.08] pb-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-300">Choose your route</p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white sm:text-3xl">What do you need help with?</h2>
-          <p className="mt-1.5 max-w-2xl text-sm leading-6 text-slate-500">Pick an issue to create a trackable request, or contact the channel that works best for you.</p>
+        <div className="border-b border-slate-100 pb-5">
+          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">Choose your route</p>
+          <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">What do you need help with?</h2>
+          <p className="mt-1.5 max-w-2xl text-sm leading-6 text-slate-500 font-medium">Pick an issue to create a trackable request, or contact the channel that works best for you.</p>
         </div>
         <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4" aria-label="Direct support channels">
           {channels.map((channel) => {
@@ -116,14 +116,14 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
             const available = Boolean(channel.href && channel.available);
             const content = (
               <>
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/[0.1] bg-white/[0.05] text-slate-200">
+                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-slate-100 bg-slate-50 text-slate-600 shadow-sm">
                   <SupportChannelIcon name={icon} className="h-5 w-5" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <strong className="block text-sm font-semibold text-white">{channel.label}</strong>
-                  <span className="mt-0.5 block text-[11px] text-slate-500">{available ? "Open direct channel" : "Currently unavailable"}</span>
+                  <strong className="block text-sm font-bold text-slate-900">{channel.label}</strong>
+                  <span className="mt-0.5 block text-[11px] text-slate-500 font-medium">{available ? "Open direct channel" : "Currently unavailable"}</span>
                 </span>
-                {available ? <StorefrontIcon name="arrow" className="recharza-nav-arrow h-4 w-4 shrink-0 text-slate-500 group-hover:text-white" /> : null}
+                {available ? <StorefrontIcon name="arrow" className="recharza-nav-arrow h-4 w-4 shrink-0 text-slate-400 group-hover:text-slate-900" /> : null}
               </>
             );
             return available ? (
@@ -132,12 +132,12 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
                 href={channel.href ?? undefined}
                 target={channel.id === "email" ? undefined : "_blank"}
                 rel={channel.id === "email" ? undefined : "noreferrer"}
-                className="group flex min-h-[4.5rem] items-center gap-3 rounded-lg border border-white/[0.08] bg-[#0d0f16] px-3.5 py-3 transition hover:-translate-y-0.5 hover:border-violet-400/30 hover:bg-violet-400/[0.07]"
+                className="group flex min-h-[4.5rem] items-center gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-3 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50"
               >
                 {content}
               </a>
             ) : (
-              <div key={channel.id} aria-disabled="true" className="flex min-h-[4.5rem] items-center gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-3.5 py-3 opacity-50">
+              <div key={channel.id} aria-disabled="true" className="flex min-h-[4.5rem] items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3.5 py-3 opacity-50">
                 {content}
               </div>
             );
@@ -153,14 +153,14 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
                 type="button"
                 onClick={() => chooseCategory(category.value)}
                 aria-pressed={active}
-                className={`min-h-24 rounded-lg border p-3.5 text-left transition ${
+                className={`min-h-24 rounded-xl border p-3.5 text-left transition-all duration-300 shadow-sm ${
                   active
-                    ? "border-violet-400/45 bg-violet-500/10"
-                    : "border-white/[0.08] bg-[#0d0f16] hover:border-white/[0.17] hover:bg-white/[0.035]"
+                    ? "border-violet-300 bg-violet-50"
+                    : "border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50"
                 }`}
               >
-                <span className="block text-sm font-semibold leading-5 text-white">{category.label}</span>
-                <span className="mt-1.5 line-clamp-2 block text-[11px] leading-4 text-slate-500">{category.description}</span>
+                <span className="block text-sm font-bold leading-5 text-slate-900">{category.label}</span>
+                <span className="mt-1.5 line-clamp-2 block text-[11px] leading-4 text-slate-500 font-medium">{category.description}</span>
               </button>
             );
           })}
@@ -168,20 +168,20 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
       </section>
 
       {selected ? (
-        <section ref={formRef} className="scroll-mt-32 overflow-hidden rounded-xl border border-white/[0.09] recharza-form-block">
+        <section ref={formRef} className="scroll-mt-32 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           {success ? (
             <div className="mx-auto max-w-xl px-5 py-10 text-center sm:px-8">
-              <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-emerald-400/10 text-emerald-300"><StorefrontIcon name="check" className="h-6 w-6" /></span>
-              <h2 className="mt-4 text-2xl font-semibold text-white">Ticket {success.id}</h2>
-              <p className="mt-2 text-sm text-slate-500">Your request is in the support queue. Keep the ticket ID for follow-up.</p>
+              <span className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-emerald-50 text-emerald-600 shadow-sm border border-emerald-100"><StorefrontIcon name="check" className="h-6 w-6" /></span>
+              <h2 className="mt-4 text-2xl font-bold text-slate-900">Ticket {success.id}</h2>
+              <p className="mt-2 text-sm text-slate-500 font-medium">Your request is in the support queue. Keep the ticket ID for follow-up.</p>
               {success.telegramConnectUrl ? (
-                <a href={success.telegramConnectUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#229ED9] px-5 text-sm font-semibold text-white">
+                <a href={success.telegramConnectUrl} target="_blank" rel="noreferrer" className="mt-5 inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#229ED9] px-5 text-sm font-bold text-white shadow-md transition hover:bg-[#1e8dbf] hover:-translate-y-0.5">
                   <SupportChannelIcon name="telegram" className="h-5 w-5" />
                   Continue in Telegram
                 </a>
               ) : null}
               {!success.persisted ? (
-                <p className="mt-4 rounded-lg border border-amber-300/20 bg-amber-300/[0.07] px-3 py-2 text-xs leading-5 text-amber-100">Ticket delivery was attempted, but persistent storage is not available on this deployment.</p>
+                <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-700 font-medium">Ticket delivery was attempted, but persistent storage is not available on this deployment.</p>
               ) : null}
               <button
                 type="button"
@@ -190,19 +190,19 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
                   setSelectedCategory(null);
                   setForm(initialForm);
                 }}
-                className="mt-6 block w-full text-xs font-semibold text-slate-500 hover:text-white"
+                className="mt-6 block w-full text-xs font-bold text-slate-500 hover:text-slate-900 transition"
               >
                 Create another request
               </button>
             </div>
           ) : (
             <form onSubmit={submit}>
-              <div className="flex items-center justify-between gap-4 border-b border-white/[0.08] px-4 py-4 sm:px-6">
+              <div className="flex items-center justify-between gap-4 border-b border-slate-100 px-4 py-4 sm:px-6 bg-slate-50/50">
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-300">Selected issue</p>
-                  <h2 className="mt-1 text-lg font-semibold text-white">{selected.label}</h2>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">Selected issue</p>
+                  <h2 className="mt-1 text-lg font-bold text-slate-900">{selected.label}</h2>
                 </div>
-                <button type="button" onClick={() => setSelectedCategory(null)} className="text-xs font-semibold text-slate-500 hover:text-white">Change</button>
+                <button type="button" onClick={() => setSelectedCategory(null)} className="text-xs font-bold text-slate-500 hover:text-slate-900 transition">Change</button>
               </div>
 
               <div className="grid gap-5 p-4 sm:p-6">
@@ -226,7 +226,7 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
                 </Field>
 
                 <fieldset>
-                  <legend className="text-xs font-semibold text-slate-400">Reply through</legend>
+                  <legend className="text-xs font-bold text-slate-500">Reply through</legend>
                   <div className="mt-2 flex gap-2">
                     {(["TELEGRAM", "EMAIL"] as const).map((channel) => (
                       <button
@@ -234,10 +234,10 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
                         type="button"
                         onClick={() => update("replyChannel", channel)}
                         aria-pressed={form.replyChannel === channel}
-                        className={`inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border text-sm font-semibold transition ${
+                        className={`inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border text-sm font-bold transition-all duration-300 shadow-sm ${
                           form.replyChannel === channel
-                            ? "border-violet-400/40 bg-violet-500/12 text-white"
-                            : "border-white/[0.08] text-slate-500 hover:text-white"
+                            ? "border-violet-300 bg-violet-50 text-violet-700 shadow-inner"
+                            : "border-slate-200 bg-white text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                         }`}
                       >
                         <SupportChannelIcon name={channel === "TELEGRAM" ? "telegram" : "email"} className="h-4 w-4" />
@@ -251,11 +251,11 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
                   <input id="support-email" type="email" required={form.replyChannel === "EMAIL"} maxLength={254} value={form.email} onChange={(event) => update("email", event.target.value)} className={inputClassName} placeholder="you@example.com" autoComplete="email" />
                 </Field>
 
-                {error ? <p role="alert" className="rounded-lg border border-red-300/20 bg-red-300/[0.07] px-3 py-2.5 text-sm text-red-100">{error}</p> : null}
+                {error ? <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-sm text-rose-700 font-bold shadow-sm">{error}</p> : null}
 
-                <div className="flex flex-col-reverse gap-3 border-t border-white/[0.08] pt-4 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-[11px] leading-5 text-slate-600">Never include passwords, OTPs, UPI PINs, card PINs or remote-access codes.</p>
-                  <button type="submit" disabled={submitting} className="min-h-11 rounded-lg bg-violet-500 px-5 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60">
+                <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-[11px] leading-5 text-slate-400 font-medium">Never include passwords, OTPs, UPI PINs, card PINs or remote-access codes.</p>
+                  <button type="submit" disabled={submitting} className="min-h-11 rounded-xl bg-violet-600 px-6 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-wait disabled:opacity-60">
                     {submitting ? "Submitting…" : "Submit request"}
                   </button>
                 </div>
@@ -271,7 +271,7 @@ export function SupportCenter({ channels }: { channels: PublicSupportChannel[] }
 function Field({ label, htmlFor, children }: { label: string; htmlFor: string; children: React.ReactNode }) {
   return (
     <label htmlFor={htmlFor} className="grid gap-2">
-      <span className="text-xs font-semibold text-slate-400">{label}</span>
+      <span className="text-xs font-bold text-slate-500">{label}</span>
       {children}
     </label>
   );

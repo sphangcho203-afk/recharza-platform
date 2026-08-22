@@ -299,20 +299,20 @@ export function SavedAddressesPanel() {
   return (
     <section
       aria-labelledby="saved-addresses-heading"
-      className="rounded-lg border border-white/10 bg-[#0f0f19] p-5 shadow-2xl shadow-black/25 sm:p-6"
+      className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-100 sm:p-8"
     >
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
             Billing identity
           </p>
           <h2
             id="saved-addresses-heading"
-            className="mt-2 text-2xl font-semibold text-white"
+            className="mt-2 text-2xl font-bold tracking-tight text-slate-900"
           >
             Saved billing addresses
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm font-medium text-slate-500">
             {loading
               ? "Loading your saved billing details…"
               : `${addresses.length} ${
@@ -325,7 +325,7 @@ export function SavedAddressesPanel() {
             type="button"
             onClick={openCreate}
             disabled={busy}
-            className="min-h-11 rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-xs font-semibold text-violet-100 transition hover:bg-violet-400/20 disabled:opacity-50"
+            className="min-h-11 rounded-2xl border border-slate-200 bg-white px-5 text-[11px] font-bold uppercase tracking-widest text-slate-900 shadow-sm transition-all hover:-translate-y-1 hover:bg-slate-50 disabled:opacity-50"
           >
             Add address
           </button>
@@ -333,7 +333,7 @@ export function SavedAddressesPanel() {
       </div>
 
       {formMode === "create" ? (
-        <div className="mt-4">
+        <div className="mt-8">
           <SavedAddressForm
             key="create"
             title="Add a billing address"
@@ -346,7 +346,7 @@ export function SavedAddressesPanel() {
       ) : null}
 
       {formMode === "edit" && editingAddress ? (
-        <div className="mt-4">
+        <div className="mt-8">
           <SavedAddressForm
             key={editingAddress.id}
             title="Edit billing address"
@@ -361,23 +361,23 @@ export function SavedAddressesPanel() {
         </div>
       ) : null}
 
-      <div className="mt-4 grid gap-3" aria-live="polite">
+      <div className="mt-8 grid gap-4" aria-live="polite">
         {loading ? (
           <>
-            <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/[0.025]" />
-            <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/[0.025]" />
+            <div className="h-32 animate-pulse rounded-3xl border border-slate-100 bg-slate-50" />
+            <div className="h-32 animate-pulse rounded-3xl border border-slate-100 bg-slate-50" />
           </>
         ) : addresses.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
-            <p className="font-semibold text-slate-300">No saved billing addresses.</p>
-            <p className="mt-2 text-sm text-slate-500">
+          <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50/50 p-12 text-center">
+            <p className="font-bold text-slate-900">No saved billing addresses.</p>
+            <p className="mt-2 text-sm font-medium text-slate-500">
               Add an address and it will prefill billing in checkout.
             </p>
             <button
               type="button"
               onClick={openCreate}
               disabled={busy}
-              className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-white px-4 py-3 text-xs font-semibold text-slate-950 disabled:opacity-50"
+              className="mt-6 inline-flex min-h-12 items-center rounded-2xl bg-violet-600 px-6 text-[11px] font-bold uppercase tracking-widest text-white shadow-lg shadow-violet-100 transition-all hover:-translate-y-1 hover:bg-violet-700 disabled:opacity-50"
             >
               Add billing address
             </button>
@@ -386,37 +386,37 @@ export function SavedAddressesPanel() {
           addresses.map((item) => (
             <article
               key={item.id}
-              className="rounded-lg border border-white/10 bg-white/[0.035] p-4 sm:p-5"
+              className="rounded-3xl border border-slate-100 bg-slate-50/50 p-6 transition-all hover:border-slate-200 hover:bg-slate-50"
             >
-              <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                 <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="text-xl font-semibold text-white">{item.fullName}</h3>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h3 className="text-xl font-bold tracking-tight text-slate-900">{item.fullName}</h3>
                     {item.isDefault ? (
-                      <span className="rounded-full border border-emerald-300/25 bg-emerald-300/10 px-3 py-1 text-[11px] font-semibold text-emerald-200">
+                      <span className="rounded-full bg-emerald-100 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-700">
                         Default
                       </span>
                     ) : null}
                   </div>
-                  <p className="mt-1.5 text-sm leading-6 text-slate-400">
+                  <p className="mt-2 text-sm font-medium leading-relaxed text-slate-600">
                     {item.line1}
                     {item.line2 ? `, ${item.line2}` : ""}, {item.city},{" "}
                     {item.state} {item.postalCode},{" "}
                     {countryLabel(item.countryCode)}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500">
-                    {item.email} · {item.phone}
+                  <p className="mt-2 text-[11px] font-bold uppercase tracking-widest text-slate-400">
+                    {item.email} <span className="mx-1 text-slate-200">·</span> {item.phone}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-3.5 flex flex-wrap items-center gap-2 border-t border-white/10 pt-3.5">
+              <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-6">
                 {!item.isDefault ? (
                   <button
                     type="button"
                     onClick={() => void setDefault(item)}
                     disabled={busy}
-                    className="min-h-10 rounded-lg border border-emerald-300/20 bg-emerald-300/[0.07] px-3.5 text-xs font-semibold text-emerald-200 transition hover:bg-emerald-300/15 disabled:opacity-50"
+                    className="min-h-10 rounded-xl bg-white border border-slate-200 px-4 text-[10px] font-bold uppercase tracking-widest text-slate-600 shadow-sm transition-all hover:border-emerald-600 hover:text-emerald-700 disabled:opacity-50"
                   >
                     {settingDefaultId === item.id ? "Setting…" : "Set as default"}
                   </button>
@@ -425,7 +425,7 @@ export function SavedAddressesPanel() {
                   type="button"
                   onClick={() => startEdit(item)}
                   disabled={busy}
-                  className="min-h-10 rounded-lg border border-white/10 bg-white/[0.03] px-3.5 text-xs font-semibold text-slate-200 transition hover:text-white disabled:opacity-50"
+                  className="min-h-10 rounded-xl border border-slate-200 bg-white px-3.5 text-xs font-bold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
                 >
                   Edit
                 </button>
@@ -438,10 +438,10 @@ export function SavedAddressesPanel() {
                       : armDelete(item)
                   }
                   disabled={Boolean(deletingId)}
-                  className={`min-h-10 rounded-lg border px-3.5 text-xs font-semibold transition disabled:opacity-50 ${
+                  className={`min-h-10 rounded-xl border px-3.5 text-xs font-bold transition disabled:opacity-50 ${
                     confirmingDeleteId === item.id
-                      ? "border-rose-400/40 bg-rose-500/15 text-rose-100 hover:bg-rose-500/25"
-                      : "border-white/10 bg-white/[0.03] text-slate-400 transition hover:border-rose-400/25 hover:text-rose-200"
+                      ? "border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                      : "border-slate-200 bg-white text-slate-400 transition hover:border-rose-200 hover:text-rose-600"
                   }`}
                 >
                   {deletingId === item.id
@@ -459,10 +459,10 @@ export function SavedAddressesPanel() {
       {message ? (
         <div
           role="status"
-          className={`mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border px-4 py-3 text-sm ${
+          className={`mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border px-4 py-3 text-sm font-medium ${
             error
-              ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
-              : "border-white/10 bg-black/20 text-slate-400"
+              ? "border-rose-200 bg-rose-50 text-rose-700"
+              : "border-slate-200 bg-slate-50 text-slate-600"
           }`}
         >
           <span>{message}</span>
@@ -470,7 +470,7 @@ export function SavedAddressesPanel() {
             <button
               type="button"
               onClick={() => void retryAddresses()}
-              className="text-xs font-semibold text-rose-100 underline"
+              className="text-xs font-bold text-rose-600 underline"
             >
               Retry
             </button>

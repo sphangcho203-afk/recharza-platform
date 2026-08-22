@@ -59,7 +59,7 @@ function deepEqual(left: unknown, right: unknown) {
 
 function Label({ children }: { children: ReactNode }) {
   return (
-    <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">
+    <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">
       {children}
     </span>
   );
@@ -84,20 +84,20 @@ function TextField({
     <label className="block min-w-0">
       <Label>{label}</Label>
       {multiline ? (
-        <textarea
-          value={value}
-          rows={rows}
-          placeholder={placeholder}
-          onChange={(event) => onChange(event.target.value)}
-          className="mt-2 w-full resize-y rounded-lg border border-white/10 bg-black/20 px-3 py-3 text-sm leading-6 text-white outline-none placeholder:text-slate-600 focus:border-fuchsia-400/50"
-        />
-      ) : (
-        <input
-          value={value}
-          placeholder={placeholder}
-          onChange={(event) => onChange(event.target.value)}
-          className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-fuchsia-400/50"
-        />
+          <textarea
+            value={value}
+            rows={rows}
+            placeholder={placeholder}
+            onChange={(event) => onChange(event.target.value)}
+            className="mt-2 w-full resize-y rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm leading-6 text-slate-900 outline-none placeholder:text-slate-400 focus:border-violet-500 shadow-sm"
+          />
+        ) : (
+          <input
+            value={value}
+            placeholder={placeholder}
+            onChange={(event) => onChange(event.target.value)}
+            className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-violet-500 shadow-sm"
+          />
       )}
     </label>
   );
@@ -122,34 +122,34 @@ function Toggle({
       aria-pressed={active}
       disabled={disabled}
       onClick={onClick}
-      className={`min-h-20 rounded-lg border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-35 ${
+      className={`min-h-20 rounded-xl border p-3 text-left transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-35 ${
         active
-          ? "border-fuchsia-300/25 bg-fuchsia-300/[0.08]"
-          : "border-white/8 bg-black/15 hover:border-white/15 hover:bg-white/[0.035]"
+          ? "border-fuchsia-200 bg-fuchsia-50 shadow-sm"
+          : "border-slate-200 bg-white hover:bg-slate-50"
       }`}
     >
       <span className="flex items-center justify-between gap-3">
-        <span className="text-sm font-semibold text-white">{label}</span>
+        <span className="text-sm font-bold text-slate-900">{label}</span>
         <span
-          className={`rounded-full px-2 py-1 text-[9px] font-semibold uppercase ${
+          className={`rounded-full px-2 py-1 text-[9px] font-bold uppercase ${
             active
-              ? "bg-fuchsia-300/15 text-fuchsia-100"
-              : "bg-white/5 text-slate-600"
+              ? "bg-fuchsia-200 text-fuchsia-700"
+              : "bg-slate-100 text-slate-500"
           }`}
         >
           {active ? "On" : "Off"}
         </span>
       </span>
-      <span className="mt-2 block text-xs leading-5 text-slate-500">{note}</span>
+      <span className="mt-2 block text-xs font-medium text-slate-500">{note}</span>
     </button>
   );
 }
 
 function Metric({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-center">
-      <p className="text-lg font-semibold text-white">{value}</p>
-      <p className="text-[9px] font-bold uppercase tracking-wider text-slate-600">
+    <div className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-center shadow-sm">
+      <p className="text-lg font-bold text-slate-900">{value}</p>
+      <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
         {label}
       </p>
     </div>
@@ -363,28 +363,28 @@ export function AdminStorefrontConsole({
   function renderOverview() {
     return (
       <div className="grid gap-5 xl:grid-cols-[1.1fr_0.9fr]">
-        <article className="rounded-lg border border-fuchsia-300/20 bg-fuchsia-300/[0.055] p-5">
+        <article className="rounded-2xl border border-fuchsia-100 bg-fuchsia-50/50 p-5 shadow-sm">
           {draft.announcement.enabled ? (
-            <div className="rounded-lg border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-cyan-100">
-              <p className="text-xs font-semibold">{draft.announcement.title}</p>
-              <p className="mt-1 text-sm opacity-80">{draft.announcement.message}</p>
+            <div className="rounded-xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-cyan-700 shadow-sm">
+              <p className="text-xs font-bold">{draft.announcement.title}</p>
+              <p className="mt-1 text-sm font-medium opacity-90">{draft.announcement.message}</p>
             </div>
           ) : null}
-          <p className="mt-5 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-200">
+          <p className="mt-5 text-xs font-bold uppercase tracking-[0.16em] text-emerald-600">
             {draft.hero.eyebrow}
           </p>
-          <h3 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-white">
+          <h3 className="mt-3 text-3xl font-bold tracking-tight text-slate-900">
             {draft.hero.title}
-            <span className="block text-violet-300">{draft.hero.accent}</span>
+            <span className="block text-violet-600">{draft.hero.accent}</span>
           </h3>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
+          <p className="mt-3 max-w-2xl text-sm font-medium leading-6 text-slate-500">
             {draft.hero.description}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
-            <span className="rounded-lg bg-white px-4 py-3 text-xs font-semibold text-slate-950">
+            <span className="rounded-xl bg-violet-600 px-4 py-3 text-xs font-bold text-white shadow-md">
               {draft.hero.primaryCtaLabel}
             </span>
-            <span className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-xs font-semibold text-white">
+            <span className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-bold text-slate-600 shadow-sm">
               {draft.hero.secondaryCtaLabel}
             </span>
           </div>
@@ -396,9 +396,9 @@ export function AdminStorefrontConsole({
           </div>
         </article>
 
-        <article className="rounded-lg border border-rose-300/15 bg-rose-300/[0.035] p-5">
-          <h3 className="text-lg font-semibold text-rose-100">Locked operational authority</h3>
-          <p className="mt-2 text-xs leading-5 text-rose-200/55">
+        <article className="rounded-2xl border border-rose-100 bg-rose-50/50 p-5 shadow-sm">
+          <h3 className="text-lg font-bold text-rose-700">Locked operational authority</h3>
+          <p className="mt-2 text-xs font-medium leading-5 text-rose-600/70">
             Content controls never become a back door into commerce or deployment.
           </p>
           <div className="mt-4 grid gap-2">
@@ -414,7 +414,7 @@ export function AdminStorefrontConsole({
                 key={item}
                 type="button"
                 disabled
-                className="min-h-11 cursor-not-allowed rounded-lg border border-rose-300/10 bg-black/15 px-3 text-left text-xs font-semibold text-rose-300/40"
+                className="min-h-11 cursor-not-allowed rounded-xl border border-rose-100 bg-white px-3 text-left text-xs font-bold text-rose-300 shadow-sm"
               >
                 {item} · Locked
               </button>
@@ -428,7 +428,7 @@ export function AdminStorefrontConsole({
   function renderHero() {
     return (
       <div className="grid gap-5 xl:grid-cols-2">
-        <article className="rounded-lg border border-white/10 bg-black/15 p-5">
+        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <Toggle
             active={draft.hero.enabled}
             label="Homepage hero"
@@ -579,11 +579,11 @@ export function AdminStorefrontConsole({
           </div>
         </article>
 
-        <article className="rounded-lg border border-white/10 bg-black/15 p-5">
-          <h3 className="text-lg font-semibold text-white">How it works cards</h3>
+        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="text-lg font-bold text-slate-900">How it works cards</h3>
           <div className="mt-4 grid gap-3 xl:grid-cols-2">
             {draft.process.steps.map((step, index) => (
-              <div key={`${index}-${step.number}`} className="rounded-lg border border-white/8 bg-white/[0.025] p-4">
+              <div key={`${index}-${step.number}`} className="rounded-xl border border-slate-100 bg-slate-50/50 p-4">
                 <div className="grid gap-3 sm:grid-cols-[5rem_minmax(0,1fr)]">
                   <TextField
                     label="Number"
@@ -642,11 +642,11 @@ export function AdminStorefrontConsole({
           </div>
         </article>
 
-        <article className="rounded-lg border border-white/10 bg-black/15 p-5">
-          <h3 className="text-lg font-semibold text-white">Customer benefit cards</h3>
+        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="text-lg font-bold text-slate-900">Customer benefit cards</h3>
           <div className="mt-4 grid gap-3 xl:grid-cols-2">
             {draft.benefits.items.map((benefit, index) => (
-              <div key={`${index}-${benefit.title}`} className="rounded-lg border border-white/8 bg-white/[0.025] p-4">
+              <div key={`${index}-${benefit.title}`} className="rounded-xl border border-slate-100 bg-slate-50/50 p-4">
                 <TextField
                   label="Title"
                   value={benefit.title}
@@ -693,15 +693,15 @@ export function AdminStorefrontConsole({
 
   function renderGames() {
     return (
-      <article className="rounded-lg border border-white/10 bg-black/15 p-5">
+      <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white">Game presentation controls</h3>
-            <p className="mt-1 text-xs leading-5 text-slate-500">
+            <h3 className="text-lg font-bold text-slate-900">Game presentation controls</h3>
+            <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
               Hiding a card never changes checkout or supplier availability.
             </p>
           </div>
-          <span className="text-xs font-bold text-slate-500">
+          <span className="text-xs font-bold text-slate-400">
             {draft.featuredGameSlugs.length}/3 featured
           </span>
         </div>
@@ -713,23 +713,23 @@ export function AdminStorefrontConsole({
             return (
               <div
                 key={game.slug}
-                className={`rounded-lg border p-4 ${
+                className={`rounded-xl border p-4 transition-all duration-300 ${
                   hidden
-                    ? "border-rose-300/15 bg-rose-300/[0.035]"
+                    ? "border-rose-200 bg-rose-50 shadow-sm"
                     : featured
-                      ? "border-violet-300/25 bg-violet-300/[0.07]"
-                      : "border-white/8 bg-white/[0.025]"
+                      ? "border-violet-200 bg-violet-50 shadow-sm"
+                      : "border-slate-100 bg-slate-50/50"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-white">{game.title}</p>
-                    <p className="mt-1 text-[10px] uppercase tracking-wider text-slate-600">
+                    <p className="truncate text-sm font-bold text-slate-900">{game.title}</p>
+                    <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       {game.status} · {game.available ? "entry enabled" : "catalogue only"}
                     </p>
                   </div>
                   {featured ? (
-                    <span className="rounded-full bg-violet-300/15 px-2 py-1 text-[9px] font-semibold text-violet-100">
+                    <span className="rounded-full bg-violet-200 px-2 py-1 text-[9px] font-bold text-violet-700">
                       #{featureIndex + 1}
                     </span>
                   ) : null}
@@ -738,7 +738,7 @@ export function AdminStorefrontConsole({
                   <button
                     type="button"
                     onClick={() => toggleGameHidden(game.slug)}
-                    className="min-h-10 rounded-lg border border-rose-300/15 bg-rose-300/[0.06] px-2 text-xs font-semibold text-rose-200"
+                    className="min-h-10 rounded-xl border border-rose-200 bg-white px-2 text-xs font-bold text-rose-600 shadow-sm hover:bg-rose-50"
                   >
                     {hidden ? "Show game" : "Hide game"}
                   </button>
@@ -746,7 +746,7 @@ export function AdminStorefrontConsole({
                     type="button"
                     disabled={!featured && draft.featuredGameSlugs.length >= 3}
                     onClick={() => toggleFeatured(game.slug)}
-                    className="min-h-10 rounded-lg border border-violet-300/20 bg-violet-300/10 px-2 text-xs font-semibold text-violet-100 disabled:opacity-30"
+                    className="min-h-10 rounded-xl border border-violet-200 bg-white px-2 text-xs font-bold text-violet-600 shadow-sm hover:bg-violet-50 disabled:opacity-30"
                   >
                     {featured ? "Unfeature" : "Feature"}
                   </button>
@@ -757,7 +757,7 @@ export function AdminStorefrontConsole({
                       type="button"
                       disabled={featureIndex === 0}
                       onClick={() => moveFeatured(game.slug, -1)}
-                      className="min-h-9 rounded-lg border border-white/10 bg-white/5 text-xs font-bold text-slate-300 disabled:opacity-25"
+                      className="min-h-9 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 shadow-sm hover:bg-slate-50 disabled:opacity-25"
                     >
                       Move up
                     </button>
@@ -765,7 +765,7 @@ export function AdminStorefrontConsole({
                       type="button"
                       disabled={featureIndex === draft.featuredGameSlugs.length - 1}
                       onClick={() => moveFeatured(game.slug, 1)}
-                      className="min-h-9 rounded-lg border border-white/10 bg-white/5 text-xs font-bold text-slate-300 disabled:opacity-25"
+                      className="min-h-9 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 shadow-sm hover:bg-slate-50 disabled:opacity-25"
                     >
                       Move down
                     </button>
@@ -873,13 +873,13 @@ export function AdminStorefrontConsole({
         {POLICY_KEYS.map((key) => {
           const policy = draft.policies[key];
           return (
-            <article key={key} className="rounded-lg border border-white/10 bg-black/15 p-5">
+            <article key={key} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h3 className="text-lg font-semibold text-white">{policy.title}</h3>
-                  <p className="mt-1 text-xs text-slate-500">Published with the next saved storefront version.</p>
+                  <h3 className="text-lg font-bold text-slate-900">{policy.title}</h3>
+                  <p className="mt-1 text-xs font-medium text-slate-500">Published with the next saved storefront version.</p>
                 </div>
-                <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${policy.visible && policy.body.trim() ? "border-emerald-300/20 bg-emerald-300/10 text-emerald-100" : "border-white/10 bg-white/5 text-slate-400"}`}>
+                <span className={`rounded-full border px-3 py-1.5 text-xs font-bold ${policy.visible && policy.body.trim() ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-slate-200 bg-slate-50 text-slate-400"}`}>
                   {policy.visible && policy.body.trim() ? "Visible" : "Hidden"}
                 </span>
               </div>
@@ -899,7 +899,7 @@ export function AdminStorefrontConsole({
                   placeholder="Write the legal page content here."
                   onChange={(value) => setPolicy(key, { body: value })}
                 />
-                <p className="rounded-lg border border-white/8 bg-white/[0.025] p-3 font-mono text-xs text-slate-500">
+                <p className="rounded-xl border border-slate-100 bg-slate-50 p-3 font-mono text-xs font-bold text-slate-400">
                   /policies/{key}
                 </p>
               </div>
@@ -913,8 +913,8 @@ export function AdminStorefrontConsole({
   function renderFlags() {
     return (
       <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-        <article className="rounded-lg border border-white/10 bg-black/15 p-5">
-          <h3 className="text-lg font-semibold text-white">Presentation-only flags</h3>
+        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <h3 className="text-lg font-bold text-slate-900">Presentation-only flags</h3>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <Toggle
               active={draft.privateFlags.showDevelopmentBadges}
@@ -946,8 +946,8 @@ export function AdminStorefrontConsole({
             />
           </div>
         </article>
-        <article className="rounded-lg border border-rose-300/15 bg-rose-300/[0.035] p-5">
-          <h3 className="text-lg font-semibold text-rose-100">Separate protected systems</h3>
+        <article className="rounded-2xl border border-rose-100 bg-rose-50/50 p-5 shadow-sm">
+          <h3 className="text-lg font-bold text-rose-700">Separate protected systems</h3>
           <div className="mt-4 grid gap-2">
             {[
               "Payments",
@@ -961,7 +961,7 @@ export function AdminStorefrontConsole({
                 key={item}
                 type="button"
                 disabled
-                className="min-h-11 cursor-not-allowed rounded-lg border border-rose-300/10 bg-black/15 px-3 text-left text-xs font-semibold text-rose-300/40"
+                className="min-h-11 cursor-not-allowed rounded-xl border border-rose-100 bg-white px-3 text-left text-xs font-bold text-rose-300 shadow-sm"
               >
                 {item} · Not a content flag
               </button>
@@ -974,24 +974,24 @@ export function AdminStorefrontConsole({
 
   function renderHistory() {
     return (
-      <article className="overflow-hidden rounded-lg border border-white/10 bg-black/15">
-        <div className="border-b border-white/10 p-5">
-          <h3 className="text-lg font-semibold text-white">Version ledger</h3>
-          <p className="mt-1 text-xs text-slate-500">Newest evidence appears first.</p>
+      <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-100 p-5 bg-slate-50/50">
+          <h3 className="text-lg font-bold text-slate-900">Version ledger</h3>
+          <p className="mt-1 text-xs font-medium text-slate-500">Newest evidence appears first.</p>
         </div>
-        <div className="divide-y divide-white/8">
+        <div className="divide-y divide-slate-50">
           {snapshot.history.length ? (
             snapshot.history.map((item, index) => (
-              <div key={`${item.createdAt}-${index}`} className="grid gap-3 p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-start">
-                <span className="w-fit rounded-full border border-violet-300/20 bg-violet-300/10 px-2.5 py-1 text-[9px] font-semibold uppercase text-violet-100">
+              <div key={`${item.createdAt}-${index}`} className="grid gap-3 p-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-start hover:bg-slate-50 transition-colors">
+                <span className="w-fit rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[9px] font-bold uppercase text-violet-700">
                   {item.action.replaceAll("-", " ")}
                 </span>
                 <div>
-                  <p className="text-sm font-semibold text-white">Revision {item.revision}</p>
-                  <p className="mt-1 text-sm leading-6 text-slate-400">{item.reason}</p>
-                  <p className="mt-1 text-xs text-slate-600">{item.actorEmail ?? "Unknown administrator"}</p>
+                  <p className="text-sm font-bold text-slate-900">Revision {item.revision}</p>
+                  <p className="mt-1 text-sm font-medium leading-6 text-slate-600">{item.reason}</p>
+                  <p className="mt-1 text-xs font-bold text-slate-400">{item.actorEmail ?? "Unknown administrator"}</p>
                 </div>
-                <time className="text-xs text-slate-600">{formatDate(item.createdAt)}</time>
+                <time className="text-xs font-bold text-slate-400">{formatDate(item.createdAt)}</time>
               </div>
             ))
           ) : (
@@ -1006,17 +1006,17 @@ export function AdminStorefrontConsole({
 
   return (
     <section id="content" className="mt-10 scroll-mt-24">
-      <div className="overflow-hidden rounded-[2rem] border border-fuchsia-300/20 bg-[radial-gradient(circle_at_top_left,rgba(217,70,239,0.12),transparent_34%),linear-gradient(145deg,rgba(255,255,255,0.04),rgba(255,255,255,0.012))]">
-        <div className="border-b border-white/10 px-5 py-5 sm:px-7">
+      <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl shadow-slate-200/50">
+        <div className="border-b border-slate-100 px-5 py-5 sm:px-7 bg-slate-50/50">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-fuchsia-300">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-fuchsia-600">
                 Website presentation authority
               </p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                 Content &amp; Storefront Command Center
               </h2>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+              <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-slate-500">
                 Control customer-facing copy, announcements, sections, games, navigation,
                 legal pages, and safe display flags through one database-backed draft and publish workflow.
               </p>
@@ -1036,41 +1036,41 @@ export function AdminStorefrontConsole({
                 value={reason}
                 onChange={(event) => setReason(event.target.value)}
                 placeholder="Explain why this storefront version is changing"
-                className="mt-2 min-h-11 w-full rounded-lg border border-white/10 bg-black/20 px-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-fuchsia-400/50"
+                className="mt-2 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-violet-500 shadow-sm"
               />
             </label>
             <div className="flex flex-wrap gap-2">
-              <button type="button" disabled={acting} onClick={() => void refresh()} className="min-h-11 rounded-lg border border-white/10 bg-white/5 px-4 text-xs font-semibold text-white disabled:opacity-40">
+              <button type="button" disabled={acting} onClick={() => void refresh()} className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 shadow-sm hover:bg-slate-50 disabled:opacity-40">
                 Refresh
               </button>
-              <button type="button" disabled={acting} onClick={() => void applyAction("restore-draft")} className="min-h-11 rounded-lg border border-amber-300/20 bg-amber-300/10 px-4 text-xs font-semibold text-amber-100 disabled:opacity-40">
+              <button type="button" disabled={acting} onClick={() => void applyAction("restore-draft")} className="min-h-11 rounded-xl border border-amber-200 bg-amber-50 px-4 text-xs font-bold text-amber-700 shadow-sm hover:bg-amber-100 disabled:opacity-40">
                 Restore published
               </button>
-              <button type="button" disabled={acting || !unsaved} onClick={() => void applyAction("save-draft")} className="min-h-11 rounded-lg border border-violet-300/25 bg-violet-300/10 px-4 text-xs font-semibold text-violet-100 disabled:opacity-30">
+              <button type="button" disabled={acting || !unsaved} onClick={() => void applyAction("save-draft")} className="min-h-11 rounded-xl border border-violet-200 bg-violet-50 px-4 text-xs font-bold text-violet-700 shadow-sm hover:bg-violet-100 disabled:opacity-30">
                 Save draft
               </button>
-              <button type="button" disabled={acting || unsaved || !unpublished} onClick={() => void applyAction("publish")} className="min-h-11 rounded-lg bg-white px-4 text-xs font-semibold text-slate-950 disabled:opacity-30">
+              <button type="button" disabled={acting || unsaved || !unpublished} onClick={() => void applyAction("publish")} className="min-h-11 rounded-xl bg-violet-600 px-4 text-xs font-bold text-white shadow-md transition hover:bg-violet-700 hover:-translate-y-0.5 disabled:opacity-30">
                 Publish saved draft
               </button>
             </div>
           </div>
 
-          <p aria-live="polite" className={`mt-4 rounded-lg border px-4 py-3 text-sm ${isError ? "border-rose-300/20 bg-rose-300/10 text-rose-100" : "border-white/10 bg-black/20 text-slate-400"}`}>
+          <p aria-live="polite" className={`mt-4 rounded-xl border px-4 py-3 text-sm font-medium ${isError ? "border-rose-200 bg-rose-50 text-rose-700" : "border-slate-200 bg-slate-50 text-slate-500"}`}>
             {message}{unsaved ? " Unsaved editor changes are present." : ""}
           </p>
         </div>
 
-        <div className="border-b border-white/10 px-3 py-3 sm:px-5">
+        <div className="border-b border-slate-100 px-3 py-3 sm:px-5 bg-slate-50/50">
           <div className="flex gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {TABS.map((item) => (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => setTab(item.id)}
-                className={`min-h-10 shrink-0 rounded-lg px-3 text-xs font-semibold ${
+                className={`min-h-10 shrink-0 rounded-xl px-3 text-xs font-bold transition-all shadow-sm ${
                   tab === item.id
-                    ? "bg-white text-slate-950"
-                    : "border border-white/10 bg-white/[0.035] text-slate-400"
+                    ? "bg-violet-600 text-white shadow-md"
+                    : "border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
                 }`}
               >
                 {item.label}

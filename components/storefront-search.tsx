@@ -48,9 +48,9 @@ export function StorefrontSearch() {
         autoComplete="off"
         enterKeyHint="search"
         placeholder="Search games, packs or regions"
-        className="h-11 w-full rounded-lg border border-white/[0.09] bg-black/25 pl-10 pr-14 text-sm font-semibold text-white outline-none transition placeholder:font-normal placeholder:text-slate-600 hover:border-white/[0.15] focus:border-cyan-300/40 focus:bg-cyan-300/[0.035] focus:ring-4 focus:ring-cyan-300/10"
+        className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-14 text-sm font-bold text-slate-900 outline-none transition-all placeholder:font-medium placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-600 focus:bg-white focus:ring-4 focus:ring-violet-500/10 shadow-sm"
       />
-      <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-md border border-white/[0.09] bg-white/[0.04] px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-500 sm:inline">
+      <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-lg border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-400 sm:inline shadow-sm">
         /
       </kbd>
     </form>

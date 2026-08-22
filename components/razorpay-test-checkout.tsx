@@ -286,35 +286,35 @@ export function RazorpayTestCheckout({
   const busy = ["creating", "open", "verifying"].includes(state);
 
   return (
-    <section className="mt-6 mb-20 overflow-hidden rounded-[1.5rem] border border-violet-300/20 bg-[radial-gradient(circle_at_100%_0%,rgba(139,92,246,0.18),transparent_42%),#11121c] shadow-[0_18px_60px_rgba(0,0,0,0.28)] sm:mb-4">
-      <div className="border-b border-white/[0.08] px-5 py-5 sm:px-6">
-        <div className="flex items-start gap-3">
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-violet-300/25 bg-violet-400/10 text-sm font-semibold text-violet-200">RZ</span>
+    <section className="mt-6 mb-20 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-slate-200/60 sm:mb-4">
+      <div className="border-b border-slate-100 bg-slate-50/50 px-5 py-6 sm:px-6">
+        <div className="flex items-start gap-4">
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-violet-200 bg-violet-600 text-base font-bold text-white shadow-lg shadow-violet-200">RZ</span>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-200">Secure payment</p>
-              <span className="rounded-full border border-emerald-300/25 bg-emerald-300/[0.08] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-200">Protected</span>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Secure payment</p>
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-emerald-700">Protected</span>
             </div>
-            <h3 className="mt-2 text-2xl font-semibold tracking-[-0.03em] text-white">Complete your order</h3>
-            <p className="mt-1.5 text-sm leading-6 text-slate-400">Your payment opens in a secure checkout and stays linked to this Recharza order.</p>
+            <h3 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Complete your order</h3>
+            <p className="mt-1.5 text-sm font-medium text-slate-500">Your payment opens in a secure checkout and stays linked to this Recharza order.</p>
           </div>
         </div>
       </div>
 
-      <div className="px-5 py-5 sm:px-6">
-        <div className="flex items-end justify-between gap-4 rounded-lg border border-white/[0.08] bg-black/20 px-4 py-3.5">
+      <div className="px-5 py-6 sm:px-6">
+        <div className="flex items-end justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-inner">
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500">Selected package</p>
-            <p className="mt-1 truncate text-sm font-bold text-slate-200">{packageName}</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Selected package</p>
+            <p className="mt-1 truncate text-base font-bold text-slate-900">{packageName}</p>
           </div>
-          <p className="shrink-0 text-xl font-semibold text-violet-200">{formatInr(amountInPaise)}</p>
+          <p className="shrink-0 text-2xl font-bold text-violet-600">{formatInr(amountInPaise)}</p>
         </div>
 
         <button
           type="button"
           disabled={busy || state === "success"}
           onClick={() => void openCheckout()}
-          className="mt-4 flex min-h-14 w-full items-center justify-center rounded-lg bg-violet-500 px-5 text-base font-semibold text-white shadow-[0_10px_25px_rgba(139,92,246,0.24)] transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-200/70 active:scale-[0.99] disabled:cursor-wait disabled:opacity-60"
+          className="mt-6 flex min-h-14 w-full items-center justify-center rounded-2xl bg-violet-600 px-6 text-base font-bold text-white shadow-xl shadow-violet-200 transition-all duration-300 hover:-translate-y-1 hover:bg-violet-700 active:scale-[0.98] disabled:cursor-wait disabled:opacity-50 disabled:translate-y-0"
         >
           {state === "creating"
             ? "Preparing secure payment…"
@@ -327,20 +327,20 @@ export function RazorpayTestCheckout({
                   : "Pay securely"}
         </button>
 
-        <div className="mt-4 grid gap-2 text-xs text-slate-500 sm:grid-cols-3">
-          <span className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-center">Encrypted checkout</span>
-          <span className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-center">Server verified</span>
-          <span className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2 text-center">Order recoverable</span>
+        <div className="mt-6 grid gap-3 text-[10px] font-bold uppercase tracking-widest text-slate-400 sm:grid-cols-3">
+          <span className="flex items-center justify-center gap-2 rounded-xl border border-slate-100 bg-slate-50 py-2.5">✓ Encrypted</span>
+          <span className="flex items-center justify-center gap-2 rounded-xl border border-slate-100 bg-slate-50 py-2.5">✓ Verified</span>
+          <span className="flex items-center justify-center gap-2 rounded-xl border border-slate-100 bg-slate-50 py-2.5">✓ Safe</span>
         </div>
 
         <p
           aria-live="polite"
-          className={`mt-4 rounded-lg border px-4 py-3 text-sm leading-6 ${
+          className={`mt-6 rounded-2xl border px-5 py-4 text-sm font-bold ${
             state === "error"
-              ? "border-rose-400/20 bg-rose-400/[0.08] text-rose-200"
+              ? "border-rose-200 bg-rose-50 text-rose-700"
               : state === "success"
-                ? "border-emerald-400/20 bg-emerald-400/[0.08] text-emerald-200"
-                : "border-white/[0.08] bg-black/15 text-slate-400"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                : "border-slate-100 bg-slate-50 text-slate-500"
           }`}
         >
           {message}

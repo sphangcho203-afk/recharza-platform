@@ -207,11 +207,11 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
   if (loading) {
     return (
       <div className="grid gap-4" aria-label="Loading account">
-        <div className="h-32 animate-pulse rounded-lg border border-white/10 bg-white/[0.03]" />
+        <div className="h-32 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/[0.025]" />
-          <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/[0.025]" />
-          <div className="h-28 animate-pulse rounded-lg border border-white/10 bg-white/[0.025]" />
+          <div className="h-28 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
+          <div className="h-28 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
+          <div className="h-28 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
         </div>
       </div>
     );
@@ -219,14 +219,14 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
 
   if (!customer || sessionEnded) {
     return (
-      <section className="mx-auto max-w-xl rounded-lg border border-white/10 bg-[#0f0f19] p-6 text-center sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+      <section className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm sm:p-8">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
           Session closed
         </p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
           Sign in to reopen your account.
         </h2>
-        <p className="mt-3 text-sm leading-6 text-slate-400">{message}</p>
+        <p className="mt-3 text-sm leading-6 text-slate-600">{message}</p>
         <a
           href="/account"
           className="mt-5 block min-h-12 rounded-lg bg-violet-500 px-5 py-3.5 text-sm font-semibold text-white transition duration-150 ease-out hover:bg-violet-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70"
@@ -241,31 +241,31 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
   return (
     <div className="grid gap-6">
       {showOrders ? (
-        <section className="rounded-lg border border-violet-300/15 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.16),transparent_48%),#0f0f19] p-5 sm:p-7">
-          <Link href="/account" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/[0.035] px-3 py-2 text-sm font-semibold text-slate-300 transition duration-150 ease-out hover:border-violet-300/40 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70">
+        <section className="rounded-2xl border border-violet-100 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.05),transparent_48%),#FFFFFF] p-5 shadow-sm sm:p-7">
+          <Link href="/account" className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold text-slate-600 transition duration-150 ease-out hover:border-violet-300 hover:bg-white hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/70">
             <span aria-hidden="true">←</span> Back to account
           </Link>
           <p className="recharza-eyebrow mt-7">Order history</p>
-          <h2 className="recharza-section-head mt-3 text-white">Your purchases</h2>
+          <h2 className="recharza-section-head mt-3 text-slate-900">Your purchases</h2>
           <p className="recharza-body mt-3 max-w-2xl">Every purchase has its own tracking link, payment state, player destination, and delivery timeline. This is your complete account-owned order workspace.</p>
-          <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-slate-400">
-            <span className="rounded-lg border border-white/10 bg-black/20 px-3 py-2">{orders.length} total orders</span>
+          <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold text-slate-600">
+            <span className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2">{orders.length} total orders</span>
             <StatusBadge state={activeOrders > 0 ? "pending" : "neutral"} label={`${activeOrders} active`} />
           </div>
         </section>
       ) : null}
       {!showOrders ? (
-      <section className="overflow-hidden rounded-lg border border-white/10 bg-[#0f0f19]">
-        <div className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.15),transparent_50%),rgba(255,255,255,0.025)] p-5 sm:p-6">
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="border-b border-slate-200 bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.05),transparent_50%),rgba(0,0,0,0.01)] p-5 sm:p-6">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-300">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-600">
                 Account active
               </p>
-              <h2 className="mt-2 break-words text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+              <h2 className="mt-2 break-words text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
                 {customer.displayName || customer.username || customer.email}
               </h2>
-              <p className="mt-2 break-all text-sm text-slate-400">
+              <p className="mt-2 break-all text-sm text-slate-600">
                 {customer.username ? `@${customer.username} · ` : ""}
                 {customer.email}
               </p>
@@ -290,24 +290,24 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
           </div>
         </div>
 
-        <nav className="grid gap-3 border-t border-white/10 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4" aria-label="Account tools">
+        <nav className="grid gap-3 border-t border-slate-200 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4" aria-label="Account tools">
           {[
-            ["Cart", "/cart", "Review packages and players", "cart", "#a78bfa"],
-            ["Start a top-up", "/#games", "Choose a game and market", "games", "#22d3ee"],
-            ["Orders", "/account/orders", "View your complete order history", "track", "#34d399"],
-            ["Get support", "/support", "Chat or create a request", "support", "#f472b6"],
+            ["Cart", "/cart", "Review packages and players", "cart", "#7C3AED"],
+            ["Start a top-up", "/#games", "Choose a game and market", "games", "#0EA5E9"],
+            ["Orders", "/account/orders", "View your complete order history", "track", "#10B981"],
+            ["Get support", "/support", "Chat or create a request", "support", "#EC4899"],
           ].map(([label, href, note, icon, accent]) => (
             <Link
               key={label}
               href={href as string}
-              className="recharza-nav-row group relative overflow-hidden rounded-xl border border-white/[0.08] bg-[linear-gradient(160deg,rgba(30,33,56,.9),rgba(13,15,25,.95))] p-4 shadow-[0_12px_32px_rgba(0,0,0,.25)]"
+              className="recharza-nav-row group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
             >
-              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px opacity-60 transition-opacity duration-300 motion-safe:group-hover:opacity-100" style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 55%, transparent) 50%, transparent)` }} />
-              <span className="relative grid h-11 w-11 place-items-center rounded-xl bg-white/[0.05] ring-1 ring-white/[0.08] transition-transform duration-200 group-hover:scale-105" style={{ color: accent } as React.CSSProperties}>
+              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px opacity-60 transition-opacity duration-300 motion-safe:group-hover:opacity-100" style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 30%, transparent) 50%, transparent)` }} />
+              <span className="relative grid h-11 w-11 place-items-center rounded-xl bg-slate-50 ring-1 ring-slate-200 transition-transform duration-200 group-hover:scale-105" style={{ color: accent } as React.CSSProperties}>
                 <StorefrontIcon name={icon as Parameters<typeof StorefrontIcon>[0]["name"]} className="h-4 w-4" />
               </span>
-              <strong className="relative mt-4 block text-sm font-semibold text-white">{label}</strong>
-              <span className="relative mt-1 block text-xs leading-5 text-slate-500">{note}</span>
+              <strong className="relative mt-4 block text-sm font-bold text-slate-900">{label}</strong>
+              <span className="relative mt-1 block text-xs leading-5 text-slate-600">{note}</span>
             </Link>
           ))}
         </nav>
@@ -322,17 +322,17 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               ["Active orders", String(activeOrders), "Still moving through the flow", "#22d3ee"],
               ["Saved players", String(savedPlayers.length), "Derived from order history", "#34d399"],
             ].map(([label, value, note, accent], tileIndex) => (
-              <article key={label as string} className="recharza-stat-tile relative overflow-hidden rounded-xl p-5">
-                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px opacity-60" style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 50%, transparent) 50%, transparent)` }} />
-                <p className="relative text-xs font-semibold uppercase tracking-[0.13em] text-slate-500">{label}</p>
-                <p className="relative mt-3 text-3xl font-semibold tracking-tight recharza-stat-value">{value}</p>
+              <article key={label as string} className="recharza-stat-tile relative overflow-hidden rounded-xl bg-white p-5 shadow-sm border border-slate-200">
+                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px opacity-60" style={{ background: `linear-gradient(90deg, transparent, color-mix(in srgb, ${accent} 30%, transparent) 50%, transparent)` }} />
+                <p className="relative text-xs font-bold uppercase tracking-[0.13em] text-slate-500">{label}</p>
+                <p className="relative mt-3 text-3xl font-bold tracking-tight text-slate-900">{value}</p>
                 <p className="relative mt-2 text-xs text-slate-600">{note}</p>
               </article>
             ))}
           </section>
-          <section className="rounded-lg border border-white/10 bg-white/[0.025] p-5 sm:p-6" aria-labelledby="account-next-step">
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6" aria-labelledby="account-next-step">
             <p className="recharza-eyebrow">Account overview</p>
-            <h2 id="account-next-step" className="recharza-section-head mt-3 text-white">What would you like to do?</h2>
+            <h2 id="account-next-step" className="recharza-section-head mt-3 text-slate-900">What would you like to do?</h2>
             <p className="recharza-body mt-3 max-w-2xl">Use the account tools above to review your cart, open your order history, or contact support. Games stay in the storefront where they belong.</p>
           </section>
           <SavedAddressesPanel />
@@ -347,7 +347,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               <p className="recharza-eyebrow">
                 Order history
               </p>
-              <h2 className="recharza-section-head mt-3 text-white">
+              <h2 className="recharza-section-head mt-3 text-slate-900">
                 Your purchases
               </h2>
             </div>
@@ -373,13 +373,13 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                 onClick={() => setStatusFilter(tab.id as any)}
                 className={`flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold tracking-wide transition-all duration-200 ${
                   statusFilter === tab.id
-                    ? "bg-violet-500 text-white shadow-[0_4px_16px_rgba(139,92,246,0.3)]"
-                    : "border border-white/[0.08] bg-white/[0.03] text-slate-400 hover:border-white/[0.15] hover:bg-white/[0.06] hover:text-white"
+                    ? "bg-violet-600 text-white shadow-sm"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
                 }`}
               >
                 {tab.label}
                 <span className={`grid h-5 min-w-[1.25rem] place-items-center rounded-lg px-1.5 text-[10px] ${
-                  statusFilter === tab.id ? "bg-white/20 text-white" : "bg-white/10 text-slate-500"
+                  statusFilter === tab.id ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
                 }`}>
                   {tab.count}
                 </span>
@@ -389,36 +389,36 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
 
           <div className="mt-6 space-y-4">
             {filteredOrders.map((order) => (
-              <div key={order.id} className="recharza-surface-raised relative overflow-hidden rounded-[1.25rem] border border-white/[0.08] bg-[#121422]/60 p-5 shadow-[0_8px_32px_rgba(0,0,0,0.4)] transition-all duration-300 hover:border-white/[0.15] hover:bg-[#16192a]/80">
+              <div key={order.id} className="recharza-surface-raised relative overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:border-violet-200 hover:shadow-md">
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-5">
                     <div className="relative shrink-0">
-                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-16 w-16 shrink-0 rounded-2xl object-cover shadow-[0_4px_24px_rgba(0,0,0,0.5)]" fallbackClassName="h-16 w-16 shrink-0 rounded-2xl" />
-                      <div className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-xl border border-white/[0.12] bg-[#07080e] text-violet-300 shadow-2xl">
+                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-16 w-16 shrink-0 rounded-2xl object-cover shadow-sm" fallbackClassName="h-16 w-16 shrink-0 rounded-2xl" />
+                      <div className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-xl border border-slate-200 bg-white text-violet-600 shadow-sm">
                         <StorefrontIcon name="games" className="h-4 w-4" />
                       </div>
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-violet-300/60">Purchase Item</span>
-                        <div className="h-px w-8 bg-white/[0.08]" />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-violet-600/60">Purchase Item</span>
+                        <div className="h-px w-8 bg-slate-200" />
                       </div>
-                      <p className="mt-1 text-lg font-bold tracking-tight text-white">{order.package.name}</p>
+                      <p className="mt-1 text-lg font-bold tracking-tight text-slate-900">{order.package.name}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <span className="font-mono text-[11px] font-medium text-slate-400">ID: <span className="text-violet-200">{order.id}</span></span>
-                        <span className="h-1 w-1 rounded-full bg-white/10" />
-                        <span className="text-[11px] font-medium text-slate-400">{gameTitle(order.gameSlug)}</span>
+                        <span className="font-mono text-[11px] font-medium text-slate-500">ID: <span className="text-violet-600">{order.id}</span></span>
+                        <span className="h-1 w-1 rounded-full bg-slate-200" />
+                        <span className="text-[11px] font-medium text-slate-600">{gameTitle(order.gameSlug)}</span>
                         {order.market && (
                           <>
-                            <span className="h-1 w-1 rounded-full bg-white/10" />
-                            <span className="text-[11px] font-medium text-slate-400">{order.market.label}</span>
+                            <span className="h-1 w-1 rounded-full bg-slate-200" />
+                            <span className="text-[11px] font-medium text-slate-600">{order.market.label}</span>
                           </>
                         )}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-white/[0.06] pt-4 sm:flex-col sm:items-end sm:border-none sm:pt-0">
+                  <div className="flex items-center justify-between border-t border-slate-100 pt-4 sm:flex-col sm:items-end sm:border-none sm:pt-0">
                     <div className="flex flex-col sm:items-end">
                       <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">Order Status</span>
                       <div className="mt-1.5">
@@ -427,19 +427,19 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
                     </div>
                     <div className="flex flex-col items-end text-right sm:mt-4">
                       <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-500">Transaction</span>
-                      <p className="mt-0.5 text-base font-bold text-white">{formatInr(order.package.amountInPaise)}</p>
+                      <p className="mt-0.5 text-base font-bold text-slate-900">{formatInr(order.package.amountInPaise)}</p>
                     </div>
                   </div>
                 </div>
                 
-                <div className="mt-5 flex items-center justify-between rounded-xl bg-white/[0.03] px-4 py-3 border border-white/[0.03]">
+                <div className="mt-5 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 border border-slate-100">
                   <div className="flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
-                    <span className="text-[11px] font-medium text-slate-400">Securely processed · {new Date(order.createdAt).toLocaleDateString("en-IN")}</span>
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-sm" />
+                    <span className="text-[11px] font-medium text-slate-600">Securely processed · {new Date(order.createdAt).toLocaleDateString("en-IN")}</span>
                   </div>
                   <Link
                     href={`/orders/${encodeURIComponent(order.id)}`}
-                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-cyan-300 transition-all hover:text-white hover:gap-2"
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-violet-600 transition-all hover:text-violet-700 hover:gap-2"
                   >
                     View Details
                     <StorefrontIcon name="arrow" className="h-3 w-3" />
@@ -449,16 +449,16 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
             ))}
 
             {!filteredOrders.length ? (
-              <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
-                <p className="text-base font-semibold text-slate-300">
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
+                <p className="text-base font-bold text-slate-900">
                   {statusFilter === "all" ? "No orders yet." : `No ${statusFilter} orders.`}
                 </p>
-                <p className="mt-2 text-sm text-slate-500">
+                <p className="mt-2 text-sm text-slate-600">
                   Your completed and active purchases will appear here.
                 </p>
                 <Link
                   href="/#games"
-                  className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-white px-4 py-3 text-xs font-semibold text-slate-950 transition duration-150 ease-out hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                  className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-violet-600 px-4 py-3 text-xs font-bold text-white transition duration-150 ease-out hover:bg-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60"
                 >
                   Browse games
                 </Link>
@@ -467,11 +467,11 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
           </div>
         </section>
 
-        <aside className="h-fit rounded-lg border border-white/10 bg-[#0f0f19] p-5 lg:sticky lg:top-24">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+        <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:sticky lg:top-24">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
             Saved players
           </p>
-          <h2 className="mt-2 text-lg font-semibold tracking-tight text-white">
+          <h2 className="mt-2 text-lg font-bold tracking-tight text-slate-900">
             Recent destinations
           </h2>
           <div className="mt-4 recharza-order-rows">
@@ -480,22 +480,22 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               return (
               <div
                 key={`${order.gameSlug}:${order.player.playerId}:${order.player.zoneId}:${order.market?.code ?? "global"}`}
-                className="recharza-order-row"
+                className="recharza-order-row border-slate-100"
               >
                 <div className="recharza-order-row-main min-w-0">
                   <div className="flex min-w-0 items-center gap-3">
                     <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-10 w-10 shrink-0 rounded-lg object-cover" fallbackClassName="h-10 w-10 shrink-0 rounded-lg" />
                     <div className="min-w-0">
-                      <p className="recharza-order-row-title">{order.player.nickname || "Mobile Legends player"}</p>
-                      <p className="recharza-order-row-meta break-all font-mono text-[.68rem]">
+                      <p className="recharza-order-row-title text-slate-900">{order.player.nickname || "Mobile Legends player"}</p>
+                      <p className="recharza-order-row-meta break-all font-mono text-[.68rem] text-slate-500">
                         {order.player.playerId}{order.player.zoneId ? ` (${order.player.zoneId})` : ""}
-                        {" · "}<span style={{ color: accent }}>{gameTitle(order.gameSlug)}</span>
+                        {" · "}<span style={{ color: accent, fontWeight: 'bold' }}>{gameTitle(order.gameSlug)}</span>
                       </p>
                     </div>
                   </div>
                 </div>
                 <div className="recharza-order-row-side">
-                  <span className="text-[.68rem] font-semibold uppercase tracking-[0.1em] text-slate-400">
+                  <span className="text-[.68rem] font-bold uppercase tracking-[0.1em] text-slate-400">
                     {order.market?.code ?? "global"}
                   </span>
                 </div>
@@ -503,7 +503,7 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
               );
             })}
             {!savedPlayers.length ? (
-              <p className="rounded-lg border border-dashed border-white/10 px-4 py-5 text-sm leading-6 text-slate-500">
+              <p className="rounded-lg border border-dashed border-slate-200 bg-slate-50 px-4 py-5 text-sm leading-6 text-slate-600">
                 Validated player destinations will be collected from your order
                 history.
               </p>
@@ -515,8 +515,8 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
       <p
         className={`rounded-lg border px-4 py-3 text-sm ${
           error
-            ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
-            : "border-white/10 bg-black/20 text-slate-400"
+            ? "border-rose-200 bg-rose-50 text-rose-700"
+            : "border-slate-200 bg-slate-50 text-slate-600"
         }`}
       >
         {message}

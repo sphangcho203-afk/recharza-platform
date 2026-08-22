@@ -663,58 +663,60 @@ export function SupplierGameCheckoutShell({
         </> : null}
 
         {step === 4 ? <>
-        <section className="rounded-lg border border-violet-300/20 bg-[radial-gradient(circle_at_0%_0%,rgba(139,92,246,0.16),transparent_42%),#0d0f16] p-5 sm:p-6">
+        <section className="rounded-2xl border border-violet-200 bg-white p-5 shadow-xl shadow-violet-100/50 sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-300">Step 4 · Final review</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.04em] text-white">Review your order</h2>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-slate-400">Confirm the player destination, package, market, currency, and total before continuing to secure payment.</p>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">Step 4 · Final review</p>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Review your order</h2>
+              <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-slate-500">Confirm the player destination, package, market, currency, and total before continuing to secure payment.</p>
             </div>
-            <span className="rounded-full border border-emerald-300/20 bg-emerald-300/[0.08] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-emerald-200">Ready for payment</span>
+            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-emerald-700">Ready for payment</span>
           </div>
-          <dl className="storefront-checkout-surface mt-6 grid gap-4 p-4 text-sm sm:grid-cols-2">
-            <div><dt className="text-xs font-bold text-slate-500">Pack</dt><dd className="mt-1 font-semibold text-white">{selectedPackage.name}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-semibold text-white">{selectedPackage.marketLabel}</dd></div>
-            {identity.riotId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{identity.riotId}</dd></div> : null}
-            {identity.playerId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Player ID / UID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{identity.playerId}</dd></div> : null}
-            {identity.serverId ? <div className="rounded-lg border border-violet-300/15 bg-violet-400/[0.06] p-3"><dt className="text-xs font-bold text-slate-500">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-semibold tracking-wide text-white">{identity.serverId}</dd></div> : null}
-            <div><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-semibold text-emerald-200">{verification?.nickname ?? "Verified player"}{verification?.region ? <span className="ml-2 rounded-md border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[10px] font-medium text-cyan-200">{verification.region}</span> : null}</dd></div>
-            <div><dt className="text-xs font-bold text-slate-500">Currency</dt><dd className="mt-1 font-semibold text-white">{billing.presentmentCurrency}</dd></div>
-            <div className="border-t border-white/[0.1] pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-semibold text-violet-300">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+          <dl className="mt-6 grid gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 text-sm sm:grid-cols-2">
+            <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pack</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
+            <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Market</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.marketLabel}</dd></div>
+            {identity.riotId ? <div className="rounded-xl border border-violet-100 bg-violet-50/50 p-3"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.riotId}</dd></div> : null}
+            {identity.playerId ? <div className="rounded-xl border border-violet-100 bg-violet-50/50 p-3"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Player ID / UID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.playerId}</dd></div> : null}
+            {identity.serverId ? <div className="rounded-xl border border-violet-100 bg-violet-50/50 p-3"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.serverId}</dd></div> : null}
+            <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-600">{verification?.nickname ?? "Verified player"}{verification?.region ? <span className="ml-2 rounded-md border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-[10px] font-bold text-cyan-700">{verification.region}</span> : null}</dd></div>
+            <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Currency</dt><dd className="mt-1 font-bold text-slate-900">{billing.presentmentCurrency}</dd></div>
+            <div className="border-t border-slate-200 pt-4 sm:col-span-2"><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total</dt><dd className="mt-1 text-3xl font-bold tracking-tight text-violet-600">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
           </dl>
-          <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-            <button type="button" onClick={() => setStep(3)} className="storefront-checkout-secondary px-4 text-sm">Back to billing</button>
-            <button type="submit" disabled={!canSubmit || isSubmitting || Boolean(order)} className="storefront-checkout-primary px-5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60">{isSubmitting ? "Preparing payment…" : "Continue to payment"}</button>
+          <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+            <button type="button" onClick={() => setStep(3)} className="min-h-11 rounded-xl border border-slate-200 bg-white px-6 text-xs font-bold text-slate-600 transition hover:bg-slate-50">Back to billing</button>
+            <button type="submit" disabled={!canSubmit || isSubmitting || Boolean(order)} className="min-h-11 rounded-xl bg-violet-600 px-8 text-xs font-bold text-white shadow-lg shadow-violet-200 transition-all hover:bg-violet-700 hover:-translate-y-0.5 disabled:opacity-50">{isSubmitting ? "Preparing payment…" : "Continue to payment"}</button>
           </div>
         </section>
         </> : null}
 
-        {error ? <p className="rounded-lg border border-rose-300/20 bg-rose-300/[0.07] px-4 py-3 text-sm text-rose-100">{error}</p> : null}
-        {message ? <p className="rounded-lg border border-cyan-300/20 bg-cyan-300/[0.07] px-4 py-3 text-sm text-cyan-100">{message}</p> : null}
+        {error ? <p className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">{error}</p> : null}
+        {message ? <p className="rounded-xl border border-cyan-200 bg-cyan-50 px-4 py-3 text-sm font-bold text-cyan-700">{message}</p> : null}
 
         {step === 5 && order ? (
-          <section className="rounded-lg border border-emerald-300/20 bg-[#0c1110] p-4 sm:p-5">
+          <section className="rounded-2xl border border-emerald-200 bg-emerald-50/30 p-4 shadow-lg shadow-emerald-100/50 sm:p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-sm font-semibold text-emerald-100">Order {order.id} created</h2>
-                <p className="mt-1 text-xs text-emerald-100/60">The order is saved and recoverable before payment.</p>
-                {addressSaveNote ? <p className="mt-2 text-xs leading-5 text-amber-200/80">{addressSaveNote}</p> : null}
+                <h2 className="text-sm font-bold text-emerald-700">Order {order.id} created</h2>
+                <p className="mt-1 text-xs font-medium text-emerald-600/70">The order is saved and recoverable before payment.</p>
+                {addressSaveNote ? <p className="mt-2 text-xs font-medium leading-5 text-amber-600">{addressSaveNote}</p> : null}
               </div>
-              <Link href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`} className="text-xs font-semibold text-emerald-300 underline">Open tracking</Link>
+              <Link href={`${order.tracking.path}?token=${encodeURIComponent(order.tracking.accessToken)}`} className="text-xs font-bold text-emerald-600 underline hover:text-emerald-700">Open tracking</Link>
             </div>
-            <PrivateOrderTokenCard token={order.tracking.accessToken} />
-            <RazorpayTestCheckout
-              orderId={order.id}
-              orderStatus={order.status}
-              accessToken={order.tracking.accessToken}
-              amountInPaise={order.package.amountInPaise}
-              packageName={order.package.name}
-              onVerified={() => {
-                setPaymentVerified(true);
-                setMessage("Payment verified. Order processing has started.");
-              }}
-            />
-            {paymentVerified ? <p className="mt-4 text-sm font-bold text-emerald-200">Payment verification completed for this order.</p> : null}
+            <div className="mt-4"><PrivateOrderTokenCard token={order.tracking.accessToken} /></div>
+            <div className="mt-4">
+              <RazorpayTestCheckout
+                orderId={order.id}
+                orderStatus={order.status}
+                accessToken={order.tracking.accessToken}
+                amountInPaise={order.package.amountInPaise}
+                packageName={order.package.name}
+                onVerified={() => {
+                  setPaymentVerified(true);
+                  setMessage("Payment verified. Order processing has started.");
+                }}
+              />
+            </div>
+            {paymentVerified ? <p className="mt-4 text-sm font-bold text-emerald-600">Payment verification completed for this order.</p> : null}
           </section>
         ) : null}
       </div>
@@ -729,21 +731,21 @@ type StepActionsProps = { current: number; onBack?: () => void; onNext: () => vo
 function CheckoutProgress({ step, onStepChange }: CheckoutProgressProps) {
   const labels = ["Package", "Player", "Billing", "Review", "Payment"];
   return (
-    <nav aria-label="Checkout progress" className="storefront-checkout-surface mb-5 p-3">
+    <nav aria-label="Checkout progress" className="mb-5 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
       <ol className="grid grid-cols-5 gap-1">
         {labels.map((label, index) => {
           const number = index + 1;
           const active = number === step;
           const complete = number < step;
           return <li key={label}>
-            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} aria-current={active ? "step" : undefined} aria-label={`${label} step${active ? ", current step" : complete ? ", completed" : ", locked"}`} className={`flex w-full flex-col items-center gap-1 rounded-lg px-1 py-2 text-center transition ${active ? "bg-violet-500/15 text-violet-200" : complete ? "text-emerald-200 hover:bg-white/[0.05]" : "text-slate-500"}`}>
-              <span className={`grid h-7 w-7 place-items-center rounded-full border text-[10px] font-semibold transition-all duration-300 ${active ? "border-violet-400/70 bg-violet-500 shadow-[0_0_14px_rgba(139,92,246,0.5)]" : complete ? "border-emerald-400/60 bg-emerald-500 shadow-[0_0_10px_rgba(34,197,94,0.35)]" : "border-white/15 bg-white/[0.06]"}`}>{complete ? "✓" : number}</span>
-              <span className="text-[9px] font-semibold uppercase tracking-[0.1em] sm:text-[10px]">{label}</span>
+            <button type="button" onClick={() => complete ? onStepChange(number as 1 | 2 | 3 | 4 | 5) : undefined} disabled={!complete && !active} aria-current={active ? "step" : undefined} aria-label={`${label} step${active ? ", current step" : complete ? ", completed" : ", locked"}`} className={`flex w-full flex-col items-center gap-1 rounded-xl px-1 py-2 text-center transition ${active ? "bg-violet-50 text-violet-600" : complete ? "text-emerald-600 hover:bg-slate-50" : "text-slate-400"}`}>
+              <span className={`grid h-7 w-7 place-items-center rounded-full border text-[10px] font-bold transition-all duration-300 ${active ? "border-violet-600 bg-violet-600 text-white shadow-lg shadow-violet-200" : complete ? "border-emerald-600 bg-emerald-600 text-white shadow-lg shadow-emerald-100" : "border-slate-200 bg-slate-50"}`}>{complete ? "✓" : number}</span>
+              <span className="text-[9px] font-bold uppercase tracking-widest sm:text-[10px]">{label}</span>
             </button>
           </li>;
         })}
       </ol>
-      <div className="mt-3 pt-1">
+      <div className="mt-3 px-1 pt-1">
         <CheckoutProgressRail current={step} />
       </div>
     </nav>

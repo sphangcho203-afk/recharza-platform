@@ -54,7 +54,7 @@ export function StaffLoginForm({ forbidden }: StaffLoginFormProps) {
 
   return (
     <form onSubmit={submit} className="mt-7 grid gap-4">
-      <label className="text-sm font-semibold text-slate-200">
+      <label className="text-sm font-semibold text-slate-500">
         Staff email
         <input
           required
@@ -62,10 +62,10 @@ export function StaffLoginForm({ forbidden }: StaffLoginFormProps) {
           autoComplete="username"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
+          className="mt-2 min-h-12 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-600/10"
         />
       </label>
-      <label className="text-sm font-semibold text-slate-200">
+      <label className="text-sm font-semibold text-slate-500">
         Password
         <input
           required
@@ -73,12 +73,12 @@ export function StaffLoginForm({ forbidden }: StaffLoginFormProps) {
           autoComplete="current-password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/20 px-4 py-3 text-base text-white outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
+          className="mt-2 min-h-12 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-base text-slate-900 outline-none focus:border-violet-600 focus:ring-2 focus:ring-violet-600/10"
         />
       </label>
       <button
         disabled={submitting}
-        className="min-h-12 rounded-lg bg-violet-500 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:cursor-wait disabled:opacity-60"
+        className="min-h-12 rounded-lg bg-violet-600 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-violet-700 disabled:cursor-wait disabled:opacity-60"
       >
         {submitting ? "Signing in..." : "Sign in to staff workspace"}
       </button>
@@ -86,8 +86,8 @@ export function StaffLoginForm({ forbidden }: StaffLoginFormProps) {
         aria-live="polite"
         className={`rounded-lg border px-4 py-3 text-sm ${
           isError
-            ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
-            : "border-white/10 bg-black/15 text-slate-400"
+            ? "border-rose-200 bg-rose-50 text-rose-700"
+            : "border-slate-200 bg-slate-50 text-slate-500"
         }`}
       >
         {message}

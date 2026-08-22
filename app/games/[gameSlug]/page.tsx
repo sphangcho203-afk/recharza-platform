@@ -78,10 +78,10 @@ export default async function GameCheckoutPage({
     const marketCount = new Set(packages.map((item) => item.marketCode)).size;
 
     return (
-      <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-white">
+      <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-slate-900 bg-white">
         <SiteHeader />
 
-        <section className="recharza-atmosphere-game border-b border-white/[0.08] px-4 py-5 sm:px-6 lg:px-8">
+        <section className="recharza-atmosphere-game border-b border-slate-100 px-4 py-5 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1240px]">
             <StorefrontBackButton />
             <nav className="recharza-breadcrumb mb-4 mt-4" aria-label="Page path">
@@ -92,11 +92,11 @@ export default async function GameCheckoutPage({
               <span aria-current="page">{definition.title}</span>
             </nav>
 
-            <div className="flex flex-col gap-4 rounded-lg border border-white/[0.08] bg-[#0d0f16] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="flex flex-col gap-4 rounded-lg border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5 shadow-sm">
               <div className="flex min-w-0 items-center gap-4">
                 <div
-                  className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/[0.08] sm:h-20 sm:w-20"
-                  style={{ background: `linear-gradient(135deg, ${game.accent}26, ${game.accent}08)` }}
+                  className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 sm:h-20 sm:w-20 shadow-sm"
+                  style={{ background: `linear-gradient(135deg, ${game.accent}15, ${game.accent}05)` }}
                 >
                   <ResilientImage
                     sources={gameLogo ? [gameLogo.url, game.icon, ...game.logoSources] : [game.icon, ...game.logoSources]}
@@ -111,24 +111,24 @@ export default async function GameCheckoutPage({
                 </div>
                 <div className="min-w-0">
                   <p className="recharza-eyebrow">Instant delivery</p>
-                  <h1 className="recharza-section-head mt-1 text-white">{definition.title} Top Up</h1>
+                  <h1 className="recharza-section-head mt-1 text-slate-900">{definition.title} Top Up</h1>
                   <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                    <span className="inline-flex whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{packages.length} offers</span>
-                    <span className="inline-flex whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-white/70">{marketCount} {marketCount === 1 ? "market" : "markets"}</span>
-                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-300/20 bg-amber-400/[0.06] px-2 py-0.5 text-[11px] font-medium text-amber-300/90">★ 4.9</span>
-                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-emerald-300/20 bg-emerald-400/[0.06] px-2 py-0.5 text-[11px] font-medium text-emerald-300/90"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Secure</span>
-                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-white/[0.10] bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-cyan-300/90"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
+                    <span className="inline-flex whitespace-nowrap rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-bold text-slate-600">{packages.length} offers</span>
+                    <span className="inline-flex whitespace-nowrap rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-bold text-slate-600">{marketCount} {marketCount === 1 ? "market" : "markets"}</span>
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700">★ 4.9</span>
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700"><StorefrontIcon name="shield" className="h-3.5 w-3.5" /> Secure</span>
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[11px] font-bold text-violet-600"><StorefrontIcon name="support" className="h-3.5 w-3.5" /> Support</span>
                   </div>
                   {game.deliveryCoverage && (
-                    <div className="mt-2.5 inline-flex max-w-full items-center gap-1.5 rounded-md border border-white/[0.10] bg-white/[0.04] px-2.5 py-1">
-                      <StorefrontIcon name="shield" className="h-3.5 w-3.5 shrink-0 text-emerald-300/90" />
-                      <p className="truncate text-[11px] font-medium leading-snug text-white/70">{game.deliveryCoverage.headline}</p>
+                    <div className="mt-2.5 inline-flex max-w-full items-center gap-1.5 rounded-md border border-slate-100 bg-slate-50 px-2.5 py-1">
+                      <StorefrontIcon name="shield" className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                      <p className="truncate text-[11px] font-bold leading-snug text-slate-600">{game.deliveryCoverage.headline}</p>
                     </div>
                   )}
                 </div>
               </div>
 
-              <div className="relative hidden h-20 w-44 overflow-hidden rounded-lg border border-white/[0.08] bg-[#12151d] md:block">
+              <div className="relative hidden h-20 w-44 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 md:block shadow-sm">
                 <ResilientImage
                   sources={gameArtwork ? [gameArtwork.url, ...game.artworkSources] : game.artworkSources}
                   alt={gameArtwork?.altText ?? game.artworkAlt}
@@ -160,14 +160,14 @@ export default async function GameCheckoutPage({
   }
 
   return (
-    <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen text-white">
+    <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen text-slate-900 bg-white">
       <SiteHeader />
       <section className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <StorefrontBackButton />
-        <div className="mt-6 rounded-lg border border-amber-400/20 bg-amber-400/[0.07] p-5 sm:p-7">
-          <h1 className="text-2xl font-semibold sm:text-3xl">{definition.title}</h1>
-          <p className="mt-3 leading-7 text-amber-100/75">{definition.readinessNote}</p>
-          <p className="mt-4 text-sm leading-6 text-amber-100/60">No substitute market or unverified price will be used. Return to the catalogue or contact support for availability.</p>
+        <div className="mt-6 rounded-xl border border-amber-100 bg-amber-50 p-5 sm:p-7 shadow-sm">
+          <h1 className="text-2xl font-bold sm:text-3xl text-slate-900">{definition.title}</h1>
+          <p className="mt-3 leading-7 text-amber-900/80 font-medium">{definition.readinessNote}</p>
+          <p className="mt-4 text-sm leading-6 text-amber-800/60 font-medium">No substitute market or unverified price will be used. Return to the catalogue or contact support for availability.</p>
         </div>
       </section>
       <SiteFooter />

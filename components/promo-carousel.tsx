@@ -46,37 +46,37 @@ export function PromoCarousel() {
   const slide = slides[active];
 
   return (
-    <section className="fable-elevation-2 relative overflow-hidden rounded-lg border border-border bg-surface" aria-label="Store promotions">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(139,92,246,0.18),transparent_38%),linear-gradient(120deg,rgba(9,9,17,0.98),rgba(16,16,24,0.94))]" />
+    <section className="fable-elevation-2 relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/50" aria-label="Store promotions">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(139,92,246,0.05),transparent_38%),linear-gradient(120deg,rgba(255,255,255,0.98),rgba(248,250,252,0.94))]" />
       <div className="relative grid min-h-[22rem] grid-cols-1 lg:grid-cols-12">
         <div className="col-span-1 grid content-center gap-6 p-6 sm:p-8 lg:col-span-7 lg:p-12">
           <div className="grid gap-3">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-muted">
+            <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-slate-500">
               <span className="h-2 w-2 rounded-full" style={{ backgroundColor: slide.accent }} />
               {slide.eyebrow}
             </p>
-            <h1 className="max-w-xl text-4xl font-heading font-semibold leading-tight tracking-tight text-text-primary md:text-5xl">{slide.title}</h1>
-            <p className="max-w-lg text-base leading-relaxed text-text-secondary">{slide.description}</p>
+            <h1 className="max-w-xl text-4xl font-heading font-bold leading-tight tracking-tight text-slate-900 md:text-5xl">{slide.title}</h1>
+            <p className="max-w-lg text-base leading-relaxed text-slate-600 font-medium">{slide.description}</p>
           </div>
           <div className="grid gap-4 sm:flex sm:items-center">
-            <Link href={slide.href} className="inline-flex min-h-11 w-fit items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors duration-150 ease-out hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+            <Link href={slide.href} className="inline-flex min-h-11 w-fit items-center gap-2 rounded-xl bg-violet-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-violet-200 transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40">
               {slide.cta}<StorefrontIcon name="arrow" className="h-4 w-4" />
             </Link>
           </div>
           <div className="flex items-center gap-2" aria-label="Promotional slides">
             {slides.map((item, index) => (
-              <button key={item.eyebrow} type="button" aria-label={`Show promotion ${index + 1}`} aria-current={index === active} onClick={() => setActive(index)} className={`h-2 rounded-lg transition-[background-color,width] duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${index === active ? "w-8 bg-primary" : "w-2 bg-border hover:bg-text-muted"}`} />
+              <button key={item.eyebrow} type="button" aria-label={`Show promotion ${index + 1}`} aria-current={index === active} onClick={() => setActive(index)} className={`h-2 rounded-lg transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 ${index === active ? "w-8 bg-violet-600" : "w-2 bg-slate-200 hover:bg-slate-300"}`} />
             ))}
           </div>
         </div>
-        <div className="grid grid-rows-[minmax(0,1fr)_auto] border-t border-border lg:col-span-5 lg:border-l lg:border-t-0">
+        <div className="grid grid-rows-[minmax(0,1fr)_auto] border-t border-slate-100 lg:col-span-5 lg:border-l lg:border-t-0">
           <div className="relative min-h-56 overflow-hidden lg:min-h-0">
             <img src={slide.image} alt="" className="absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-200 ease-out" />
-            <div className="absolute inset-0 bg-gradient-to-r from-surface/80 via-surface/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/20 to-transparent" />
           </div>
-          <div className="fable-surface-raised grid gap-1 border-t border-border p-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-text-primary"><StorefrontIcon name="shield" className="h-4 w-4 text-success" /> Protected checkout</div>
-            <p className="text-sm leading-relaxed text-text-secondary">Verify your destination before payment.</p>
+          <div className="fable-surface-raised grid gap-1 border-t border-slate-100 p-4 bg-slate-50/50">
+            <div className="flex items-center gap-2 text-sm font-bold text-slate-900"><StorefrontIcon name="shield" className="h-4 w-4 text-emerald-600" /> Protected checkout</div>
+            <p className="text-sm leading-relaxed text-slate-500 font-medium">Verify your destination before payment.</p>
           </div>
         </div>
       </div>

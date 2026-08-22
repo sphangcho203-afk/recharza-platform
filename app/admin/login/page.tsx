@@ -29,7 +29,7 @@ export default async function AdminLoginPage({
   }
 
   return (
-    <main className="min-h-screen bg-[var(--surface-0)] px-4 py-10 text-white sm:px-6">
+    <main className="min-h-screen bg-white px-4 py-10 text-slate-900 sm:px-6">
       <div className="mx-auto max-w-md">
         <Link
           href="/"
@@ -38,13 +38,13 @@ export default async function AdminLoginPage({
           <RecharzaMark />
         </Link>
         <section className="system-panel mt-8 p-5 sm:p-7">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
             Private staff access
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
             Sign in with your staff credential.
           </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-400">
+          <p className="mt-3 text-sm font-medium leading-6 text-slate-500">
             Customer magic links do not authorize staff, operator, or administrator
             routes.
           </p>
@@ -52,7 +52,7 @@ export default async function AdminLoginPage({
         </section>
         <p className="mt-5 text-center text-xs text-slate-600">
           Customer account access remains at{" "}
-          <Link href="/account" className="text-violet-300 hover:text-violet-200">
+          <Link href="/account" className="text-violet-600 hover:text-violet-700">
             /account
           </Link>
           .

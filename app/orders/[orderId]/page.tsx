@@ -18,30 +18,30 @@ export default async function OrderTrackingPage({
   const { orderId } = await params;
 
   return (
-    <main className="min-h-screen overflow-x-clip bg-[#070711] text-white">
+    <main className="min-h-screen overflow-x-clip bg-white text-slate-900">
       <SiteHeader />
 
-      <section className="relative isolate border-b border-white/10">
+      <section className="relative isolate border-b border-slate-100">
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="absolute left-1/3 top-[-14rem] h-[30rem] w-[30rem] rounded-full bg-violet-600/20 blur-[120px]" />
-          <div className="hero-grid absolute inset-0 opacity-30" />
+          <div className="absolute left-1/3 top-[-14rem] h-[30rem] w-[30rem] rounded-full bg-violet-100 blur-[120px]" />
+          <div className="hero-grid absolute inset-0 opacity-10" />
         </div>
 
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-8 sm:py-14 lg:py-18">
           <Link
             href="/#games"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-violet-300 transition hover:text-violet-200"
+            className="inline-flex items-center gap-2 text-sm font-bold text-violet-600 transition hover:text-violet-700"
           >
             <span aria-hidden="true">←</span>
             Back to games
           </Link>
-          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.2em] text-violet-300">
+          <p className="mt-8 text-xs font-bold uppercase tracking-[0.2em] text-violet-600">
             Secure order console
           </p>
-          <h1 className="mt-3 max-w-3xl text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">
+          <h1 className="mt-3 max-w-3xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
             Track an order without exposing customer data.
           </h1>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-300">
+          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-500 font-medium">
             The public order ID locates the record. A separate private token
             unlocks the timeline, masked receipt address, package details, and
             status history.

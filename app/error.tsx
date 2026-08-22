@@ -15,19 +15,19 @@ export default function ErrorPage({
   }, [error]);
 
   return (
-    <main className="grid min-h-screen place-items-center bg-[var(--surface-0)] px-4 py-16 text-white sm:px-6">
-      <section className="mx-auto w-full max-w-2xl rounded-lg border border-rose-300/20 bg-rose-300/[0.07] p-6 shadow-2xl shadow-black/30 sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-200">Something failed</p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">The page could not finish loading.</h1>
-        <p className="mt-4 text-sm leading-7 text-rose-100/75 sm:text-base">
+    <main className="grid min-h-screen place-items-center bg-white px-4 py-16 text-slate-900 sm:px-6">
+      <section className="mx-auto w-full max-w-2xl rounded-2xl border border-rose-100 bg-rose-50 p-6 shadow-sm sm:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-rose-600 font-bold">Something failed</p>
+        <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">The page could not finish loading.</h1>
+        <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base font-medium">
           Your order and payment state are stored on the server, so retrying the page is safer than repeating an action blindly.
         </p>
-        {error.digest ? <p className="mt-3 font-mono text-xs text-rose-200/60">Reference: {error.digest}</p> : null}
+        {error.digest ? <p className="mt-3 font-mono text-xs text-rose-400 font-bold">Reference: {error.digest}</p> : null}
         <div className="mt-6 flex flex-col gap-3 min-[420px]:flex-row">
-          <button type="button" onClick={reset} className="min-h-12 rounded-lg bg-white px-5 py-3.5 text-sm font-semibold text-slate-950 transition hover:bg-rose-100">
+          <button type="button" onClick={reset} className="min-h-12 rounded-xl bg-rose-600 px-5 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-rose-700 active:scale-95">
             Retry this page
           </button>
-          <Link href="/" className="min-h-12 rounded-lg border border-white/15 bg-black/15 px-5 py-3.5 text-center text-sm font-bold text-white transition hover:bg-white/[0.06]">
+          <Link href="/" className="min-h-12 rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-center text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 active:scale-95">
             Return to store
           </Link>
         </div>

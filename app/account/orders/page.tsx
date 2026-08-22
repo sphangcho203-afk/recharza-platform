@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function AccountOrdersPage() {
   return (
-    <main className="storefront-page recharza-atmo-v2 recharza-atmo-orders min-h-screen overflow-x-clip text-white">
+    <main className="storefront-page recharza-atmo-v2 recharza-atmo-orders min-h-screen overflow-x-clip text-slate-900">
       <SiteHeader />
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
         <div className="mx-auto max-w-5xl">

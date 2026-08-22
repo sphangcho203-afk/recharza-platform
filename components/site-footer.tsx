@@ -47,7 +47,7 @@ export async function SiteFooter() {
     : [];
 
   return (
-    <footer className="border-t border-white/[0.08] bg-[#07080c] px-4 pb-6 pt-9 sm:px-6 lg:px-8">
+    <footer className="border-t border-slate-200 bg-slate-50 px-4 pb-6 pt-9 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1240px]">
         <div className="grid gap-8 md:grid-cols-[1.4fr_0.7fr_0.8fr_0.9fr]">
           <div className="max-w-sm">
@@ -59,7 +59,7 @@ export async function SiteFooter() {
               {channels.map((channel) => {
                 const icon = channelIcons[channel.id];
                 if (!icon) return null;
-                const className = "grid h-9 w-9 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.025] text-slate-400 transition hover:border-white/[0.16] hover:bg-white/[0.05] hover:text-white";
+                const className = "grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900";
                 return channel.href && channel.available ? (
                   <a key={channel.id} href={channel.href} target={channel.id === "email" ? undefined : "_blank"} rel={channel.id === "email" ? undefined : "noreferrer"} aria-label={channel.label} className={className}>
                     <SupportChannelIcon name={icon} className="h-4.5 w-4.5" />
@@ -77,10 +77,10 @@ export async function SiteFooter() {
           <FooterColumn title="Support" links={supportLinks} />
 
           <div>
-            <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">Payments</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-900">Payments</h2>
             <div className="mt-3 flex flex-wrap items-center gap-2.5" aria-label="Accepted payment methods">
               {paymentMarks.map((mark) => (
-                <span key={mark.label} title={mark.label} className="grid h-10 min-w-11 place-items-center rounded-lg border border-white/[0.08] bg-white/[0.035] px-2.5 shadow-[0_8px_24px_rgba(0,0,0,0.14)]">
+                <span key={mark.label} title={mark.label} className="grid h-10 min-w-11 place-items-center rounded-lg border border-slate-200 bg-white px-2.5 shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
                   <img src={mark.src} alt={mark.label} className={`${mark.className} object-contain opacity-95`} />
                 </span>
               ))}
@@ -90,15 +90,15 @@ export async function SiteFooter() {
         </div>
 
         {publishedPolicies.length > 0 ? (
-          <section aria-labelledby="footer-legal-heading" className="mt-8 border-t border-white/[0.07] pt-5">
-            <h2 id="footer-legal-heading" className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">Legal</h2>
+          <section aria-labelledby="footer-legal-heading" className="mt-8 border-t border-slate-200 pt-5">
+            <h2 id="footer-legal-heading" className="text-xs font-bold uppercase tracking-[0.14em] text-slate-900">Legal</h2>
             <nav aria-label="Legal policies" className="mt-3 max-w-md">
               <div className="grid gap-1.5">
                 {publishedPolicies.map((policy) => (
                   <Link
                     key={policy.key}
                     href={`/policies/${policy.key}`}
-                    className="group flex min-h-9 items-center rounded-lg px-2 py-1.5 text-sm font-semibold text-slate-500 transition hover:bg-white/[0.035] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-[#07080c]"
+                    className="group flex min-h-9 items-center rounded-lg px-2 py-1.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                   >
                     {policy.title}
                   </Link>
@@ -120,10 +120,10 @@ export async function SiteFooter() {
 function FooterColumn({ title, links }: { title: string; links: { label: string; href: string }[] }) {
   return (
     <div>
-      <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">{title}</h2>
+      <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-900">{title}</h2>
       <nav className="mt-3 grid gap-2.5" aria-label={`${title} links`}>
         {links.map((link) => (
-          <Link key={link.href} href={link.href} className="text-sm text-slate-500 transition hover:text-white">
+          <Link key={link.href} href={link.href} className="text-sm font-medium text-slate-600 transition hover:text-slate-900">
             {link.label}
           </Link>
         ))}

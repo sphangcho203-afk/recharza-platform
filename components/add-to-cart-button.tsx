@@ -91,13 +91,13 @@ export function AddToCartButton({
         type="button"
         disabled={disabled || state.status === "adding"}
         onClick={() => void addToCart()}
-        className="flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-violet-400/30 bg-violet-500/10 px-3 text-[11px] font-semibold text-violet-200 transition hover:bg-violet-500/20 hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
+        className="flex min-h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-violet-200 bg-violet-50 px-3 text-[10px] font-bold uppercase tracking-widest text-violet-700 transition-all duration-200 hover:bg-violet-600 hover:text-white hover:shadow-lg hover:shadow-violet-200 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {state.status === "adding" ? (
           <>
             <span
               aria-hidden="true"
-              className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-violet-300/30 border-t-violet-200"
+              className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-violet-600/30 border-t-violet-600"
             />
             Adding…
           </>
@@ -109,7 +109,7 @@ export function AddToCartButton({
               className="h-3.5 w-3.5"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2.6"
+              strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -125,7 +125,7 @@ export function AddToCartButton({
               className="h-3.5 w-3.5"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.8"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -142,8 +142,8 @@ export function AddToCartButton({
         <span
           role="status"
           aria-live="polite"
-          className={`mt-1.5 block text-[10px] leading-4 ${
-            state.status === "added" ? "text-emerald-300/90" : "text-rose-300/90"
+          className={`mt-2 block text-[10px] font-bold uppercase tracking-widest leading-4 ${
+            state.status === "added" ? "text-emerald-600" : "text-rose-600"
           }`}
         >
           {state.message}

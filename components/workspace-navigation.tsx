@@ -18,7 +18,7 @@ export function WorkspaceNavigation({
   const modules = getVisibleModules(getWorkspaceModules(workspace));
 
   return (
-    <aside className="min-w-0 w-full border-b border-white/10 bg-[var(--surface-1)] lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:border-b-0 lg:border-r">
+    <aside className="min-w-0 w-full border-b border-slate-100 bg-slate-50 lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] lg:border-b-0 lg:border-r">
       <nav
         className="flex w-full gap-2 overflow-x-auto p-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:content-start lg:overflow-y-auto lg:p-4"
         aria-label={`${workspace} modules`}
@@ -26,12 +26,12 @@ export function WorkspaceNavigation({
         {modules.map((module) => {
           const active = module.id === activeId;
           const interactive = isInteractiveModule(module.state);
-          const className = `group min-h-12 min-w-[10rem] shrink-0 rounded-lg border px-3.5 py-3 text-left transition sm:min-w-[12rem] lg:min-w-0 lg:w-full ${
+          const className = `group min-h-12 min-w-[10rem] shrink-0 rounded-xl border px-3.5 py-3 text-left transition-all duration-300 sm:min-w-[12rem] lg:min-w-0 lg:w-full shadow-sm ${
             active
-              ? "border-white bg-white text-slate-950"
+              ? "border-violet-600 bg-violet-600 text-white shadow-lg shadow-violet-100"
               : interactive
-                ? "border-white/10 bg-white/[0.025] text-slate-300 hover:border-white/20 hover:bg-white/[0.055] hover:text-white"
-                : "cursor-not-allowed border-white/8 bg-white/[0.015] text-slate-600"
+                ? "border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
+                : "cursor-not-allowed border-slate-100 bg-slate-50/50 text-slate-400"
           }`;
 
           const content = (
@@ -42,7 +42,7 @@ export function WorkspaceNavigation({
               </span>
               <span
                 className={`line-clamp-2 text-[11px] leading-4 ${
-                  active ? "text-slate-600" : "text-slate-600 group-hover:text-slate-400"
+                  active ? "text-violet-100" : "text-slate-500 group-hover:text-slate-600"
                 }`}
               >
                 {module.description}

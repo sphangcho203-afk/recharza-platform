@@ -14,16 +14,16 @@ export const dynamic = "force-dynamic";
 
 export default function CartCheckoutRoute() {
   return (
-    <main className="storefront-page recharza-atmo-v2 recharza-atmo-checkout min-h-screen overflow-x-clip text-white">
+    <main className="storefront-page recharza-atmo-v2 recharza-atmo-checkout min-h-screen overflow-x-clip text-slate-900 bg-white">
       <SiteHeader />
-      <section className="border-b border-white/[0.08] bg-[#0a0c12] px-4 py-5 sm:px-6 lg:px-8">
+      <section className="border-b border-slate-100 bg-slate-50 px-4 py-5 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1120px]">
-          <div className="flex items-center gap-2 text-[11px] text-slate-600">
-            <Link href="/" className="hover:text-white">Home</Link>
-            <span>/</span>
-            <Link href="/cart" className="hover:text-white">Cart</Link>
-            <span>/</span>
-            <span className="text-slate-400">Checkout</span>
+          <div className="flex items-center gap-2 text-[11px] font-bold text-slate-500">
+            <Link href="/" className="hover:text-slate-900">Home</Link>
+            <span className="text-slate-300">/</span>
+            <Link href="/cart" className="hover:text-slate-900">Cart</Link>
+            <span className="text-slate-300">/</span>
+            <span className="text-slate-900">Checkout</span>
           </div>
         </div>
       </section>

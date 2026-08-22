@@ -256,22 +256,22 @@ export function CartWorkspace({
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="grid min-w-0 gap-5">
-        <section className="overflow-hidden rounded-lg border border-white/10 bg-[#0f0f19] shadow-2xl shadow-black/25">
-          <div className="border-b border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(124,58,237,0.16),transparent_50%),rgba(255,255,255,0.025)] p-5 sm:p-6">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-slate-200/50">
+          <div className="border-b border-slate-100 bg-slate-50/50 p-6 sm:p-8">
+            <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
               Add Mobile Legends offer
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
               Build the order before checkout.
             </h2>
           </div>
-          <div className="grid gap-4 p-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end sm:p-6">
-            <label className="text-sm font-semibold text-slate-200">
+          <div className="grid gap-6 p-6 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end sm:p-8">
+            <label className="text-xs font-bold uppercase tracking-widest text-slate-400">
               Package
               <select
                 value={selectedPackageId}
                 onChange={(event) => setSelectedPackageId(event.target.value)}
-                className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-base text-white outline-none focus:border-violet-400"
+                className="mt-3 min-h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-base font-bold text-slate-900 outline-none transition-all focus:border-violet-600 focus:ring-4 focus:ring-violet-100"
               >
                 {packages.map((item) => (
                   <option key={item.id} value={item.id}>
@@ -284,7 +284,7 @@ export function CartWorkspace({
               type="button"
               disabled={!selectedPackage || busyItem === "add"}
               onClick={() => void addSelectedPackage()}
-              className="min-h-12 rounded-lg bg-violet-500 px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-violet-400 disabled:opacity-50"
+              className="min-h-14 rounded-2xl bg-violet-600 px-8 py-4 text-sm font-bold uppercase tracking-widest text-white shadow-xl shadow-violet-200 transition-all hover:-translate-y-1 hover:bg-violet-700 disabled:opacity-50 disabled:translate-y-0"
             >
               {busyItem === "add" ? "Adding..." : "Add to cart"}
             </button>
@@ -292,12 +292,12 @@ export function CartWorkspace({
         </section>
 
         <section>
-          <div className="flex flex-wrap items-end justify-between gap-3">
+          <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-300">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
                 Cart items
               </p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">
                 Player destinations
               </h2>
             </div>
@@ -306,22 +306,22 @@ export function CartWorkspace({
                 type="button"
                 disabled={busyItem === "clear"}
                 onClick={() => void clearCart()}
-                className="min-h-11 rounded-lg border border-rose-400/20 bg-rose-400/10 px-4 py-3 text-xs font-semibold text-rose-200"
+                className="min-h-11 rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-rose-700 hover:bg-rose-100 transition-colors"
               >
                 Clear cart
               </button>
             ) : null}
           </div>
 
-          <div className="mt-4 grid gap-4">
+          <div className="mt-6 grid gap-5">
             {loading ? (
-              <div className="h-40 animate-pulse rounded-lg border border-white/10 bg-white/[0.03]" />
+              <div className="h-48 animate-pulse rounded-3xl border border-slate-200 bg-slate-50" />
             ) : null}
 
             {!loading && !cart.items.length ? (
-              <div className="rounded-lg border border-dashed border-white/10 bg-white/[0.02] p-10 text-center">
-                <p className="font-semibold text-slate-300">Your cart is empty.</p>
-                <p className="mt-2 text-sm text-slate-500">
+              <div className="rounded-3xl border-2 border-dashed border-slate-200 bg-white p-16 text-center shadow-sm">
+                <p className="text-lg font-bold text-slate-900">Your cart is empty.</p>
+                <p className="mt-3 text-sm font-medium text-slate-500">
                   Choose a package from any game in the store to get started.
                 </p>
               </div>
@@ -337,17 +337,17 @@ export function CartWorkspace({
               return (
                 <article
                   key={item.id}
-                  className="rounded-lg border border-white/10 bg-white/[0.035] p-4 sm:p-5"
+                  className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/40 sm:p-8"
                 >
-                  <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">
+                  <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                     <div className="min-w-0">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-violet-300">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">
                         {market.flag} {market.label}
                       </p>
-                      <h3 className="mt-2 text-xl font-semibold text-white">
+                      <h3 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">
                         {item.package.name}
                       </h3>
-                      <p className="mt-1 text-sm font-bold text-emerald-200">
+                      <p className="mt-1 text-lg font-bold text-emerald-600">
                         {formatInr(item.package.amountInPaise)}
                       </p>
                     </div>
@@ -355,14 +355,14 @@ export function CartWorkspace({
                       type="button"
                       disabled={busyItem === item.id}
                       onClick={() => void removeItem(item.id)}
-                      className="w-fit rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+                      className="w-fit rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:bg-slate-100 hover:text-slate-900 transition-colors"
                     >
                       Remove
                     </button>
                   </div>
 
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <label className="text-sm font-semibold text-slate-200">
+                  <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                       Player ID
                       <input
                         inputMode="numeric"
@@ -376,11 +376,11 @@ export function CartWorkspace({
                             },
                           }))
                         }
-                        className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-base text-white outline-none focus:border-violet-400"
+                        className="mt-3 min-h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-base font-bold text-slate-900 outline-none transition-all focus:border-violet-600 focus:ring-4 focus:ring-violet-100"
                         placeholder="Player ID"
                       />
                     </label>
-                    <label className="text-sm font-semibold text-slate-200">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
                       Zone ID
                       <input
                         inputMode="numeric"
@@ -394,7 +394,7 @@ export function CartWorkspace({
                             },
                           }))
                         }
-                        className="mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-black/25 px-4 py-3 text-base text-white outline-none focus:border-violet-400"
+                        className="mt-3 min-h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-base font-bold text-slate-900 outline-none transition-all focus:border-violet-600 focus:ring-4 focus:ring-violet-100"
                         placeholder="Zone ID"
                       />
                     </label>
@@ -406,7 +406,7 @@ export function CartWorkspace({
                       busyItem === item.id || !draft.playerId || !draft.zoneId
                     }
                     onClick={() => void validateItem(item.id)}
-                    className="mt-3 min-h-11 w-full rounded-lg border border-violet-400/25 bg-violet-400/10 px-4 py-3 text-sm font-semibold text-violet-100 disabled:opacity-45"
+                    className="mt-6 min-h-12 w-full rounded-2xl border border-violet-200 bg-violet-50 px-6 py-3 text-[10px] font-bold uppercase tracking-widest text-violet-700 shadow-sm transition-all hover:bg-violet-600 hover:text-white disabled:opacity-50"
                   >
                     {busyItem === item.id
                       ? "Validating..."
@@ -416,10 +416,10 @@ export function CartWorkspace({
                   </button>
 
                   {validated ? (
-                    <div className="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-200">
-                      <strong className="text-white">
+                    <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-bold text-emerald-700 shadow-sm">
+                      <span className="text-emerald-900">
                         {item.player.nickname}
-                      </strong>{" "}
+                      </span>{" "}
                       · Account validated successfully.
                     </div>
                   ) : null}

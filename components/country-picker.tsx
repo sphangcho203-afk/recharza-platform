@@ -17,7 +17,7 @@ export function CountryPicker({ value, onChange }: CountryPickerProps) {
         required
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-12 w-full appearance-none rounded-lg border border-white/10 bg-[#08080f] px-4 py-3 pr-11 text-base font-normal text-white outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-400/15"
+        className="min-h-12 w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 pr-11 text-base font-normal text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
         aria-label="Billing country"
       >
         {allBillingCountries.map((country) => (
