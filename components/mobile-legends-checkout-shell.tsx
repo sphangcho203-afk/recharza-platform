@@ -159,7 +159,7 @@ export function MobileLegendsCheckoutShell({
   const visiblePackages = packages;
 
   const billingComplete = billingIsComplete(billing);
-  const playerComplete = verification.status === "success" || verification.status === "error";
+  const playerComplete = verification.status === "success";
   const canCreateOrder = Boolean(selectedPackage && playerComplete && billingComplete);
 
   function formatPresentment(amountInPaise: number) {
@@ -324,7 +324,7 @@ export function MobileLegendsCheckoutShell({
 
   function advanceStep(nextStep: CheckoutStep) {
     if (nextStep === 2 && !selectedPackage) { setCheckoutError("Choose a package before continuing."); return; }
-    if (nextStep === 3 && verification.status === "idle") { setCheckoutError("Verify the player destination before continuing."); return; }
+    if (nextStep === 3 && verification.status !== "success") { setCheckoutError("Verify the player destination before continuing."); return; }
     if (nextStep === 4 && !billingComplete) { setCheckoutError("Complete the billing details before continuing."); return; }
     setCheckoutError("");
     setStep(nextStep);
