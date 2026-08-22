@@ -2,7 +2,7 @@
 
 import { StorefrontIcon } from "@/components/storefront-icon";
 import { StorefrontArtwork } from "@/components/storefront-artwork";
-import type { Game, GameEducation } from "@/lib/games";
+import type { Game } from "@/lib/games";
 
 function Tile({
   game,
@@ -38,7 +38,7 @@ export function GameEducationSection({
 }: {
   game: Game;
 }) {
-  const education = game.education as GameEducation | undefined;
+  const education = game.education;
   if (!education) return null;
   const { about, currencyUses, findId, steps, regionNote } = education;
   const accent = game.accent ?? "#9b7cff";
@@ -125,7 +125,7 @@ export function GameEducationSection({
                   <h3 className="text-xl font-bold text-slate-900">How to purchase</h3>
                 </div>
                 <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-                  {steps.map((step, index) => (
+                  {steps.map((step: string, index: number) => (
                     <div key={index} className="flex flex-col gap-4">
                       <span className="grid h-10 w-10 place-items-center rounded-2xl text-base font-black text-white shadow-md" style={{ backgroundColor: accent }}>
                         {index + 1}
