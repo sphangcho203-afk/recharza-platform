@@ -87,8 +87,7 @@ export async function validateMobileLegendsIdentity(input: {
     }
     return {
       ...volsever,
-      message:
-        "Primary account lookup is temporarily busy. " + (volsever.message || "Please retry shortly."),
+            message: "The account lookup service is currently busy. " + (volsever.message || "Please try again in a few moments."),
     };
   }
 

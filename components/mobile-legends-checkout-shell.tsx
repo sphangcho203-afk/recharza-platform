@@ -235,7 +235,7 @@ export function MobileLegendsCheckoutShell({
       if (!response.ok || !result.valid) {
         setVerification({
           status: "error",
-          message: result.message ?? "We could not find a game account with those details. Double-check the IDs.",
+          message: result.message ?? "We couldn't find an account with these details. Please verify your IDs.",
           nickname: null,
         });
         return;
@@ -315,7 +315,7 @@ export function MobileLegendsCheckoutShell({
         });
       }
     } catch {
-      setCheckoutError("The checkout service could not be reached. Retrying uses the same safe order key.");
+      setCheckoutError("We couldn't reach the checkout service. Please try again in a moment.");
       setCheckoutMessage("");
     } finally {
       setIsSubmitting(false);
@@ -406,8 +406,7 @@ export function MobileLegendsCheckoutShell({
 
           {restoredFromCart ? (
             <p className="mt-3 rounded-xl border border-cyan-100 bg-cyan-50 px-4 py-3 text-xs font-medium leading-relaxed text-cyan-700">
-              Package restored from your cart. Verify the player destination
-              before paying for this order.
+              Your selected package has been restored. Please confirm your account details to continue.
             </p>
           ) : null}
         </section>
