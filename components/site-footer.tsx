@@ -47,19 +47,19 @@ export async function SiteFooter() {
     : [];
 
   return (
-    <footer className="border-t border-white/5 bg-[#020306] px-4 pb-8 pt-12 sm:px-6 lg:px-8">
+    <footer className="border-t border-slate-200/60 bg-slate-50 px-4 pb-12 pt-16 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1240px]">
-        <div className="grid gap-12 md:grid-cols-[1.4fr_0.7fr_0.8fr_0.9fr]">
+        <div className="grid gap-12 md:grid-cols-[1.6fr_0.7fr_0.7fr_1fr]">
           <div className="max-w-sm">
             <RecharzaMark />
-            <p className="mt-4 text-[0.95rem] leading-7 text-slate-400 font-medium">
-              Game top-ups with published pricing, secure checkout, recoverable order tracking and connected support.
+            <p className="mt-6 text-[1rem] leading-7 text-slate-500 font-medium tracking-tight">
+              Recharza is the premium destination for gaming top-ups. We provide secure, transparent, and instant delivery for your favorite titles worldwide.
             </p>
-            <div className="mt-6 flex gap-3" aria-label="Support channels">
+            <div className="mt-8 flex gap-3" aria-label="Support channels">
               {channels.map((channel) => {
                 const icon = channelIcons[channel.id];
                 if (!icon) return null;
-                const className = "grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/5 text-slate-400 transition-all duration-300 hover:border-violet-500/40 hover:bg-violet-500/10 hover:text-white hover:shadow-[0_0_15px_rgba(124,58,237,0.2)]";
+                const className = "grid h-11 w-11 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-400 transition-all duration-300 hover:border-violet-400 hover:bg-violet-50 hover:text-violet-600 hover:shadow-lg hover:-translate-y-1";
                 return channel.href && channel.available ? (
                   <a key={channel.id} href={channel.href} target={channel.id === "email" ? undefined : "_blank"} rel={channel.id === "email" ? undefined : "noreferrer"} aria-label={channel.label} className={className}>
                     <SupportChannelIcon name={icon} className="h-5 w-5" />
@@ -77,28 +77,28 @@ export async function SiteFooter() {
           <FooterColumn title="Support" links={supportLinks} />
 
           <div>
-            <h2 className="text-xs font-extrabold uppercase tracking-[0.2em] text-white text-shadow-sm">Payments</h2>
-            <div className="mt-4 flex flex-wrap items-center gap-3" aria-label="Accepted payment methods">
+            <h2 className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-900">Accepted Payments</h2>
+            <div className="mt-5 flex flex-wrap items-center gap-2.5" aria-label="Accepted payment methods">
               {paymentMarks.map((mark) => (
-                <span key={mark.label} title={mark.label} className="grid h-11 min-w-12 place-items-center rounded-xl border border-white/10 bg-white/5 px-3 shadow-2xl transition-all duration-300 hover:border-white/20 hover:bg-white/8">
-                  <img src={mark.src} alt={mark.label} className={`${mark.className} object-contain opacity-90 brightness-0 invert`} />
+                <span key={mark.label} title={mark.label} className="grid h-12 min-w-[3.5rem] place-items-center rounded-2xl border border-slate-200 bg-white px-3.5 shadow-sm transition-all duration-300 hover:border-violet-200 hover:bg-violet-50/30 hover:shadow-md">
+                  <img src={mark.src} alt={mark.label} className={`${mark.className} object-contain opacity-80 group-hover:opacity-100`} />
                 </span>
               ))}
             </div>
-            <p className="mt-5 text-[11px] leading-5 text-slate-500 font-medium">Payment availability depends on the active checkout configuration and market.</p>
+            <p className="mt-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">Secure & Encrypted Transactions</p>
           </div>
         </div>
 
         {publishedPolicies.length > 0 ? (
-          <section aria-labelledby="footer-legal-heading" className="mt-12 border-t border-white/10 pt-8">
-            <h2 id="footer-legal-heading" className="text-xs font-extrabold uppercase tracking-[0.2em] text-white">Legal</h2>
-            <nav aria-label="Legal policies" className="mt-4 max-w-md">
-              <div className="grid gap-2">
+          <section aria-labelledby="footer-legal-heading" className="mt-16 border-t border-slate-200 pt-10">
+            <h2 id="footer-legal-heading" className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-900">Legal Policies</h2>
+            <nav aria-label="Legal policies" className="mt-6">
+              <div className="flex flex-wrap gap-x-8 gap-y-3">
                 {publishedPolicies.map((policy) => (
                   <Link
                     key={policy.key}
                     href={`/policies/${policy.key}`}
-                    className="group flex min-h-10 items-center rounded-xl px-3 py-2 text-[0.9rem] font-bold text-slate-400 transition-all duration-200 hover:bg-white/5 hover:text-white hover:translate-x-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60"
+                    className="text-[13px] font-black uppercase tracking-widest text-slate-500 transition-all duration-200 hover:text-violet-600"
                   >
                     {policy.title}
                   </Link>
@@ -120,10 +120,10 @@ export async function SiteFooter() {
 function FooterColumn({ title, links }: { title: string; links: { label: string; href: string }[] }) {
   return (
     <div>
-      <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-white">{title}</h2>
+      <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-900">{title}</h2>
       <nav className="mt-3 grid gap-2.5" aria-label={`${title} links`}>
         {links.map((link) => (
-          <Link key={link.href} href={link.href} className="text-sm font-medium text-slate-400 transition hover:text-white">
+          <Link key={link.href} href={link.href} className="text-sm font-medium text-slate-500 transition hover:text-slate-900">
             {link.label}
           </Link>
         ))}

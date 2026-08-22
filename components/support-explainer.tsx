@@ -112,61 +112,61 @@ export function SupportExplainer() {
   return (
     <div className="space-y-12">
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400">How support works</p>
-        <h2 className="mt-2 text-2xl font-bold tracking-tight text-white sm:text-4xl">Reach help your way — every channel, explained.</h2>
-        <p className="mt-4 max-w-2xl text-base font-medium text-slate-400">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">How support works</p>
+        <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-4xl">Reach help your way — every channel, explained.</h2>
+        <p className="mt-4 max-w-2xl text-base font-medium text-slate-500">
           Recharza support works through one shared ticket system and several doors you can enter from. Whatever channel you use, a real team member reads your request, and nothing about your account is ever solved by an unattended script.
         </p>
       </div>
 
-      <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md">
-        <div className="grid gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl">
+        <div className="grid gap-px bg-slate-100 sm:grid-cols-2 lg:grid-cols-3">
           {CHANNEL_EXPLAINER.map((channel) => (
-            <div key={channel.id} className="bg-[#06070d]/50 p-6 transition-colors hover:bg-white/5">
+            <div key={channel.id} className="bg-white p-6 transition-colors hover:bg-slate-50">
               <div className="flex items-center gap-4">
                 <img
                   src={channel.logo}
                   alt=""
                   aria-hidden="true"
-                  className="h-10 w-10 shrink-0 rounded-xl border border-white/10 bg-white/5 object-contain shadow-sm"
+                  className="h-10 w-10 shrink-0 rounded-xl border border-slate-100 bg-slate-50 object-contain shadow-sm"
                   width={40}
                   height={40}
                 />
                 <div>
-                  <strong className="block text-base font-bold text-white">{channel.name}</strong>
-                  <span className="mt-0.5 block text-xs font-bold text-slate-500 uppercase tracking-wider">{channel.tagline}</span>
+                  <strong className="block text-base font-bold text-slate-900">{channel.name}</strong>
+                  <span className="mt-0.5 block text-xs font-bold text-slate-400 uppercase tracking-wider">{channel.tagline}</span>
                 </div>
               </div>
-              <p className="mt-6 text-[10px] font-bold uppercase tracking-widest text-slate-500">Best for</p>
-              <p className="mt-2 text-sm font-medium text-slate-300 leading-relaxed">{channel.bestFor}</p>
-              <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">How it works</p>
-              <p className="mt-2 text-sm font-medium text-slate-400 leading-relaxed">{channel.howItWorks}</p>
-              <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">What to bring</p>
-              <p className="mt-2 text-sm font-medium text-slate-400 leading-relaxed">{channel.whatToBring}</p>
+              <p className="mt-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">Best for</p>
+              <p className="mt-2 text-sm font-medium text-slate-600 leading-relaxed">{channel.bestFor}</p>
+              <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">How it works</p>
+              <p className="mt-2 text-sm font-medium text-slate-500 leading-relaxed">{channel.howItWorks}</p>
+              <p className="mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">What to bring</p>
+              <p className="mt-2 text-sm font-medium text-slate-500 leading-relaxed">{channel.whatToBring}</p>
             </div>
           ))}
         </div>
       </div>
 
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400">Creating a ticket</p>
-        <h3 className="mt-2 text-2xl font-bold tracking-tight text-white">From first tap to solved — four steps.</h3>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Creating a ticket</p>
+        <h3 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">From first tap to solved — four steps.</h3>
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {ticketSteps.map((item) => (
-            <div key={item.step} className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur-md">
-              <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400">{item.step}</p>
-              <strong className="mt-2 block text-base font-bold text-white">{item.title}</strong>
-              <p className="mt-2 text-sm font-medium text-slate-400 leading-relaxed">{item.body}</p>
+            <div key={item.step} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xl">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">{item.step}</p>
+              <strong className="mt-2 block text-base font-bold text-slate-900">{item.title}</strong>
+              <p className="mt-2 text-sm font-medium text-slate-500 leading-relaxed">{item.body}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 sm:p-8 backdrop-blur-md">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-violet-400">What happens behind the scenes</p>
-        <h3 className="mt-2 text-xl font-bold tracking-tight text-white">Your ticket is tracked end to end.</h3>
-        <p className="mt-4 max-w-3xl text-sm font-medium text-slate-400 leading-relaxed">
-          Every request receives a unique ticket number (for example <span className="rounded-lg border border-violet-500/20 bg-violet-500/10 px-2 py-1 font-mono text-xs font-bold text-violet-400 shadow-sm">RZS-XXXXXXXXXXXXXXXX</span>) and is recorded in our system with its status, category, and every reply exchanged. You can check progress anytime by typing <span className="rounded-lg border border-violet-500/20 bg-violet-500/10 px-2 py-1 font-mono text-xs font-bold text-violet-400 shadow-sm">/status</span> followed by your ticket number in the Telegram bot, and our team marks it resolved only when you confirm everything is fixed.
+      <div className="rounded-[2rem] border border-slate-200 bg-slate-50/50 p-6 sm:p-8">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-violet-600">What happens behind the scenes</p>
+        <h3 className="mt-2 text-xl font-bold tracking-tight text-slate-900">Your ticket is tracked end to end.</h3>
+        <p className="mt-4 max-w-3xl text-sm font-medium text-slate-500 leading-relaxed">
+          Every request receives a unique ticket number (for example <span className="rounded-lg border border-violet-100 bg-violet-50 px-2 py-1 font-mono text-xs font-bold text-violet-600 shadow-sm">RZS-XXXXXXXXXXXXXXXX</span>) and is recorded in our system with its status, category, and every reply exchanged. You can check progress anytime by typing <span className="rounded-lg border border-violet-100 bg-violet-50 px-2 py-1 font-mono text-xs font-bold text-violet-600 shadow-sm">/status</span> followed by your ticket number in the Telegram bot, and our team marks it resolved only when you confirm everything is fixed.
         </p>
       </div>
     </div>

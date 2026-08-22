@@ -207,11 +207,11 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
   if (loading) {
     return (
       <div className="grid gap-4" aria-label="Loading account">
-        <div className="h-32 animate-pulse rounded-lg border border-white/5 bg-white/5" />
+        <div className="h-32 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
         <div className="grid gap-4 sm:grid-cols-3">
-          <div className="h-28 animate-pulse rounded-lg border border-white/5 bg-white/5" />
-          <div className="h-28 animate-pulse rounded-lg border border-white/5 bg-white/5" />
-          <div className="h-28 animate-pulse rounded-lg border border-white/5 bg-white/5" />
+          <div className="h-28 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
+          <div className="h-28 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
+          <div className="h-28 animate-pulse rounded-lg border border-slate-200 bg-slate-50" />
         </div>
       </div>
     );
@@ -219,17 +219,17 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
 
   if (!customer || sessionEnded) {
     return (
-      <section className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-white/5 p-6 text-center shadow-2xl backdrop-blur-md sm:p-8">
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-400">
+      <section className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-xl sm:p-8">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
           Session closed
         </p>
-        <h2 className="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+        <h2 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
           Sign in to reopen your account.
         </h2>
-        <p className="mt-3 text-sm leading-6 text-slate-400">{message}</p>
+        <p className="mt-3 text-sm leading-6 text-slate-500 font-medium">{message}</p>
         <a
           href="/account"
-          className="mt-5 block min-h-12 rounded-lg bg-violet-600 px-5 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_rgba(124,58,237,0.4)] transition duration-150 ease-out hover:bg-violet-700 hover:shadow-[0_0_30px_rgba(124,58,237,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70"
+          className="mt-5 block min-h-12 rounded-lg bg-violet-600 px-5 py-3.5 text-sm font-bold text-white shadow-md transition duration-150 ease-out hover:bg-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70"
         >
           Return to login
         </a>
@@ -241,75 +241,74 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
   return (
     <div className="grid gap-6">
       {showOrders ? (
-        <section className="rounded-2xl border border-white/10 bg-[#1a1d26] p-5 shadow-2xl backdrop-blur-md sm:p-7 relative overflow-hidden">
-          <div className="absolute inset-0 recharza-atmo-v2 opacity-[0.2]" />
-          <Link href="/account" className="relative z-10 inline-flex min-h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-bold text-slate-300 transition duration-150 ease-out hover:border-white/20 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70">
+        <section className="rounded-[2.5rem] border border-slate-200 bg-white p-6 shadow-xl sm:p-10 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-violet-50/50 rounded-full blur-3xl -mr-32 -mt-32" />
+          <Link href="/account" className="relative z-10 inline-flex min-h-11 items-center gap-2.5 rounded-2xl border border-slate-200 bg-white px-5 py-2 text-[11px] font-black uppercase tracking-widest text-slate-600 transition-all duration-300 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70">
             <span aria-hidden="true">←</span> Back to account
           </Link>
-          <p className="recharza-eyebrow mt-7 relative z-10 text-violet-400">Order history</p>
-          <h2 className="recharza-section-head mt-3 text-white relative z-10">Your purchases</h2>
-          <p className="recharza-body mt-3 max-w-2xl relative z-10 text-slate-400">Every purchase has its own tracking link, payment state, player destination, and delivery timeline. This is your complete account-owned order workspace.</p>
-          <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold relative z-10">
-            <span className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-slate-300">{orders.length} total orders</span>
+          <p className="mt-8 relative z-10 text-[10px] font-black uppercase tracking-[0.25em] text-violet-600">Order history</p>
+          <h2 className="mt-3 text-3xl font-black tracking-tighter text-slate-900 relative z-10 sm:text-4xl">Your purchases</h2>
+          <p className="mt-4 max-w-2xl relative z-10 text-[15px] font-medium leading-relaxed text-slate-500">Every purchase has its own tracking link, payment state, player destination, and delivery timeline. This is your complete account-owned order workspace.</p>
+          <div className="mt-6 flex flex-wrap gap-3 text-[11px] font-black uppercase tracking-widest relative z-10">
+            <span className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-slate-600 shadow-sm">{orders.length} total orders</span>
             <StatusBadge state={activeOrders > 0 ? "pending" : "neutral"} label={`${activeOrders} active`} />
           </div>
         </section>
       ) : null}
       {!showOrders ? (
-      <section className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md">
-        <div className="border-b border-white/5 bg-white/5 p-5 sm:p-6 relative">
-          <div className="absolute inset-0 recharza-atmo-v2 opacity-[0.1]" />
-          <div className="relative z-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+      <section className="overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white shadow-xl">
+        <div className="border-b border-slate-100 bg-slate-50 p-6 sm:p-10 relative">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50/50 rounded-full blur-3xl -mr-32 -mt-32" />
+          <div className="relative z-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-start">
             <div className="min-w-0">
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-400">
+              <p className="text-[10px] font-black uppercase tracking-[0.25em] text-emerald-600">
                 Account active
               </p>
-              <h2 className="mt-2 break-words text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              <h2 className="mt-3 break-words text-3xl font-black tracking-tighter text-slate-900 sm:text-4xl">
                 {customer.displayName || customer.username || customer.email}
               </h2>
-              <p className="mt-2 break-all text-sm text-slate-400">
+              <p className="mt-3 break-all text-[15px] font-medium text-slate-500">
                 {customer.username ? `@${customer.username} · ` : ""}
                 {customer.email}
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               {customer.role !== "customer" ? (
                 <Link
                   href={internalDestination}
-                  className="min-h-11 rounded-lg border border-violet-500/30 bg-violet-500/10 px-4 py-3 text-xs font-bold text-violet-400 shadow-[0_0_15px_rgba(124,58,237,0.2)] transition duration-150 ease-out hover:bg-violet-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70"
+                  className="min-h-12 rounded-2xl border border-violet-200 bg-violet-600 px-6 py-3 text-[11px] font-black uppercase tracking-widest text-white shadow-lg shadow-violet-200 transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70"
                 >
                   Open {customer.role} workspace
                 </Link>
               ) : null}
-		              <button
-		                type="button"
-		                onClick={() => void logout()}
-		                className="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/10 bg-white/5 px-4 text-xs font-bold text-slate-400 transition duration-150 ease-out hover:border-white/20 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20"
-		              >
-		                Sign out
-		              </button>
+			              <button
+			                type="button"
+			                onClick={() => void logout()}
+			                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 text-[11px] font-black uppercase tracking-widest text-slate-600 shadow-sm transition-all duration-300 hover:border-rose-300 hover:bg-rose-50 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-200"
+			              >
+			                Sign out
+			              </button>
             </div>
           </div>
         </div>
 
-        <nav className="grid gap-3 border-t border-white/5 p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-4" aria-label="Account tools">
+        <nav className="grid gap-4 border-t border-slate-100 p-5 sm:grid-cols-2 sm:p-8 lg:grid-cols-4" aria-label="Account tools">
           {[
-            ["Cart", "/cart", "Review packages and players", "cart", "#A78BFA"],
-            ["Start a top-up", "/#games", "Choose a game and market", "games", "#38BDF8"],
-            ["Orders", "/account/orders", "View your complete order history", "track", "#34D399"],
-            ["Get support", "/support", "Chat or create a request", "support", "#F472B6"],
+            ["Cart", "/cart", "Review packages and players", "cart", "#7c3aed"],
+            ["Start a top-up", "/#games", "Choose a game and market", "games", "#0891b2"],
+            ["Orders", "/account/orders", "View your complete order history", "track", "#10b981"],
+            ["Get support", "/support", "Chat or create a request", "support", "#db2777"],
           ].map(([label, href, note, icon, accent]) => (
             <Link
               key={label}
               href={href as string}
-              className="recharza-nav-row group relative overflow-hidden rounded-xl border border-white/10 bg-white/5 p-4 shadow-2xl transition-all duration-300 hover:border-white/20 hover:bg-white/10"
+              className="recharza-nav-row group relative overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-violet-300 hover:bg-violet-50/30 hover:shadow-md hover:-translate-y-1"
             >
-              <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px opacity-40 transition-opacity duration-300 motion-safe:group-hover:opacity-100 shadow-[0_0_15px_rgba(255,255,255,0.3)]" style={{ background: `linear-gradient(90deg, transparent, ${accent} 50%, transparent)` }} />
-              <span className="relative grid h-11 w-11 place-items-center rounded-xl bg-white/5 ring-1 ring-white/10 transition-transform duration-200 group-hover:scale-105 shadow-[0_0_15px_rgba(0,0,0,0.3)]" style={{ color: accent } as React.CSSProperties}>
-                <StorefrontIcon name={icon as Parameters<typeof StorefrontIcon>[0]["name"]} className="h-4 w-4" />
+              <span className="relative grid h-12 w-12 place-items-center rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 transition-all duration-300 group-hover:scale-110 group-hover:shadow-md" style={{ color: accent } as React.CSSProperties}>
+                <StorefrontIcon name={icon as Parameters<typeof StorefrontIcon>[0]["name"]} className="h-5 w-5" />
               </span>
-              <strong className="relative mt-4 block text-sm font-bold text-white">{label}</strong>
-              <span className="relative mt-1 block text-xs leading-5 text-slate-400">{note}</span>
+              <strong className="relative mt-5 block text-base font-black tracking-tight text-slate-900">{label}</strong>
+              <span className="relative mt-1.5 block text-xs font-medium leading-relaxed text-slate-500">{note}</span>
             </Link>
           ))}
         </nav>
@@ -319,24 +318,24 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
       {!showOrders ? (
         <>
 	          <section className="grid grid-cols-2 gap-3 sm:grid-cols-3" aria-label="Account summary">
-	            {            [
-	              ["Total orders", String(orders.length), "All account-owned orders", "#A78BFA"],
-	              ["Active orders", String(activeOrders), "Still moving through the flow", "#38BDF8"],
-	              ["Saved players", String(savedPlayers.length), "Derived from order history", "#34D399"],
-	            ].map(([label, value, note, accent], tileIndex) => (
-	              <article key={label as string} className={`recharza-stat-tile relative overflow-hidden rounded-xl bg-white/5 p-4 shadow-2xl border border-white/10 backdrop-blur-md sm:p-5 ${tileIndex === 2 ? "col-span-2 sm:col-span-1" : ""}`}>
-                <span aria-hidden="true" className="absolute inset-x-0 top-0 h-px opacity-60 shadow-[0_0_15px_rgba(255,255,255,0.2)]" style={{ background: `linear-gradient(90deg, transparent, ${accent} 50%, transparent)` }} />
-                <p className="relative text-xs font-bold uppercase tracking-[0.13em] text-slate-400">{label}</p>
-                <p className="relative mt-3 text-3xl font-bold tracking-tight text-white">{value}</p>
-                <p className="relative mt-2 text-xs text-slate-500">{note}</p>
+            {            [
+              ["Total orders", String(orders.length), "All account-owned orders", "#A78BFA"],
+              ["Active orders", String(activeOrders), "Still moving through the flow", "#38BDF8"],
+              ["Saved players", String(savedPlayers.length), "Derived from order history", "#34D399"],
+            ].map(([label, value, note, accent], tileIndex) => (
+	              <article key={label as string} className={`recharza-stat-tile group relative overflow-hidden rounded-[2rem] bg-white p-5 shadow-lg border border-slate-200 sm:p-7 transition-all duration-300 hover:border-violet-200 hover:shadow-xl hover:-translate-y-1 ${tileIndex === 2 ? "col-span-2 sm:col-span-1" : ""}`}>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-slate-50/50 rounded-full blur-2xl -mr-16 -mt-16 group-hover:bg-violet-50/50 transition-colors" />
+                <p className="relative text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 group-hover:text-violet-600 transition-colors">{label}</p>
+                <p className="relative mt-4 text-4xl font-black tracking-tighter text-slate-900">{value}</p>
+                <p className="relative mt-2 text-[11px] font-medium text-slate-400">{note}</p>
               </article>
             ))}
           </section>
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur-md sm:p-6" aria-labelledby="account-next-step">
-            <p className="recharza-eyebrow text-violet-400">Account overview</p>
-            <h2 id="account-next-step" className="recharza-section-head mt-3 text-white">What would you like to do?</h2>
-            <p className="recharza-body mt-3 max-w-2xl">Use the account tools above to review your cart, open your order history, or contact support. Games stay in the storefront where they belong.</p>
-          </section>
+	          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-lg sm:p-6" aria-labelledby="account-next-step">
+	            <p className="recharza-eyebrow text-violet-600">Account overview</p>
+	            <h2 id="account-next-step" className="recharza-section-head mt-3 text-slate-900">What would you like to do?</h2>
+	            <p className="recharza-body mt-3 max-w-2xl text-slate-500">Use the account tools above to review your cart, open your order history, or contact support. Games stay in the storefront where they belong.</p>
+	          </section>
           <SavedAddressesPanel />
         </>
       ) : null}
@@ -389,62 +388,62 @@ export function CustomerDashboard({ showOrders = false }: { showOrders?: boolean
             ))}
           </div>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-8 space-y-6">
             {filteredOrders.map((order) => (
-              <div key={order.id} className="recharza-surface-raised relative overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:border-violet-200 hover:shadow-md">
-                <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-5">
+              <div key={order.id} className="recharza-surface-raised relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm transition-all duration-500 hover:border-violet-300 hover:shadow-xl hover:-translate-y-1">
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex items-center gap-6">
                     <div className="relative shrink-0">
-                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-16 w-16 shrink-0 rounded-2xl object-cover shadow-sm" fallbackClassName="h-16 w-16 shrink-0 rounded-2xl" />
-                      <div className="absolute -bottom-1 -right-1 grid h-7 w-7 place-items-center rounded-xl border border-slate-200 bg-white text-violet-600 shadow-sm">
+                      <StorefrontArtwork artworkKey={games.find((game) => game.slug === order.gameSlug)?.artworkKey} sources={artworkSourcesForGame(order.gameSlug)} alt={`${gameTitle(order.gameSlug)} artwork`} fallbackLabel={gameTitle(order.gameSlug).slice(0, 2)} className="h-20 w-20 shrink-0 rounded-[1.5rem] object-cover shadow-md ring-1 ring-slate-200/50" fallbackClassName="h-20 w-20 shrink-0 rounded-[1.5rem]" />
+                      <div className="absolute -bottom-1 -right-1 grid h-8 w-8 place-items-center rounded-2xl border border-slate-200 bg-white text-violet-600 shadow-md">
                         <StorefrontIcon name="games" className="h-4 w-4" />
                       </div>
                     </div>
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-violet-600/60">Purchase Item</span>
-                        <div className="h-px w-8 bg-slate-200" />
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-[10px] font-black uppercase tracking-[0.25em] text-violet-600">Purchase Item</span>
+                        <div className="h-px w-10 bg-slate-100" />
                       </div>
-                      <p className="mt-1 text-lg font-semibold tracking-tight text-slate-900 break-words">{order.package.name}</p>
-                      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-	                        <span className="font-mono text-[11px] font-medium text-slate-600">ID: <span className="text-violet-600">{order.id}</span></span>
-	                        <span className="h-1 w-1 rounded-full bg-slate-300" />
-	                        <span className="text-[11px] font-medium text-slate-700">{gameTitle(order.gameSlug)}</span>
-	                        {order.market && (
-	                          <>
-	                            <span className="h-1 w-1 rounded-full bg-slate-300" />
-	                            <span className="text-[11px] font-medium text-slate-700">{order.market.label}</span>
-	                          </>
-	                        )}
+                      <p className="mt-2 text-xl font-black tracking-tight text-slate-900 break-words leading-tight">{order.package.name}</p>
+                      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+                        <span className="font-mono text-[11px] font-bold text-slate-500">ID: <span className="text-violet-600">{order.id}</span></span>
+                        <div className="h-1 w-1 rounded-full bg-slate-300" />
+                        <span className="text-[11px] font-black uppercase tracking-widest text-slate-700">{gameTitle(order.gameSlug)}</span>
+                        {order.market && (
+                          <>
+                            <div className="h-1 w-1 rounded-full bg-slate-300" />
+                            <span className="text-[11px] font-black uppercase tracking-widest text-slate-700">{order.market.label}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between border-t border-slate-100 pt-4 sm:flex-col sm:items-end sm:border-none sm:pt-0">
-                    <div className="flex flex-col sm:items-end">
-	                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-600">Order Status</span>
-                      <div className="mt-1.5">
+                  <div className="flex items-center justify-between border-t border-slate-100 pt-5 lg:flex-row lg:items-center lg:gap-8 lg:border-none lg:pt-0">
+                    <div className="flex flex-col lg:items-end">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Order Status</span>
+                      <div className="mt-2">
                         <StatusBadge state={statusStateFor(order.status)} label={order.status.replaceAll("_", " ")} />
                       </div>
                     </div>
-                    <div className="flex flex-col items-end text-right sm:mt-4">
-	                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-slate-600">Transaction</span>
-                      <p className="mt-0.5 text-base font-bold text-slate-900">{formatInr(order.package.amountInPaise)}</p>
+                    <div className="flex flex-col items-end text-right">
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Transaction</span>
+                      <p className="mt-1 text-xl font-black text-slate-900 tracking-tight">{formatInr(order.package.amountInPaise)}</p>
                     </div>
                   </div>
                 </div>
                 
-                <div className="mt-5 flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3 border border-slate-100">
-	                  <div className="flex items-center gap-2">
-	                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-sm" />
-	                    <span className="text-[11px] font-medium text-slate-700">Securely processed · {new Date(order.createdAt).toLocaleDateString("en-IN")}</span>
-	                  </div>
+                <div className="mt-6 flex items-center justify-between rounded-2xl bg-slate-50 px-5 py-4 border border-slate-100 shadow-inner">
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-lg shadow-emerald-200" />
+                    <span className="text-[11px] font-black uppercase tracking-widest text-slate-500">Securely processed · {new Date(order.createdAt).toLocaleDateString("en-IN")}</span>
+                  </div>
                   <Link
                     href={`/orders/${encodeURIComponent(order.id)}`}
-                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-violet-600 transition-all hover:text-violet-700 hover:gap-2"
+                    className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.15em] text-violet-600 transition-all hover:text-violet-700 hover:gap-3"
                   >
-                    View Details
-                    <StorefrontIcon name="arrow" className="h-3 w-3" />
+                    Details
+                    <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
                   </Link>
                 </div>
               </div>

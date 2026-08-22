@@ -34,30 +34,11 @@
   inset: 18%;
   pointer-events: none;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(67, 214, 255, .42) 0%, rgba(92, 112, 255, .20) 38%, transparent 74%);
+  background: radial-gradient(circle, rgba(124, 58, 237, .15) 0%, transparent 74%);
   filter: blur(12px);
   opacity: .24;
   transform: scale(.78);
   transform-origin: center;
-  animation: recharza-logo-glow-breathe 9.6s cubic-bezier(.4, 0, .2, 1) infinite;
-}
-
-@keyframes recharza-logo-glow-breathe {
-  0%, 58%, 100% {
-    opacity: .20;
-    transform: scale(.78);
-    filter: blur(12px);
-  }
-  70% {
-    opacity: .48;
-    transform: scale(1.12);
-    filter: blur(9px);
-  }
-  78% {
-    opacity: .32;
-    transform: scale(.94);
-    filter: blur(10px);
-  }
 }
 
 .site-brand-link:hover .recharza-electric-mark,
@@ -76,18 +57,10 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(114deg, transparent 0 58%, rgba(103, 232, 249, .12) 58.2%, transparent 58.7% 67%, rgba(139, 92, 246, .08) 67.3%, transparent 67.8%);
+  background: radial-gradient(circle at 70% 20%, rgba(124, 58, 237, 0.05), transparent 50%);
   content: "";
   pointer-events: none;
-  mix-blend-mode: screen;
   opacity: .36;
-  animation: recharza-electric-sweep 18s ease-in-out infinite alternate;
-}
-
-@keyframes recharza-electric-sweep {
-  0% { transform: translate3d(-2%, 1%, 0) scale(1); opacity: .22; }
-  50% { transform: translate3d(1%, -1%, 0) scale(1.02); opacity: .42; }
-  100% { transform: translate3d(3%, 1%, 0) scale(1.04); opacity: .28; }
 }
 
 /* Electric Accents for Gaming UI */
@@ -112,22 +85,22 @@
 }
 
 .recharza-electric-glow {
-  box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
-  border-color: rgba(124, 58, 237, 0.4);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.1);
+  border-color: rgba(124, 58, 237, 0.2);
 }
 
 .recharza-electric-text {
-  text-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
+  color: #7c3aed;
 }
 
 .recharza-electric-border {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: #ffffff;
 }
 
 .recharza-electric-border:hover {
-  border-color: rgba(124, 58, 237, 0.3);
-  box-shadow: 0 0 20px rgba(124, 58, 237, 0.1);
+  border-color: rgba(124, 58, 237, 0.2);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
 }
 
 @media (max-width: 640px) {

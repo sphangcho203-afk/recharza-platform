@@ -87,93 +87,105 @@ export default async function MobileLegendsMarketPage({
   }
 
   return (
-    <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-white">
+    <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-slate-900 bg-white">
       <SiteHeader />
 
-      <section className="recharza-atmosphere-game border-b border-white/5 bg-white/2 px-4 py-5 sm:px-6 lg:px-8">
+      <section className="recharza-atmosphere-game border-b border-slate-200/60 bg-slate-50 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1240px]">
           <StorefrontBackButton />
-          <nav className="recharza-breadcrumb mb-4 mt-4 text-slate-400" aria-label="Page path">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link>
-            <span aria-hidden="true">/</span>
-            <Link href="/games/mobile-legends" className="hover:text-white transition-colors">Mobile Legends</Link>
-            <span aria-hidden="true">/</span>
-            <span aria-current="page" className="text-white">{selectedMarket.label}</span>
+          <nav className="recharza-breadcrumb mb-6 mt-6 text-slate-500 text-[11px] font-bold uppercase tracking-widest" aria-label="Page path">
+            <Link href="/" className="hover:text-slate-900 transition-colors">Home</Link>
+            <span className="mx-2 text-slate-300">/</span>
+            <Link href="/games/mobile-legends" className="hover:text-slate-900 transition-colors">Mobile Legends</Link>
+            <span className="mx-2 text-slate-300">/</span>
+            <span aria-current="page" className="text-violet-600">{selectedMarket.label}</span>
           </nav>
 
-          <div className="flex flex-col gap-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-5 shadow-2xl sm:flex-row sm:items-center sm:justify-between sm:p-6">
-            <div className="flex min-w-0 items-center gap-5 sm:gap-6">
-              <div
-                className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-100 shadow-sm sm:h-20 sm:w-20"
-                style={{ background: `linear-gradient(135deg, ${regionalGame.accent}15, ${regionalGame.accent}05)` }}
-              >
-                <ResilientImage
-                  sources={gameLogo ? [gameLogo.url, regionalGame.icon, ...regionalGame.logoSources] : [regionalGame.icon, ...regionalGame.logoSources]}
-                  alt={gameLogo?.altText ?? regionalGame.logoAlt}
-                  fallbackLabel="ML"
-                  fill
-                  priority
-                  sizes="80px"
-                  className="object-contain p-2"
-                  fallbackClassName="absolute inset-0 h-full w-full"
-                />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Instant delivery</p>
-                <h1 className="mt-1 text-xl font-bold tracking-tight text-white sm:text-2xl lg:text-3xl leading-tight">
-                  {regionalGame.title} Top Up
-                </h1>
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-1 shadow-sm">
-                    <span className="text-[10px] font-bold text-slate-300">{selectedMarket.flag} {selectedMarket.label}</span>
-                    <span className="h-1 w-1 rounded-full bg-white/20" />
-                    <span className="text-[10px] font-bold text-slate-300">{packages.length} offers</span>
-                    <span className="h-1 w-1 rounded-full bg-white/20" />
-                    <span className="text-[10px] font-bold text-slate-300">{selectedMarket.defaultCurrency}</span>
+          <div className="recharza-surface-floating relative overflow-hidden rounded-[2.5rem] p-6 sm:p-10 group bg-white shadow-xl ring-1 ring-slate-200/50">
+            <div className="relative z-10 flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+              <div className="flex flex-col items-start gap-8 sm:flex-row sm:items-center">
+                <div className="relative h-28 w-28 flex-none overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50 shadow-sm sm:h-36 sm:w-36 transition-transform duration-500 group-hover:scale-105">
+                  <ResilientImage
+                    sources={gameLogo ? [gameLogo.url, regionalGame.icon, ...regionalGame.logoSources] : [regionalGame.icon, ...regionalGame.logoSources]}
+                    alt={gameLogo?.altText ?? regionalGame.logoAlt}
+                    fallbackLabel="ML"
+                    fill
+                    priority
+                    sizes="144px"
+                    className="object-contain p-3"
+                    fallbackClassName="absolute inset-0 h-full w-full"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                </div>
+                <div className="flex flex-col gap-5">
+                  <div className="flex flex-col gap-3">
+                    <span className="recharza-eyebrow text-violet-400 animate-pulse">Instant delivery</span>
+                    <h1 className="recharza-display text-4xl sm:text-5xl lg:text-7xl text-slate-900">
+                      Mobile Legends <span className="text-violet-600">Top Up</span>
+                    </h1>
                   </div>
-                  <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 shadow-sm">
-                    <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
-                      Verified
-                    </span>
-                    <span className="h-1 w-1 rounded-full bg-white/10" />
-                    <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
-                      Support
-                    </span>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex items-center gap-2.5 rounded-xl bg-slate-50 px-4 py-2 border border-slate-200 shadow-sm">
+                      <span className="text-xl">{selectedMarket.flag}</span>
+                      <span className="text-[0.95rem] font-extrabold text-slate-900">{selectedMarket.label}</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                      <span className="text-sm font-bold text-slate-600">{packages.length} offers</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-cyan-500" />
+                      <span className="text-xs font-black text-slate-500 uppercase tracking-[0.2em]">{selectedMarket.defaultCurrency}</span>
+                    </div>
+                    <div className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white px-5 py-2.5 shadow-sm">
+                      <span className="text-[0.7rem] font-black text-slate-500 uppercase tracking-[0.25em]">Verified</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-slate-100" />
+                      <span className="text-[0.7rem] font-black text-slate-500 uppercase tracking-[0.25em]">Support</span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="relative hidden h-20 w-44 overflow-hidden rounded-xl border border-white/10 bg-white/5 md:block shadow-2xl">
-              <ResilientImage
-                sources={gameArtwork ? [gameArtwork.url, ...regionalGame.artworkSources] : regionalGame.artworkSources}
-                alt={gameArtwork?.altText ?? regionalGame.artworkAlt}
-                fallbackLabel="Mobile Legends"
-                fill
-                sizes="176px"
-                className="object-cover"
-                fallbackClassName="absolute inset-0 h-full w-full"
-              />
+              {/* Decorative Artwork */}
+              <div className="hidden lg:block">
+                <div className="relative h-40 w-72 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-slate-50 shadow-lg transition-all duration-500 group-hover:border-violet-500/30 group-hover:shadow-xl">
+                  <ResilientImage
+                    sources={gameArtwork ? [gameArtwork.url, ...regionalGame.artworkSources] : regionalGame.artworkSources}
+                    alt={gameArtwork?.altText ?? regionalGame.artworkAlt}
+                    fallbackLabel="Mobile Legends"
+                    fill
+                    sizes="288px"
+                    className="object-cover opacity-90 transition-opacity duration-500 group-hover:opacity-100"
+                    fallbackClassName="absolute inset-0 h-full w-full"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent" />
+                  <div className="absolute bottom-4 right-5">
+                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-violet-600/60">Premium</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
-        <div className="mb-6 rounded-2xl border border-white/5 bg-white/2 p-4 sm:p-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3">
-              <StorefrontIcon name="globe" className="h-4 w-4 shrink-0 text-slate-500" />
-              <p className="text-[11px] font-medium leading-relaxed text-slate-400">
-                <strong className="font-bold text-white">{selectedMarket.flag} {selectedMarket.label}:</strong> {selectedMarket.note}
-              </p>
+      <section className="mx-auto max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8">
+        <div className="relative mb-10 overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50/50 p-6 sm:flex-row sm:items-center sm:justify-between sm:px-10 group/strip shadow-sm">
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div className="flex items-center gap-5">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-violet-600 border border-violet-100 shadow-sm">
+                <StorefrontIcon name="globe" className="h-6 w-6" />
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="text-[0.95rem] font-semibold text-slate-600 leading-relaxed">
+                  <b className="text-slate-900 font-extrabold">{selectedMarket.flag} {selectedMarket.label}:</b> {selectedMarket.note}
+                </p>
+              </div>
             </div>
             {regionalGame.deliveryCoverage && (
-              <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-3 sm:border-none sm:pt-0">
-                <p className="text-[11px] font-bold text-slate-300 underline decoration-emerald-500/50 decoration-2 underline-offset-4">{regionalGame.deliveryCoverage.headline}</p>
-                <div className="flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2 py-1">
-                  <StorefrontIcon name="shield" className="h-3.5 w-3.5 text-emerald-400" />
-                  <span className="text-[10px] font-bold text-emerald-400">Secure Checkout</span>
+              <div className="flex flex-wrap items-center gap-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-500 tracking-wide">{regionalGame.deliveryCoverage.headline}</span>
+                </div>
+                <div className="flex items-center gap-2.5 rounded-xl bg-emerald-50 px-4 py-2 text-emerald-600 border border-emerald-100 shadow-sm">
+                  <StorefrontIcon name="shield" className="h-4 w-4 text-emerald-600" />
+                  <span className="text-[0.7rem] font-black uppercase tracking-[0.2em]">Secure Checkout</span>
                 </div>
               </div>
             )}

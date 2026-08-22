@@ -131,47 +131,46 @@ export function MobileNavMenu() {
 
   const menu = open ? (
     <div className="recharza-scrim fixed inset-0 z-[9999] isolate" onMouseDown={(event) => { if (event.target === event.currentTarget) closeMenu(); }}>
-      <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby={supportOpen ? "support-chooser-title" : "mobile-navigation-title"} className="recharza-sheet absolute left-0 top-0 h-auto max-h-[92vh] w-[min(20rem,85vw)] overflow-hidden rounded-br-[3rem] shadow-[20px_20px_80px_rgba(0,0,0,0.5)] bg-[#1a1d26] border-r border-b border-white/10">
-        <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-          <span className="recharza-atmo-v2 absolute inset-0 opacity-[0.4]" />
-          <span style={{ position: "absolute", left: "-20%", top: "-20%", width: "140%", height: "140%", background: "radial-gradient(circle at 30% 30%, rgba(124,58,237,0.15), transparent 60%), radial-gradient(circle at 70% 70%, rgba(8,145,178,0.1), transparent 60%)", filter: "blur(90px)", animation: "recharza-aurora-drift-a 25s ease-in-out infinite alternate" }} />
-        </span>
-        <div className="flex items-start justify-between gap-4 border-b border-white/5 px-6 py-5">
+        <aside id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby={supportOpen ? "support-chooser-title" : "mobile-navigation-title"} className="recharza-sheet absolute left-0 top-0 h-auto max-h-[95vh] w-[min(21rem,90vw)] overflow-hidden rounded-br-[2.5rem] shadow-2xl bg-white border-r border-b border-slate-200">
+          <span aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+            <span className="recharza-atmo-v2 absolute inset-0 opacity-[0.03]" />
+          </span>
+          <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-slate-50 px-6 py-6">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-400">Recharza</p>
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">Recharza</p>
             {supportOpen ? (
               <div className="mt-1 flex items-center gap-2">
-                <button type="button" onClick={() => setSupportOpen(false)} aria-label="Back to store navigation" className="grid h-7 w-7 place-items-center rounded-lg text-slate-400 transition hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60">
+                <button type="button" onClick={() => setSupportOpen(false)} aria-label="Back to store navigation" className="grid h-7 w-7 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60">
                   <StorefrontIcon name="chevron" className="h-5 w-5 rotate-180" />
                 </button>
-                <h2 id="support-chooser-title" className="text-lg font-bold tracking-tight text-white">Support</h2>
+                <h2 id="support-chooser-title" className="text-lg font-bold tracking-tight text-slate-900">Support</h2>
               </div>
-            ) : <h2 id="mobile-navigation-title" className="mt-1 text-lg font-bold tracking-tight text-white">Store navigation</h2>}
+            ) : <h2 id="mobile-navigation-title" className="mt-1 text-lg font-bold tracking-tight text-slate-900">Store navigation</h2>}
           </div>
-          <button type="button" onClick={closeMenu} aria-label="Close navigation menu" className="grid h-9 w-9 place-items-center rounded-lg text-slate-400 transition hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60">
+          <button type="button" onClick={closeMenu} aria-label="Close navigation menu" className="grid h-9 w-9 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60">
             <StorefrontIcon name="close" className="h-5 w-5" />
           </button>
         </div>
 
         {supportOpen ? (
           <div className="mt-4 overflow-y-auto px-6 pb-8">
-            <p className="px-1 text-sm leading-6 text-slate-400">Choose the channel that works best for your question.</p>
-            <nav aria-label="Support channels" className="mt-4 space-y-2">
+            <p className="px-1 text-sm leading-6 text-slate-500">Choose the channel that works best for your question.</p>
+            <nav aria-label="Support channels" className="mt-5 space-y-2.5">
               {supportChannels.map((channel) => {
-                const content = <><ChannelMark channel={channel} /><span className="relative min-w-0 flex-1"><span className="block text-sm font-bold text-white">{channel.label}</span><span className="mt-0.5 block text-xs leading-5 text-slate-400">{channel.description}</span></span><StorefrontIcon name="arrow" className="recharza-nav-arrow relative h-4 w-4 shrink-0 text-slate-500 group-hover:text-white" /></>;
+                const content = <><ChannelMark channel={channel} /><span className="relative min-w-0 flex-1"><span className="block text-sm font-bold text-slate-900">{channel.label}</span><span className="mt-0.5 block text-[11px] font-medium leading-5 text-slate-500">{channel.description}</span></span><StorefrontIcon name="arrow" className="recharza-nav-arrow relative h-4 w-4 shrink-0 text-slate-400 group-hover:text-slate-900 group-hover:translate-x-1 transition-transform" /></>;
                 const isDisabled = "disabled" in channel && channel.disabled;
-                const className = `recharza-nav-row group relative flex min-h-[4.5rem] items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-left shadow-2xl transition duration-150 ease-out hover:border-violet-500/25 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60 ${isDisabled ? "cursor-not-allowed opacity-55" : ""}`;
+                const className = `recharza-nav-row group relative flex min-h-[5rem] items-center gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left shadow-sm transition-all duration-300 ease-out hover:border-violet-300 hover:bg-violet-50/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60 ${isDisabled ? "cursor-not-allowed opacity-55" : ""}`;
                 if (isDisabled) return <div key={channel.key} aria-disabled="true" className={className}>{content}</div>;
                 return <a key={channel.key} href={channel.href ?? undefined} target={channel.external ? "_blank" : undefined} rel={channel.external ? "noopener noreferrer" : undefined} onClick={() => { setSupportOpen(false); setOpen(false); }} className={className}>{content}</a>;
               })}
             </nav>
           </div>
         ) : (
-          <nav className="mt-4 space-y-2 overflow-y-auto px-6 pb-8">
+          <nav className="mt-5 space-y-2.5 overflow-y-auto px-6 pb-10">
             {links.map((link) => {
-              const base = "recharza-nav-row group relative flex min-h-[3.75rem] w-full items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-left text-[15px] font-bold text-slate-200 transition duration-300 ease-out hover:bg-white/10 hover:border-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60";
-              const icon = <span aria-hidden="true" className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-violet-400 shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-transform duration-300 group-hover:scale-110" style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.2)" }}><StorefrontIcon name={link.icon} className="h-[18px] w-[18px]" /></span>;
-              const arrow = <StorefrontIcon name="arrow" className="recharza-nav-arrow ml-auto h-4 w-4 shrink-0 opacity-20 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100" />;
+              const base = "recharza-nav-row group relative flex min-h-[4.25rem] w-full items-center gap-4 rounded-2xl border border-slate-100 bg-white px-5 py-3 text-left text-[15px] font-black text-slate-600 transition-all duration-300 ease-out hover:bg-violet-50/40 hover:border-violet-200 hover:text-violet-700 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60";
+              const icon = <span aria-hidden="true" className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl text-violet-600 shadow-sm ring-1 ring-violet-100 transition-all duration-300 group-hover:scale-110 group-hover:bg-white group-hover:shadow-md" style={{ background: "#f5f3ff" }}><StorefrontIcon name={link.icon} className="h-[20px] w-[20px]" /></span>;
+              const arrow = <StorefrontIcon name="arrow" className="recharza-nav-arrow ml-auto h-4 w-4 shrink-0 opacity-20 transition-all duration-300 group-hover:translate-x-1.5 group-hover:opacity-100 group-hover:text-violet-600" />;
               return link.support ? (
                 <button key={link.label} type="button" onClick={() => setSupportOpen(true)} className={base}>
                   {icon}<span className="relative">{link.label}</span>{arrow}
@@ -190,7 +189,7 @@ export function MobileNavMenu() {
 
   return (
     <>
-      <button ref={triggerRef} type="button" aria-expanded={open} aria-controls="mobile-navigation" onClick={() => { setOpen((value) => !value); setSupportOpen(false); }} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 text-slate-400 transition duration-150 ease-out hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60">
+      <button ref={triggerRef} type="button" aria-expanded={open} aria-controls="mobile-navigation" onClick={() => { setOpen((value) => !value); setSupportOpen(false); }} className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-slate-200 bg-white text-slate-400 transition duration-150 ease-out hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60">
         <span className="sr-only">{open ? "Close navigation menu" : "Open navigation menu"}</span>
         <StorefrontIcon name="menu" className="h-[18px] w-[18px]" />
       </button>

@@ -132,10 +132,10 @@ export function CartPage() {
         <p
           role="status"
           aria-live="polite"
-          className={`mb-4 rounded-xl border px-4 py-3 text-xs font-bold shadow-2xl backdrop-blur-md ${
+          className={`mb-4 rounded-xl border px-4 py-3 text-xs font-bold shadow-sm ${
             notice.tone === "error"
-              ? "border-rose-500/20 bg-rose-500/10 text-rose-400"
-              : "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
+              ? "border-rose-100 bg-rose-50 text-rose-600"
+              : "border-emerald-100 bg-emerald-50 text-emerald-600"
           }`}
         >
           {notice.text}
@@ -147,32 +147,32 @@ export function CartPage() {
           role="status"
           aria-label="Loading your cart"
           aria-busy="true"
-          className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start"
+          className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start"
         >
-          <div className="grid gap-4">
+          <div className="grid gap-5">
             {[0, 1].map((index) => (
               <div
                 key={index}
-                className="h-40 animate-pulse rounded-xl border border-white/5 bg-white/5"
+                className="h-44 animate-pulse rounded-[2rem] border border-slate-200 bg-slate-50"
               />
             ))}
           </div>
-          <div className="h-64 animate-pulse rounded-xl border border-white/5 bg-white/5 lg:sticky lg:top-28" />
+          <div className="h-72 animate-pulse rounded-[2rem] border border-slate-200 bg-slate-50 lg:sticky lg:top-28" />
         </div>
       ) : null}
 
       {loadState.status === "error" ? (
         <div
           role="alert"
-          className="mx-auto max-w-xl rounded-xl border border-rose-500/20 bg-rose-500/5 p-8 text-center shadow-2xl backdrop-blur-md"
+          className="mx-auto max-w-xl rounded-xl border border-rose-100 bg-white p-8 text-center shadow-sm"
         >
-          <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl border border-rose-500/30 bg-white/5 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.3)]">
+          <span className="mx-auto grid h-12 w-12 place-items-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 shadow-sm">
             <StorefrontIcon name="cart" className="h-5 w-5" />
           </span>
-          <h2 className="mt-4 text-lg font-bold tracking-tight text-white">
+          <h2 className="mt-4 text-lg font-bold tracking-tight text-slate-900">
             The cart couldn&apos;t be loaded
           </h2>
-          <p className="mt-2 text-sm leading-6 text-rose-400/70 font-medium">
+          <p className="mt-2 text-sm leading-6 text-slate-500 font-medium">
             {loadState.message} Your saved items are safe.
           </p>
           <div className="mt-5 flex justify-center gap-2">
@@ -182,13 +182,13 @@ export function CartPage() {
                 setLoadState({ status: "loading" });
                 void load();
               }}
-              className="min-h-10 rounded-lg bg-white px-4 text-xs font-bold text-black transition hover:bg-slate-200"
+              className="min-h-10 rounded-lg bg-slate-900 px-4 text-xs font-bold text-white transition hover:bg-black"
             >
               Try again
             </button>
             <Link
               href="/#games"
-              className="inline-flex min-h-10 items-center rounded-lg border border-white/10 bg-white/5 px-4 text-xs font-bold text-white transition hover:bg-white/10"
+              className="inline-flex min-h-10 items-center rounded-lg border border-slate-200 bg-white px-4 text-xs font-bold text-slate-900 transition hover:bg-slate-50"
             >
               Browse games
             </Link>
@@ -197,20 +197,20 @@ export function CartPage() {
       ) : null}
 
       {loadState.status === "ready" && cart.items.length === 0 ? (
-        <div className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-white/5 px-6 py-14 text-center shadow-2xl backdrop-blur-md">
-          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-500/30 bg-white/5 text-violet-400 shadow-[0_0_20px_rgba(124,58,237,0.3)]">
+        <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white px-6 py-14 text-center shadow-sm">
+          <span className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-100 bg-violet-50 text-violet-600 shadow-sm">
             <StorefrontIcon name="cart" className="h-6 w-6" />
           </span>
-          <h2 className="mt-5 text-xl font-bold tracking-tight text-white">
+          <h2 className="mt-5 text-xl font-bold tracking-tight text-slate-900">
             Your cart is empty
           </h2>
-          <p className="mt-2 text-sm leading-6 text-slate-400 font-medium">
+          <p className="mt-2 text-sm leading-6 text-slate-500 font-medium">
             Add something from the store to get started.
           </p>
           <div className="mt-6 flex flex-col justify-center gap-2 sm:flex-row">
             <Link
               href="/#games"
-              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-violet-600 px-6 text-sm font-bold text-white shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(124,58,237,0.6)]"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-violet-600 px-6 text-sm font-bold text-white shadow-md transition-all duration-300 hover:bg-violet-700 hover:-translate-y-0.5"
             >
               Browse Games
             </Link>
@@ -219,14 +219,14 @@ export function CartPage() {
       ) : null}
 
       {loadState.status === "ready" && cart.items.length > 0 ? (
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_21rem] lg:items-start">
-          <div className="grid min-w-0 gap-4">
-            <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+          <div className="grid min-w-0 gap-5">
+            <div className="flex flex-wrap items-end justify-between gap-4 px-1">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.14em] text-violet-400">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-violet-600">
                   Ready to top up
                 </p>
-                <h2 className="mt-1 text-lg font-bold tracking-tight text-white">
+                <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-900">
                   Your items
                 </h2>
               </div>
@@ -234,23 +234,25 @@ export function CartPage() {
                 type="button"
                 disabled={busyClear}
                 onClick={() => void clearCart()}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 text-[11px] font-bold text-slate-400 transition duration-300 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-[11px] font-black uppercase tracking-widest text-slate-500 transition-all duration-300 hover:border-rose-500/30 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {busyClear ? "Clearing…" : "Clear cart"}
               </button>
             </div>
 
-            {cart.items.map((item) => (
-              <CartItemRow
-                key={item.id}
-                item={item}
-                busy={busyItemId === item.id}
-                onQuantityChange={(itemId, quantity) =>
-                  void changeQuantity(itemId, quantity)
-                }
-                onRemove={(itemId) => void removeItem(itemId)}
-              />
-            ))}
+            <div className="grid gap-4">
+              {cart.items.map((item) => (
+                <CartItemRow
+                  key={item.id}
+                  item={item}
+                  busy={busyItemId === item.id}
+                  onQuantityChange={(itemId, quantity) =>
+                    void changeQuantity(itemId, quantity)
+                  }
+                  onRemove={(itemId) => void removeItem(itemId)}
+                />
+              ))}
+            </div>
           </div>
 
           <CartOrderSummary cart={cart} busy={busyItemId !== "" || busyClear} />

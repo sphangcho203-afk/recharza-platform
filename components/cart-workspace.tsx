@@ -430,24 +430,24 @@ export function CartWorkspace({
         </section>
       </div>
 
-<aside className="h-fit rounded-lg border border-white/10 bg-[#0f0f19] p-5 lg:sticky lg:top-24">
-	        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+<aside className="h-fit rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-200/50 lg:sticky lg:top-24">
+	        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
 	          Order summary
 	        </p>
-        <div className="mt-4 grid gap-3 text-sm">
+        <div className="mt-5 grid gap-4 text-sm">
           <div className="flex items-center justify-between">
-            <span className="text-slate-500">Items</span>
-            <strong className="text-white">{cart.itemCount}</strong>
+            <span className="font-medium text-slate-500">Items</span>
+            <strong className="font-bold text-slate-900">{cart.itemCount}</strong>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-slate-500">Confirmed</span>
-            <strong className="text-white">
+            <span className="font-medium text-slate-500">Confirmed</span>
+            <strong className="font-bold text-slate-900">
               {validatedCount}/{cart.items.length}
             </strong>
           </div>
-          <div className="flex items-center justify-between border-t border-white/10 pt-3">
-            <span className="font-bold text-slate-300">Total</span>
-            <strong className="text-2xl text-white">
+          <div className="flex items-center justify-between border-t border-slate-100 pt-4">
+            <span className="font-bold text-slate-900 uppercase tracking-wider text-[11px]">Total</span>
+            <strong className="text-3xl font-bold text-slate-900 tracking-tight">
               {formatInr(cart.totalInPaise)}
             </strong>
           </div>
@@ -455,15 +455,15 @@ export function CartWorkspace({
 
 <Link
 	          href={`/games/mobile-legends/${market.code}`}
-	          className={`mt-5 block min-h-12 rounded-lg px-5 py-3.5 text-center text-sm font-semibold transition duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${
+	          className={`mt-6 block min-h-14 rounded-2xl px-6 py-4 text-center text-sm font-bold uppercase tracking-widest transition duration-300 shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-violet-100 ${
 	            cart.items.length && validatedCount === cart.items.length
-	              ? "bg-white text-slate-950 hover:bg-violet-200"
-	              : "pointer-events-none bg-white/10 text-slate-600"
+	              ? "bg-violet-600 text-white shadow-violet-200 hover:-translate-y-0.5 hover:bg-violet-700"
+	              : "pointer-events-none bg-slate-100 text-slate-400 shadow-none"
 	          }`}
 	        >
 	          Continue to checkout
 	        </Link>
-        <p className="mt-3 text-xs leading-5 text-slate-500">
+        <p className="mt-4 text-[11px] font-medium leading-relaxed text-slate-400">
           Please confirm all account details before continuing. Guest carts merge
           automatically after login.
         </p>
@@ -471,10 +471,10 @@ export function CartWorkspace({
         {message ? (
           <p
             aria-live={error ? "assertive" : "polite"}
-            className={`mt-4 rounded-lg border px-3 py-3 text-xs leading-5 ${
+            className={`mt-5 rounded-xl border px-4 py-3 text-[11px] font-bold leading-relaxed ${
               error
-                ? "border-rose-400/20 bg-rose-400/10 text-rose-200"
-                : "border-white/10 bg-black/20 text-slate-400"
+                ? "border-rose-100 bg-rose-50 text-rose-600"
+                : "border-slate-100 bg-slate-50 text-slate-500"
             }`}
           >
             {message}

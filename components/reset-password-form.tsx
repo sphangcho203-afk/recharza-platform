@@ -33,17 +33,17 @@ export function ResetPasswordForm({ token }: { token: string }) {
   }
 
   return (
-    <section className="mx-auto max-w-xl overflow-hidden rounded-[2.5rem] border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md" aria-labelledby="reset-password-heading">
-      <div className="border-b border-white/10 bg-white/5 p-8 sm:p-10">
+    <section className="mx-auto max-w-xl overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white shadow-xl" aria-labelledby="reset-password-heading">
+      <div className="border-b border-slate-100 bg-slate-50/50 p-8 sm:p-10">
         <div className="flex items-center gap-4">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-white/10 bg-[#06070d] shadow-inner">
+          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 bg-white shadow-sm">
             <RecharzaMark compact />
           </span>
-          <p className="text-sm font-bold tracking-tight text-white uppercase tracking-widest">Recharza account recovery</p>
+          <p className="text-sm font-bold tracking-tight text-slate-900 uppercase tracking-widest">Recharza account recovery</p>
         </div>
-        <p className="mt-10 text-[10px] font-bold uppercase tracking-widest text-emerald-400">Security reset</p>
-        <h1 id="reset-password-heading" className="mt-2 text-4xl font-bold tracking-tight text-white">Create a new password.</h1>
-        <p className="mt-4 text-sm font-medium leading-relaxed text-slate-400">A successful reset revokes existing sessions and requires a fresh sign-in.</p>
+        <p className="mt-10 text-[10px] font-bold uppercase tracking-widest text-emerald-600">Security reset</p>
+        <h1 id="reset-password-heading" className="mt-2 text-4xl font-bold tracking-tight text-slate-900">Create a new password.</h1>
+        <p className="mt-4 text-sm font-medium leading-relaxed text-slate-500">A successful reset revokes existing sessions and requires a fresh sign-in.</p>
       </div>
 
       <div className="p-8 sm:p-10">
@@ -51,11 +51,11 @@ export function ResetPasswordForm({ token }: { token: string }) {
           <form onSubmit={submit} className="grid gap-6">
             <PasswordField id="new-password" label="New password" value={password} onChange={setPassword} visible={showPassword} onToggle={() => setShowPassword((value) => !value)} disabled={!token} />
             <PasswordField id="confirm-new-password" label="Confirm new password" value={confirmPassword} onChange={setConfirmPassword} visible={showConfirm} onToggle={() => setShowConfirm((value) => !value)} disabled={!token} />
-            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600">Use at least 10 characters with a password you do not reuse elsewhere.</p>
-            <button disabled={submitting || !token} className="min-h-14 rounded-2xl bg-emerald-500 px-6 text-sm font-bold uppercase tracking-widest text-white shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all hover:-translate-y-1 hover:bg-emerald-600 active:translate-y-0 disabled:cursor-wait disabled:opacity-50">{submitting ? "Resetting password…" : "Reset password"}</button>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Use at least 10 characters with a password you do not reuse elsewhere.</p>
+            <button disabled={submitting || !token} className="min-h-14 rounded-2xl bg-emerald-600 px-6 text-sm font-bold uppercase tracking-widest text-white shadow-md transition-all hover:-translate-y-1 hover:bg-emerald-700 active:translate-y-0 disabled:cursor-wait disabled:opacity-50">{submitting ? "Resetting password…" : "Reset password"}</button>
           </form>
-        ) : <Link href="/account" className="block min-h-14 rounded-2xl bg-emerald-500 px-6 py-4 text-center text-sm font-bold uppercase tracking-widest text-white shadow-[0_0_20px_rgba(16,185,129,0.4)] transition-all hover:-translate-y-1 hover:bg-emerald-600">Sign in with the new password</Link>}
-        <p role={success ? "status" : "alert"} aria-live="polite" className={`mt-6 rounded-2xl border px-5 py-4 text-sm font-bold leading-relaxed ${success ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400" : "border-white/5 bg-white/5 text-slate-500"}`}>{message}</p>
+        ) : <Link href="/account" className="block min-h-14 rounded-2xl bg-emerald-600 px-6 py-4 text-center text-sm font-bold uppercase tracking-widest text-white shadow-md transition-all hover:-translate-y-1 hover:bg-emerald-700">Sign in with the new password</Link>}
+        <p role={success ? "status" : "alert"} aria-live="polite" className={`mt-6 rounded-2xl border px-5 py-4 text-sm font-bold leading-relaxed ${success ? "border-emerald-100 bg-emerald-50 text-emerald-700" : "border-slate-100 bg-slate-50 text-slate-500"}`}>{message}</p>
       </div>
     </section>
   );
@@ -76,14 +76,14 @@ function PasswordField({ id, label, value, onChange, visible, onToggle, disabled
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder="10+ characters"
-          className="mt-3 min-h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-5 pr-20 text-base font-bold text-white outline-none transition-all focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 placeholder:text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-3 min-h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 pr-20 text-base font-bold text-slate-900 outline-none transition-all focus:border-emerald-600 focus:bg-white focus:ring-4 focus:ring-emerald-600/10 placeholder:text-slate-400 shadow-inner disabled:cursor-not-allowed disabled:opacity-50"
         />
         <button
           type="button"
           onClick={onToggle}
           disabled={disabled}
           aria-label={visible ? `Hide ${label.toLowerCase()}` : `Show ${label.toLowerCase()}`}
-          className="absolute right-3 top-1/2 min-h-9 -translate-y-1/2 rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest text-slate-500 transition-all hover:bg-white/10 hover:text-white disabled:opacity-50"
+          className="absolute right-3 top-1/2 min-h-9 -translate-y-1/2 rounded-xl px-3 text-[10px] font-bold uppercase tracking-widest text-slate-400 transition-all hover:bg-slate-100 hover:text-slate-900 disabled:opacity-50"
         >
           {visible ? "Hide" : "Show"}
         </button>

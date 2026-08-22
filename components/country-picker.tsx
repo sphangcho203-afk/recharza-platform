@@ -17,11 +17,11 @@ export function CountryPicker({ value, onChange }: CountryPickerProps) {
         required
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-12 w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 pr-11 text-base font-normal text-white outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
+        className="min-h-12 w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 pr-11 text-base font-normal text-slate-900 outline-none transition focus:border-violet-600 focus:ring-2 focus:ring-violet-600/10 shadow-sm"
         aria-label="Billing country"
       >
         {allBillingCountries.map((country) => (
-          <option key={country.isoCode} value={country.isoCode} className="bg-[#1a1d26]">
+          <option key={country.isoCode} value={country.isoCode} className="bg-white text-slate-900">
             {countryFlag(country.isoCode)} {country.name}
           </option>
         ))}

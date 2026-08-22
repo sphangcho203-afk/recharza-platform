@@ -78,25 +78,24 @@ export default async function GameCheckoutPage({
     const marketCount = new Set(packages.map((item) => item.marketCode)).size;
 
     return (
-      <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-white">
+      <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-slate-900 bg-white">
         <SiteHeader />
 
-        <section className="recharza-atmosphere-game border-b border-white/5 bg-white/2 px-4 py-5 sm:px-6 lg:px-8">
+        <section className="recharza-atmosphere-game border-b border-slate-200/60 bg-slate-50 px-4 py-5 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1240px]">
             <StorefrontBackButton />
-            <nav className="recharza-breadcrumb mb-4 mt-4 text-slate-400" aria-label="Page path">
-              <Link href="/" className="hover:text-white transition-colors">Home</Link>
-              <span aria-hidden="true">/</span>
-              <Link href="/#games" className="hover:text-white transition-colors">Top Up</Link>
-              <span aria-hidden="true">/</span>
-              <span aria-current="page" className="text-white">{definition.title}</span>
+            <nav className="recharza-breadcrumb mb-4 mt-4 text-slate-500 text-[11px] font-bold uppercase tracking-widest" aria-label="Page path">
+              <Link href="/" className="hover:text-slate-900 transition-colors">Home</Link>
+              <span className="mx-2 text-slate-300">/</span>
+              <Link href="/#games" className="hover:text-slate-900 transition-colors">Top Up</Link>
+              <span className="mx-2 text-slate-300">/</span>
+              <span aria-current="page" className="text-violet-600">{definition.title}</span>
             </nav>
 
-            <div className="flex flex-col gap-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-5 shadow-2xl sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <div className="flex flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-lg sm:flex-row sm:items-center sm:justify-between sm:p-6">
               <div className="flex min-w-0 items-center gap-5 sm:gap-6">
                 <div
-                  className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-100 shadow-sm sm:h-20 sm:w-20"
-                  style={{ background: `linear-gradient(135deg, ${game.accent}15, ${game.accent}05)` }}
+                  className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm sm:h-20 sm:w-20"
                 >
                   <ResilientImage
                     sources={gameLogo ? [gameLogo.url, game.icon, ...game.logoSources] : [game.icon, ...game.logoSources]}
@@ -111,19 +110,19 @@ export default async function GameCheckoutPage({
                 </div>
                 <div className="min-w-0">
                   <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Instant delivery</p>
-                  <h1 className="mt-1 text-xl font-bold tracking-tight text-white sm:text-2xl lg:text-3xl leading-tight">{definition.title} Top Up</h1>
+                  <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-3xl leading-tight">{definition.title} Top Up</h1>
                   <div className="mt-3 flex flex-wrap items-center gap-2">
-                    <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-1 shadow-sm">
-                      <span className="text-[10px] font-bold text-slate-300">{packages.length} offers</span>
-                      <span className="h-1 w-1 rounded-full bg-white/20" />
-                      <span className="text-[10px] font-bold text-slate-300">{marketCount} {marketCount === 1 ? "market" : "markets"}</span>
+                    <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 shadow-sm">
+                      <span className="text-[10px] font-bold text-slate-600">{packages.length} offers</span>
+                      <span className="h-1 w-1 rounded-full bg-slate-200" />
+                      <span className="text-[10px] font-bold text-slate-600">{marketCount} {marketCount === 1 ? "market" : "markets"}</span>
                     </div>
-                    <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 shadow-sm">
-                      <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
+                    <div className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 shadow-sm">
+                      <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
                         Verified
                       </span>
-                      <span className="h-1 w-1 rounded-full bg-white/10" />
-                      <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
+                      <span className="h-1 w-1 rounded-full bg-slate-100" />
+                      <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500">
                         Support
                       </span>
                     </div>
@@ -131,7 +130,7 @@ export default async function GameCheckoutPage({
                 </div>
               </div>
 
-              <div className="relative hidden h-20 w-44 overflow-hidden rounded-lg border border-white/10 bg-white/5 md:block shadow-2xl">
+              <div className="relative hidden h-20 w-44 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 md:block shadow-lg">
                 <ResilientImage
                   sources={gameArtwork ? [gameArtwork.url, ...game.artworkSources] : game.artworkSources}
                   alt={gameArtwork?.altText ?? game.artworkAlt}
@@ -147,20 +146,20 @@ export default async function GameCheckoutPage({
         </section>
 
         <section className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
-          <div className="mb-6 rounded-2xl border border-white/5 bg-white/2 p-4 sm:p-5">
+          <div className="mb-6 rounded-2xl border border-slate-200 bg-slate-50/50 p-4 sm:p-5 shadow-sm">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <StorefrontIcon name="globe" className="h-4 w-4 shrink-0 text-slate-500" />
-                <p className="text-[11px] font-medium leading-relaxed text-slate-400">
-                  <strong className="font-bold text-white">{game.title} Global Delivery:</strong> Secure account confirmation and immediate delivery to your profile.
+                <p className="text-[11px] font-medium leading-relaxed text-slate-600">
+                  <strong className="font-bold text-slate-900">{game.title} Global Delivery:</strong> Secure account confirmation and immediate delivery to your profile.
                 </p>
               </div>
               {game.deliveryCoverage && (
-                <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-3 sm:border-none sm:pt-0">
-                  <p className="text-[11px] font-bold text-slate-300 underline decoration-emerald-500/50 decoration-2 underline-offset-4">{game.deliveryCoverage.headline}</p>
-                  <div className="flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2 py-1">
-                    <StorefrontIcon name="shield" className="h-3.5 w-3.5 text-emerald-400" />
-                    <span className="text-[10px] font-bold text-emerald-400">Secure Checkout</span>
+                <div className="flex items-center justify-between gap-4 border-t border-slate-100 pt-3 sm:border-none sm:pt-0">
+                  <p className="text-[11px] font-bold text-slate-500">{game.deliveryCoverage.headline}</p>
+                  <div className="flex items-center gap-1.5 rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-1 shadow-sm">
+                    <StorefrontIcon name="shield" className="h-3.5 w-3.5 text-emerald-600" />
+                    <span className="text-[10px] font-bold text-emerald-600">Secure Checkout</span>
                   </div>
                 </div>
               )}

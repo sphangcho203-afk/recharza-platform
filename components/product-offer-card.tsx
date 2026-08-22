@@ -22,24 +22,24 @@ export function ProductOfferCard({
   const badge = getMerchandisingBadge(item);
   const quantity = splitBonusQuantity(item.name);
   const badgeClass = badge?.tone === "rose"
-    ? "border-rose-500/20 bg-rose-500/10 text-rose-400"
+    ? "border-rose-100 bg-rose-50 text-rose-600"
     : badge?.tone === "emerald"
-      ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.2)]"
-      : "border-violet-500/20 bg-violet-500/10 text-violet-400 shadow-[0_0_10px_rgba(167,139,250,0.2)]";
+      ? "border-emerald-100 bg-emerald-50 text-emerald-600 shadow-sm"
+      : "border-violet-100 bg-violet-50 text-violet-600 shadow-sm";
 
   return (
     <button
       type="button"
       aria-pressed={selected}
       onClick={onSelect}
-      className={`recharza-bleed-card group relative min-h-[16rem] w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 transition-all duration-300 ${
+      className={`recharza-bleed-card group relative min-h-[16rem] w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-600 transition-all duration-300 ${
         selected
-          ? "border-violet-500/50 bg-violet-500/10 shadow-[0_0_30px_rgba(124,58,237,0.2)]"
-          : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(255,255,255,0.05)]"
+          ? "border-violet-600 bg-violet-50 shadow-md"
+          : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-lg"
       }`}
     >
       {/* Artwork bleeds to the card edges — no inset padding. */}
-      <span className="recharza-bleed-media block aspect-[16/10] bg-white/5">
+      <span className="recharza-bleed-media block aspect-[16/10] bg-slate-100">
         <ResilientImage
           sources={item.media.sources}
           alt={item.media.alt}
@@ -56,10 +56,10 @@ export function ProductOfferCard({
           ) : <span aria-hidden="true" className="grow" />}
           <span
             aria-hidden="true"
-            className={`grid h-6 w-6 place-items-center rounded-full border text-[10px] transition-all shadow-[0_0_15px_rgba(0,0,0,0.3)] ${
+            className={`grid h-6 w-6 place-items-center rounded-full border text-[10px] transition-all ${
               selected
-                ? "border-violet-500 bg-violet-500 text-white shadow-[0_0_15px_rgba(124,58,237,0.4)]"
-                : "border-white/20 bg-black/40 text-slate-300 backdrop-blur-md group-hover:border-violet-400 group-hover:text-white"
+                ? "border-violet-600 bg-violet-600 text-white shadow-sm"
+                : "border-white/40 bg-black/20 text-white backdrop-blur-md group-hover:bg-violet-600 group-hover:border-violet-600"
             }`}
           >
             {selected ? "✓" : "+"}
@@ -69,17 +69,17 @@ export function ProductOfferCard({
 
       {/* Distinct lower strip: title on body tint, price + CTA on its own tinted base. */}
       <span className="recharza-bleed-strip flex min-h-[8.5rem] flex-col gap-1.5 p-4">
-        <span className="line-clamp-2 min-h-10 text-[15px] font-semibold leading-5 tracking-[-0.015em] text-white">
-          {quantity.bonus ? <><span>{quantity.base}</span> <span className="font-semibold text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]">{quantity.plus} {quantity.bonus}</span></> : item.name}
+        <span className="line-clamp-2 min-h-10 text-[15px] font-semibold leading-5 tracking-[-0.015em] text-slate-900">
+          {quantity.bonus ? <><span>{quantity.base}</span> <span className="font-semibold text-emerald-600">{quantity.plus} {quantity.bonus}</span></> : item.name}
         </span>
-        <span className="line-clamp-2 text-[11px] leading-4 text-slate-400">
+        <span className="line-clamp-2 text-[11px] leading-4 text-slate-500 font-medium">
           {item.deliveryLabel}
         </span>
         <span className="mt-auto flex items-end justify-between gap-3 pt-3">
           <span>
-            <span className="block text-xl font-semibold tracking-[-0.03em] text-white">{displayPrice}</span>
+            <span className="block text-xl font-semibold tracking-[-0.03em] text-slate-900">{displayPrice}</span>
             {settlementPrice ? (
-              <span className="mt-0.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">
+              <span className="mt-0.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400">
                 Settlement {settlementPrice}
               </span>
             ) : null}
@@ -88,8 +88,8 @@ export function ProductOfferCard({
             aria-hidden="true"
             className={`inline-flex min-h-9 items-center rounded-md px-3 text-xs font-semibold transition-all duration-200 ${
               selected 
-                ? "bg-violet-600 text-white shadow-[0_0_15px_rgba(124,58,237,0.4)]" 
-                : "bg-white/5 text-slate-300 group-hover:bg-violet-600 group-hover:text-white group-hover:shadow-[0_0_15px_rgba(124,58,237,0.4)]"
+                ? "bg-violet-600 text-white shadow-sm" 
+                : "bg-slate-100 text-slate-600 group-hover:bg-violet-600 group-hover:text-white"
             }`}
           >
             Select

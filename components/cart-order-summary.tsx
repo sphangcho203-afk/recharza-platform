@@ -18,25 +18,25 @@ export function CartOrderSummary({
       aria-label="Order summary"
       className="lg:sticky lg:top-28"
     >
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-2xl backdrop-blur-md sm:p-5">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-lg sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-400">Secure checkout</p>
-            <h2 className="mt-1 text-base font-bold tracking-tight text-white">Order summary</h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">Secure checkout</p>
+            <h2 className="mt-1 text-base font-bold tracking-tight text-slate-900">Order summary</h2>
           </div>
-          <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.2)]">Protected</span>
+          <span className="rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-600 shadow-sm">Protected</span>
         </div>
 
         <dl className="mt-4 grid gap-3 text-xs">
           <div className="flex items-center justify-between gap-4">
-            <dt className="text-slate-400 font-bold">Items ({cart.itemCount})</dt>
-            <dd className="font-bold text-white">
+            <dt className="text-slate-500 font-bold">Items ({cart.itemCount})</dt>
+            <dd className="font-bold text-slate-900">
               <DisplayPrice amountInrMinor={cart.totalInPaise} />
             </dd>
           </div>
-          <div className="flex items-center justify-between gap-4 border-t border-white/5 pt-3">
-            <dt className="font-bold text-white">Subtotal</dt>
-            <dd className="text-xl font-bold tracking-tight text-violet-400 shadow-violet-400/20 drop-shadow-[0_0_8px_rgba(167,139,250,0.3)]">
+          <div className="flex items-center justify-between gap-4 border-t border-slate-100 pt-3">
+            <dt className="font-bold text-slate-900">Subtotal</dt>
+            <dd className="text-xl font-bold tracking-tight text-violet-600">
               <DisplayPrice amountInrMinor={cart.totalInPaise} />
             </dd>
           </div>
@@ -64,7 +64,7 @@ export function CartOrderSummary({
 
         <Link
           href="/#games"
-          className="mt-3 block min-h-10 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-center text-xs font-bold text-white transition duration-300 hover:bg-white/10"
+          className="mt-3 block min-h-10 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-center text-xs font-bold text-slate-900 transition duration-300 hover:bg-slate-50"
         >
           Continue shopping
         </Link>

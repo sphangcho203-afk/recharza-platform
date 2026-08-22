@@ -21,11 +21,13 @@ export function StorefrontHero({
     <section className="px-4 pb-6 pt-5 sm:px-6 sm:pb-8 sm:pt-6 lg:px-8">
       <div className="mx-auto max-w-[1240px]">
         <PromoCarousel />
-        <div className="mt-3 grid grid-cols-3 overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl">
-          {trustPoints.map((point, index) => (
-            <div key={point.label} className={`flex min-h-14 items-center justify-center gap-2 px-3 text-center text-[10px] font-bold text-slate-400 sm:text-xs ${index > 0 ? "border-l border-white/5" : ""}`}>
-              <StorefrontIcon name={point.icon} className="h-4 w-4 shrink-0 text-violet-400" />
-              <span>{point.label}</span>
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          {trustPoints.map((point) => (
+            <div key={point.label} className="flex min-h-[4.5rem] flex-col items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-white p-2 text-center shadow-sm transition-all duration-300 hover:border-violet-200 hover:shadow-md sm:flex-row sm:gap-2.5 sm:p-3">
+              <div className="grid h-8 w-8 place-items-center rounded-xl bg-violet-50 text-violet-600 shadow-sm ring-1 ring-violet-100/50">
+                <StorefrontIcon name={point.icon} className="h-4 w-4 shrink-0" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-slate-600 sm:text-[11px]">{point.label}</span>
             </div>
           ))}
         </div>

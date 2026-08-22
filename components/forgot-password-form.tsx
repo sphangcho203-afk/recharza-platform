@@ -27,26 +27,26 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <section className="mx-auto max-w-xl overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md" aria-labelledby="forgot-password-heading">
-      <div className="border-b border-white/5 bg-white/5 p-8 sm:p-10">
+    <section className="mx-auto max-w-xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-xl" aria-labelledby="forgot-password-heading">
+      <div className="border-b border-slate-100 bg-slate-50/50 p-8 sm:p-10">
         <div className="flex items-center gap-4">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-white/10 bg-white/5 shadow-2xl">
+          <span className="grid h-12 w-12 place-items-center rounded-2xl border border-slate-200 bg-white shadow-sm">
             <RecharzaMark compact />
           </span>
-          <p className="text-sm font-bold tracking-tight text-white uppercase tracking-widest">Recharza account recovery</p>
+          <p className="text-sm font-bold tracking-tight text-slate-900 uppercase tracking-widest">Recharza account recovery</p>
         </div>
-        <p className="mt-10 text-[10px] font-bold uppercase tracking-widest text-violet-400">Reset access</p>
-        <h1 id="forgot-password-heading" className="mt-2 text-4xl font-bold tracking-tight text-white">Get back into your account.</h1>
-        <p className="mt-4 text-sm font-medium leading-relaxed text-slate-400">Enter the email connected to Recharza. If we find an account, we’ll send a single-use reset link that expires after 20 minutes.</p>
+        <p className="mt-10 text-[10px] font-bold uppercase tracking-widest text-violet-600">Reset access</p>
+        <h1 id="forgot-password-heading" className="mt-2 text-4xl font-bold tracking-tight text-slate-900">Get back into your account.</h1>
+        <p className="mt-4 text-sm font-medium leading-relaxed text-slate-500">Enter the email connected to Recharza. If we find an account, we’ll send a single-use reset link that expires after 20 minutes.</p>
       </div>
 
       <form onSubmit={submit} className="p-8 sm:p-10">
-        <label htmlFor="recovery-email" className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Email address
-          <input id="recovery-email" required aria-required="true" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" className="mt-3 min-h-14 w-full rounded-2xl border border-white/10 bg-white/5 px-5 text-base font-bold text-white outline-none transition-all focus:border-violet-500 focus:ring-4 focus:ring-violet-500/20 placeholder:text-slate-600" />
+        <label htmlFor="recovery-email" className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Email address
+          <input id="recovery-email" required aria-required="true" type="email" autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="you@example.com" className="mt-3 min-h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-base font-bold text-slate-900 outline-none transition-all focus:border-violet-600 focus:bg-white focus:ring-4 focus:ring-violet-600/10 placeholder:text-slate-400 shadow-inner" />
         </label>
-        <button disabled={submitting} className="mt-8 min-h-14 w-full rounded-2xl bg-violet-600 px-6 text-sm font-bold uppercase tracking-widest text-white shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-all hover:-translate-y-1 hover:bg-violet-700 hover:shadow-[0_0_30px_rgba(124,58,237,0.6)] active:translate-y-0 disabled:cursor-wait disabled:opacity-60">{submitting ? "Sending reset link…" : "Send reset link"}</button>
-        {message ? <p role="status" aria-live="polite" className="mt-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-4 text-sm font-bold leading-relaxed text-emerald-400">{message}</p> : null}
-        <Link href="/account" className="mt-8 block text-center text-xs font-bold uppercase tracking-widest text-violet-400 transition-all hover:text-violet-300">Return to account access</Link>
+        <button disabled={submitting} className="mt-8 min-h-14 w-full rounded-2xl bg-violet-600 px-6 text-sm font-bold uppercase tracking-widest text-white shadow-md transition-all hover:-translate-y-1 hover:bg-violet-700 active:translate-y-0 disabled:cursor-wait disabled:opacity-60">{submitting ? "Sending reset link…" : "Send reset link"}</button>
+        {message ? <p role="status" aria-live="polite" className="mt-6 rounded-2xl border border-emerald-100 bg-emerald-50 px-5 py-4 text-sm font-bold leading-relaxed text-emerald-700">{message}</p> : null}
+        <Link href="/account" className="mt-8 block text-center text-xs font-bold uppercase tracking-widest text-violet-600 transition-all hover:text-violet-700">Return to account access</Link>
       </form>
     </section>
   );

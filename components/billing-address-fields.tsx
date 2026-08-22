@@ -31,7 +31,7 @@ export const initialBillingForm: BillingFormState = {
 };
 
 const inputClassName =
-  "mt-2 min-h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-base font-normal text-white outline-none transition placeholder:text-slate-500 focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20";
+  "mt-2 min-h-12 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-base font-normal text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-600 focus:ring-2 focus:ring-violet-600/10";
 
 export function BillingAddressFields({
   value,
@@ -56,38 +56,38 @@ export function BillingAddressFields({
   }
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md">
-      <div className="grid border-b border-white/5 lg:grid-cols-[18rem_minmax(0,1fr)]">
-        <div className="border-b border-white/5 bg-white/5 p-5 lg:border-b-0 lg:border-r lg:border-white/5 lg:p-6">
+    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
+      <div className="grid border-b border-slate-100 lg:grid-cols-[18rem_minmax(0,1fr)]">
+        <div className="border-b border-slate-100 bg-slate-50/50 p-5 lg:border-b-0 lg:border-r lg:border-slate-100 lg:p-6">
           <div className="flex items-center gap-3">
-            <span className="grid h-9 w-9 place-items-center rounded-lg border border-violet-500/30 bg-violet-500/10 text-sm font-bold text-violet-400 shadow-[0_0_10px_rgba(124,58,237,0.2)]">
+            <span className="grid h-9 w-9 place-items-center rounded-lg border border-violet-100 bg-violet-50 text-sm font-bold text-violet-600 shadow-sm">
               {stepNumber}
             </span>
-            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-400">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-violet-600">
               {stepLabel}
             </p>
           </div>
-          <h2 className="mt-5 text-2xl font-bold tracking-tight text-white">
+          <h2 className="mt-5 text-2xl font-bold tracking-tight text-slate-900">
             Billing and payment identity
           </h2>
-          <p className="mt-3 text-sm leading-6 text-slate-400">
+          <p className="mt-3 text-sm leading-6 text-slate-500 font-medium">
             Used for payment processing, receipts, and support verification. The selected game market controls the storefront currency.
           </p>
-          <div className="mt-5 rounded-lg border border-white/10 bg-white/5 px-3 py-3 text-xs leading-5 text-slate-400">
+          <div className="mt-5 rounded-lg border border-slate-200 bg-white px-3 py-3 text-xs leading-5 text-slate-500 font-medium">
             Billing details never change the selected game-account market.
           </div>
         </div>
 
         <div className="flex items-center justify-between gap-4 p-5 lg:p-6">
           <div>
-            <p className="text-sm font-bold text-white">Complete billing details</p>
-            <p className="mt-1 text-xs leading-5 text-slate-400">
+            <p className="text-sm font-bold text-slate-900">Complete billing details</p>
+            <p className="mt-1 text-xs leading-5 text-slate-400 font-medium">
               Keep the information consistent with the payment account.
             </p>
           </div>
           <span
             className={`shrink-0 rounded-full border px-3 py-1 text-[11px] font-bold ${
-              "border-emerald-500/20 bg-emerald-500/10 text-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.2)]"
+              "border-emerald-100 bg-emerald-50 text-emerald-600 shadow-sm"
             }`}
           >
             {fixedCurrency} market pricing
@@ -97,10 +97,10 @@ export function BillingAddressFields({
 
       <div className="grid gap-7 p-5 sm:p-6 lg:grid-cols-2 lg:p-7">
         <fieldset className="grid content-start gap-4">
-          <legend className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-violet-400">
+          <legend className="mb-1 text-xs font-bold uppercase tracking-[0.16em] text-violet-600">
             Contact and receipt
           </legend>
-          <label className="text-sm font-bold text-white">
+          <label className="text-sm font-bold text-slate-900">
             Full billing name
             <input
               required
@@ -112,7 +112,7 @@ export function BillingAddressFields({
               placeholder="Name on the payment account"
             />
           </label>
-          <label className="text-sm font-bold text-white">
+          <label className="text-sm font-bold text-slate-900">
             Receipt email
             <input
               required
@@ -125,7 +125,7 @@ export function BillingAddressFields({
               placeholder="billing@example.com"
             />
           </label>
-          <label className="text-sm font-bold text-white">
+          <label className="text-sm font-bold text-slate-900">
             Phone number
             <input
               required
@@ -139,7 +139,7 @@ export function BillingAddressFields({
             />
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-bold text-white">
+            <label className="text-sm font-bold text-slate-900">
               Country
               <CountryPicker
                 value={value.countryCode}
@@ -154,19 +154,19 @@ export function BillingAddressFields({
 
               />
             </label>
-            <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white">
-              <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Market currency</span>
-              <span className="mt-1 block text-base font-bold text-white">{fixedCurrency}</span>
-              <span className="mt-1 block text-xs leading-5 text-slate-400">Prices are fixed by the selected game market. Billing country does not change them.</span>
+            <div className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-900">
+              <span className="block text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Market currency</span>
+              <span className="mt-1 block text-base font-bold text-slate-900">{fixedCurrency}</span>
+              <span className="mt-1 block text-xs leading-5 text-slate-500 font-medium">Prices are fixed by the selected game market. Billing country does not change them.</span>
             </div>
           </div>
         </fieldset>
 
-        <fieldset className="grid content-start gap-4 rounded-xl border border-white/5 bg-white/5 p-4 sm:p-5">
-          <legend className="px-2 text-xs font-bold uppercase tracking-[0.16em] text-violet-400">
+        <fieldset className="grid content-start gap-4 rounded-xl border border-slate-100 bg-slate-50/50 p-4 sm:p-5">
+          <legend className="px-2 text-xs font-bold uppercase tracking-[0.16em] text-violet-600">
             Billing address
           </legend>
-          <label className="text-sm font-bold text-white">
+          <label className="text-sm font-bold text-slate-900">
             Address line 1
             <input
               required
@@ -178,8 +178,8 @@ export function BillingAddressFields({
               placeholder="House, building and street"
             />
           </label>
-          <label className="text-sm font-bold text-white">
-            Address line 2 <span className="font-normal text-slate-500">(optional)</span>
+          <label className="text-sm font-bold text-slate-900">
+            Address line 2 <span className="font-normal text-slate-400">(optional)</span>
             <input
               autoComplete="address-line2"
               maxLength={180}
@@ -190,7 +190,7 @@ export function BillingAddressFields({
             />
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-bold text-white">
+            <label className="text-sm font-bold text-slate-900">
               City
               <input
                 required
@@ -201,7 +201,7 @@ export function BillingAddressFields({
                 className={inputClassName}
               />
             </label>
-            <label className="text-sm font-bold text-white">
+            <label className="text-sm font-bold text-slate-900">
               State or province
               <select
                 required
@@ -210,14 +210,14 @@ export function BillingAddressFields({
                 onChange={(event) => update("state", event.target.value)}
                 className={inputClassName}
               >
-                {states.length ? <option value="" className="bg-[#1a1d26]">Choose a state or province</option> : <option value="N/A" className="bg-[#1a1d26]">Not applicable</option>}
+                {states.length ? <option value="" className="bg-white">Choose a state or province</option> : <option value="N/A" className="bg-white">Not applicable</option>}
                 {states.map((state) => (
-                  <option key={`${state.countryCode}-${state.isoCode}`} value={state.name} className="bg-[#1a1d26]">{state.name}</option>
+                  <option key={`${state.countryCode}-${state.isoCode}`} value={state.name} className="bg-white">{state.name}</option>
                 ))}
               </select>
             </label>
           </div>
-          <label className="text-sm font-bold text-white">
+          <label className="text-sm font-bold text-slate-900">
             Postal code
             <input
               required
