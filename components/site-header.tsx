@@ -23,7 +23,7 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
   const storefront = content ?? await getPublishedStorefrontContent();
 
   return (
-    <header className="site-header sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-2xl">
+    <header className="site-header sticky top-0 z-50 border-b border-white/10 bg-[#0d0f16]/90 backdrop-blur-2xl shadow-2xl">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
         <div className="site-header-main">
           <div className="flex min-w-0 items-center gap-2.5">
@@ -52,7 +52,7 @@ export async function SiteHeader({ content }: SiteHeaderProps = {}) {
         </div>
 
         {storefront.navigation.visibleIds.length > 0 ? (
-          <Suspense fallback={<div aria-hidden="true" className="h-10 border-t border-slate-100" />}>
+          <Suspense fallback={<div aria-hidden="true" className="h-10 border-t border-white/5" />}>
             <StorefrontCategoryNav />
           </Suspense>
         ) : null}

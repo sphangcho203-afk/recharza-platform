@@ -71,44 +71,44 @@ export default async function AdminPage() {
   const plannedCount = modules.filter((module) => module.state === "planned").length;
 
   return (
-    <main className="min-h-screen w-full overflow-x-clip bg-white text-slate-900">
+    <main className="min-h-screen w-full overflow-x-clip bg-[#06070d] text-white">
       <InternalHeader
         workspace="Admin"
         role={session.customer.role}
         email={session.customer.email}
       />
 
-      <div className="grid min-h-[calc(100vh-4rem)] w-full min-w-0 lg:grid-cols-[16rem_minmax(0,1fr)]">
+      <div className="grid min-h-[calc(100vh-5rem)] w-full min-w-0 lg:grid-cols-[18rem_minmax(0,1fr)]">
         <WorkspaceNavigation workspace="admin" activeId="overview" />
 
         <div className="min-w-0 w-full px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
           <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-400">
                 Private whole-store administration
               </p>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Recharza command authority
               </h1>
-              <p className="mt-2 max-w-4xl text-sm font-medium leading-6 text-slate-500">
+              <p className="mt-2 max-w-4xl text-sm font-medium leading-6 text-slate-400">
                 Control and inspect the storefront, customers, staff, permissions, orders,
                 products, pricing, payments, suppliers, fulfilment, media, content, policies,
                 sessions, audit evidence, and every protected interface from one
                 administration system.
               </p>
             </div>
-            <div className="grid w-fit grid-cols-3 gap-2 rounded-xl border border-slate-200 bg-white p-2 text-center shadow-sm">
-              <div className="rounded-lg bg-emerald-50 px-3 py-2 border border-emerald-100">
-                <p className="text-lg font-bold text-emerald-700">{liveCount}</p>
-                <p className="text-[9px] font-bold uppercase tracking-wider text-emerald-600">Live</p>
+            <div className="grid w-fit grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-white/5 p-2 text-center shadow-2xl backdrop-blur-md">
+              <div className="rounded-xl bg-emerald-500/10 px-3 py-2 border border-emerald-500/20">
+                <p className="text-lg font-bold text-emerald-400">{liveCount}</p>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-emerald-500">Live</p>
               </div>
-              <div className="rounded-lg bg-cyan-50 px-3 py-2 border border-cyan-100">
-                <p className="text-lg font-bold text-cyan-700">{betaCount}</p>
-                <p className="text-[9px] font-bold uppercase tracking-wider text-cyan-600">Beta</p>
+              <div className="rounded-xl bg-cyan-500/10 px-3 py-2 border border-cyan-500/20">
+                <p className="text-lg font-bold text-cyan-400">{betaCount}</p>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-cyan-500">Beta</p>
               </div>
-              <div className="rounded-lg bg-amber-50 px-3 py-2 border border-amber-100">
-                <p className="text-lg font-bold text-amber-700">{plannedCount}</p>
-                <p className="text-[9px] font-bold uppercase tracking-wider text-amber-600">Planned</p>
+              <div className="rounded-xl bg-amber-500/10 px-3 py-2 border border-amber-500/20">
+                <p className="text-lg font-bold text-amber-400">{plannedCount}</p>
+                <p className="text-[9px] font-bold uppercase tracking-wider text-amber-500">Planned</p>
               </div>
             </div>
           </section>
@@ -150,13 +150,13 @@ export default async function AdminPage() {
               <a
                 key={source.label}
                 href={source.href}
-                className="group rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/10"
+                className="group rounded-2xl border border-white/10 bg-white/5 p-4 shadow-2xl transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-500/50 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/20"
               >
                 <span className="flex items-center justify-between gap-3">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">{source.label}</span>
-                  <span aria-hidden="true" className="text-slate-300 transition group-hover:text-violet-600">↗</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">{source.label}</span>
+                  <span aria-hidden="true" className="text-slate-600 transition group-hover:text-violet-400">↗</span>
                 </span>
-                <span className="mt-3 block text-sm font-bold text-slate-900">{source.value}</span>
+                <span className="mt-3 block text-sm font-bold text-white">{source.value}</span>
                 <span className="mt-1 block text-xs font-medium text-slate-500">{source.note}</span>
               </a>
             ))}
@@ -174,11 +174,11 @@ export default async function AdminPage() {
 
           <section id="overview" className="mt-10 scroll-mt-24">
             <div className="grid gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-              <article className="system-panel p-5 border border-slate-200 bg-white shadow-sm rounded-2xl">
+              <article className="system-panel p-5 border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md rounded-[2.5rem]">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-lg font-bold text-slate-900">Platform control map</h2>
-                    <p className="mt-1 text-sm font-medium text-slate-500">
+                    <h2 className="text-lg font-bold text-white">Platform control map</h2>
+                    <p className="mt-1 text-sm font-medium text-slate-400">
                       Every admin capability is registered with an honest lifecycle state.
                     </p>
                   </div>
@@ -188,10 +188,10 @@ export default async function AdminPage() {
                   {modules.map((module) => (
                     <div
                       key={module.id}
-                      className="rounded-xl border border-slate-100 bg-slate-50/50 p-3"
+                      className="rounded-2xl border border-white/5 bg-white/2 p-3"
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-bold text-slate-900">{module.label}</p>
+                        <p className="text-sm font-bold text-white">{module.label}</p>
                         <ModuleStateBadge state={module.state} />
                       </div>
                       <p className="mt-2 text-xs font-medium leading-5 text-slate-500">
@@ -202,9 +202,9 @@ export default async function AdminPage() {
                 </div>
               </article>
 
-              <article className="system-panel p-5 border border-slate-200 bg-white shadow-sm rounded-2xl">
-                <h2 className="text-lg font-bold text-slate-900">Registered control surfaces</h2>
-                <p className="mt-1 text-sm font-medium text-slate-500">
+              <article className="system-panel p-5 border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md rounded-[2.5rem]">
+                <h2 className="text-lg font-bold text-white">Registered control surfaces</h2>
+                <p className="mt-1 text-sm font-medium text-slate-400">
                   Live modules open real controls. Planned modules remain disabled until
                   persistence, authorization, audit, and recovery behavior exist.
                 </p>
@@ -216,10 +216,10 @@ export default async function AdminPage() {
                         key={module.id}
                         href={interactive ? module.href : undefined}
                         aria-disabled={!interactive}
-                        className={`grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-xl border px-3 py-3 text-sm font-bold transition-all duration-300 shadow-sm ${
+                        className={`grid min-h-12 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border px-3 py-3 text-sm font-bold transition-all duration-300 shadow-2xl ${
                           interactive
-                            ? "border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700"
-                            : "cursor-not-allowed border-slate-100 bg-slate-50/50 text-slate-400"
+                            ? "border-white/10 bg-white/5 text-slate-400 hover:border-violet-500/50 hover:bg-white/10 hover:text-white"
+                            : "cursor-not-allowed border-white/5 bg-white/2 text-slate-600"
                         }`}
                       >
                         <span>{module.label}</span>
@@ -234,11 +234,11 @@ export default async function AdminPage() {
 
           <section id="interfaces" className="mt-10 scroll-mt-24">
             <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-600">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-400">
                 Whole-platform access
               </p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Website interface map</h2>
-              <p className="mt-2 text-sm font-medium text-slate-500">
+              <h2 className="mt-1 text-2xl font-bold text-white">Website interface map</h2>
+              <p className="mt-2 text-sm font-medium text-slate-400">
                 Open every public, customer, staff, administrative, tracking, and regional
                 version without exposing internal navigation to customers.
               </p>
@@ -248,11 +248,11 @@ export default async function AdminPage() {
 
           <section id="catalogue" className="mt-10 scroll-mt-24">
             <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-fuchsia-600">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-fuchsia-400">
                 Games, packages, icons, and media
               </p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Catalogue control</h2>
-              <p className="mt-2 text-sm font-medium text-slate-500">
+              <h2 className="mt-1 text-2xl font-bold text-white">Catalogue control</h2>
+              <p className="mt-2 text-sm font-medium text-slate-400">
                 Publish or pause supplier products and manage product names or reviewed
                 image sources with a complete audit trail.
               </p>
@@ -266,20 +266,20 @@ export default async function AdminPage() {
 
           <section id="pricing" className="mt-10 scroll-mt-24">
             <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-600">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-400">
                 Catalogue and pricing
               </p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Supplier and pricing controls</h2>
+              <h2 className="mt-1 text-2xl font-bold text-white">Supplier and pricing controls</h2>
             </div>
             <SupplierPricingConsole />
           </section>
 
           <section id="orders" className="mt-10 scroll-mt-24">
             <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-600">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-400">
                 Order operations
               </p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Order control</h2>
+              <h2 className="mt-1 text-2xl font-bold text-white">Order control</h2>
             </div>
             <OperatorConsole />
           </section>

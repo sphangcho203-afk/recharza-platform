@@ -12,30 +12,30 @@ export const metadata: Metadata = {
 
 export default function OrderLookupPage() {
   return (
-    <main className="min-h-screen overflow-hidden bg-white text-slate-900">
+    <main className="min-h-screen overflow-hidden bg-[#06070d] text-white">
       <SiteHeader />
 
-      <section className="relative isolate border-b border-slate-100">
+      <section className="relative isolate border-b border-white/5 bg-white/2 backdrop-blur-md">
         <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="orb-drift absolute left-1/3 top-[-14rem] h-[30rem] w-[30rem] rounded-full bg-violet-100 blur-[120px]" />
-          <div className="hero-grid absolute inset-0 opacity-10" />
+          <div className="orb-drift absolute left-1/3 top-[-14rem] h-[30rem] w-[30rem] rounded-full bg-violet-500/10 blur-[120px]" />
+          <div className="hero-grid absolute inset-0 opacity-5" />
         </div>
 
         <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 lg:py-20">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-bold text-violet-600 transition hover:text-violet-700"
+            className="inline-flex items-center gap-2 text-sm font-bold text-violet-400 transition hover:text-white"
           >
             <span aria-hidden="true">←</span>
             Back to storefront
           </Link>
-          <p className="mt-8 text-xs font-bold uppercase tracking-[0.2em] text-violet-600">
+          <p className="mt-8 text-xs font-bold uppercase tracking-[0.2em] text-violet-400">
             Customer order access
           </p>
-          <h1 className="mt-3 max-w-4xl text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+          <h1 className="mt-3 max-w-4xl text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
             Find the order without exposing the customer.
           </h1>
-          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-500 font-medium">
+          <p className="mt-5 max-w-3xl text-base leading-8 text-slate-400 font-medium">
             Recharza separates the public order reference from the private tracking credential. This
             launcher sends both to the existing secure tracking console without placing the token in
             the URL.

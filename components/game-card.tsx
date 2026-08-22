@@ -45,12 +45,12 @@ export function GameCard({
   const accent = game.accent ?? "#9b7cff";
   const card = (
     <article
-      className={`recharza-premium-card group relative h-full overflow-hidden rounded-[1.5rem] bg-white p-2.5 shadow-[0_8px_30px_-4px_rgba(0,0,0,0.04),0_0_0_1px_rgba(15,23,42,0.03)] transition-all duration-500 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08),0_0_0_1px_rgba(124,58,237,0.08)] hover:-translate-y-1.5 ${
+      className={`recharza-premium-card group relative h-full overflow-hidden rounded-[1.5rem] bg-[#1a1d26] p-2.5 shadow-2xl ring-1 ring-white/5 transition-all duration-500 hover:shadow-[0_0_40px_rgba(124,58,237,0.15)] hover:ring-white/10 hover:-translate-y-1.5 ${
         interactive ? "" : "opacity-60"
       }`}
     >
       {/* Artwork container with improved shape and foundation */}
-      <div className="relative aspect-square overflow-hidden rounded-[1.1rem] bg-slate-50 ring-1 ring-slate-900/5">
+      <div className="relative aspect-square overflow-hidden rounded-[1.1rem] bg-black ring-1 ring-white/5">
         <StorefrontArtwork
           artworkKey={game.artworkKey}
           sources={preferredArtworkSources(game)}
@@ -73,10 +73,10 @@ export function GameCard({
       <div className="relative flex flex-col px-2 pb-2.5 pt-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[9px] font-black uppercase tracking-[0.25em] text-violet-600/80">{category}</p>
-            <h3 className="mt-1 truncate text-[1rem] font-black leading-tight tracking-tight text-slate-900">{title}</h3>
+            <p className="text-[9px] font-black uppercase tracking-[0.25em] text-violet-400/80">{category}</p>
+            <h3 className="mt-1 truncate text-[1rem] font-black leading-tight tracking-tight text-white">{title}</h3>
           </div>
-          <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-400 ring-1 ring-slate-200/60 transition-all duration-500 cubic-bezier(0.23, 1, 0.32, 1) group-hover:bg-violet-600 group-hover:text-white group-hover:ring-violet-600 group-hover:shadow-[0_8px_20px_rgba(124,58,237,0.3)] group-hover:rotate-[360deg]">
+          <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/5 text-slate-400 ring-1 ring-white/10 transition-all duration-500 cubic-bezier(0.23, 1, 0.32, 1) group-hover:bg-violet-600 group-hover:text-white group-hover:ring-violet-600 group-hover:shadow-[0_0_20px_rgba(124,58,237,0.5)] group-hover:rotate-[360deg]">
             <StorefrontIcon name="arrow" className="h-3.5 w-3.5" />
           </div>
         </div>
@@ -84,13 +84,13 @@ export function GameCard({
         <div className="mt-3.5 flex items-end justify-between gap-2">
           {price ? (
             <div className="flex flex-col gap-0.5">
-              <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none">From</span>
-              <DisplayPrice amountInrMinor={price} className="text-[0.92rem] font-black text-violet-600 leading-none" />
+              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest leading-none">From</span>
+              <DisplayPrice amountInrMinor={price} className="text-[0.92rem] font-black text-violet-400 leading-none" />
             </div>
           ) : (
-            <div className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 ring-1 ring-emerald-500/10">
-              <div className="h-1 w-1 rounded-full bg-emerald-500" />
-              <span className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">Verified</span>
+            <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2 py-0.5 ring-1 ring-emerald-500/20">
+              <div className="h-1 w-1 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
+              <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Verified</span>
             </div>
           )}
         </div>

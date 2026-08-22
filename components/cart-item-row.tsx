@@ -60,13 +60,13 @@ export function CartItemRow({
 
   return (
     <article
-      className={`rounded-xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm transition-all duration-300 hover:shadow-md ${
+      className={`rounded-xl border border-white/10 bg-white/5 p-4 sm:p-5 shadow-2xl backdrop-blur-md transition-all duration-300 hover:border-white/20 hover:shadow-[0_0_30px_rgba(124,58,237,0.1)] ${
         busy ? "opacity-60" : ""
       }`}
       aria-busy={busy}
     >
       <div className="flex gap-4">
-        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-slate-100 bg-slate-50 shadow-inner">
+        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-white/5 bg-white/5 shadow-inner">
           <ResilientImage
             sources={media.sources}
             alt={media.alt}
@@ -81,17 +81,17 @@ export function CartItemRow({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-500">
+              <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
                 {itemContextLabel(item)}
               </p>
-              <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-5 text-slate-900 sm:text-[15px] break-words">
+              <h3 className="mt-1 line-clamp-2 text-sm font-semibold leading-5 text-white sm:text-[15px] break-words">
                 {item.package.name}
               </h3>
-              <p className="mt-1 text-xs font-bold text-slate-500">
+              <p className="mt-1 text-xs font-bold text-slate-400">
                 <DisplayPrice amountInrMinor={item.package.amountInPaise} />{" "}
-                <span className="font-medium text-slate-600">each</span>
+                <span className="font-medium text-slate-500">each</span>
               </p>
-              <div className="mt-2 text-[11px] font-bold text-emerald-600 leading-normal break-words">
+              <div className="mt-2 text-[11px] font-bold text-emerald-400 leading-normal break-words">
                 Delivers {deliveredAmountLabel(item.package.name)}
                 {item.quantity > 1 ? ` · ${item.quantity} packages` : ""}
               </div>
@@ -101,7 +101,7 @@ export function CartItemRow({
                 disabled={busy}
                 onClick={() => onRemove(item.id)}
                 aria-label={`Remove ${item.package.name} from cart`}
-                className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-[11px] font-bold text-slate-600 transition duration-300 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:cursor-not-allowed disabled:opacity-50 shadow-sm sm:min-h-9 sm:px-2.5"
+                className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 text-[11px] font-bold text-slate-400 transition duration-300 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-400 disabled:cursor-not-allowed disabled:opacity-50 shadow-2xl sm:min-h-9 sm:px-2.5"
               >
               <svg
                 aria-hidden="true"
@@ -126,14 +126,14 @@ export function CartItemRow({
               </label>
               <div
                 aria-labelledby={`qty-${item.id}`}
-                className="flex items-center rounded-lg border border-slate-200 bg-slate-50 shadow-inner"
+                className="flex items-center rounded-lg border border-white/10 bg-white/5 shadow-inner"
               >
                 <button
                   type="button"
                   disabled={busy || item.quantity <= 1}
                   onClick={() => onQuantityChange(item.id, item.quantity - 1)}
                   aria-label={`Decrease quantity of ${item.package.name}`}
-                  className="grid min-h-11 min-w-11 place-items-center rounded-l-lg text-slate-500 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35 sm:min-h-9 sm:min-w-9"
+                  className="grid min-h-11 min-w-11 place-items-center rounded-l-lg text-slate-400 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 sm:min-h-9 sm:min-w-9"
                 >
                   <svg
                     aria-hidden="true"
@@ -147,7 +147,7 @@ export function CartItemRow({
                     <path d="M5.5 12h13" />
                   </svg>
                 </button>
-                <span className="min-w-8 text-center text-sm font-bold text-slate-900">
+                <span className="min-w-8 text-center text-sm font-bold text-white">
                   {item.quantity}
                 </span>
                 <button
@@ -155,7 +155,7 @@ export function CartItemRow({
                   disabled={busy || item.quantity >= CART_MAX_QUANTITY}
                   onClick={() => onQuantityChange(item.id, item.quantity + 1)}
                   aria-label={`Increase quantity of ${item.package.name}`}
-                  className="grid min-h-11 min-w-11 place-items-center rounded-r-lg text-slate-500 transition hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-35 sm:min-h-9 sm:min-w-9"
+                  className="grid min-h-11 min-w-11 place-items-center rounded-r-lg text-slate-400 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-35 sm:min-h-9 sm:min-w-9"
                 >
                   <svg
                     aria-hidden="true"
@@ -170,7 +170,7 @@ export function CartItemRow({
                   </svg>
                 </button>
               </div>
-              <span className="text-[11px] text-slate-600">
+              <span className="text-[11px] text-slate-500">
                 Max {CART_MAX_QUANTITY}
               </span>
             </div>
@@ -180,7 +180,7 @@ export function CartItemRow({
                 Line total
                 <strong
                   aria-live="polite"
-                  className="block text-base font-bold text-slate-900"
+                  className="block text-base font-bold text-white"
                 >
                   <DisplayPrice amountInrMinor={lineTotalInPaise(item)} />
                 </strong>

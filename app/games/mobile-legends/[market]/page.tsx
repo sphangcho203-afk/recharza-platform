@@ -87,21 +87,21 @@ export default async function MobileLegendsMarketPage({
   }
 
   return (
-    <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-slate-900">
+    <main className="storefront-page recharza-atmo-v2 recharza-atmo-games min-h-screen overflow-x-clip text-white">
       <SiteHeader />
 
-      <section className="recharza-atmosphere-game border-b border-slate-100 bg-slate-50/30 px-4 py-5 sm:px-6 lg:px-8">
+      <section className="recharza-atmosphere-game border-b border-white/5 bg-white/2 px-4 py-5 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1240px]">
           <StorefrontBackButton />
-          <nav className="recharza-breadcrumb mb-4 mt-4" aria-label="Page path">
-            <Link href="/">Home</Link>
+          <nav className="recharza-breadcrumb mb-4 mt-4 text-slate-400" aria-label="Page path">
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
             <span aria-hidden="true">/</span>
-            <Link href="/games/mobile-legends">Mobile Legends</Link>
+            <Link href="/games/mobile-legends" className="hover:text-white transition-colors">Mobile Legends</Link>
             <span aria-hidden="true">/</span>
-            <span aria-current="page">{selectedMarket.label}</span>
+            <span aria-current="page" className="text-white">{selectedMarket.label}</span>
           </nav>
 
-          <div className="flex flex-col gap-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex flex-col gap-6 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md p-5 shadow-2xl sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div className="flex min-w-0 items-center gap-5 sm:gap-6">
               <div
                 className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-100 shadow-sm sm:h-20 sm:w-20"
@@ -120,23 +120,23 @@ export default async function MobileLegendsMarketPage({
               </div>
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Instant delivery</p>
-                <h1 className="mt-1 text-xl font-bold tracking-tight text-slate-900 sm:text-2xl lg:text-3xl leading-tight">
-                  {selectedMarket.label} · {regionalGame.title} Top Up
+                <h1 className="mt-1 text-xl font-bold tracking-tight text-white sm:text-2xl lg:text-3xl leading-tight">
+                  {regionalGame.title} Top Up
                 </h1>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 shadow-sm">
-                    <span className="text-[10px] font-bold text-slate-700">{selectedMarket.flag} {selectedMarket.label}</span>
-                    <span className="h-1 w-1 rounded-full bg-slate-300" />
-                    <span className="text-[10px] font-bold text-slate-700">{packages.length} offers</span>
-                    <span className="h-1 w-1 rounded-full bg-slate-300" />
-                    <span className="text-[10px] font-bold text-slate-700">{selectedMarket.defaultCurrency}</span>
+                  <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-1 shadow-sm">
+                    <span className="text-[10px] font-bold text-slate-300">{selectedMarket.flag} {selectedMarket.label}</span>
+                    <span className="h-1 w-1 rounded-full bg-white/20" />
+                    <span className="text-[10px] font-bold text-slate-300">{packages.length} offers</span>
+                    <span className="h-1 w-1 rounded-full bg-white/20" />
+                    <span className="text-[10px] font-bold text-slate-300">{selectedMarket.defaultCurrency}</span>
                   </div>
-                  <div className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1 shadow-sm">
-                    <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-600">
+                  <div className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 shadow-sm">
+                    <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
                       Verified
                     </span>
-                    <span className="h-1 w-1 rounded-full bg-slate-200" />
-                    <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-600">
+                    <span className="h-1 w-1 rounded-full bg-white/10" />
+                    <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
                       Support
                     </span>
                   </div>
@@ -144,7 +144,7 @@ export default async function MobileLegendsMarketPage({
               </div>
             </div>
 
-            <div className="relative hidden h-20 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white md:block shadow-sm">
+            <div className="relative hidden h-20 w-44 overflow-hidden rounded-xl border border-white/10 bg-white/5 md:block shadow-2xl">
               <ResilientImage
                 sources={gameArtwork ? [gameArtwork.url, ...regionalGame.artworkSources] : regionalGame.artworkSources}
                 alt={gameArtwork?.altText ?? regionalGame.artworkAlt}
@@ -160,20 +160,20 @@ export default async function MobileLegendsMarketPage({
       </section>
 
       <section className="mx-auto max-w-[1240px] px-4 py-6 sm:px-6 lg:px-8 lg:py-7">
-        <div className="mb-6 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 sm:p-5">
+        <div className="mb-6 rounded-2xl border border-white/5 bg-white/2 p-4 sm:p-5">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-3">
-              <StorefrontIcon name="globe" className="h-4 w-4 shrink-0 text-slate-400" />
-              <p className="text-[11px] font-medium leading-relaxed text-slate-600">
-                <strong className="font-bold text-slate-900">{selectedMarket.flag} {selectedMarket.label}:</strong> {selectedMarket.note}
+              <StorefrontIcon name="globe" className="h-4 w-4 shrink-0 text-slate-500" />
+              <p className="text-[11px] font-medium leading-relaxed text-slate-400">
+                <strong className="font-bold text-white">{selectedMarket.flag} {selectedMarket.label}:</strong> {selectedMarket.note}
               </p>
             </div>
             {regionalGame.deliveryCoverage && (
-              <div className="flex items-center justify-between gap-4 border-t border-slate-200 pt-3 sm:border-none sm:pt-0">
-                <p className="text-[11px] font-bold text-slate-700 underline decoration-emerald-500/30 decoration-2 underline-offset-4">{regionalGame.deliveryCoverage.headline}</p>
-                <div className="flex items-center gap-1.5 rounded-lg border border-emerald-100 bg-emerald-50 px-2 py-1">
-                  <StorefrontIcon name="shield" className="h-3.5 w-3.5 text-emerald-600" />
-                  <span className="text-[10px] font-bold text-emerald-700">Secure Checkout</span>
+              <div className="flex items-center justify-between gap-4 border-t border-white/10 pt-3 sm:border-none sm:pt-0">
+                <p className="text-[11px] font-bold text-slate-300 underline decoration-emerald-500/50 decoration-2 underline-offset-4">{regionalGame.deliveryCoverage.headline}</p>
+                <div className="flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2 py-1">
+                  <StorefrontIcon name="shield" className="h-3.5 w-3.5 text-emerald-400" />
+                  <span className="text-[10px] font-bold text-emerald-400">Secure Checkout</span>
                 </div>
               </div>
             )}

@@ -46,26 +46,26 @@ export default async function StaffPage() {
   const modules = getVisibleModules(staffModules);
 
   return (
-    <main className="min-h-screen w-full overflow-x-clip bg-white text-slate-900">
+    <main className="min-h-screen w-full overflow-x-clip bg-[#06070d] text-white">
       <InternalHeader
         workspace="Staff"
         role={session.customer.role}
         email={session.customer.email}
       />
 
-      <div className="grid min-h-[calc(100vh-4rem)] w-full min-w-0 lg:grid-cols-[16rem_minmax(0,1fr)]">
+      <div className="grid min-h-[calc(100vh-5rem)] w-full min-w-0 lg:grid-cols-[18rem_minmax(0,1fr)]">
         <WorkspaceNavigation workspace="staff" activeId="queue" />
 
         <div className="min-w-0 w-full px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
           <section className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-600">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-400">
                 Private staff workspace
               </p>
-              <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
                 Operations queue
               </h1>
-              <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-slate-500">
+              <p className="mt-2 max-w-2xl text-sm font-medium leading-6 text-slate-400">
                 Live order operations and the support inbox are available. Queue metrics are beta. Escalation workflows stay planned until their data models exist.
               </p>
             </div>
@@ -73,7 +73,7 @@ export default async function StaffPage() {
               {modules.map((module) => (
                 <div
                   key={module.id}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-600 shadow-sm"
+                  className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold text-slate-400 shadow-2xl"
                 >
                   {module.label}
                   <ModuleStateBadge state={module.state} />
@@ -89,48 +89,48 @@ export default async function StaffPage() {
               ["Escalations", "1", "Workflow planned"],
               ["Average response", "6m", "Beta performance metric"],
             ].map(([label, value, note]) => (
-              <article key={label} className="system-card p-5 border border-slate-200 bg-white shadow-sm rounded-2xl">
-                <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
+              <article key={label} className="system-card p-5 border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md rounded-[2.5rem]">
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">
                   {label}
                 </p>
-                <p className="mt-3 text-3xl font-bold text-slate-900">{value}</p>
-                <p className="mt-2 text-xs font-medium text-slate-500">{note}</p>
+                <p className="mt-3 text-3xl font-bold text-white">{value}</p>
+                <p className="mt-2 text-xs font-medium text-slate-400">{note}</p>
               </article>
             ))}
           </section>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[1.25fr_0.75fr]">
-            <section id="queue" className="system-panel overflow-hidden scroll-mt-24 border border-slate-200 bg-white shadow-sm rounded-2xl">
-              <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 bg-slate-50/50">
+            <section id="queue" className="system-panel overflow-hidden scroll-mt-24 border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md rounded-[2.5rem]">
+              <div className="flex items-start justify-between gap-4 border-b border-white/10 p-5 bg-white/5">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-900">Assigned work</h2>
-                  <p className="mt-1 text-sm font-medium text-slate-500">
+                  <h2 className="text-lg font-bold text-white">Assigned work</h2>
+                  <p className="mt-1 text-sm font-medium text-slate-400">
                     Preview queue until assignment persistence is implemented.
                   </p>
                 </div>
                 <ModuleStateBadge state="beta" />
               </div>
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-white/5">
                 {queue.map((item) => (
                   <article
                     key={item.id}
-                    className="grid gap-4 p-5 sm:grid-cols-[1fr_auto] sm:items-center hover:bg-slate-50 transition-colors"
+                    className="grid gap-4 p-5 sm:grid-cols-[1fr_auto] sm:items-center hover:bg-white/5 transition-colors"
                   >
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-bold text-slate-900">{item.game}</h3>
+                        <h3 className="font-bold text-white">{item.game}</h3>
                         <span
                           className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${
                             item.priority === "High"
-                              ? "bg-amber-50 text-amber-700 border border-amber-100"
-                              : "bg-slate-100 text-slate-600"
+                              ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                              : "bg-white/5 text-slate-400"
                           }`}
                         >
                           {item.priority}
                         </span>
                       </div>
-                      <p className="mt-2 text-sm font-medium text-slate-600">{item.task}</p>
-                      <p className="mt-2 font-mono text-[11px] font-bold text-slate-400">
+                      <p className="mt-2 text-sm font-medium text-slate-400">{item.task}</p>
+                      <p className="mt-2 font-mono text-[11px] font-bold text-slate-600">
                         {item.id} · waiting {item.age}
                       </p>
                     </div>
@@ -138,7 +138,7 @@ export default async function StaffPage() {
                       type="button"
                       disabled
                       title="Task assignment workflow is planned."
-                      className="min-h-11 cursor-not-allowed rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-bold text-slate-400"
+                      className="min-h-11 cursor-not-allowed rounded-2xl border border-white/5 bg-white/2 px-3 text-xs font-bold text-slate-600"
                     >
                       Preview only
                     </button>
@@ -148,27 +148,27 @@ export default async function StaffPage() {
             </section>
 
             <div className="grid content-start gap-6">
-              <section id="activity" className="system-panel scroll-mt-24 p-5 border border-slate-200 bg-white shadow-sm rounded-2xl">
+              <section id="activity" className="system-panel scroll-mt-24 p-5 border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md rounded-[2.5rem]">
                 <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-lg font-bold text-slate-900">Shift activity</h2>
+                  <h2 className="text-lg font-bold text-white">Shift activity</h2>
                   <ModuleStateBadge state="beta" />
                 </div>
                 <div className="mt-4 grid gap-3 text-sm">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-slate-500 font-medium">Orders validated</span>
-                    <strong className="text-slate-900">7</strong>
+                    <span className="text-slate-400 font-medium">Orders validated</span>
+                    <strong className="text-white">7</strong>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-slate-500 font-medium">Orders fulfilled</span>
-                    <strong className="text-slate-900">5</strong>
+                    <span className="text-slate-400 font-medium">Orders fulfilled</span>
+                    <strong className="text-white">5</strong>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-slate-500 font-medium">Tickets answered</span>
-                    <strong className="text-slate-900">0</strong>
+                    <span className="text-slate-400 font-medium">Tickets answered</span>
+                    <strong className="text-white">0</strong>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-slate-500 font-medium">Escalations raised</span>
-                    <strong className="text-slate-900">0</strong>
+                    <span className="text-slate-400 font-medium">Escalations raised</span>
+                    <strong className="text-white">0</strong>
                   </div>
                 </div>
               </section>
@@ -178,11 +178,11 @@ export default async function StaffPage() {
           <section id="orders" className="mt-8 scroll-mt-24">
             <div className="mb-4 flex items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-600">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-400">
                   Protected order records
                 </p>
-                <h2 className="mt-1 text-2xl font-bold text-slate-900">Order operations</h2>
-                <p className="mt-2 text-sm font-medium text-slate-500">
+                <h2 className="mt-1 text-2xl font-bold text-white">Order operations</h2>
+                <p className="mt-2 text-sm font-medium text-slate-400">
                   This is the live operational module. API authorization still verifies every request.
                 </p>
               </div>

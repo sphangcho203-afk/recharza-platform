@@ -82,7 +82,7 @@ type IdentityState = {
 type CheckoutStep = 1 | 2 | 3 | 4;
 
 const initialIdentity: IdentityState = { playerId: "", riotId: "", serverId: "" };
-const fieldClassName = "storefront-checkout-field mt-2 w-full px-3.5 text-sm placeholder:text-slate-600";
+const fieldClassName = "storefront-checkout-field mt-2 w-full px-3.5 text-sm placeholder:text-slate-500 border-white/10 bg-white/5 focus:border-violet-500 focus:ring-violet-500/20";
 
 function createIdempotencyKey() {
   if (globalThis.crypto?.randomUUID) return `rz_${globalThis.crypto.randomUUID()}`;
@@ -440,11 +440,11 @@ export function SupplierGameCheckoutShell({
         <CheckoutProgress step={step} onStepChange={setStep} />
 
         {step === 2 ? <>
-        <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
+        <section className="storefront-checkout-surface p-4 sm:p-5 border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl rounded-2xl">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-base font-bold text-slate-900">Account Details</h2>
-              <p className="mt-1 text-xs text-slate-600">Enter your account details exactly as shown in-game.</p>
+              <h2 className="text-base font-bold text-white">Account Details</h2>
+              <p className="mt-1 text-xs text-slate-400">Enter your account details exactly as shown in-game.</p>
             </div>
           </div>
 
@@ -513,12 +513,12 @@ export function SupplierGameCheckoutShell({
           </div>
 
           <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className={`text-xs font-medium ${verification?.confirmed ? "text-emerald-600" : identityResult?.valid ? "text-slate-600" : "text-slate-400"}`}>
+            <p className={`text-xs font-medium ${verification?.confirmed ? "text-emerald-400" : identityResult?.valid ? "text-slate-300" : "text-slate-500"}`}>
               {verification?.confirmed && verification.nickname
                 ? `Verified IGN: ${verification.nickname}${verification.region ? ` — ${verification.region} account` : ""}`
                 : identityResult?.valid
-                  ? `Destination format confirmed for ${selectedPackage.marketLabel}. Verify before continuing.`
-                  : identityResult?.message ?? "Enter the destination details to continue."}
+                  ? `Format confirmed for ${selectedPackage.marketLabel}. Verify before continuing.`
+                  : identityResult?.message ?? "Enter the account details to continue."}
             </p>
             <button
               type="button"
@@ -537,8 +537,8 @@ export function SupplierGameCheckoutShell({
         <section>
           <div className="flex items-end justify-between gap-3">
             <div>
-              <h2 className="text-lg font-bold tracking-tight text-slate-900">Choose a package</h2>
-              <p className="mt-1 text-xs font-medium text-slate-500">
+              <h2 className="text-lg font-bold tracking-tight text-white">Choose a package</h2>
+              <p className="mt-1 text-xs font-medium text-slate-400">
                 {marketPackages.length} published offers{gameSlug === "free-fire" ? " across supported regions" : ` for ${selectedPackage.marketLabel}`}.
               </p>
             </div>
@@ -566,8 +566,8 @@ export function SupplierGameCheckoutShell({
                   key={item.id}
                     className={`group overflow-hidden rounded-2xl border text-left transition duration-200 ${
                     selected
-                      ? "border-violet-600 bg-violet-50 shadow-sm"
-                      : "border-slate-100 bg-white hover:border-slate-200 hover:shadow-md"
+                      ? "border-violet-500 bg-violet-500/10 shadow-[0_0_20px_rgba(124,58,237,0.2)]"
+                      : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/[0.08] hover:shadow-2xl"
                   }`}
                 >
                   <button
@@ -581,7 +581,7 @@ export function SupplierGameCheckoutShell({
                     aria-pressed={selected}
                     className="block w-full text-left"
                   >
-                    <span className="relative block aspect-[16/9] overflow-hidden bg-slate-50">
+                    <span className="relative block aspect-[16/9] overflow-hidden bg-white/5">
                       <ResilientImage
                         sources={item.media.sources}
                         alt={item.media.alt}
@@ -599,11 +599,11 @@ export function SupplierGameCheckoutShell({
                           {badge.label}
                         </span>
                       ) : null}
-                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-tight text-slate-900 sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-bold text-emerald-600">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
+                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-tight text-white sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-bold text-emerald-400">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
                       {gameSlug === "free-fire" && item.marketLabel ? (
-                        <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-slate-500">{item.marketLabel}</span>
+                        <span className="mt-1 block text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{item.marketLabel}</span>
                       ) : null}
-                      <span className="mt-3 block text-lg font-bold tracking-tight text-violet-600">{formatPresentment(item.amountInPaise)}</span>
+                      <span className="mt-3 block text-lg font-bold tracking-tight text-violet-400">{formatPresentment(item.amountInPaise)}</span>
                       {selected ? <span className="mt-1 block text-[10px] font-bold text-emerald-600">Selected</span> : null}
                     </span>
                   </button>
@@ -625,22 +625,22 @@ export function SupplierGameCheckoutShell({
 
         {step === 3 ? <>
         <div id="billing" className="space-y-5">
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+          <section className="storefront-checkout-surface p-5 sm:p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl rounded-2xl">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-600">Final review</p>
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-slate-900">Review & Billing</h2>
-                <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-slate-500">Check your top-up details and provide billing information for the payment.</p>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-violet-400">Final review</p>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">Review & Billing</h2>
+                <p className="mt-2 max-w-xl text-sm font-medium leading-6 text-slate-400">Check your top-up details and provide billing information for the payment.</p>
               </div>
             </div>
-            <dl className="mt-6 grid gap-4 rounded-2xl border border-slate-100 bg-slate-50/50 p-5 text-sm sm:grid-cols-2">
-              <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Pack</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
-              <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Market</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.marketLabel}</dd></div>
-              {identity.riotId ? <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.riotId}</dd></div> : null}
-              {identity.playerId ? <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Player ID / UID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.playerId}</dd></div> : null}
-              {identity.serverId ? <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-600">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{identity.serverId}</dd></div> : null}
-              <div className="sm:col-span-2"><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-600">{verification?.nickname ?? "Verified player"}{verification?.region ? <span className="ml-2 rounded-md border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-[10px] font-bold text-cyan-700">{verification.region}</span> : null}</dd></div>
-              <div className="border-t border-slate-200 pt-4 sm:col-span-2"><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total</dt><dd className="mt-1 text-3xl font-bold tracking-tight text-violet-600">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+            <dl className="mt-6 grid gap-4 rounded-2xl border border-white/5 bg-white/2 p-5 text-sm sm:grid-cols-2">
+              <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Pack</dt><dd className="mt-1 font-bold text-white">{selectedPackage.name}</dd></div>
+              <div><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Market</dt><dd className="mt-1 font-bold text-white">{selectedPackage.marketLabel}</dd></div>
+              {identity.riotId ? <div className="rounded-xl border border-white/10 bg-white/5 p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-400">Riot ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-white">{identity.riotId}</dd></div> : null}
+              {identity.playerId ? <div className="rounded-xl border border-white/10 bg-white/5 p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-400">Player ID / UID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-white">{identity.playerId}</dd></div> : null}
+              {identity.serverId ? <div className="rounded-xl border border-white/10 bg-white/5 p-3 shadow-sm"><dt className="text-[10px] font-bold uppercase tracking-widest text-violet-400">Server / Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-white">{identity.serverId}</dd></div> : null}
+              <div className="sm:col-span-2"><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-400">{verification?.nickname ?? "Verified player"}{verification?.region ? <span className="ml-2 rounded-md border border-cyan-500/20 bg-cyan-500/10 px-2 py-0.5 text-[10px] font-bold text-cyan-400">{verification.region}</span> : null}</dd></div>
+              <div className="border-t border-white/10 pt-4 sm:col-span-2"><dt className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Total</dt><dd className="mt-1 text-3xl font-bold tracking-tight text-violet-400">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
             </dl>
           </section>
 

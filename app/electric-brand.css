@@ -34,9 +34,9 @@
   inset: 18%;
   pointer-events: none;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(67, 214, 255, .22) 0%, rgba(92, 112, 255, .10) 38%, transparent 74%);
-  filter: blur(9px);
-  opacity: .16;
+  background: radial-gradient(circle, rgba(67, 214, 255, .42) 0%, rgba(92, 112, 255, .20) 38%, transparent 74%);
+  filter: blur(12px);
+  opacity: .24;
   transform: scale(.78);
   transform-origin: center;
   animation: recharza-logo-glow-breathe 9.6s cubic-bezier(.4, 0, .2, 1) infinite;
@@ -44,19 +44,19 @@
 
 @keyframes recharza-logo-glow-breathe {
   0%, 58%, 100% {
-    opacity: .12;
+    opacity: .20;
     transform: scale(.78);
-    filter: blur(9px);
+    filter: blur(12px);
   }
   70% {
-    opacity: .28;
-    transform: scale(1.06);
-    filter: blur(7px);
+    opacity: .48;
+    transform: scale(1.12);
+    filter: blur(9px);
   }
   78% {
-    opacity: .2;
+    opacity: .32;
     transform: scale(.94);
-    filter: blur(8px);
+    filter: blur(10px);
   }
 }
 
@@ -76,18 +76,58 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(114deg, transparent 0 58%, rgba(103, 232, 249, .06) 58.2%, transparent 58.7% 67%, rgba(139, 92, 246, .045) 67.3%, transparent 67.8%);
+  background: linear-gradient(114deg, transparent 0 58%, rgba(103, 232, 249, .12) 58.2%, transparent 58.7% 67%, rgba(139, 92, 246, .08) 67.3%, transparent 67.8%);
   content: "";
   pointer-events: none;
   mix-blend-mode: screen;
-  opacity: .28;
+  opacity: .36;
   animation: recharza-electric-sweep 18s ease-in-out infinite alternate;
 }
 
 @keyframes recharza-electric-sweep {
-  0% { transform: translate3d(-2%, 1%, 0) scale(1); opacity: .16; }
-  50% { transform: translate3d(1%, -1%, 0) scale(1.02); opacity: .26; }
-  100% { transform: translate3d(3%, 1%, 0) scale(1.04); opacity: .18; }
+  0% { transform: translate3d(-2%, 1%, 0) scale(1); opacity: .22; }
+  50% { transform: translate3d(1%, -1%, 0) scale(1.02); opacity: .42; }
+  100% { transform: translate3d(3%, 1%, 0) scale(1.04); opacity: .28; }
+}
+
+/* Electric Accents for Gaming UI */
+.recharza-electric-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.recharza-electric-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(135deg, transparent 0%, rgba(103, 232, 249, 0.05) 50%, transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.recharza-electric-card:hover::after {
+  opacity: 1;
+}
+
+.recharza-electric-glow {
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+  border-color: rgba(124, 58, 237, 0.4);
+}
+
+.recharza-electric-text {
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.4);
+}
+
+.recharza-electric-border {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+}
+
+.recharza-electric-border:hover {
+  border-color: rgba(124, 58, 237, 0.3);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.1);
 }
 
 @media (max-width: 640px) {

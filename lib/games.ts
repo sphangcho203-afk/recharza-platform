@@ -142,7 +142,7 @@ export const games: Game[] = [
     (region): Game => ({
       ...mobileLegendsBase,
       slug: `mobile-legends-${region.code}`,
-      title: `${region.label} · Mobile Legends`,
+      title: "Mobile Legends",
       kind: "mobile-legends-region",
       status: "checkout",
       available: true,

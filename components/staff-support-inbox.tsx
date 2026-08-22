@@ -82,18 +82,18 @@ const FILTERS: Array<"all" | SupportTicketStatus> = [
 ];
 
 const STATUS_BADGE: Record<string, string> = {
-  OPEN: "bg-slate-100 text-slate-600",
-  ASSIGNED: "bg-violet-100 text-violet-700",
-  WAITING_CUSTOMER: "bg-cyan-100 text-cyan-700",
-  UNDER_REVIEW: "bg-amber-100 text-amber-700",
-  RESOLVED: "bg-emerald-100 text-emerald-700",
-  CLOSED: "bg-slate-100 text-slate-400",
+  OPEN: "bg-white/5 text-slate-400 border border-white/10",
+  ASSIGNED: "bg-violet-500/10 text-violet-400 border border-violet-500/20",
+  WAITING_CUSTOMER: "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20",
+  UNDER_REVIEW: "bg-amber-500/10 text-amber-400 border border-amber-500/20",
+  RESOLVED: "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20",
+  CLOSED: "bg-white/2 text-slate-600 border border-white/5",
 };
 
 const DELIVERY_BADGE: Record<string, string> = {
-  SENT: "text-emerald-600",
-  SKIPPED: "text-slate-400",
-  FAILED: "text-rose-600",
+  SENT: "text-emerald-400",
+  SKIPPED: "text-slate-500",
+  FAILED: "text-rose-400",
 };
 
 function timeAgo(value: string) {
@@ -316,11 +316,11 @@ export function StaffSupportInbox() {
     <section id="support" className="scroll-mt-24">
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-600">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-cyan-400">
             Customer support cases
           </p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">Support inbox</h2>
-          <p className="mt-2 text-sm font-medium text-slate-500">
+          <h2 className="mt-1 text-2xl font-bold tracking-tight text-white">Support inbox</h2>
+          <p className="mt-2 text-sm font-medium text-slate-400">
             {message}
           </p>
         </div>
@@ -328,7 +328,7 @@ export function StaffSupportInbox() {
           type="button"
           onClick={() => loadTickets()}
           disabled={loading}
-          className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-50"
+          className="min-h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-xs font-bold text-slate-400 shadow-2xl transition-all hover:bg-white/10 hover:text-white disabled:opacity-50"
         >
           {loading ? "Refreshing..." : "Refresh"}
         </button>
@@ -341,10 +341,10 @@ export function StaffSupportInbox() {
               key={value}
               type="button"
               onClick={() => setFilter(value)}
-              className={`min-h-9 rounded-full px-3 text-xs font-bold transition-colors ${
+              className={`min-h-9 rounded-full px-3 text-xs font-bold transition-all ${
                 filter === value
-                  ? "bg-cyan-50 text-cyan-700 ring-1 ring-cyan-200"
-                  : "bg-white text-slate-400 border border-slate-200 hover:bg-slate-50 hover:text-slate-600"
+                  ? "bg-cyan-500/20 text-cyan-400 ring-1 ring-cyan-500/30 shadow-[0_0_15px_rgba(34,211,238,0.2)]"
+                  : "bg-white/5 text-slate-500 border border-white/10 hover:bg-white/10 hover:text-slate-300"
               }`}
             >
               {value === "all" ? "All" : supportTicketStatusLabel(value)}
@@ -360,13 +360,13 @@ export function StaffSupportInbox() {
               if (event.key === "Enter") loadTickets(filter, search);
             }}
             placeholder="Search tickets..."
-            className="min-h-11 w-full min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 lg:w-64"
+            className="min-h-11 w-full min-w-0 flex-1 rounded-2xl border border-white/10 bg-[#06070d] px-3 text-sm font-medium text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/20 lg:w-64"
             aria-label="Search support tickets"
           />
           <button
             type="button"
             onClick={() => loadTickets(filter, search)}
-            className="min-h-11 rounded-xl border border-slate-200 bg-white px-4 text-xs font-bold text-slate-600 shadow-sm transition-colors hover:bg-slate-50"
+            className="min-h-11 rounded-2xl border border-white/10 bg-white/5 px-4 text-xs font-bold text-slate-400 shadow-2xl transition-all hover:bg-white/10 hover:text-white"
           >
             Search
           </button>
@@ -374,12 +374,12 @@ export function StaffSupportInbox() {
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
-        <div className="system-panel overflow-hidden border border-slate-200 bg-white shadow-xl shadow-slate-200/50 rounded-2xl">
-          <div className="flex items-center justify-between gap-3 border-b border-slate-100 p-4">
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
+        <div className="system-panel overflow-hidden border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md rounded-[2.5rem]">
+          <div className="flex items-center justify-between gap-3 border-b border-white/10 p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-500">
               Tickets · {visibleCount}
             </p>
-            <span className="rounded-full bg-slate-50 px-2 py-1 text-[10px] font-bold text-slate-500 border border-slate-100">
+            <span className="rounded-full bg-white/5 px-2 py-1 text-[10px] font-bold text-slate-500 border border-white/10">
               {filter === "all" ? "All statuses" : supportTicketStatusLabel(filter)}
             </span>
           </div>

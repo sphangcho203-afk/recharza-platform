@@ -1,32 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  color-scheme: light;
-  --background: #f8f9fc;
-  --foreground: #0f172a;
-  --surface-0: #ffffff;
-  --surface-1: #f1f5f9;
-  --surface-2: #e2e8f0;
-  --surface-3: #cbd5e1;
-  --border-subtle: rgba(15, 23, 42, 0.08);
-  --border-strong: rgba(15, 23, 42, 0.16);
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
+  color-scheme: dark;
+  --background: #05060a;
+  --foreground: #f8fafc;
+  --surface-0: #0d0f16;
+  --surface-1: #161a24;
+  --surface-2: #1e2532;
+  --surface-3: #2d3648;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.12);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --brand-primary: #7c3aed;
   --brand-secondary: #d946ef;
   --brand-cyan: #0891b2;
-  --brand-ink: #f8fafc;
-  --status-success: #059669;
-  --status-warning: #d97706;
-  --status-danger: #dc2626;
-  --focus-ring: rgba(124, 58, 237, 0.5);
+  --brand-ink: #05060a;
+  --status-success: #10b981;
+  --status-warning: #f59e0b;
+  --status-danger: #ef4444;
+  --focus-ring: rgba(124, 58, 237, 0.6);
   --radius-sm: 0.75rem;
   --radius-md: 1rem;
   --radius-lg: 1.5rem;
   --radius-xl: 2rem;
-  --shadow-panel: 0 12px 40px rgba(0, 0, 0, 0.08);
-  --shadow-float: 0 18px 46px rgba(0, 0, 0, 0.12);
+  --shadow-panel: 0 12px 40px rgba(0, 0, 0, 0.4);
+  --shadow-float: 0 18px 46px rgba(0, 0, 0, 0.6);
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
@@ -121,10 +121,10 @@ a:active {
   position: relative;
   isolation: isolate;
   background:
-    radial-gradient(circle at 12% 7%, rgba(124, 58, 237, 0.08), transparent 31rem),
-    radial-gradient(circle at 88% 12%, rgba(8, 145, 178, 0.05), transparent 28rem),
-    radial-gradient(circle at 52% 42%, rgba(217, 70, 239, 0.03), transparent 34rem),
-    linear-gradient(180deg, #f8f9fc 0%, #f1f5f9 56%, #f8f9fc 100%);
+    radial-gradient(circle at 12% 7%, rgba(124, 58, 237, 0.12), transparent 31rem),
+    radial-gradient(circle at 88% 12%, rgba(8, 145, 178, 0.08), transparent 28rem),
+    radial-gradient(circle at 52% 42%, rgba(217, 70, 239, 0.05), transparent 34rem),
+    linear-gradient(180deg, #05060a 0%, #0d0f16 56%, #05060a 100%);
 }
 
 .storefront-page::before {
@@ -211,8 +211,8 @@ a:active {
 }
 
 .storefront-input {
-  border: 1px solid rgba(15, 23, 42, 0.1);
-  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 0.875rem;
   transition: border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out), background 180ms var(--ease-out);
   color: var(--text-primary);
@@ -230,17 +230,18 @@ a:active {
 }
 
 .storefront-checkout-surface {
-  border: 1px solid rgba(124, 58, 237, 0.1);
+  border: 1px solid rgba(124, 58, 237, 0.2);
   border-radius: 1.25rem;
-  background: #ffffff;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 1);
+  background: rgba(13, 15, 22, 0.8);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .storefront-checkout-field {
   min-height: 3rem;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 0.875rem;
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.02);
   color: var(--text-primary);
   outline: none;
   transition: border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out), background 180ms var(--ease-out);
@@ -263,19 +264,19 @@ a:active {
 
 .storefront-checkout-secondary {
   min-height: 3rem;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.875rem;
   color: var(--text-secondary);
   font-weight: 800;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.03);
   transition: border-color 180ms var(--ease-out), background-color 180ms var(--ease-out), color 180ms var(--ease-out);
 }
-.storefront-checkout-secondary:hover { border-color: rgba(8, 145, 178, 0.3); background: #f0f9ff; color: #0369a1; }
+.storefront-checkout-secondary:hover { border-color: rgba(124, 58, 237, 0.4); background: rgba(124, 58, 237, 0.1); color: #fff; }
 
 .storefront-checkout-label { color: #475569; font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
 .storefront-checkout-muted { color: #64748b; }
-.storefront-checkout-alert { border-radius: 0.875rem; border: 1px solid rgba(8, 145, 178, 0.2); background: #f0f9ff; color: #0369a1; }
-.storefront-checkout-alert-error { border-color: rgba(220, 38, 38, 0.2); background: #fef2f2; color: #991b1b; }
+.storefront-checkout-alert { border-radius: 0.875rem; border: 1px solid rgba(8, 145, 178, 0.2); background: rgba(8, 145, 178, 0.1); color: #67e8f9; }
+.storefront-checkout-alert-error { border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.1); color: #fca5a5; }
 
 .storefront-float {
   animation: storefront-float 12s ease-in-out infinite alternate;

@@ -75,18 +75,18 @@ export function CurrencySelector({ compact = false }: CurrencySelectorProps) {
 
   const picker = open ? (
     <div className="recharza-scrim fixed inset-0 z-[9999] flex items-end justify-center p-0 sm:items-center sm:p-4" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} className="recharza-sheet w-full max-h-[min(88vh,46rem)] overflow-hidden shadow-2xl">
-        <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-4 py-3.5">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} className="recharza-sheet w-full max-h-[min(88vh,46rem)] overflow-hidden shadow-2xl bg-[#1a1d26] border border-white/10">
+        <div className="flex items-center justify-between gap-3 border-b border-white/5 px-4 py-3.5">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-600">Display currency</p>
-            <h2 id={titleId} className="mt-0.5 text-lg font-bold text-slate-900">Choose currency</h2>
+            <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-violet-400">Display currency</p>
+            <h2 id={titleId} className="mt-0.5 text-lg font-bold text-white">Choose currency</h2>
           </div>
-          <button type="button" onClick={() => setOpen(false)} aria-label="Close currency picker" className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition-colors duration-150 hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60"><StorefrontIcon name="close" className="h-5 w-5" /></button>
+          <button type="button" onClick={() => setOpen(false)} aria-label="Close currency picker" className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition-colors duration-150 hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60"><StorefrontIcon name="close" className="h-5 w-5" /></button>
         </div>
         <ul className="max-h-[min(62vh,28rem)] overflow-y-auto p-2" aria-label="Currencies">
           {filteredCurrencies.map((item) => {
             const active = item.code === currency;
-            return <li key={item.code}><button type="button" onClick={() => choose(item.code)} className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors duration-150 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${active ? "bg-violet-50 text-slate-900" : "text-slate-600"}`} aria-pressed={active}><span aria-hidden="true" className="grid h-9 min-w-9 shrink-0 place-items-center rounded-lg border border-slate-200 bg-slate-50 px-1 text-center text-slate-700"><span className="text-sm font-bold leading-none">{currencySymbol(item.code, item.locale)}</span></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{item.region}</span><span className="mt-0.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">{item.code}</span></span>{active ? <StorefrontIcon name="shield" className="h-4 w-4 shrink-0 text-violet-600" /> : null}</button></li>;
+            return <li key={item.code}><button type="button" onClick={() => choose(item.code)} className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors duration-150 hover:bg-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60 ${active ? "bg-violet-500/10 text-white" : "text-slate-400"}`} aria-pressed={active}><span aria-hidden="true" className="grid h-9 min-w-9 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 px-1 text-center text-slate-200"><span className="text-sm font-bold leading-none">{currencySymbol(item.code, item.locale)}</span></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{item.region}</span><span className="mt-0.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-slate-500">{item.code}</span></span>{active ? <StorefrontIcon name="shield" className="h-4 w-4 shrink-0 text-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.5)]" /> : null}</button></li>;
           })}
         </ul>
       </div>
@@ -95,10 +95,10 @@ export function CurrencySelector({ compact = false }: CurrencySelectorProps) {
 
   return (
     <>
-      <button ref={triggerRef} type="button" onClick={() => setOpen(true)} className={`group relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-left transition-colors duration-150 ease-out hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 ${compact ? "sm:h-10 sm:w-10" : "sm:h-11 sm:w-11"}`} aria-haspopup="dialog" aria-expanded={open} aria-label={`Display currency: ${selected.code} ${selected.region}`}>
-        <span aria-hidden="true" className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-slate-200 bg-slate-50 text-base font-bold text-slate-700">{currencySymbol(selected.code, selected.locale)}</span>
+      <button ref={triggerRef} type="button" onClick={() => setOpen(true)} className={`group relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-left transition-colors duration-150 ease-out hover:border-white/20 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60 ${compact ? "sm:h-10 sm:w-10" : "sm:h-11 sm:w-11"}`} aria-haspopup="dialog" aria-expanded={open} aria-label={`Display currency: ${selected.code} ${selected.region}`}>
+        <span aria-hidden="true" className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/5 text-base font-bold text-slate-200 shadow-inner">{currencySymbol(selected.code, selected.locale)}</span>
         <span className="sr-only">{selected.code} · {selected.label} · {selected.region}</span>
-        <StorefrontIcon name="arrow" className="absolute h-3 w-3 translate-x-5 translate-y-3 rotate-90 text-slate-400 transition-transform group-hover:translate-y-[0.85rem]" />
+        <StorefrontIcon name="arrow" className="absolute h-3 w-3 translate-x-5 translate-y-3 rotate-90 text-slate-500 transition-transform group-hover:translate-y-[0.85rem]" />
       </button>
       {typeof document !== "undefined" && picker ? createPortal(picker, document.body) : null}
     </>

@@ -4,10 +4,10 @@ import {
 } from "@/lib/product-system";
 
 const stateClassNames: Record<ProductModuleState, string> = {
-  live: "border-emerald-200 bg-emerald-50 text-emerald-700",
-  beta: "border-cyan-200 bg-cyan-50 text-cyan-700",
-  planned: "border-amber-200 bg-amber-50 text-amber-700",
-  hidden: "border-slate-200 bg-slate-50 text-slate-500",
+  live: "border-emerald-500/20 bg-emerald-500/10 text-emerald-400",
+  beta: "border-cyan-500/20 bg-cyan-500/10 text-cyan-400",
+  planned: "border-amber-500/20 bg-amber-500/10 text-amber-400",
+  hidden: "border-white/10 bg-white/5 text-slate-500",
 };
 
 export function ModuleStateBadge({ state }: { state: ProductModuleState }) {

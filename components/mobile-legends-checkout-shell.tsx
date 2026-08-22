@@ -439,8 +439,8 @@ export function MobileLegendsCheckoutShell({
                   key={item.id}
                     className={`group overflow-hidden rounded-2xl border transition-all duration-200 ${
                     selected
-                      ? "border-violet-600 bg-violet-50 shadow-sm"
-                      : "border-slate-100 bg-white hover:border-slate-200 hover:shadow-md"
+                      ? "border-violet-500 bg-violet-500/10 shadow-[0_0_20px_rgba(124,58,237,0.2)]"
+                      : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/[0.08] hover:shadow-2xl"
                   }`}
                 >
                   <button
@@ -452,7 +452,7 @@ export function MobileLegendsCheckoutShell({
                     aria-pressed={selected}
                     className="block w-full text-left"
                   >
-                    <span className="relative block aspect-[16/9] overflow-hidden bg-slate-50">
+                    <span className="relative block aspect-[16/9] overflow-hidden bg-white/5">
                       <StorefrontArtwork
                         sources={item.media.sources}
                         alt={item.media.alt}
@@ -470,8 +470,8 @@ export function MobileLegendsCheckoutShell({
                           {badge.label}
                         </span>
                       ) : null}
-                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-tight text-slate-900 sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-bold text-emerald-600">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
-                      <span className="mt-3 block text-lg font-bold tracking-tight text-violet-600">{formatPresentment(item.amountInPaise)}</span>
+                      <strong className="line-clamp-2 min-h-10 text-[13px] font-bold leading-5 tracking-tight text-white sm:text-[15px]">{quantity.bonus ? <><span>{quantity.base}</span> <span className="font-bold text-emerald-400">{quantity.plus} {quantity.bonus}</span></> : item.name}</strong>
+                      <span className="mt-3 block text-lg font-bold tracking-tight text-violet-400">{formatPresentment(item.amountInPaise)}</span>
                       <span className="mt-1.5 block text-[10px] font-bold uppercase tracking-widest text-slate-400">{item.source === "fazercards-live" ? "Instant delivery" : "Digital delivery"}</span>
                     </span>
                   </button>
@@ -490,25 +490,25 @@ export function MobileLegendsCheckoutShell({
               );
             })}
           </div>
-          {visiblePackages.length === 0 ? <p className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-12 text-center text-sm font-medium text-slate-500">No packages are currently available.</p> : null}
+          {visiblePackages.length === 0 ? <p className="mt-4 rounded-2xl border border-dashed border-white/10 bg-white/5 p-12 text-center text-sm font-medium text-slate-400">No packages are currently available.</p> : null}
         </section>
         {step === 1 ? <StepActions current={step} onNext={() => advanceStep(2)} nextLabel="Continue to player info" /> : null}
         </> : null}
 
         {step === 3 ? <>
         <div id="billing" className="space-y-5">
-          <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-sm">
-            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-600">Order Summary</p>
-            <h2 className="mt-1 text-xl font-bold text-slate-900">Order Review</h2>
-            <p className="mt-1 text-sm text-slate-600">Please review your purchase details and provide billing information to complete your order.</p>
+          <section className="storefront-checkout-surface p-4 sm:p-5 border border-white/10 bg-white/5 backdrop-blur-md shadow-2xl rounded-2xl">
+            <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-violet-400">Order Summary</p>
+            <h2 className="mt-1 text-xl font-bold text-white">Order Review</h2>
+            <p className="mt-1 text-sm text-slate-400">Please review your purchase details and provide billing information to complete your order.</p>
             
-            <dl className="mt-5 grid gap-4 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm sm:grid-cols-2">
-              <div><dt className="text-xs font-bold text-slate-500">Package</dt><dd className="mt-1 font-bold text-slate-900">{selectedPackage.name}</dd></div>
-              <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-bold text-slate-900">{market.flag} {market.label}</dd></div>
-              <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Player ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{playerId || "—"}</dd></div>
-              <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-slate-900">{zoneId || "—"}</dd></div>
-              <div className="rounded-lg border border-slate-200 bg-white p-3 shadow-sm sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-600">{verification.nickname || "Verified player"}</dd></div>
-              <div className="border-t border-slate-200 pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-bold text-violet-600">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
+            <dl className="mt-5 grid gap-4 rounded-xl border border-white/5 bg-white/2 p-4 text-sm sm:grid-cols-2">
+              <div><dt className="text-xs font-bold text-slate-500">Package</dt><dd className="mt-1 font-bold text-white">{selectedPackage.name}</dd></div>
+              <div><dt className="text-xs font-bold text-slate-500">Market</dt><dd className="mt-1 font-bold text-white">{market.flag} {market.label}</dd></div>
+              <div className="rounded-lg border border-white/10 bg-white/5 p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Player ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-white">{playerId || "—"}</dd></div>
+              <div className="rounded-lg border border-white/10 bg-white/5 p-3 shadow-sm"><dt className="text-xs font-bold text-slate-500">Zone ID</dt><dd className="mt-1 break-all font-mono text-sm font-bold tracking-wide text-white">{zoneId || "—"}</dd></div>
+              <div className="rounded-lg border border-white/10 bg-white/5 p-3 shadow-sm sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Verified IGN</dt><dd className="mt-1 break-words font-bold text-emerald-400">{verification.nickname || "Verified player"}</dd></div>
+              <div className="border-t border-white/10 pt-4 sm:col-span-2"><dt className="text-xs font-bold text-slate-500">Total</dt><dd className="mt-1 text-3xl font-bold text-violet-400">{formatPresentment(selectedPackage.amountInPaise)}</dd></div>
             </dl>
           </section>
 

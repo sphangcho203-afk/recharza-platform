@@ -17,17 +17,17 @@ export function CountryPicker({ value, onChange }: CountryPickerProps) {
         required
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-12 w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-3 pr-11 text-base font-normal text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/10"
+        className="min-h-12 w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-4 py-3 pr-11 text-base font-normal text-white outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20"
         aria-label="Billing country"
       >
         {allBillingCountries.map((country) => (
-          <option key={country.isoCode} value={country.isoCode}>
+          <option key={country.isoCode} value={country.isoCode} className="bg-[#1a1d26]">
             {countryFlag(country.isoCode)} {country.name}
           </option>
         ))}
       </select>
-      <StorefrontIcon name="arrow" className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90 text-slate-500" aria-hidden="true" />
-      <span className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-slate-600">
+      <StorefrontIcon name="arrow" className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 rotate-90 text-slate-400" aria-hidden="true" />
+      <span className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
         {selected?.isoCode}
       </span>
     </div>

@@ -47,19 +47,19 @@ export async function SiteFooter() {
     : [];
 
   return (
-    <footer className="border-t border-slate-200 bg-slate-50 px-4 pb-6 pt-9 sm:px-6 lg:px-8">
+    <footer className="border-t border-white/5 bg-[#0d0f16] px-4 pb-6 pt-9 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-[1240px]">
         <div className="grid gap-8 md:grid-cols-[1.4fr_0.7fr_0.8fr_0.9fr]">
           <div className="max-w-sm">
             <RecharzaMark />
-            <p className="mt-3 text-sm leading-6 text-slate-500">
+            <p className="mt-3 text-sm leading-6 text-slate-400">
               Game top-ups with published pricing, secure checkout, recoverable order tracking and connected support.
             </p>
             <div className="mt-5 flex gap-2" aria-label="Support channels">
               {channels.map((channel) => {
                 const icon = channelIcons[channel.id];
                 if (!icon) return null;
-                const className = "grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900";
+                const className = "grid h-9 w-9 place-items-center rounded-lg border border-white/10 bg-white/5 text-slate-400 transition hover:border-white/20 hover:bg-white/10 hover:text-white";
                 return channel.href && channel.available ? (
                   <a key={channel.id} href={channel.href} target={channel.id === "email" ? undefined : "_blank"} rel={channel.id === "email" ? undefined : "noreferrer"} aria-label={channel.label} className={className}>
                     <SupportChannelIcon name={icon} className="h-4.5 w-4.5" />
@@ -77,28 +77,28 @@ export async function SiteFooter() {
           <FooterColumn title="Support" links={supportLinks} />
 
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-900">Payments</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-white">Payments</h2>
             <div className="mt-3 flex flex-wrap items-center gap-2.5" aria-label="Accepted payment methods">
               {paymentMarks.map((mark) => (
-                <span key={mark.label} title={mark.label} className="grid h-10 min-w-11 place-items-center rounded-lg border border-slate-200 bg-white px-2.5 shadow-[0_4px_12px_rgba(0,0,0,0.05)]">
-                  <img src={mark.src} alt={mark.label} className={`${mark.className} object-contain opacity-95`} />
+                <span key={mark.label} title={mark.label} className="grid h-10 min-w-11 place-items-center rounded-lg border border-white/10 bg-white/5 px-2.5 shadow-2xl">
+                  <img src={mark.src} alt={mark.label} className={`${mark.className} object-contain opacity-95 brightness-0 invert`} />
                 </span>
               ))}
             </div>
-            <p className="mt-4 text-xs leading-5 text-slate-600">Payment availability depends on the active checkout configuration and market.</p>
+            <p className="mt-4 text-xs leading-5 text-slate-500">Payment availability depends on the active checkout configuration and market.</p>
           </div>
         </div>
 
         {publishedPolicies.length > 0 ? (
-          <section aria-labelledby="footer-legal-heading" className="mt-8 border-t border-slate-200 pt-5">
-            <h2 id="footer-legal-heading" className="text-xs font-bold uppercase tracking-[0.14em] text-slate-900">Legal</h2>
+          <section aria-labelledby="footer-legal-heading" className="mt-8 border-t border-white/10 pt-5">
+            <h2 id="footer-legal-heading" className="text-xs font-bold uppercase tracking-[0.14em] text-white">Legal</h2>
             <nav aria-label="Legal policies" className="mt-3 max-w-md">
               <div className="grid gap-1.5">
                 {publishedPolicies.map((policy) => (
                   <Link
                     key={policy.key}
                     href={`/policies/${policy.key}`}
-                    className="group flex min-h-9 items-center rounded-lg px-2 py-1.5 text-sm font-bold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-300/60 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                    className="group flex min-h-9 items-center rounded-lg px-2 py-1.5 text-sm font-bold text-slate-400 transition hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/60"
                   >
                     {policy.title}
                   </Link>
@@ -108,7 +108,7 @@ export async function SiteFooter() {
           </section>
         ) : null}
 
-        <div className="mt-4 flex flex-col gap-1 text-[10px] leading-4 text-slate-700 sm:flex-row sm:justify-between">
+        <div className="mt-4 flex flex-col gap-1 text-[10px] leading-4 text-slate-500 sm:flex-row sm:justify-between">
           <p>© 2026 Recharza.</p>
           <p>Game names and artwork belong to their respective publishers.</p>
         </div>
@@ -120,10 +120,10 @@ export async function SiteFooter() {
 function FooterColumn({ title, links }: { title: string; links: { label: string; href: string }[] }) {
   return (
     <div>
-      <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-slate-900">{title}</h2>
+      <h2 className="text-xs font-bold uppercase tracking-[0.14em] text-white">{title}</h2>
       <nav className="mt-3 grid gap-2.5" aria-label={`${title} links`}>
         {links.map((link) => (
-          <Link key={link.href} href={link.href} className="text-sm font-medium text-slate-600 transition hover:text-slate-900">
+          <Link key={link.href} href={link.href} className="text-sm font-medium text-slate-400 transition hover:text-white">
             {link.label}
           </Link>
         ))}

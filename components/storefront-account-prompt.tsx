@@ -42,13 +42,13 @@ export function StorefrontAccountPrompt() {
   if (state === "loading") {
     return (
       <section className="mx-auto max-w-[1240px] px-4 py-12 sm:px-6 lg:px-8" aria-label="Checking account status">
-        <div className="storefront-support-panel min-h-44 animate-pulse border border-slate-100 bg-white shadow-sm">
+        <div className="storefront-support-panel min-h-44 animate-pulse border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md">
           <div className="space-y-3">
-            <div className="h-3 w-32 rounded-full bg-slate-100" />
-            <div className="h-8 w-full max-w-xl rounded-lg bg-slate-100" />
-            <div className="h-4 w-full max-w-2xl rounded bg-slate-50" />
+            <div className="h-3 w-32 rounded-full bg-white/10" />
+            <div className="h-8 w-full max-w-xl rounded-lg bg-white/10" />
+            <div className="h-4 w-full max-w-2xl rounded bg-white/5" />
           </div>
-          <div className="h-12 w-40 rounded-lg bg-slate-100" />
+          <div className="h-12 w-40 rounded-lg bg-white/10" />
         </div>
       </section>
     );
@@ -58,23 +58,23 @@ export function StorefrontAccountPrompt() {
 
   return (
     <section id="offers" className="mx-auto max-w-[1240px] scroll-mt-32 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="storefront-support-panel">
+      <div className="storefront-support-panel border border-white/10 bg-white/5 shadow-2xl backdrop-blur-md">
         <div>
-          <div className="storefront-section-label">{authenticated ? "Account ready" : "Ready when you are"}</div>
-          <h2 className="mt-3 max-w-xl font-heading text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          <div className="storefront-section-label text-violet-400">{authenticated ? "Account ready" : "Ready when you are"}</div>
+          <h2 className="mt-3 max-w-xl font-heading text-2xl font-bold tracking-tight text-white sm:text-3xl">
             {authenticated ? `Welcome back, ${displayName}.` : "A cleaner way to keep every top-up in one place."}
           </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-400">
             {authenticated
               ? "Your account is active. Review orders, saved destinations, billing details, and support from one workspace."
               : "Open an account to keep order history together, or go straight to support if you already have a question."}
           </p>
         </div>
         <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-          <Link href={authenticated ? "/account" : "/account"} className="storefront-primary-cta">
+          <Link href={authenticated ? "/account" : "/account"} className="storefront-primary-cta shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-shadow hover:shadow-[0_0_30px_rgba(124,58,237,0.6)]">
             {authenticated ? "Go to account" : "Open account"} <StorefrontIcon name="arrow" className="h-4 w-4" />
           </Link>
-          <Link href="/support" className="storefront-secondary-cta">Contact support</Link>
+          <Link href="/support" className="storefront-secondary-cta border-white/10 text-white hover:bg-white/5">Contact support</Link>
         </div>
       </div>
     </section>

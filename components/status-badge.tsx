@@ -25,6 +25,8 @@ type StatusBadgeProps = {
  */
 export function StatusBadge({ state, label }: StatusBadgeProps) {
   return (
-    <span className={STATE_CLASS[state]}>{label}</span>
+    <span className={`${STATE_CLASS[state]} rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider`}>
+      {label}
+    </span>
   );
 }

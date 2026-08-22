@@ -91,13 +91,13 @@ export function AddToCartButton({
         type="button"
         disabled={disabled || state.status === "adding"}
         onClick={() => void addToCart()}
-        className="flex min-h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-violet-200 bg-violet-50 px-3 text-[10px] font-bold uppercase tracking-widest text-violet-700 transition-all duration-200 hover:bg-violet-600 hover:text-white hover:shadow-lg hover:shadow-violet-200 disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex min-h-9 w-full items-center justify-center gap-1.5 rounded-xl border border-violet-500/30 bg-violet-500/10 px-3 text-[10px] font-bold uppercase tracking-widest text-violet-400 shadow-[0_0_15px_rgba(124,58,237,0.2)] transition-all duration-300 hover:bg-violet-600 hover:text-white hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] disabled:cursor-not-allowed disabled:opacity-50"
       >
         {state.status === "adding" ? (
           <>
             <span
               aria-hidden="true"
-              className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-violet-600/30 border-t-violet-600"
+              className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-violet-400/30 border-t-violet-400"
             />
             Adding…
           </>
@@ -143,7 +143,7 @@ export function AddToCartButton({
           role="status"
           aria-live="polite"
           className={`mt-2 block text-[10px] font-bold uppercase tracking-widest leading-4 ${
-            state.status === "added" ? "text-emerald-600" : "text-rose-600"
+            state.status === "added" ? "text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.3)]" : "text-rose-400 drop-shadow-[0_0_8px_rgba(251,113,133,0.3)]"
           }`}
         >
           {state.message}
